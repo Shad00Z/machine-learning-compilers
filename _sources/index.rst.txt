@@ -6,7 +6,7 @@ Machine Learning Compilers
    :caption: Project Overview
    :glob:
 
-   project_overview/01_project_information
+   project_overview/*
 
 .. toctree::
    :maxdepth: 2

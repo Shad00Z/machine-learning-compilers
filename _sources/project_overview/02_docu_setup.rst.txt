@@ -19,4 +19,4 @@ After everything has been installed, you can now run
     make html
 
 from inside the ``docs`` directory to build the documentation. 
-To access it, open the ``index.html`` file located in ``docs/build/html``.
+You may now view the built documentation by opening the ``index.html`` file located in ``docs/build/html``.
