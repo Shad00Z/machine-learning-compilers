@@ -1,0 +1,242 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Base &mdash; Machine Learning Compilers  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Assembly" href="01_assembly.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Machine Learning Compilers
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Project Overview</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../project_overview/01_project_information.html">Machine Learning Compilers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../project_overview/02_docu_setup.html">Documentation Setup</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Submissions</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="01_assembly.html">Assembly</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Base</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#copying-data">Copying Data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#task-1-2">Task 1 &amp; 2</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Machine Learning Compilers</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Base</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/submissions/02_base.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="base">
+<h1>Base<a class="headerlink" href="#base" title="Link to this heading"></a></h1>
+<section id="copying-data">
+<h2>Copying Data<a class="headerlink" href="#copying-data" title="Link to this heading"></a></h2>
+<p>For this task, we have been given a C++ driver that makes calls to C and assembly functions. The first C function copies 7 32-bit integers from an array to another. The second C function does the same, but with a variable number of integers which is passed as the first argument. The two assembly functions are supposed to have the same functionality as the C functions, however they were not implemented yet.</p>
+<p>For context, the C functions are as follows:</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">copy_c.c</span><a class="headerlink" href="#id1" title="Link to this code"></a></div>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdint.h&gt;</span>
+<span class="linenos"> 2</span>
+<span class="linenos"> 3</span><span class="cp">#ifdef __cplusplus</span>
+<span class="linenos"> 4</span><span class="k">extern</span><span class="w"> </span><span class="s">&quot;C&quot;</span><span class="w"> </span><span class="p">{</span>
+<span class="linenos"> 5</span><span class="cp">#endif</span>
+<span class="linenos"> 6</span>
+<span class="linenos"> 7</span><span class="kt">void</span><span class="w"> </span><span class="nf">copy_c_0</span><span class="p">(</span><span class="w"> </span><span class="kt">int32_t</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">__restrict</span><span class="w"> </span><span class="n">a</span><span class="p">,</span>
+<span class="linenos"> 8</span><span class="w">               </span><span class="kt">int32_t</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">__restrict</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="linenos"> 9</span><span class="w">  </span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<span class="linenos">10</span><span class="w">  </span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+<span class="linenos">11</span><span class="w">  </span><span class="n">b</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+<span class="linenos">12</span><span class="w">  </span><span class="n">b</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
+<span class="linenos">13</span><span class="w">  </span><span class="n">b</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="p">[</span><span class="mi">4</span><span class="p">];</span>
+<span class="linenos">14</span><span class="w">  </span><span class="n">b</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="p">[</span><span class="mi">5</span><span class="p">];</span>
+<span class="linenos">15</span><span class="w">  </span><span class="n">b</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="p">[</span><span class="mi">6</span><span class="p">];</span>
+<span class="linenos">16</span><span class="p">}</span>
+<span class="linenos">17</span>
+<span class="linenos">18</span><span class="kt">void</span><span class="w"> </span><span class="nf">copy_c_1</span><span class="p">(</span><span class="w"> </span><span class="kt">int64_t</span><span class="w">              </span><span class="n">n</span><span class="p">,</span>
+<span class="linenos">19</span><span class="w">               </span><span class="kt">int32_t</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">__restrict</span><span class="w"> </span><span class="n">a</span><span class="p">,</span>
+<span class="linenos">20</span><span class="w">               </span><span class="kt">int32_t</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">__restrict</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="linenos">21</span><span class="w">  </span><span class="k">for</span><span class="p">(</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="linenos">22</span><span class="w">    </span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<span class="linenos">23</span><span class="w">  </span><span class="p">}</span>
+<span class="linenos">24</span><span class="p">}</span>
+<span class="linenos">25</span>
+<span class="linenos">26</span><span class="cp">#ifdef __cplusplus</span>
+<span class="linenos">27</span><span class="p">}</span>
+<span class="linenos">28</span><span class="cp">#endif</span>
+</pre></div>
+</div>
+</div>
+<section id="task-1-2">
+<h3>Task 1 &amp; 2<a class="headerlink" href="#task-1-2" title="Link to this heading"></a></h3>
+<p>Given the C functions, our task is to implement the assembly functions that match the C functions in functionality by using only base instructions. For the first function, we simply load and store the 7 32-bit integers from the source to the destination using the <cite>ldr</cite> and <cite>str</cite> instructions. We start with the given addresses and increment them by 4 bytes for each further 32-bit integer.</p>
+<p>For the second function, we need to use a loop to copy the values from the source to the destination. We use two registers to keep track of number of elements copied and the current byte offset. The loop then starts by copying the first 32-bit integer, and then increase the number of elements copied by 1 and the byte offset by 4 (since each integer is 4 bytes). Next, we use the <cite>cmp</cite> instruction to check if we have copied the specified number of integers. If not, we go back to the beginning of the loop and repeat the process. If we have copied the specified number of integers, we exit the loop and return from the function.</p>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">copy_asm.s</span><a class="headerlink" href="#id2" title="Link to this code"></a></div>
+<div class="highlight-asm notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="w">    </span><span class="na">.text</span>
+<span class="linenos"> 2</span><span class="w">    </span><span class="na">.type</span><span class="w"> </span><span class="no">copy_asm_0</span><span class="p">,</span><span class="w"> </span><span class="nv">%function</span>
+<span class="linenos"> 3</span><span class="w">    </span><span class="na">.global</span><span class="w"> </span><span class="no">copy_asm_0</span>
+<span class="linenos"> 4</span><span class="w">    </span><span class="cm">/*</span>
+<span class="linenos"> 5</span><span class="cm">    * Copies an array of 7 32-bit integers from one </span>
+<span class="linenos"> 6</span><span class="cm">    * location to another.</span>
+<span class="linenos"> 7</span><span class="cm">    *</span>
+<span class="linenos"> 8</span><span class="cm">    * @param x0: address of the source array.</span>
+<span class="linenos"> 9</span><span class="cm">    * @param x1: address of the destination array.</span>
+<span class="linenos">10</span><span class="cm">    */</span>
+<span class="linenos">11</span><span class="nl">copy_asm_0:</span>
+<span class="linenos">12</span><span class="w">    </span><span class="c1">// b[0] = a[0]</span>
+<span class="linenos">13</span><span class="w">    </span><span class="nf">ldr</span><span class="w"> </span><span class="no">w2</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x0</span><span class="p">]</span>
+<span class="linenos">14</span><span class="w">    </span><span class="nf">str</span><span class="w"> </span><span class="no">w2</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x1</span><span class="p">]</span>
+<span class="linenos">15</span><span class="w">    </span><span class="c1">// b[1] = a[1]</span>
+<span class="linenos">16</span><span class="w">    </span><span class="nf">ldr</span><span class="w"> </span><span class="no">w2</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x0</span><span class="p">,</span><span class="w"> </span><span class="mi">#4</span><span class="p">]</span>
+<span class="linenos">17</span><span class="w">    </span><span class="nf">str</span><span class="w"> </span><span class="no">w2</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="mi">#4</span><span class="p">]</span>
+<span class="linenos">18</span><span class="w">    </span><span class="c1">// b[2] = a[2]</span>
+<span class="linenos">19</span><span class="w">    </span><span class="nf">ldr</span><span class="w"> </span><span class="no">w2</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x0</span><span class="p">,</span><span class="w"> </span><span class="mi">#8</span><span class="p">]</span>
+<span class="linenos">20</span><span class="w">    </span><span class="nf">str</span><span class="w"> </span><span class="no">w2</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="mi">#8</span><span class="p">]</span>
+<span class="linenos">21</span><span class="w">    </span><span class="c1">// b[3] = a[3]</span>
+<span class="linenos">22</span><span class="w">    </span><span class="nf">ldr</span><span class="w"> </span><span class="no">w2</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x0</span><span class="p">,</span><span class="w"> </span><span class="mi">#12</span><span class="p">]</span>
+<span class="linenos">23</span><span class="w">    </span><span class="nf">str</span><span class="w"> </span><span class="no">w2</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="mi">#12</span><span class="p">]</span>
+<span class="linenos">24</span><span class="w">    </span><span class="c1">// b[4] = a[4]</span>
+<span class="linenos">25</span><span class="w">    </span><span class="nf">ldr</span><span class="w"> </span><span class="no">w2</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x0</span><span class="p">,</span><span class="w"> </span><span class="mi">#16</span><span class="p">]</span>
+<span class="linenos">26</span><span class="w">    </span><span class="nf">str</span><span class="w"> </span><span class="no">w2</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="mi">#16</span><span class="p">]</span>
+<span class="linenos">27</span><span class="w">    </span><span class="c1">// b[5] = a[5]</span>
+<span class="linenos">28</span><span class="w">    </span><span class="nf">ldr</span><span class="w"> </span><span class="no">w2</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x0</span><span class="p">,</span><span class="w"> </span><span class="mi">#20</span><span class="p">]</span>
+<span class="linenos">29</span><span class="w">    </span><span class="nf">str</span><span class="w"> </span><span class="no">w2</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="mi">#20</span><span class="p">]</span>
+<span class="linenos">30</span><span class="w">    </span><span class="c1">// b[6] = a[6]</span>
+<span class="linenos">31</span><span class="w">    </span><span class="nf">ldr</span><span class="w"> </span><span class="no">w2</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x0</span><span class="p">,</span><span class="w"> </span><span class="mi">#24</span><span class="p">]</span>
+<span class="linenos">32</span><span class="w">    </span><span class="nf">str</span><span class="w"> </span><span class="no">w2</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="mi">#24</span><span class="p">]</span>
+<span class="linenos">33</span><span class="w">    </span><span class="nf">ret</span>
+<span class="linenos">34</span>
+<span class="linenos">35</span>
+<span class="linenos">36</span><span class="w">    </span><span class="na">.text</span>
+<span class="linenos">37</span><span class="w">    </span><span class="na">.type</span><span class="w"> </span><span class="no">copy_asm_1</span><span class="p">,</span><span class="w"> </span><span class="nv">%function</span>
+<span class="linenos">38</span><span class="w">    </span><span class="na">.global</span><span class="w"> </span><span class="no">copy_asm_1</span>
+<span class="linenos">39</span><span class="w">    </span><span class="cm">/*</span>
+<span class="linenos">40</span><span class="cm">    * Copies an array of n 32-bit integers from one </span>
+<span class="linenos">41</span><span class="cm">    * location to another.</span>
+<span class="linenos">42</span><span class="cm">    *</span>
+<span class="linenos">43</span><span class="cm">    * @param x0: number of elements to copy.</span>
+<span class="linenos">44</span><span class="cm">    * @param x1: address of the source array.</span>
+<span class="linenos">45</span><span class="cm">    * @param x2: address of the destination array.</span>
+<span class="linenos">46</span><span class="cm">    */</span>
+<span class="linenos">47</span><span class="nl">copy_asm_1:</span>
+<span class="linenos">48</span><span class="w">    </span><span class="c1">// number of elements copied</span>
+<span class="linenos">49</span><span class="w">    </span><span class="nf">mov</span><span class="w"> </span><span class="no">x3</span><span class="p">,</span><span class="w"> </span><span class="mi">#0</span>
+<span class="linenos">50</span><span class="w">    </span><span class="c1">// byte offset for array</span>
+<span class="linenos">51</span><span class="w">    </span><span class="nf">mov</span><span class="w"> </span><span class="no">x4</span><span class="p">,</span><span class="w"> </span><span class="mi">#0</span>
+<span class="linenos">52</span><span class="nl">loop:</span>
+<span class="linenos">53</span><span class="w">    </span><span class="c1">// b[i] = a[i]</span>
+<span class="linenos">54</span><span class="w">    </span><span class="nf">ldr</span><span class="w"> </span><span class="no">w5</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="no">x4</span><span class="p">]</span>
+<span class="linenos">55</span><span class="w">    </span><span class="nf">str</span><span class="w"> </span><span class="no">w5</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x2</span><span class="p">,</span><span class="w"> </span><span class="no">x4</span><span class="p">]</span>
+<span class="linenos">56</span><span class="w">    </span><span class="c1">// increment the number of elements copied</span>
+<span class="linenos">57</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x3</span><span class="p">,</span><span class="w"> </span><span class="no">x3</span><span class="p">,</span><span class="w"> </span><span class="mi">#1</span>
+<span class="linenos">58</span><span class="w">    </span><span class="c1">// increment the byte offset</span>
+<span class="linenos">59</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x4</span><span class="p">,</span><span class="w"> </span><span class="no">x4</span><span class="p">,</span><span class="w"> </span><span class="mi">#4</span>
+<span class="linenos">60</span><span class="w">    </span><span class="c1">// check if we have copied n elements</span>
+<span class="linenos">61</span><span class="w">    </span><span class="nf">cmp</span><span class="w"> </span><span class="no">x3</span><span class="p">,</span><span class="w"> </span><span class="no">x0</span>
+<span class="linenos">62</span><span class="w">    </span><span class="c1">// if not, loop again</span>
+<span class="linenos">63</span><span class="w">    </span><span class="nf">blt</span><span class="w"> </span><span class="no">loop</span>
+<span class="linenos">64</span><span class="w">    </span><span class="nf">ret</span>
+</pre></div>
+</div>
+</div>
+<p>After compiling and running the driver, we can see that the assembly functions work as expected. The output of the driver is as follows:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>./copy_driver
+copy_c_0:<span class="w"> </span>copy<span class="w"> </span>succeeded
+copy_c_1:<span class="w"> </span>copy<span class="w"> </span>succeeded
+copy_asm_0:<span class="w"> </span>copy<span class="w"> </span>succeeded
+copy_asm_1:<span class="w"> </span>copy<span class="w"> </span>succeeded
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="01_assembly.html" class="btn btn-neutral float-left" title="Assembly" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Lucas Obitz, Luca-Philipp Grumbach.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

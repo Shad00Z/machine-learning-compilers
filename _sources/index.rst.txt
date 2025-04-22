@@ -13,4 +13,4 @@ Machine Learning Compilers
    :caption: Submissions
    :glob:
 
-   submissions/01_assembly
+   submissions/*
