@@ -1,5 +1,9 @@
 #include <stdint.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void copy_c_0( int32_t * __restrict a,
                int32_t * __restrict b ) {
   b[0] = a[0];
@@ -18,3 +22,7 @@ void copy_c_1( int64_t              n,
     b[i] = a[i];
   }
 }
+
+#ifdef __cplusplus
+}
+#endif

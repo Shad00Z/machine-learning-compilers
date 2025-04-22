@@ -1,6 +1,7 @@
 # Build & System files
 build/
 _build/
+*.o
 
 .DS_STORE
 python_env

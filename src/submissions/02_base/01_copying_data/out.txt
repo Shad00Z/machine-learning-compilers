@@ -1,0 +1,5 @@
+>./copy_driver 
+copy_c_0: copy succeeded
+copy_c_1: copy succeeded
+copy_asm_0: copy succeeded
+copy_asm_1: copy succeeded
