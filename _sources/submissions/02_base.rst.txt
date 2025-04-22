@@ -16,7 +16,7 @@ For context, the C functions are as follows:
 Task 1 & 2
 ^^^^^^^^^^^^
 
-Given the C functions, our task is to implement the assembly functions that match the C functions in functionality by using only base instructions. For the first function, we simply load and store the 7 32-bit integers from the source to the destination using the `ldr` and `str` instructions. We start with the given addresses and increment them by 4 bytes for each further 32-bit integer.
+Given the C functions, our task is to implement the assembly functions that match the C functions in functionality by using only base instructions. For the first function, we simply load and store the 7 32-bit integers from the source to the destination using the `ldr` and `str` instructions. We use the given addresses and an immediate offset that is incremented by 4 for each 32-bit integer (4 bytes = 32 bit).
 
 For the second function, we need to use a loop to copy the values from the source to the destination. We use two registers to keep track of number of elements copied and the current byte offset. The loop then starts by copying the first 32-bit integer, and then increase the number of elements copied by 1 and the byte offset by 4 (since each integer is 4 bytes). Next, we use the `cmp` instruction to check if we have copied the specified number of integers. If not, we go back to the beginning of the loop and repeat the process. If we have copied the specified number of integers, we exit the loop and return from the function.
 
