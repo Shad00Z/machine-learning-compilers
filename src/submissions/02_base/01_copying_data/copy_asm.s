@@ -45,9 +45,9 @@ copy_asm_0:
     * @param x2: address of the destination array.
     */
 copy_asm_1:
-    // x3: number of elements copied
-    // x4: byte offset for array
+    // number of elements copied
     mov x3, #0
+    // byte offset for array
     mov x4, #0
 loop:
     // b[i] = a[i]
