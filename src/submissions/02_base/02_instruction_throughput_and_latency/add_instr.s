@@ -57,7 +57,7 @@ loop:
     add x26, x27, x28
 
     subs x0, x0, #1          // decrement loop counter
-    b.ne loop                // branch if not zero
+    b.ge loop                // branch if not zero
 
     // restore callee-saved registers
     ldp x27, x28, [sp], #16
