@@ -120,12 +120,14 @@ To understand the results, we did two things:
 2. we looked at the `ARM Neoverse V2 Software Optimization Guide <https://developer.arm.com/documentation/109898/latest/>`_ for the base instructions.
 
 The guide specifies the following theoretical instruction **throughput** per cycle:
-- ADD: 6 instructions per cycle
-- MUL: 2 instructions per cycle
 
-and the latency until a result is available of:
-- ADD: 1 clock cycle
-- MUL: 2 clock cycles
+* ADD: 6 instructions per cycle
+* MUL: 2 instructions per cycle
+
+and the latency (until a result is available) of:
+
+* ADD: 1 clock cycle
+* MUL: 2 clock cycles
 
 Looking at a these numbers, we can assume a clock cycle speed of:
 
@@ -140,7 +142,7 @@ For the **latency** we can make a similar calculation:
 
 .. math:: \frac{4.4 \text{ GHz}}{4.37951 \text{ GOPS}} ≈ 1 \text{ clock cycles per instr}
 
-.. math:: \frac{4.4 \text{ GHz}}{4.37951 \text{ GOPS}} ≈ 3 \text{ clock cycles per instr}
+.. math:: \frac{4.4 \text{ GHz}}{1.46244 \text{ GOPS}} ≈ 3 \text{ clock cycles per instr}
 
 This shows that our obtained results for the ADD instruction correspond with the 
 number that we obtained from the guide, whereas the latency for the MUL instruction 
