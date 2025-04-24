@@ -136,7 +136,13 @@ Looking at a these numbers, we can assume a clock cycle speed of:
 .. math:: \frac{13.2584 \text{ GOPS}}{2} = 6.63 \text{ GHz}
 
 For the ADD instruction, this aligns closely with the *known* clock speed of 4.4 GHz.
-For the MUL instruction on the other hand the clock speed it higher than expected.
+For the MUL instruction on the other hand, the clock speed is higher than expected. It is not clear why exactly this is the case, but in order to verify the correctness of our code, we ran it on an M3 Pro Chip with a clock speed of 4.05 GHz. The result for `ADD` and `MUL` here was:
+
+.. math:: \frac{26.195 \text{ GOPS}}{6} = 4.37 \text{ GHz}
+
+.. math:: \frac{8.08751 \text{ GOPS}}{2} = 4.04 \text{ GHz}
+
+We see that the calculated clock speeds are close to the expected clock speed of 4.05 GHz in both cases, which indicates that our code is correct.
 
 For the **latency** we can make a similar calculation:
 
