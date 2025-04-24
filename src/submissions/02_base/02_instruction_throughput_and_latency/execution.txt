@@ -1,0 +1,3 @@
+Commands:
+g++ microbench.cpp mul_lat_instr.s add_lat_instr.s mul_instr.s add_instr.s -o microbench.o
+./microbench.o 

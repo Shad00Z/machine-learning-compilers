@@ -1,0 +1,31 @@
+Benchmarking ADD throughput ...
+-----------------------------------------------
+Measuring throughput for Instruction
+Total time (s):   1.29126
+Instructions per Second:   2.90414e+10
+Estimated GOPS:   29.0414 GigaOps/sec
+-----------------------------------------------
+
+Benchmarking MUL throughput ...
+-----------------------------------------------
+Measuring throughput for Instruction
+Total time (s):   2.82838
+Instructions per Second:   1.32584e+10
+Estimated GOPS:   13.2584 GigaOps/sec
+-----------------------------------------------
+
+Benchmarking ADD latency ...
+-----------------------------------------------
+Measuring latency for Instruction
+Total time (s):   0.856261
+Instructions per Second:   4.37951e+09
+Estimated GOPS:   4.37951 GigaOps/sec
+-----------------------------------------------
+
+Benchmarking MUL latency ...
+-----------------------------------------------
+Measuring latency for Instruction
+Total time (s):   2.5642
+Instructions per Second:   1.46244e+09
+Estimated GOPS:   1.46244 GigaOps/sec
+-----------------------------------------------
