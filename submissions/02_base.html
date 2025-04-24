@@ -19,6 +19,7 @@
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../_static/copybutton.js?v=f281be69"></script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -55,6 +56,12 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Base</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#copying-data">Copying Data</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#task-1-2">Task 1 &amp; 2</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#instruction-throughput-and-latency">Instruction Throughput and Latency</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#throughput">Throughput</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#latency">Latency</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#results">Results</a></li>
 </ul>
 </li>
 </ul>
@@ -221,6 +228,235 @@ copy_asm_0:<span class="w"> </span>copy<span class="w"> </span>succeeded
 copy_asm_1:<span class="w"> </span>copy<span class="w"> </span>succeeded
 </pre></div>
 </div>
+</section>
+</section>
+<section id="instruction-throughput-and-latency">
+<h2>Instruction Throughput and Latency<a class="headerlink" href="#instruction-throughput-and-latency" title="Link to this heading"></a></h2>
+<p>For this task, we were supposed to write a micro-benchmarking script to measure the
+throughput and the latency of the ADD (shifted register) and the MUL instruction.</p>
+<section id="throughput">
+<h3>Throughput<a class="headerlink" href="#throughput" title="Link to this heading"></a></h3>
+<p>To measure the <strong>throughput</strong> of the instructions we have developed an assembly function
+for each of the two instructions. The idea for measuring the throughput is that for
+every consecutive add instructions there shouldn’t be any dependencies on the add
+instruction from before. The loop that was executed several times for the ADD (shifted register)
+and the MUL instruction was:</p>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">loop in add_instr.s</span><a class="headerlink" href="#id3" title="Link to this code"></a></div>
+<div class="highlight-asm notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nl">loop:</span>
+<span class="linenos"> 2</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="no">x27</span><span class="p">,</span><span class="w"> </span><span class="no">x28</span>
+<span class="linenos"> 3</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x2</span><span class="p">,</span><span class="w"> </span><span class="no">x27</span><span class="p">,</span><span class="w"> </span><span class="no">x28</span>
+<span class="linenos"> 4</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x3</span><span class="p">,</span><span class="w"> </span><span class="no">x27</span><span class="p">,</span><span class="w"> </span><span class="no">x28</span>
+<span class="linenos"> 5</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x4</span><span class="p">,</span><span class="w"> </span><span class="no">x27</span><span class="p">,</span><span class="w"> </span><span class="no">x28</span>
+<span class="linenos"> 6</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x5</span><span class="p">,</span><span class="w"> </span><span class="no">x27</span><span class="p">,</span><span class="w"> </span><span class="no">x28</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x6</span><span class="p">,</span><span class="w"> </span><span class="no">x27</span><span class="p">,</span><span class="w"> </span><span class="no">x28</span>
+<span class="linenos"> 9</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x7</span><span class="p">,</span><span class="w"> </span><span class="no">x27</span><span class="p">,</span><span class="w"> </span><span class="no">x28</span>
+<span class="linenos">10</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x8</span><span class="p">,</span><span class="w"> </span><span class="no">x27</span><span class="p">,</span><span class="w"> </span><span class="no">x28</span>
+<span class="linenos">11</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x9</span><span class="p">,</span><span class="w"> </span><span class="no">x27</span><span class="p">,</span><span class="w"> </span><span class="no">x28</span>
+<span class="linenos">12</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x10</span><span class="p">,</span><span class="w"> </span><span class="no">x27</span><span class="p">,</span><span class="w"> </span><span class="no">x28</span>
+<span class="linenos">13</span>
+<span class="linenos">14</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x11</span><span class="p">,</span><span class="w"> </span><span class="no">x27</span><span class="p">,</span><span class="w"> </span><span class="no">x28</span>
+<span class="linenos">15</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x12</span><span class="p">,</span><span class="w"> </span><span class="no">x27</span><span class="p">,</span><span class="w"> </span><span class="no">x28</span>
+<span class="linenos">16</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x13</span><span class="p">,</span><span class="w"> </span><span class="no">x27</span><span class="p">,</span><span class="w"> </span><span class="no">x28</span>
+<span class="linenos">17</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x14</span><span class="p">,</span><span class="w"> </span><span class="no">x27</span><span class="p">,</span><span class="w"> </span><span class="no">x28</span>
+<span class="linenos">18</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x15</span><span class="p">,</span><span class="w"> </span><span class="no">x27</span><span class="p">,</span><span class="w"> </span><span class="no">x28</span>
+<span class="linenos">19</span>
+<span class="linenos">20</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x16</span><span class="p">,</span><span class="w"> </span><span class="no">x27</span><span class="p">,</span><span class="w"> </span><span class="no">x28</span>
+<span class="linenos">21</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x17</span><span class="p">,</span><span class="w"> </span><span class="no">x27</span><span class="p">,</span><span class="w"> </span><span class="no">x28</span>
+<span class="linenos">22</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x19</span><span class="p">,</span><span class="w"> </span><span class="no">x27</span><span class="p">,</span><span class="w"> </span><span class="no">x28</span>
+<span class="linenos">23</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x20</span><span class="p">,</span><span class="w"> </span><span class="no">x27</span><span class="p">,</span><span class="w"> </span><span class="no">x28</span>
+<span class="linenos">24</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x21</span><span class="p">,</span><span class="w"> </span><span class="no">x27</span><span class="p">,</span><span class="w"> </span><span class="no">x28</span>
+<span class="linenos">25</span>
+<span class="linenos">26</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x22</span><span class="p">,</span><span class="w"> </span><span class="no">x27</span><span class="p">,</span><span class="w"> </span><span class="no">x28</span>
+<span class="linenos">27</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x23</span><span class="p">,</span><span class="w"> </span><span class="no">x27</span><span class="p">,</span><span class="w"> </span><span class="no">x28</span>
+<span class="linenos">28</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x24</span><span class="p">,</span><span class="w"> </span><span class="no">x27</span><span class="p">,</span><span class="w"> </span><span class="no">x28</span>
+<span class="linenos">29</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x25</span><span class="p">,</span><span class="w"> </span><span class="no">x27</span><span class="p">,</span><span class="w"> </span><span class="no">x28</span>
+<span class="linenos">30</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x26</span><span class="p">,</span><span class="w"> </span><span class="no">x27</span><span class="p">,</span><span class="w"> </span><span class="no">x28</span>
+<span class="linenos">31</span>
+<span class="linenos">32</span><span class="w">    </span><span class="nf">subs</span><span class="w"> </span><span class="no">x0</span><span class="p">,</span><span class="w"> </span><span class="no">x0</span><span class="p">,</span><span class="w"> </span><span class="mi">#1</span><span class="w">          </span><span class="c1">// decrement loop counter</span>
+<span class="linenos">33</span><span class="w">    </span><span class="nf">b.gt</span><span class="w"> </span><span class="no">loop</span><span class="w">                </span><span class="c1">// branch if greater than zero</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">loop in mul_instr.s</span><a class="headerlink" href="#id4" title="Link to this code"></a></div>
+<div class="highlight-asm notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="w">    </span><span class="nf">mul</span><span class="w"> </span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="no">x27</span><span class="p">,</span><span class="w"> </span><span class="no">x28</span>
+<span class="linenos"> 2</span><span class="w">    </span><span class="nf">mul</span><span class="w"> </span><span class="no">x2</span><span class="p">,</span><span class="w"> </span><span class="no">x27</span><span class="p">,</span><span class="w"> </span><span class="no">x28</span>
+<span class="linenos"> 3</span><span class="w">    </span><span class="nf">mul</span><span class="w"> </span><span class="no">x3</span><span class="p">,</span><span class="w"> </span><span class="no">x27</span><span class="p">,</span><span class="w"> </span><span class="no">x28</span>
+<span class="linenos"> 4</span><span class="w">    </span><span class="nf">mul</span><span class="w"> </span><span class="no">x4</span><span class="p">,</span><span class="w"> </span><span class="no">x27</span><span class="p">,</span><span class="w"> </span><span class="no">x28</span>
+<span class="linenos"> 5</span><span class="w">    </span><span class="nf">mul</span><span class="w"> </span><span class="no">x5</span><span class="p">,</span><span class="w"> </span><span class="no">x27</span><span class="p">,</span><span class="w"> </span><span class="no">x28</span>
+<span class="linenos"> 6</span>
+<span class="linenos"> 7</span><span class="w">    </span><span class="nf">mul</span><span class="w"> </span><span class="no">x6</span><span class="p">,</span><span class="w"> </span><span class="no">x27</span><span class="p">,</span><span class="w"> </span><span class="no">x28</span>
+<span class="linenos"> 8</span><span class="w">    </span><span class="nf">mul</span><span class="w"> </span><span class="no">x7</span><span class="p">,</span><span class="w"> </span><span class="no">x27</span><span class="p">,</span><span class="w"> </span><span class="no">x28</span>
+<span class="linenos"> 9</span><span class="w">    </span><span class="nf">mul</span><span class="w"> </span><span class="no">x8</span><span class="p">,</span><span class="w"> </span><span class="no">x27</span><span class="p">,</span><span class="w"> </span><span class="no">x28</span>
+<span class="linenos">10</span><span class="w">    </span><span class="nf">mul</span><span class="w"> </span><span class="no">x9</span><span class="p">,</span><span class="w"> </span><span class="no">x27</span><span class="p">,</span><span class="w"> </span><span class="no">x28</span>
+<span class="linenos">11</span><span class="w">    </span><span class="nf">mul</span><span class="w"> </span><span class="no">x10</span><span class="p">,</span><span class="w"> </span><span class="no">x27</span><span class="p">,</span><span class="w"> </span><span class="no">x28</span>
+<span class="linenos">12</span>
+<span class="linenos">13</span><span class="w">    </span><span class="nf">mul</span><span class="w"> </span><span class="no">x11</span><span class="p">,</span><span class="w"> </span><span class="no">x27</span><span class="p">,</span><span class="w"> </span><span class="no">x28</span>
+<span class="linenos">14</span><span class="w">    </span><span class="nf">mul</span><span class="w"> </span><span class="no">x12</span><span class="p">,</span><span class="w"> </span><span class="no">x27</span><span class="p">,</span><span class="w"> </span><span class="no">x28</span>
+<span class="linenos">15</span><span class="w">    </span><span class="nf">mul</span><span class="w"> </span><span class="no">x13</span><span class="p">,</span><span class="w"> </span><span class="no">x27</span><span class="p">,</span><span class="w"> </span><span class="no">x28</span>
+<span class="linenos">16</span><span class="w">    </span><span class="nf">mul</span><span class="w"> </span><span class="no">x14</span><span class="p">,</span><span class="w"> </span><span class="no">x27</span><span class="p">,</span><span class="w"> </span><span class="no">x28</span>
+<span class="linenos">17</span><span class="w">    </span><span class="nf">mul</span><span class="w"> </span><span class="no">x15</span><span class="p">,</span><span class="w"> </span><span class="no">x27</span><span class="p">,</span><span class="w"> </span><span class="no">x28</span>
+<span class="linenos">18</span>
+<span class="linenos">19</span><span class="w">    </span><span class="nf">mul</span><span class="w"> </span><span class="no">x16</span><span class="p">,</span><span class="w"> </span><span class="no">x27</span><span class="p">,</span><span class="w"> </span><span class="no">x28</span>
+<span class="linenos">20</span><span class="w">    </span><span class="nf">mul</span><span class="w"> </span><span class="no">x17</span><span class="p">,</span><span class="w"> </span><span class="no">x27</span><span class="p">,</span><span class="w"> </span><span class="no">x28</span>
+<span class="linenos">21</span><span class="w">    </span><span class="nf">mul</span><span class="w"> </span><span class="no">x19</span><span class="p">,</span><span class="w"> </span><span class="no">x27</span><span class="p">,</span><span class="w"> </span><span class="no">x28</span>
+<span class="linenos">22</span><span class="w">    </span><span class="nf">mul</span><span class="w"> </span><span class="no">x20</span><span class="p">,</span><span class="w"> </span><span class="no">x27</span><span class="p">,</span><span class="w"> </span><span class="no">x28</span>
+<span class="linenos">23</span><span class="w">    </span><span class="nf">mul</span><span class="w"> </span><span class="no">x21</span><span class="p">,</span><span class="w"> </span><span class="no">x27</span><span class="p">,</span><span class="w"> </span><span class="no">x28</span>
+<span class="linenos">24</span>
+<span class="linenos">25</span><span class="w">    </span><span class="nf">mul</span><span class="w"> </span><span class="no">x22</span><span class="p">,</span><span class="w"> </span><span class="no">x27</span><span class="p">,</span><span class="w"> </span><span class="no">x28</span>
+<span class="linenos">26</span><span class="w">    </span><span class="nf">mul</span><span class="w"> </span><span class="no">x23</span><span class="p">,</span><span class="w"> </span><span class="no">x27</span><span class="p">,</span><span class="w"> </span><span class="no">x28</span>
+<span class="linenos">27</span><span class="w">    </span><span class="nf">mul</span><span class="w"> </span><span class="no">x24</span><span class="p">,</span><span class="w"> </span><span class="no">x27</span><span class="p">,</span><span class="w"> </span><span class="no">x28</span>
+<span class="linenos">28</span><span class="w">    </span><span class="nf">mul</span><span class="w"> </span><span class="no">x25</span><span class="p">,</span><span class="w"> </span><span class="no">x27</span><span class="p">,</span><span class="w"> </span><span class="no">x28</span>
+<span class="linenos">29</span><span class="w">    </span><span class="nf">mul</span><span class="w"> </span><span class="no">x26</span><span class="p">,</span><span class="w"> </span><span class="no">x27</span><span class="p">,</span><span class="w"> </span><span class="no">x28</span>
+<span class="linenos">30</span>
+<span class="linenos">31</span><span class="w">    </span><span class="nf">subs</span><span class="w"> </span><span class="no">x0</span><span class="p">,</span><span class="w"> </span><span class="no">x0</span><span class="p">,</span><span class="w"> </span><span class="mi">#1</span><span class="w">          </span><span class="c1">// decrement loop counter</span>
+<span class="linenos">32</span><span class="w">    </span><span class="nf">b.gt</span><span class="w"> </span><span class="no">loop</span><span class="w">                </span><span class="c1">// branch if greater than zero</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="latency">
+<h3>Latency<a class="headerlink" href="#latency" title="Link to this heading"></a></h3>
+<p>To measure the <strong>latency</strong> of the two instructions we have developed two more assembly
+functions. The idea for measuring the latency is to have consecutive instructions that
+dependent on the result from the last executed instruction. That meant we had to slightly
+adjust the loops from the throughput programs, resulting in the following loops for the
+ADD (shifted register) and the MUL instruction:</p>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text">loop in add_lat_instr.s</span><a class="headerlink" href="#id5" title="Link to this code"></a></div>
+<div class="highlight-asm notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nl">loop:</span>
+<span class="linenos"> 2</span><span class="w">    </span><span class="c1">// repeat the following block 5 times</span>
+<span class="linenos"> 3</span><span class="w">    </span><span class="na">.rept</span><span class="w"> </span><span class="mi">5</span>
+<span class="linenos"> 4</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="no">x2</span>
+<span class="linenos"> 5</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="no">x2</span>
+<span class="linenos"> 6</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="no">x2</span>
+<span class="linenos"> 7</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="no">x2</span>
+<span class="linenos"> 8</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="no">x2</span>
+<span class="linenos"> 9</span><span class="w">    </span><span class="na">.endr</span>
+<span class="linenos">10</span>
+<span class="linenos">11</span><span class="w">    </span><span class="nf">subs</span><span class="w"> </span><span class="no">x0</span><span class="p">,</span><span class="w"> </span><span class="no">x0</span><span class="p">,</span><span class="w"> </span><span class="mi">#1</span><span class="w">          </span><span class="c1">// decrement loop counter</span>
+<span class="linenos">12</span><span class="w">    </span><span class="nf">b.gt</span><span class="w"> </span><span class="no">loop</span><span class="w">                </span><span class="c1">// branch if greater than zero</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text">loop in mul_lat_instr.s</span><a class="headerlink" href="#id6" title="Link to this code"></a></div>
+<div class="highlight-asm notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nl">loop:</span>
+<span class="linenos"> 2</span><span class="w">    </span><span class="c1">// repeat the following block 5 times</span>
+<span class="linenos"> 3</span><span class="w">    </span><span class="na">.rept</span><span class="w"> </span><span class="mi">5</span>
+<span class="linenos"> 4</span><span class="w">    </span><span class="nf">mul</span><span class="w"> </span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="no">x2</span>
+<span class="linenos"> 5</span><span class="w">    </span><span class="nf">mul</span><span class="w"> </span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="no">x2</span>
+<span class="linenos"> 6</span><span class="w">    </span><span class="nf">mul</span><span class="w"> </span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="no">x2</span>
+<span class="linenos"> 7</span><span class="w">    </span><span class="nf">mul</span><span class="w"> </span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="no">x2</span>
+<span class="linenos"> 8</span><span class="w">    </span><span class="nf">mul</span><span class="w"> </span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="no">x2</span>
+<span class="linenos"> 9</span><span class="w">    </span><span class="na">.endr</span>
+<span class="linenos">10</span>
+<span class="linenos">11</span><span class="w">    </span><span class="nf">subs</span><span class="w"> </span><span class="no">x0</span><span class="p">,</span><span class="w"> </span><span class="no">x0</span><span class="p">,</span><span class="w"> </span><span class="mi">#1</span><span class="w">          </span><span class="c1">// decrement loop counter</span>
+<span class="linenos">12</span><span class="w">    </span><span class="nf">b.gt</span><span class="w"> </span><span class="no">loop</span><span class="w">                </span><span class="c1">// branch if greater than zero</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="results">
+<h3>Results<a class="headerlink" href="#results" title="Link to this heading"></a></h3>
+<p>To test our assembly functions we implemented a microbenchmark in C++ that would
+1. call these functions several times
+2. measure the time it took to complete these computations
+3. calculate the GOPS obtained by these calculations</p>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text">time measurement for add_instr in microbench.cpp</span><a class="headerlink" href="#id7" title="Link to this code"></a></div>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="w">        </span><span class="k">auto</span><span class="w"> </span><span class="n">l_start_time</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">high_resolution_clock</span><span class="o">::</span><span class="n">now</span><span class="p">();</span>
+<span class="w">        </span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="p">);</span>
+<span class="w">        </span><span class="k">auto</span><span class="w"> </span><span class="n">l_end_time</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">high_resolution_clock</span><span class="o">::</span><span class="n">now</span><span class="p">();</span>
+<span class="w">        </span><span class="n">elapsedTime</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">duration_cast</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">microseconds</span><span class="o">&gt;</span><span class="p">(</span><span class="n">l_end_time</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">l_start_time</span><span class="p">).</span><span class="n">count</span><span class="p">()</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mf">1e6</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id8">
+<div class="code-block-caption"><span class="caption-text">GOPS calculation for add_instr in microbench.cpp</span><a class="headerlink" href="#id8" title="Link to this code"></a></div>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">totalOps</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">25</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">opsPerSec</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">totalOps</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">elapsedTime</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">gops</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">opsPerSec</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mf">1e9</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<p>To compile and execute the microbenchmark we simply used:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>g++<span class="w"> </span>microbench.cpp<span class="w"> </span>add_instr.s<span class="w"> </span>add_lat_instr.s<span class="w"> </span>mul_instr.s<span class="w"> </span>mul_lat_instr.s<span class="w"> </span>-o<span class="w"> </span>microbench.o
+$<span class="w"> </span>./microbench.o
+</pre></div>
+</div>
+<p>When executing our benchmarking script we obtained the following results:</p>
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text">results</span><a class="headerlink" href="#id9" title="Link to this code"></a></div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Benchmarking ADD throughput ...
+-----------------------------------------------
+Measuring throughput for Instruction
+Total time (s):   1.29126
+Instructions per Second:   2.90414e+10
+Estimated GOPS:   29.0414 GigaOps/sec
+-----------------------------------------------
+
+Benchmarking MUL throughput ...
+-----------------------------------------------
+Measuring throughput for Instruction
+Total time (s):   2.82838
+Instructions per Second:   1.32584e+10
+Estimated GOPS:   13.2584 GigaOps/sec
+-----------------------------------------------
+
+Benchmarking ADD latency ...
+-----------------------------------------------
+Measuring latency for Instruction
+Total time (s):   0.856261
+Instructions per Second:   4.37951e+09
+Estimated GOPS:   4.37951 GigaOps/sec
+-----------------------------------------------
+
+Benchmarking MUL latency ...
+-----------------------------------------------
+Measuring latency for Instruction
+Total time (s):   2.5642
+Instructions per Second:   1.46244e+09
+Estimated GOPS:   1.46244 GigaOps/sec
+-----------------------------------------------
+</pre></div>
+</div>
+</div>
+<p>To understand the results, we did two things:
+1. we searched for the <a class="reference external" href="https://everymac.com/systems/apple/mac_mini/specs/mac-mini-m4-10-core-cpu-10-core-gpu-2024-specs.html#:~:text=This%20model%20is%20powered%20by,speed%20clockspeed%20around%204.4%20GHz.">clock speed</a>  which is about 4.4 GHz
+2. we looked at the <a class="reference external" href="https://developer.arm.com/documentation/109898/latest/">ARM Neoverse V2 Software Optimization Guide</a> for the base instructions.</p>
+<p>The guide specifies the following theoretical instruction <strong>throughput</strong> per cycle:</p>
+<ul class="simple">
+<li><p>ADD: 6 instructions per cycle</p></li>
+<li><p>MUL: 2 instructions per cycle</p></li>
+</ul>
+<p>and the latency (until a result is available) of:</p>
+<ul class="simple">
+<li><p>ADD: 1 clock cycle</p></li>
+<li><p>MUL: 2 clock cycles</p></li>
+</ul>
+<p>Looking at a these numbers, we can assume a clock cycle speed of:</p>
+<div class="math notranslate nohighlight">
+\[\frac{29.0414 \text{ GOPS}}{6} = 4.84 \text{ GHz}\]</div>
+<div class="math notranslate nohighlight">
+\[\frac{13.2584 \text{ GOPS}}{2} = 6.63 \text{ GHz}\]</div>
+<p>For the ADD instruction, this aligns closely with the <em>known</em> clock speed of 4.4 GHz.
+For the MUL instruction on the other hand, the clock speed is higher than expected. It is not clear why exactly this is the case, but in order to verify the correctness of our code, we ran it on an M3 Pro Chip with a clock speed of 4.05 GHz. The result for <cite>ADD</cite> and <cite>MUL</cite> here was:</p>
+<div class="math notranslate nohighlight">
+\[\frac{26.195 \text{ GOPS}}{6} = 4.37 \text{ GHz}\]</div>
+<div class="math notranslate nohighlight">
+\[\frac{8.08751 \text{ GOPS}}{2} = 4.04 \text{ GHz}\]</div>
+<p>We see that the calculated clock speeds are close to the expected clock speed of 4.05 GHz in both cases, which indicates that our code is correct.</p>
+<p>For the <strong>latency</strong> we can make a similar calculation:</p>
+<div class="math notranslate nohighlight">
+\[\frac{4.4 \text{ GHz}}{4.37951 \text{ GOPS}} ≈ 1 \text{ clock cycles per instr}\]</div>
+<div class="math notranslate nohighlight">
+\[\frac{4.4 \text{ GHz}}{1.46244 \text{ GOPS}} ≈ 3 \text{ clock cycles per instr}\]</div>
+<p>This shows that our obtained results for the ADD instruction correspond with the
+number that we obtained from the guide, whereas the latency for the MUL instruction
+is slightly higher than expected.</p>
 </section>
 </section>
 </section>
