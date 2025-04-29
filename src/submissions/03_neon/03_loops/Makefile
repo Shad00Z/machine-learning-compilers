@@ -1,0 +1,12 @@
+# 02_microkernel -> 03_neon -> submissions -> src ... include
+INCLUDE_DIR = ../../../../include
+
+default: test
+	@echo "Build complete. Run the test with ./build/test"
+
+test:
+	mkdir -p build
+	g++ tests.cpp matmul_16_6_64.test.cpp matmul_16_6_64.s matmul_64_6_64.test.cpp matmul_64_6_64.s -I$(INCLUDE_DIR) -o build/test
+
+clean:
+	rm -rf build
