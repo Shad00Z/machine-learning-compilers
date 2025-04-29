@@ -51,17 +51,12 @@ _matmul_64_6_64:
     mov x11, #4 // 64/16 = 4 blocks
 
 _m_loop:
-    // set current block start pointers
-    mov x0, x7 // A
-    mov x1, x8 // B
-    mov x2, x9 // C
-
 // ------------------------------------------
 // START matmul_16_6_64
 // ------------------------------------------
 
     // LOAD MATRIX C
-    mov x12, x2
+    mov x12, x9
     // first column
     ldp q0, q1, [x12]
     ldp q2, q3, [x12, #32]
@@ -89,9 +84,9 @@ _m_loop:
     // K loop counter
     mov x14, #64
     // set start of A
-    mov x15, x0
+    mov x15, x7
     // set start of B
-    mov x16, x1
+    mov x16, x8
     // init row count of B
     mov x17, #0
 _k_loop:
@@ -149,7 +144,7 @@ _k_loop:
     // move to next column of A
     add x15, x15, x3
     // move to next row of B
-    mov x16, x1
+    mov x16, x8
     add x17, x17, #4
     add x16, x16, x17
 
@@ -159,7 +154,7 @@ _k_loop:
     cbnz x14, _k_loop
 
     // STORE MATRIX C
-    mov x12, x2
+    mov x12, x9
     // first column
     stp q0, q1, [x12]
     stp q2, q3, [x12, #32]
