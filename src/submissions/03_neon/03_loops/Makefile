@@ -6,7 +6,7 @@ default: test
 
 test:
 	mkdir -p build
-	g++ tests.cpp matmul_16_6_64.test.cpp matmul_16_6_64.s matmul_64_6_64.test.cpp matmul_64_6_64.s -I$(INCLUDE_DIR) -o build/test
+	g++ tests.cpp matmul_16_6_64.test.cpp matmul_16_6_64.s matmul_64_6_64.test.cpp matmul_64_6_64.s matmul_64_48_64.test.cpp matmul_64_48_64.s -I$(INCLUDE_DIR) -o build/test
 
 clean:
 	rm -rf build
