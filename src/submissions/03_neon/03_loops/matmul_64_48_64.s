@@ -1,6 +1,6 @@
     .text
-//    .type _matmul_64_48_64, %function
-    .global _matmul_64_48_64
+    .type matmul_64_48_64, %function
+    .global matmul_64_48_64
     /*
     * Computes C+=AB for three matrices 
     * with the dimensions M=64, N=48, and K=64.
@@ -12,7 +12,7 @@
     * @param x4 leading dimension of B.
     * @param x5 leading dimension of C.
     */
-_matmul_64_48_64:
+matmul_64_48_64:
 // ------------------------------------------
 // START PCS
 // ------------------------------------------

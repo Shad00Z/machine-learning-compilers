@@ -1,6 +1,6 @@
     .text
-//    .type _matmul_64_6_64, %function
-    .global _matmul_64_6_64
+    .type matmul_64_6_64, %function
+    .global matmul_64_6_64
     /*
     * Computes C+=AB for three matrices 
     * with the dimensions M=64, N=6, and K=64.
@@ -12,7 +12,7 @@
     * @param x4 leading dimension of B.
     * @param x5 leading dimension of C.
     */
-_matmul_64_6_64:
+matmul_64_6_64:
 // ------------------------------------------
 // START PCS
 // ------------------------------------------
@@ -90,7 +90,7 @@ _m_loop:
     // init row count of B
     mov x17, #0
 _k_loop:
-    // load column of A
+    // load column of A (16 values)
     ldp q24, q25, [x15]
     ldp q26, q27, [x15, #32]
 
