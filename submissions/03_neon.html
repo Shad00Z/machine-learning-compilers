@@ -1,0 +1,415 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Neon &mdash; Machine Learning Compilers  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Base" href="02_base.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Machine Learning Compilers
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Project Overview</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../project_overview/01_project_information.html">Machine Learning Compilers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../project_overview/02_docu_setup.html">Documentation Setup</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Submissions</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="01_assembly.html">Assembly</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02_base.html">Base</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Neon</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#execution-throughput-and-latency">Execution Throughput and Latency</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#throughput">Throughput</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#latency">Latency</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Machine Learning Compilers</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Neon</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/submissions/03_neon.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="neon">
+<h1>Neon<a class="headerlink" href="#neon" title="Link to this heading"></a></h1>
+<section id="execution-throughput-and-latency">
+<h2>Execution Throughput and Latency<a class="headerlink" href="#execution-throughput-and-latency" title="Link to this heading"></a></h2>
+<p>For this task, we were benchmarking the execution throughput and latency for FP32 neon instructions.
+Specifically, we were looking at:</p>
+<ol class="arabic simple">
+<li><p><a class="reference external" href="https://developer.arm.com/documentation/ddi0602/2025-03/SIMD-FP-Instructions/FMLA--vector---Floating-point-fused-multiply-add-to-accumulator--vector--">FMLA (vector)</a> instruction</p></li>
+<li><p><a class="reference external" href="https://developer.arm.com/documentation/ddi0602/2025-03/SIMD-FP-Instructions/FMADD--Floating-point-fused-multiply-add--scalar--?lang=en">FMADD (scalar)</a> instruction</p></li>
+</ol>
+<section id="throughput">
+<h3>Throughput<a class="headerlink" href="#throughput" title="Link to this heading"></a></h3>
+<p>As a first step we were comparing the throughput of:</p>
+<ol class="arabic simple">
+<li><p>FMLA (vector) with arrangement specifier <code class="docutils literal notranslate"><span class="pre">4S</span></code></p></li>
+<li><p>FMLA (vector) with arrangement specifier <code class="docutils literal notranslate"><span class="pre">2S</span></code></p></li>
+<li><p>FMADD (scalar), single-precision variant</p></li>
+</ol>
+<p>To compare the throughput, we created three assembly programs, that were executing
+several of these operations. To get proper results we were looking for any dependencies
+regarding the source or destination registers of the operations.
+The calculations that we were ending up with were:</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">FMLA (vector) with arrangement specifier <code class="docutils literal notranslate"><span class="pre">4S</span></code></span><a class="headerlink" href="#id1" title="Link to this code"></a></div>
+<div class="highlight-asm notranslate"><div class="highlight"><pre><span></span><span class="nl">loop:</span>
+<span class="w">    </span><span class="na">.rept</span><span class="w"> </span><span class="mi">100</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w">  </span><span class="no">v0.4s</span><span class="p">,</span><span class="w">  </span><span class="no">v8.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v16.4s</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w">  </span><span class="no">v1.4s</span><span class="p">,</span><span class="w">  </span><span class="no">v9.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v17.4s</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w">  </span><span class="no">v2.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v10.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v18.4s</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w">  </span><span class="no">v3.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v11.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v19.4s</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w">  </span><span class="no">v4.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v12.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v20.4s</span>
+
+<span class="w">    </span><span class="nf">fmla</span><span class="w">  </span><span class="no">v5.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v13.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v21.4s</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w">  </span><span class="no">v6.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v14.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v22.4s</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w">  </span><span class="no">v7.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v15.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v23.4s</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w">  </span><span class="no">v8.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v16.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v24.4s</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w">  </span><span class="no">v9.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v17.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v25.4s</span>
+
+<span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v10.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v18.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v26.4s</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v11.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v19.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v27.4s</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v12.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v20.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v28.4s</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v13.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v21.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v29.4s</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v14.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v22.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v30.4s</span>
+
+<span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v15.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v23.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v31.4s</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v16.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v24.4s</span><span class="p">,</span><span class="w">  </span><span class="no">v0.4s</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v17.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v25.4s</span><span class="p">,</span><span class="w">  </span><span class="no">v1.4s</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v18.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v26.4s</span><span class="p">,</span><span class="w">  </span><span class="no">v2.4s</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v19.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v27.4s</span><span class="p">,</span><span class="w">  </span><span class="no">v3.4s</span>
+
+<span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v20.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v28.4s</span><span class="p">,</span><span class="w">  </span><span class="no">v4.4s</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v21.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v29.4s</span><span class="p">,</span><span class="w">  </span><span class="no">v5.4s</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v22.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v30.4s</span><span class="p">,</span><span class="w">  </span><span class="no">v6.4s</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v23.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v31.4s</span><span class="p">,</span><span class="w">  </span><span class="no">v7.4s</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v24.4s</span><span class="p">,</span><span class="w">  </span><span class="no">v0.4s</span><span class="p">,</span><span class="w">  </span><span class="no">v8.4s</span>
+
+<span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v25.4s</span><span class="p">,</span><span class="w">  </span><span class="no">v1.4s</span><span class="p">,</span><span class="w">  </span><span class="no">v9.4s</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v26.4s</span><span class="p">,</span><span class="w">  </span><span class="no">v2.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v10.4s</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v27.4s</span><span class="p">,</span><span class="w">  </span><span class="no">v3.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v11.4s</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v28.4s</span><span class="p">,</span><span class="w">  </span><span class="no">v4.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v12.4s</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v29.4s</span><span class="p">,</span><span class="w">  </span><span class="no">v5.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v13.4s</span>
+
+<span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v30.4s</span><span class="p">,</span><span class="w">  </span><span class="no">v6.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v14.4s</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v31.4s</span><span class="p">,</span><span class="w">  </span><span class="no">v7.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v15.4s</span>
+<span class="w">    </span><span class="na">.endr</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">FMLA (vector) with arrangement specifier <code class="docutils literal notranslate"><span class="pre">2S</span></code></span><a class="headerlink" href="#id2" title="Link to this code"></a></div>
+<div class="highlight-asm notranslate"><div class="highlight"><pre><span></span><span class="nl">loop:</span>
+<span class="w">    </span><span class="na">.rept</span><span class="w"> </span><span class="mi">100</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w">  </span><span class="no">v0.2s</span><span class="p">,</span><span class="w">  </span><span class="no">v8.2s</span><span class="p">,</span><span class="w"> </span><span class="no">v16.2s</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w">  </span><span class="no">v1.2s</span><span class="p">,</span><span class="w">  </span><span class="no">v9.2s</span><span class="p">,</span><span class="w"> </span><span class="no">v17.2s</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w">  </span><span class="no">v2.2s</span><span class="p">,</span><span class="w"> </span><span class="no">v10.2s</span><span class="p">,</span><span class="w"> </span><span class="no">v18.2s</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w">  </span><span class="no">v3.2s</span><span class="p">,</span><span class="w"> </span><span class="no">v11.2s</span><span class="p">,</span><span class="w"> </span><span class="no">v19.2s</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w">  </span><span class="no">v4.2s</span><span class="p">,</span><span class="w"> </span><span class="no">v12.2s</span><span class="p">,</span><span class="w"> </span><span class="no">v20.2s</span>
+
+<span class="w">    </span><span class="nf">fmla</span><span class="w">  </span><span class="no">v5.2s</span><span class="p">,</span><span class="w"> </span><span class="no">v13.2s</span><span class="p">,</span><span class="w"> </span><span class="no">v21.2s</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w">  </span><span class="no">v6.2s</span><span class="p">,</span><span class="w"> </span><span class="no">v12.2s</span><span class="p">,</span><span class="w"> </span><span class="no">v22.2s</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w">  </span><span class="no">v7.2s</span><span class="p">,</span><span class="w"> </span><span class="no">v15.2s</span><span class="p">,</span><span class="w"> </span><span class="no">v23.2s</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w">  </span><span class="no">v8.2s</span><span class="p">,</span><span class="w"> </span><span class="no">v16.2s</span><span class="p">,</span><span class="w"> </span><span class="no">v24.2s</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w">  </span><span class="no">v9.2s</span><span class="p">,</span><span class="w"> </span><span class="no">v17.2s</span><span class="p">,</span><span class="w"> </span><span class="no">v25.2s</span>
+
+<span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v10.2s</span><span class="p">,</span><span class="w"> </span><span class="no">v18.2s</span><span class="p">,</span><span class="w"> </span><span class="no">v26.2s</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v11.2s</span><span class="p">,</span><span class="w"> </span><span class="no">v19.2s</span><span class="p">,</span><span class="w"> </span><span class="no">v27.2s</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v12.2s</span><span class="p">,</span><span class="w"> </span><span class="no">v20.2s</span><span class="p">,</span><span class="w"> </span><span class="no">v28.2s</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v13.2s</span><span class="p">,</span><span class="w"> </span><span class="no">v21.2s</span><span class="p">,</span><span class="w"> </span><span class="no">v29.2s</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v12.2s</span><span class="p">,</span><span class="w"> </span><span class="no">v22.2s</span><span class="p">,</span><span class="w"> </span><span class="no">v30.2s</span>
+
+<span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v15.2s</span><span class="p">,</span><span class="w"> </span><span class="no">v23.2s</span><span class="p">,</span><span class="w"> </span><span class="no">v31.2s</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v16.2s</span><span class="p">,</span><span class="w"> </span><span class="no">v24.2s</span><span class="p">,</span><span class="w">  </span><span class="no">v0.2s</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v17.2s</span><span class="p">,</span><span class="w"> </span><span class="no">v25.2s</span><span class="p">,</span><span class="w">  </span><span class="no">v1.2s</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v18.2s</span><span class="p">,</span><span class="w"> </span><span class="no">v26.2s</span><span class="p">,</span><span class="w">  </span><span class="no">v2.2s</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v19.2s</span><span class="p">,</span><span class="w"> </span><span class="no">v27.2s</span><span class="p">,</span><span class="w">  </span><span class="no">v3.2s</span>
+
+<span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v20.2s</span><span class="p">,</span><span class="w"> </span><span class="no">v28.2s</span><span class="p">,</span><span class="w">  </span><span class="no">v4.2s</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v21.2s</span><span class="p">,</span><span class="w"> </span><span class="no">v29.2s</span><span class="p">,</span><span class="w">  </span><span class="no">v5.2s</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v22.2s</span><span class="p">,</span><span class="w"> </span><span class="no">v30.2s</span><span class="p">,</span><span class="w">  </span><span class="no">v6.2s</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v23.2s</span><span class="p">,</span><span class="w"> </span><span class="no">v31.2s</span><span class="p">,</span><span class="w">  </span><span class="no">v7.2s</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v24.2s</span><span class="p">,</span><span class="w">  </span><span class="no">v0.2s</span><span class="p">,</span><span class="w">  </span><span class="no">v8.2s</span>
+
+<span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v25.2s</span><span class="p">,</span><span class="w">  </span><span class="no">v1.2s</span><span class="p">,</span><span class="w">  </span><span class="no">v9.2s</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v26.2s</span><span class="p">,</span><span class="w">  </span><span class="no">v2.2s</span><span class="p">,</span><span class="w"> </span><span class="no">v10.2s</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v27.2s</span><span class="p">,</span><span class="w">  </span><span class="no">v3.2s</span><span class="p">,</span><span class="w"> </span><span class="no">v11.2s</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v28.2s</span><span class="p">,</span><span class="w">  </span><span class="no">v4.2s</span><span class="p">,</span><span class="w"> </span><span class="no">v12.2s</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v29.2s</span><span class="p">,</span><span class="w">  </span><span class="no">v5.2s</span><span class="p">,</span><span class="w"> </span><span class="no">v13.2s</span>
+
+<span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v30.2s</span><span class="p">,</span><span class="w">  </span><span class="no">v6.2s</span><span class="p">,</span><span class="w"> </span><span class="no">v12.2s</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v31.2s</span><span class="p">,</span><span class="w">  </span><span class="no">v7.2s</span><span class="p">,</span><span class="w"> </span><span class="no">v15.2s</span>
+<span class="w">    </span><span class="na">.endr</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">FMADD (scalar), single-precision variant</span><a class="headerlink" href="#id3" title="Link to this code"></a></div>
+<div class="highlight-asm notranslate"><div class="highlight"><pre><span></span><span class="nl">loop:</span>
+<span class="w">    </span><span class="na">.rept</span><span class="w"> </span><span class="mi">100</span>
+<span class="w">    </span><span class="nf">fmadd</span><span class="w">  </span><span class="no">s0</span><span class="p">,</span><span class="w">  </span><span class="no">s8</span><span class="p">,</span><span class="w"> </span><span class="no">s16</span><span class="p">,</span><span class="w"> </span><span class="no">s24</span>
+<span class="w">    </span><span class="nf">fmadd</span><span class="w">  </span><span class="no">s1</span><span class="p">,</span><span class="w">  </span><span class="no">s9</span><span class="p">,</span><span class="w"> </span><span class="no">s17</span><span class="p">,</span><span class="w"> </span><span class="no">s25</span>
+<span class="w">    </span><span class="nf">fmadd</span><span class="w">  </span><span class="no">s2</span><span class="p">,</span><span class="w"> </span><span class="no">s10</span><span class="p">,</span><span class="w"> </span><span class="no">s18</span><span class="p">,</span><span class="w"> </span><span class="no">s26</span>
+<span class="w">    </span><span class="nf">fmadd</span><span class="w">  </span><span class="no">s3</span><span class="p">,</span><span class="w"> </span><span class="no">s11</span><span class="p">,</span><span class="w"> </span><span class="no">s19</span><span class="p">,</span><span class="w"> </span><span class="no">s27</span>
+<span class="w">    </span><span class="nf">fmadd</span><span class="w">  </span><span class="no">s4</span><span class="p">,</span><span class="w"> </span><span class="no">s12</span><span class="p">,</span><span class="w"> </span><span class="no">s20</span><span class="p">,</span><span class="w"> </span><span class="no">s28</span>
+
+<span class="w">    </span><span class="nf">fmadd</span><span class="w">  </span><span class="no">s5</span><span class="p">,</span><span class="w"> </span><span class="no">s13</span><span class="p">,</span><span class="w"> </span><span class="no">s21</span><span class="p">,</span><span class="w"> </span><span class="no">s29</span>
+<span class="w">    </span><span class="nf">fmadd</span><span class="w">  </span><span class="no">s6</span><span class="p">,</span><span class="w"> </span><span class="no">s14</span><span class="p">,</span><span class="w"> </span><span class="no">s22</span><span class="p">,</span><span class="w"> </span><span class="no">s30</span>
+<span class="w">    </span><span class="nf">fmadd</span><span class="w">  </span><span class="no">s7</span><span class="p">,</span><span class="w"> </span><span class="no">s15</span><span class="p">,</span><span class="w"> </span><span class="no">s23</span><span class="p">,</span><span class="w"> </span><span class="no">s31</span>
+<span class="w">    </span><span class="nf">fmadd</span><span class="w">  </span><span class="no">s8</span><span class="p">,</span><span class="w"> </span><span class="no">s16</span><span class="p">,</span><span class="w"> </span><span class="no">s24</span><span class="p">,</span><span class="w"> </span><span class="no">s0</span>
+<span class="w">    </span><span class="nf">fmadd</span><span class="w">  </span><span class="no">s9</span><span class="p">,</span><span class="w"> </span><span class="no">s17</span><span class="p">,</span><span class="w"> </span><span class="no">s25</span><span class="p">,</span><span class="w"> </span><span class="no">s1</span>
+
+<span class="w">    </span><span class="nf">fmadd</span><span class="w"> </span><span class="no">s10</span><span class="p">,</span><span class="w"> </span><span class="no">s18</span><span class="p">,</span><span class="w"> </span><span class="no">s26</span><span class="p">,</span><span class="w"> </span><span class="no">s2</span>
+<span class="w">    </span><span class="nf">fmadd</span><span class="w"> </span><span class="no">s11</span><span class="p">,</span><span class="w"> </span><span class="no">s19</span><span class="p">,</span><span class="w"> </span><span class="no">s27</span><span class="p">,</span><span class="w"> </span><span class="no">s3</span>
+<span class="w">    </span><span class="nf">fmadd</span><span class="w"> </span><span class="no">s12</span><span class="p">,</span><span class="w"> </span><span class="no">s20</span><span class="p">,</span><span class="w"> </span><span class="no">s28</span><span class="p">,</span><span class="w"> </span><span class="no">s4</span>
+<span class="w">    </span><span class="nf">fmadd</span><span class="w"> </span><span class="no">s13</span><span class="p">,</span><span class="w"> </span><span class="no">s21</span><span class="p">,</span><span class="w"> </span><span class="no">s29</span><span class="p">,</span><span class="w"> </span><span class="no">s5</span>
+<span class="w">    </span><span class="nf">fmadd</span><span class="w"> </span><span class="no">s14</span><span class="p">,</span><span class="w"> </span><span class="no">s22</span><span class="p">,</span><span class="w"> </span><span class="no">s30</span><span class="p">,</span><span class="w"> </span><span class="no">s6</span>
+
+<span class="w">    </span><span class="nf">fmadd</span><span class="w"> </span><span class="no">s15</span><span class="p">,</span><span class="w"> </span><span class="no">s23</span><span class="p">,</span><span class="w"> </span><span class="no">s31</span><span class="p">,</span><span class="w"> </span><span class="no">s7</span>
+<span class="w">    </span><span class="nf">fmadd</span><span class="w"> </span><span class="no">s16</span><span class="p">,</span><span class="w"> </span><span class="no">s24</span><span class="p">,</span><span class="w">  </span><span class="no">s0</span><span class="p">,</span><span class="w"> </span><span class="no">s8</span>
+<span class="w">    </span><span class="nf">fmadd</span><span class="w"> </span><span class="no">s17</span><span class="p">,</span><span class="w"> </span><span class="no">s25</span><span class="p">,</span><span class="w">  </span><span class="no">s1</span><span class="p">,</span><span class="w"> </span><span class="no">s9</span>
+<span class="w">    </span><span class="nf">fmadd</span><span class="w"> </span><span class="no">s18</span><span class="p">,</span><span class="w"> </span><span class="no">s26</span><span class="p">,</span><span class="w">  </span><span class="no">s2</span><span class="p">,</span><span class="w"> </span><span class="no">s10</span>
+<span class="w">    </span><span class="nf">fmadd</span><span class="w"> </span><span class="no">s19</span><span class="p">,</span><span class="w"> </span><span class="no">s27</span><span class="p">,</span><span class="w">  </span><span class="no">s3</span><span class="p">,</span><span class="w"> </span><span class="no">s11</span>
+
+<span class="w">    </span><span class="nf">fmadd</span><span class="w"> </span><span class="no">s20</span><span class="p">,</span><span class="w"> </span><span class="no">s28</span><span class="p">,</span><span class="w">  </span><span class="no">s4</span><span class="p">,</span><span class="w"> </span><span class="no">s12</span>
+<span class="w">    </span><span class="nf">fmadd</span><span class="w"> </span><span class="no">s21</span><span class="p">,</span><span class="w"> </span><span class="no">s29</span><span class="p">,</span><span class="w">  </span><span class="no">s5</span><span class="p">,</span><span class="w"> </span><span class="no">s13</span>
+<span class="w">    </span><span class="nf">fmadd</span><span class="w"> </span><span class="no">s22</span><span class="p">,</span><span class="w"> </span><span class="no">s30</span><span class="p">,</span><span class="w">  </span><span class="no">s6</span><span class="p">,</span><span class="w"> </span><span class="no">s14</span>
+<span class="w">    </span><span class="nf">fmadd</span><span class="w"> </span><span class="no">s23</span><span class="p">,</span><span class="w"> </span><span class="no">s31</span><span class="p">,</span><span class="w">  </span><span class="no">s7</span><span class="p">,</span><span class="w"> </span><span class="no">s15</span>
+<span class="w">    </span><span class="nf">fmadd</span><span class="w"> </span><span class="no">s24</span><span class="p">,</span><span class="w">  </span><span class="no">s0</span><span class="p">,</span><span class="w">  </span><span class="no">s8</span><span class="p">,</span><span class="w"> </span><span class="no">s16</span>
+
+<span class="w">    </span><span class="nf">fmadd</span><span class="w"> </span><span class="no">s25</span><span class="p">,</span><span class="w">  </span><span class="no">s1</span><span class="p">,</span><span class="w">  </span><span class="no">s9</span><span class="p">,</span><span class="w"> </span><span class="no">s17</span>
+<span class="w">    </span><span class="nf">fmadd</span><span class="w"> </span><span class="no">s26</span><span class="p">,</span><span class="w">  </span><span class="no">s2</span><span class="p">,</span><span class="w"> </span><span class="no">s10</span><span class="p">,</span><span class="w"> </span><span class="no">s18</span>
+<span class="w">    </span><span class="nf">fmadd</span><span class="w"> </span><span class="no">s27</span><span class="p">,</span><span class="w">  </span><span class="no">s3</span><span class="p">,</span><span class="w"> </span><span class="no">s11</span><span class="p">,</span><span class="w"> </span><span class="no">s19</span>
+<span class="w">    </span><span class="nf">fmadd</span><span class="w"> </span><span class="no">s28</span><span class="p">,</span><span class="w">  </span><span class="no">s4</span><span class="p">,</span><span class="w"> </span><span class="no">s12</span><span class="p">,</span><span class="w"> </span><span class="no">s20</span>
+<span class="w">    </span><span class="nf">fmadd</span><span class="w"> </span><span class="no">s29</span><span class="p">,</span><span class="w">  </span><span class="no">s5</span><span class="p">,</span><span class="w"> </span><span class="no">s13</span><span class="p">,</span><span class="w"> </span><span class="no">s21</span>
+
+<span class="w">    </span><span class="nf">fmadd</span><span class="w"> </span><span class="no">s30</span><span class="p">,</span><span class="w">  </span><span class="no">s6</span><span class="p">,</span><span class="w"> </span><span class="no">s14</span><span class="p">,</span><span class="w"> </span><span class="no">s22</span>
+<span class="w">    </span><span class="nf">fmadd</span><span class="w"> </span><span class="no">s31</span><span class="p">,</span><span class="w">  </span><span class="no">s7</span><span class="p">,</span><span class="w"> </span><span class="no">s15</span><span class="p">,</span><span class="w"> </span><span class="no">s23</span>
+<span class="w">    </span><span class="na">.endr</span>
+
+<span class="w">    </span><span class="nf">subs</span><span class="w"> </span><span class="no">x0</span><span class="p">,</span><span class="w"> </span><span class="no">x0</span><span class="p">,</span><span class="w"> </span><span class="mi">#1</span>
+<span class="w">    </span><span class="nf">b.gt</span><span class="w"> </span><span class="no">loop</span>
+</pre></div>
+</div>
+</div>
+<p>In order to measure the throughput of these instructions we developed a C++ microbenchmark.
+For each instruction we firstly performed a warm up, measured the time, counted the operations and then calculated the GFLOPs.</p>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">Example benchmark for FMLA (vector) with arrangement specifier <code class="docutils literal notranslate"><span class="pre">4S</span></code></span><a class="headerlink" href="#id4" title="Link to this code"></a></div>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="w">        </span><span class="c1">// Warmup</span>
+<span class="w">        </span><span class="n">fmla_4s_instr</span><span class="p">(</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="n">g_4s_registers</span><span class="w"> </span><span class="p">);</span>
+
+<span class="w">        </span><span class="k">auto</span><span class="w"> </span><span class="n">l_start_time</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">high_resolution_clock</span><span class="o">::</span><span class="n">now</span><span class="p">();</span>
+<span class="w">        </span><span class="n">fmla_4s_instr</span><span class="p">(</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">g_4s_registers</span><span class="w"> </span><span class="p">);</span>
+<span class="w">        </span><span class="k">auto</span><span class="w"> </span><span class="n">l_end_time</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">high_resolution_clock</span><span class="o">::</span><span class="n">now</span><span class="p">();</span>
+<span class="w">        </span><span class="n">elapsedTime</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">duration_cast</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">microseconds</span><span class="o">&gt;</span><span class="p">(</span><span class="w"> </span><span class="n">l_end_time</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">l_start_time</span><span class="w"> </span><span class="p">).</span><span class="n">count</span><span class="p">()</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mf">1e6</span><span class="p">;</span>
+
+<span class="w">        </span><span class="c1">// per FMLA: 4 Muls, 4 Adds</span>
+<span class="w">        </span><span class="c1">// 32 fmla</span>
+<span class="w">        </span><span class="c1">// rept 100</span>
+<span class="w">        </span><span class="c1">// n: loop iterations</span>
+<span class="w">        </span><span class="n">totalOps</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">32</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">100</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">n</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<p>For the <code class="docutils literal notranslate"><span class="pre">2S</span></code> and the FMADD (scalar) instructions, we simply adjusted the calculations for the operations slightly:</p>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text">Calculations for FMLA (vector) with arrangement specifier <code class="docutils literal notranslate"><span class="pre">2S</span></code></span><a class="headerlink" href="#id5" title="Link to this code"></a></div>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="w">        </span><span class="c1">// per FMLA: 2 Muls, 2 Adds</span>
+<span class="w">        </span><span class="c1">// 32 fmla</span>
+<span class="w">        </span><span class="c1">// rept 100</span>
+<span class="w">        </span><span class="c1">// n: loop iterations</span>
+<span class="w">        </span><span class="n">totalOps</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">32</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">100</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">n</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text">Calculations for FMLA (vector) with arrangement specifier <code class="docutils literal notranslate"><span class="pre">2S</span></code></span><a class="headerlink" href="#id6" title="Link to this code"></a></div>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="w">        </span><span class="c1">// per FMADD: 1 Mul, 1 Add</span>
+<span class="w">        </span><span class="c1">// 32 fmadd</span>
+<span class="w">        </span><span class="c1">// rept 100</span>
+<span class="w">        </span><span class="c1">// n: loop iterations</span>
+<span class="w">        </span><span class="n">totalOps</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">32</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">100</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">n</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<p>For this benchmarking task we obtained the following results:</p>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text">Throughput results for the three instructions</span><a class="headerlink" href="#id7" title="Link to this code"></a></div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Benchmarking FMLA 4s throughput ...
+-----------------------------------------------
+Measuring throughput for FMLA_4sInstruction
+Total time (s):   1.96706
+Instructions per Second:   1.30144e+11
+Estimated GOPS:   130.144 GFLOPs/sec
+-----------------------------------------------
+
+Benchmarking FMLA 2s throughput ...
+-----------------------------------------------
+Measuring throughput for FMLA_2sInstruction
+Total time (s):   2.53647
+Instructions per Second:   5.04638e+10
+Estimated GOPS:   50.4638 GFLOPs/sec
+-----------------------------------------------
+
+Benchmarking FMADD throughput ...
+-----------------------------------------------
+Measuring throughput for FMADDInstruction
+Total time (s):   3.52918
+Instructions per Second:   1.81345e+10
+Estimated GOPS:   18.1345 GFLOPs/sec
+-----------------------------------------------
+</pre></div>
+</div>
+</div>
+<p>It can be clearly seen that the FMLA (vector) with arrangement specifier <code class="docutils literal notranslate"><span class="pre">4S</span></code> instruction performs approximately
+2.5 times as many floating point operations than the FMLA (vector) with arrangement specifier <code class="docutils literal notranslate"><span class="pre">2S</span></code> instruction.
+Further the FMLA (vector) with arrangement specifier <code class="docutils literal notranslate"><span class="pre">2S</span></code> instructions performs at approximately 2.5 times more
+floating point operations than the FMADD (scalar) instruction.</p>
+<p>This clearly shows that leveraging data-level parallelism (vector-based) can yield a much higher throughput, than
+using only scalar operations.</p>
+</section>
+<section id="latency">
+<h3>Latency<a class="headerlink" href="#latency" title="Link to this heading"></a></h3>
+<p>To measure the execution latency for FMLA (vector) instructions with arrangement specifier <code class="docutils literal notranslate"><span class="pre">4S</span></code>, we examined two scenarios:</p>
+<ol class="arabic simple">
+<li><p>Each instruction depends on the destination register and one of the source register of the previous instruction</p></li>
+</ol>
+<div class="literal-block-wrapper docutils container" id="id8">
+<div class="code-block-caption"><span class="caption-text">fmla instructions with dependencies on the destination register and one of the source registers</span><a class="headerlink" href="#id8" title="Link to this code"></a></div>
+<div class="highlight-asm notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v0.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v0.4s</span><span class="p">,</span><span class="w">  </span><span class="no">v1.4s</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v0.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v0.4s</span><span class="p">,</span><span class="w">  </span><span class="no">v2.4s</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v0.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v0.4s</span><span class="p">,</span><span class="w">  </span><span class="no">v3.4s</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v0.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v0.4s</span><span class="p">,</span><span class="w">  </span><span class="no">v4.4s</span>
+</pre></div>
+</div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>Each instruction depends only on the destination register of the previous instruction</p></li>
+</ol>
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text">fmla instructions with dependencies on the destination register</span><a class="headerlink" href="#id9" title="Link to this code"></a></div>
+<div class="highlight-asm notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v0.4s</span><span class="p">,</span><span class="w">  </span><span class="no">v1.4s</span><span class="p">,</span><span class="w">  </span><span class="no">v9.4s</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v0.4s</span><span class="p">,</span><span class="w">  </span><span class="no">v2.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v10.4s</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v0.4s</span><span class="p">,</span><span class="w">  </span><span class="no">v3.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v11.4s</span>
+<span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v0.4s</span><span class="p">,</span><span class="w">  </span><span class="no">v4.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v12.4s</span>
+</pre></div>
+</div>
+</div>
+<p>Both files contain 32 fmla instructions each, which are executed 100 times. The results of our benchmark is shown below:</p>
+<div class="literal-block-wrapper docutils container" id="id10">
+<div class="code-block-caption"><span class="caption-text">Latency results for the two scenarios</span><a class="headerlink" href="#id10" title="Link to this code"></a></div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Benchmarking FMLA 4s source register latency ...
+-----------------------------------------------
+Measuring latency for FMLA_SourceInstruction
+Total time (s):   3.30277
+Instructions per Second:   1.16266e+10
+Estimated GOPS:   11.6266 GFLOPs/sec
+-----------------------------------------------
+
+Benchmarking FMLA 4s destination register latency ...
+-----------------------------------------------
+Measuring latency for FMLA_DestinationInstruction
+Total time (s):   3.30207
+Instructions per Second:   1.16291e+10
+Estimated GOPS:   11.6291 GFLOPs/sec
+-----------------------------------------------
+</pre></div>
+</div>
+</div>
+<p>We can see that both scenarios have similar results, which is why we computed the latency only for the first scenario.</p>
+<p>We measured <span class="math notranslate nohighlight">\(1.16266 \times 10^{10}\)</span> instructions per second, which means that the latency of the FMLA (vector) instruction with arrangement specifier <code class="docutils literal notranslate"><span class="pre">4S</span></code> is approximately <span class="math notranslate nohighlight">\(\frac{1}{1.16266 \times 10^{10}} \approx 8.6 \times 10^{-11}\)</span> seconds. Using a known clock frequency of 4.4 GHz, we computed the latency as <span class="math notranslate nohighlight">\(8.6 \times 10^{-11} \times 4.4 \times 10^9 = 0.3784\)</span> cycles.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="02_base.html" class="btn btn-neutral float-left" title="Base" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Lucas Obitz, Luca-Philipp Grumbach.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
