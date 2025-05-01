@@ -103,3 +103,52 @@ Both files contain 32 fmla instructions each, which are executed 100 times. The 
 We can see that both scenarios have similar results, which is why we computed the latency only for the first scenario.
 
 We measured :math:`1.16266 \times 10^{10}` instructions per second, which means that the latency of the FMLA (vector) instruction with arrangement specifier ``4S`` is approximately :math:`\frac{1}{1.16266 \times 10^{10}} \approx 8.6 \times 10^{-11}` seconds. Using a known clock frequency of 4.4 GHz, we computed the latency as :math:`8.6 \times 10^{-11} \times 4.4 \times 10^9 = 0.3784` cycles.
+
+Loops
+------
+
+In this task, we had to add loops to the matrix multiplication kernel which we wrote in the previous task. The goal was to enable the 16x6x1 kernel to be used for larger matrices.
+
+The first step was to implement a loop in the K dimension, resulting in a 16x6x64 kernel. The loading and storing of matrix C was left unchanged. The relevant code is shown below:
+
+.. literalinclude:: ../../../src/submissions/03_neon/03_loops/matmul_16_6_64.s
+    :language: asm
+    :linenos:
+    :lines: 67-133
+    :caption: Looping matmul_16_6_1 over K dimension
+
+The ``matmul_16_6_1`` kernel mostly stayed the same, except that for each K loop, we now need to adjust the pointers to the input matrices A and B. At the end of each loop, we move the pointers to A to the next column by adding the given stride. In B, we need to move the pointer to the next row. To do this, we jump by 4 Bytes (since we are using 32-bit floats) from the starting address of B. To keep jumping to the next row in each loop, we accumulate the offset of 4 Bytes in the register ``x9``.
+
+The second step was to implement a loop in the M dimension, resulting in a 64x6x64 kernel. To keep the code examples shorter, we exclude the K loop from the code snippets. The relevant code is shown below:
+
+.. literalinclude:: ../../../src/submissions/03_neon/03_loops/matmul_64_6_64.s
+    :language: asm
+    :linenos:
+    :lines: 45-92
+    :caption: First part of looping over M dimension
+
+.. literalinclude:: ../../../src/submissions/03_neon/03_loops/matmul_64_6_64.s
+    :language: asm
+    :linenos:
+    :lines: 153-193
+    :caption: Second part of looping over M dimension
+
+The M loop needs only 4 iterations, since we are extending the kernel from 16 to 64 in the M dimension. This means that we divide the M dimension into 4 blocks of 16 elements. At the end of the M loop, we need to move the pointers of A and C to the next block. This means that we simply need to jump by 16 elements in the M dimension, which means adding 16*4 Bytes to the pointer of A and C.
+
+The last step was to implement a loop in the N dimension, resulting in a 64x48x64 kernel. The relevant code is shown below:
+
+.. literalinclude:: ../../../src/submissions/03_neon/03_loops/matmul_64_48_64.s
+    :language: asm
+    :linenos:
+    :lines: 49-66
+    :caption: First part of looping over N dimension
+
+.. literalinclude:: ../../../src/submissions/03_neon/03_loops/matmul_64_48_64.s
+    :language: asm
+    :linenos:
+    :lines: 205-220
+    :caption: Second part of looping over N dimension
+
+Since we are extending the kernel from 6 to 48 in the N dimension, we need to divide the N dimension into 8 blocks of 6 elements. This means that the loop will have 8 iterations. For each N loop, it is important to first reset the pointer of A to the original address. After each iteration, we need to move the pointers of B and C to the next block. This means we need to jump by elements in the N dimension, that is specifically 6 columns of B and C. We do this by adding 6 times the stride of B and C to the pointers.
+
+For all three kernels we have written unit tests. To execute the tests, one first needs to compile the code by invoking ``make`` from within the ``src/submissions/03_neon/03_loops`` directory. This will create an executable that can be run with ``./build/test``.
