@@ -1,0 +1,23 @@
+Benchmarking Matmul_16_6_64 throughput ...
+-----------------------------------------------
+Measuring throughput for Instruction
+Total time (s):   1.89248
+Instructions per Second:   1.29861e+11
+Estimated GFLOPS:   129.861 GFLOPS/sec
+-----------------------------------------------
+
+Benchmarking Matmul_64_6_64 Matmul throughput ...
+-----------------------------------------------
+Measuring throughput for Instruction
+Total time (s):   1.84635
+Instructions per Second:   1.33106e+11
+Estimated GFLOPS:   133.106 GFLOPS/sec
+-----------------------------------------------
+
+Benchmarking Matmul_64_48_64 Matmul throughput ...
+-----------------------------------------------
+Measuring throughput for Instruction
+Total time (s):   1.49743
+Instructions per Second:   1.31297e+11
+Estimated GFLOPS:   131.297 GFLOPS/sec
+-----------------------------------------------

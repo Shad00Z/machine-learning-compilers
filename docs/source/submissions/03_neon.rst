@@ -209,4 +209,21 @@ The last step was to implement a loop in the N dimension, resulting in a 64x48x6
 
 Since we are extending the kernel from 6 to 48 in the N dimension, we need to divide the N dimension into 8 blocks of 6 elements. This means that the loop will have 8 iterations. For each N loop, it is important to first reset the pointer of A to the original address. After each iteration, we need to move the pointers of B and C to the next block. To do this, we jump by elements in the N dimension, that is specifically 6 columns of B and C. We do this by adding 6 times the stride of B and C to the pointers.
 
+Testing and Benchmarking
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
 For all three kernels we have written unit tests. To execute the tests, one first needs to compile the code by invoking ``make`` from within the ``src/submissions/03_neon/03_loops`` directory. This will create an executable that can be run with ``./build/test``.
+
+We also calculated the GFLOPs for each of these matrix multiplications.
+To calculate them we followed the simple formula:
+
+.. math:: M \cdot N \cdot K \cdot \text{Ops Per FMLA}
+
+The results that we obtained were:
+
+.. literalinclude:: ../../../src/submissions/03_neon/03_loops/benchmarking_results.txt
+    :language: text
+    :caption: GFLOPs calculations for MatMuls
+
+Our results indicate that the number of GFLOPs is very consistent, even when scaling the size of our matrix.
+
