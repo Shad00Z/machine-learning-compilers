@@ -60,6 +60,11 @@
 <li class="toctree-l3"><a class="reference internal" href="#latency">Latency</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#microkernel">Microkernel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#neon-microkernel">Neon Microkernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#testing-and-benchmarking">Testing and Benchmarking</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -378,6 +383,90 @@ Estimated GOPS:   11.6291 GFLOPs/sec
 </div>
 <p>We can see that both scenarios have similar results, which is why we computed the latency only for the first scenario.</p>
 <p>We measured <span class="math notranslate nohighlight">\(1.16266 \times 10^{10}\)</span> instructions per second, which means that the latency of the FMLA (vector) instruction with arrangement specifier <code class="docutils literal notranslate"><span class="pre">4S</span></code> is approximately <span class="math notranslate nohighlight">\(\frac{1}{1.16266 \times 10^{10}} \approx 8.6 \times 10^{-11}\)</span> seconds. Using a known clock frequency of 4.4 GHz, we computed the latency as <span class="math notranslate nohighlight">\(8.6 \times 10^{-11} \times 4.4 \times 10^9 = 0.3784\)</span> cycles.</p>
+</section>
+</section>
+<section id="microkernel">
+<h2>Microkernel<a class="headerlink" href="#microkernel" title="Link to this heading"></a></h2>
+<p>For the second task we were implementing a microkernel to execute a matrix multiplication for matrices with the dimensions:</p>
+<ol class="arabic simple">
+<li><p>Matrix A: 16 x 1</p></li>
+<li><p>Matrix B: 1 x 6</p></li>
+<li><p>Matrix C: 16 x 6</p></li>
+</ol>
+<section id="neon-microkernel">
+<h3>Neon Microkernel<a class="headerlink" href="#neon-microkernel" title="Link to this heading"></a></h3>
+<p>We developed three different versions of this microkernel in order to optimize its performance.</p>
+<p>In the <strong>first version</strong> we:</p>
+<ol class="arabic simple">
+<li><p>Load matrix A (16 x 1)</p></li>
+<li><p>Load three columns (1 x 1) of matrix B</p></li>
+<li><p>Load matrix C (16 x 6)</p></li>
+</ol>
+<p>In the <strong>second version</strong> we:</p>
+<ol class="arabic simple">
+<li><p>Load matrix A (16 x 1)</p></li>
+<li><p>Load one column of matrix B</p></li>
+<li><p>Load matrix C (16 x 6)</p></li>
+</ol>
+<p>In the <strong>third version</strong> we:</p>
+<ol class="arabic simple">
+<li><p>Load matrix A (16 x 1)</p></li>
+<li><p>Load one column of matrix B</p></li>
+<li><p>Load one column of matrix C (16 x 1)</p></li>
+</ol>
+</section>
+<section id="testing-and-benchmarking">
+<h3>Testing and Benchmarking<a class="headerlink" href="#testing-and-benchmarking" title="Link to this heading"></a></h3>
+<p>To test and compare our versions with one another we:</p>
+<ol class="arabic simple">
+<li><p>implemented a microkernel that would give us a visual indication of the results</p></li>
+<li><p>implemented a test using Catch2 to test the correctness of our implementations</p></li>
+<li><p>implemented a microbenchmark that would calculate the GFLOPs for each of the three versions</p></li>
+</ol>
+<p>The GFLOPs were calculated using the following formula:</p>
+<div class="literal-block-wrapper docutils container" id="id11">
+<div class="code-block-caption"><span class="caption-text">GFLOPs calculations</span><a class="headerlink" href="#id11" title="Link to this code"></a></div>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">totalOps</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="mi">6</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">16</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">loopIterations</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">loop_iters</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">500</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">opsPerIteration</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">totalOps</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">loopIterations</span><span class="p">;</span>
+
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">opsPerSec</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">opsPerIteration</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">elapsedTime</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">gflops</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">opsPerIteration</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">elapsedTime</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">1e9</span><span class="w"> </span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<p>For each version we would perform <code class="docutils literal notranslate"><span class="pre">50,000</span></code> iterations as a warmup to guarantee similar results for each execution of the benchmark.
+Using this approach we obtained the following results:</p>
+<div class="literal-block-wrapper docutils container" id="id12">
+<div class="code-block-caption"><span class="caption-text">GFLOPs calculations</span><a class="headerlink" href="#id12" title="Link to this code"></a></div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Benchmarking V1 Matmul throughput ...
+-----------------------------------------------
+Measuring throughput for Instruction
+Total time (s):   2.93595
+Instructions per Second:   3.26981e+10
+Estimated GFLOPS:   32.6981 GFLOPS/sec
+-----------------------------------------------
+
+Benchmarking V2 Matmul throughput ...
+-----------------------------------------------
+Measuring throughput for Instruction
+Total time (s):   2.90291
+Instructions per Second:   3.30702e+10
+Estimated GFLOPS:   33.0702 GFLOPS/sec
+-----------------------------------------------
+
+Benchmarking V3 Matmul throughput ...
+-----------------------------------------------
+Measuring throughput for Instruction
+Total time (s):   2.79132
+Instructions per Second:   3.43923e+10
+Estimated GFLOPS:   34.3923 GFLOPS/sec
+-----------------------------------------------
+</pre></div>
+</div>
+</div>
+<p>The GLFOPs results indicate that with every version we obtained slightly better results, resulting in
+about <code class="docutils literal notranslate"><span class="pre">1.7</span></code> GLOPs in difference comparing our best with our worst approach.</p>
 </section>
 </section>
 </section>

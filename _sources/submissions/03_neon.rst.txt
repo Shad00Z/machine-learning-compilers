@@ -103,3 +103,61 @@ Both files contain 32 fmla instructions each, which are executed 100 times. The 
 We can see that both scenarios have similar results, which is why we computed the latency only for the first scenario.
 
 We measured :math:`1.16266 \times 10^{10}` instructions per second, which means that the latency of the FMLA (vector) instruction with arrangement specifier ``4S`` is approximately :math:`\frac{1}{1.16266 \times 10^{10}} \approx 8.6 \times 10^{-11}` seconds. Using a known clock frequency of 4.4 GHz, we computed the latency as :math:`8.6 \times 10^{-11} \times 4.4 \times 10^9 = 0.3784` cycles.
+
+Microkernel
+--------------------------------
+
+For the second task we were implementing a microkernel to execute a matrix multiplication for matrices with the dimensions:
+
+1. Matrix A: 16 x 1
+2. Matrix B: 1 x 6
+3. Matrix C: 16 x 6
+
+Neon Microkernel
+^^^^^^^^^^^^^^^^^
+
+We developed three different versions of this microkernel in order to optimize its performance.
+
+In the **first version** we:
+
+1. Load matrix A (16 x 1)
+2. Load three columns (1 x 1) of matrix B
+3. Load matrix C (16 x 6)
+
+In the **second version** we:
+
+1. Load matrix A (16 x 1)
+2. Load one column of matrix B
+3. Load matrix C (16 x 6)
+
+In the **third version** we:
+
+1. Load matrix A (16 x 1)
+2. Load one column of matrix B
+3. Load one column of matrix C (16 x 1)
+
+Testing and Benchmarking
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To test and compare our versions with one another we:
+
+1. implemented a microkernel that would give us a visual indication of the results
+2. implemented a test using Catch2 to test the correctness of our implementations
+3. implemented a microbenchmark that would calculate the GFLOPs for each of the three versions
+
+The GFLOPs were calculated using the following formula:
+
+.. literalinclude:: ../../../src/submissions/03_neon/02_microkernel/microbench.cpp
+    :language: cpp
+    :lines: 138-143
+    :caption: GFLOPs calculations
+
+For each version we would perform ``50,000`` iterations as a warmup to guarantee similar results for each execution of the benchmark.
+Using this approach we obtained the following results:
+
+.. literalinclude:: ../../../src/submissions/03_neon/02_microkernel/benchmarking_results.txt
+    :language: text
+    :caption: GFLOPs calculations
+
+The GLFOPs results indicate that with every version we obtained slightly better results, resulting in 
+about ``1.7`` GLOPs in difference comparing our best with our worst approach.
