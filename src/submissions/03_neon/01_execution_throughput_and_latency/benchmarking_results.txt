@@ -1,0 +1,39 @@
+Benchmarking FMLA 4s throughput ...
+-----------------------------------------------
+Measuring throughput for FMLA_4sInstruction
+Total time (s):   1.96706
+Instructions per Second:   1.30144e+11
+Estimated GOPS:   130.144 GFLOPs/sec
+-----------------------------------------------
+
+Benchmarking FMLA 2s throughput ...
+-----------------------------------------------
+Measuring throughput for FMLA_2sInstruction
+Total time (s):   2.53647
+Instructions per Second:   5.04638e+10
+Estimated GOPS:   50.4638 GFLOPs/sec
+-----------------------------------------------
+
+Benchmarking FMADD throughput ...
+-----------------------------------------------
+Measuring throughput for FMADDInstruction
+Total time (s):   3.52918
+Instructions per Second:   1.81345e+10
+Estimated GOPS:   18.1345 GFLOPs/sec
+-----------------------------------------------
+
+Benchmarking FMLA 4s source register latency ...
+-----------------------------------------------
+Measuring latency for FMLA_SourceInstruction
+Total time (s):   3.30277
+Instructions per Second:   1.16266e+10
+Estimated GOPS:   11.6266 GFLOPs/sec
+-----------------------------------------------
+
+Benchmarking FMLA 4s destination register latency ...
+-----------------------------------------------
+Measuring latency for FMLA_DestinationInstruction
+Total time (s):   3.30207
+Instructions per Second:   1.16291e+10
+Estimated GOPS:   11.6291 GFLOPs/sec
+-----------------------------------------------
