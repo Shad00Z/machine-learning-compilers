@@ -161,3 +161,69 @@ Using this approach we obtained the following results:
 
 The GLFOPs results indicate that with every version we obtained slightly better results, resulting in 
 about ``1.7`` GLOPs in difference comparing our best with our worst approach.
+
+Loops
+------
+
+In this task, we had to add loops to the matrix multiplication kernel which we wrote in the previous task. The goal was to enable the 16x6x1 kernel to be used for larger matrices.
+
+The first step was to implement a loop in the K dimension, resulting in a 16x6x64 kernel. The loading and storing of matrix C was left unchanged. The relevant code is shown below:
+
+.. literalinclude:: ../../../src/submissions/03_neon/03_loops/matmul_16_6_64.s
+    :language: asm
+    :linenos:
+    :lines: 67-133
+    :caption: Looping matmul_16_6_1 over K dimension
+
+The ``matmul_16_6_1`` kernel mostly stayed the same, except that for each K loop, we now need to adjust the pointers to the input matrices A and B. At the end of each loop, we move the pointers to A to the next column by adding the given stride. In B, we need to move the pointer to the next row. Therefore, we jump by 4 Bytes (since we are using 32-bit floats) from the starting address of B. To keep jumping to the next row in each loop, we accumulate the offset of 4 Bytes in the register ``x9``.
+
+The second step was to implement a loop in the M dimension, resulting in a 64x6x64 kernel. To keep the code examples shorter, we exclude the K loop from the code snippets. The relevant code is shown below:
+
+.. literalinclude:: ../../../src/submissions/03_neon/03_loops/matmul_64_6_64.s
+    :language: asm
+    :linenos:
+    :lines: 45-92
+    :caption: First part of looping over M dimension
+
+.. literalinclude:: ../../../src/submissions/03_neon/03_loops/matmul_64_6_64.s
+    :language: asm
+    :linenos:
+    :lines: 153-193
+    :caption: Second part of looping over M dimension
+
+The M loop needs only 4 iterations, since we are extending the kernel from 16 to 64 in the M dimension by dividing the M dimension into 4 blocks of 16 elements. At the end of the M loop, we move the pointers of A and C to the next block. We jump by 16 elements in the M dimension, which means adding 16*4 Bytes to the pointer of A and C.
+
+The last step was to implement a loop in the N dimension, resulting in a 64x48x64 kernel. The relevant code is shown below:
+
+.. literalinclude:: ../../../src/submissions/03_neon/03_loops/matmul_64_48_64.s
+    :language: asm
+    :linenos:
+    :lines: 49-66
+    :caption: First part of looping over N dimension
+
+.. literalinclude:: ../../../src/submissions/03_neon/03_loops/matmul_64_48_64.s
+    :language: asm
+    :linenos:
+    :lines: 205-220
+    :caption: Second part of looping over N dimension
+
+Since we are extending the kernel from 6 to 48 in the N dimension, we need to divide the N dimension into 8 blocks of 6 elements. This means that the loop will have 8 iterations. For each N loop, it is important to first reset the pointer of A to the original address. After each iteration, we need to move the pointers of B and C to the next block. To do this, we jump by elements in the N dimension, that is specifically 6 columns of B and C. We do this by adding 6 times the stride of B and C to the pointers.
+
+Testing and Benchmarking
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+For all three kernels we have written unit tests. To execute the tests, one first needs to compile the code by invoking ``make`` from within the ``src/submissions/03_neon/03_loops`` directory. This will create an executable that can be run with ``./build/test``.
+
+We also calculated the GFLOPs for each of these matrix multiplications.
+To calculate them we followed the simple formula:
+
+.. math:: M \cdot N \cdot K \cdot \text{Ops Per FMLA}
+
+The results that we obtained were:
+
+.. literalinclude:: ../../../src/submissions/03_neon/03_loops/benchmarking_results.txt
+    :language: text
+    :caption: GFLOPs calculations for MatMuls
+
+Our results indicate that the number of GFLOPs is very consistent, even when scaling the size of our matrix.
+
