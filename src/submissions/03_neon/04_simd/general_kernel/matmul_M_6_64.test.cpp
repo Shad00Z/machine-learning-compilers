@@ -4,7 +4,7 @@
 
 extern "C"
 {
-    void matmul_M8_6_64(float const *a,
+    void matmul_M_6_64(float const *a,
                         float const *b,
                         float *c,
                         int64_t lda,
@@ -12,7 +12,7 @@ extern "C"
                         int64_t ldc);
 }
 
-TEST_CASE("Tests the matmul_M8_6_64 microkernel function with random matrices and M=7", "[matmul_M8_6_64], M=7")
+TEST_CASE("Tests the matmul_M_6_64 microkernel function with random matrices and M=7", "[matmul_M_6_64], M=7")
 {
     const int M = 7;
     const int N = 6;
@@ -58,7 +58,7 @@ TEST_CASE("Tests the matmul_M8_6_64 microkernel function with random matrices an
         }
     }
 
-    matmul_M8_6_64(A, B, C, M, K, M);
+    matmul_M_6_64(A, B, C, M, K, M);
 
     for (int i = 0; i < M * N; i++)
     {
@@ -66,7 +66,7 @@ TEST_CASE("Tests the matmul_M8_6_64 microkernel function with random matrices an
     }
 }
 
-TEST_CASE("Tests the matmul_M8_6_64 microkernel function with random matrices and M=8", "[matmul_M8_6_64], M=8")
+TEST_CASE("Tests the matmul_M_6_64 microkernel function with random matrices and M=8", "[matmul_M_6_64], M=8")
 {
     const int M = 8;
     const int N = 6;
@@ -112,7 +112,7 @@ TEST_CASE("Tests the matmul_M8_6_64 microkernel function with random matrices an
         }
     }
 
-    matmul_M8_6_64(A, B, C, M, K, M);
+    matmul_M_6_64(A, B, C, M, K, M);
 
     for (int i = 0; i < M * N; i++)
     {
@@ -120,7 +120,7 @@ TEST_CASE("Tests the matmul_M8_6_64 microkernel function with random matrices an
     }
 }
 
-TEST_CASE("Tests the matmul_M8_6_64 microkernel function with random matrices and M=9", "[matmul_M8_6_64], M=9")
+TEST_CASE("Tests the matmul_M_6_64 microkernel function with random matrices and M=9", "[matmul_M_6_64], M=9")
 {
     const int M = 9;
     const int N = 6;
@@ -166,7 +166,7 @@ TEST_CASE("Tests the matmul_M8_6_64 microkernel function with random matrices an
         }
     }
 
-    matmul_M8_6_64(A, B, C, M, K, M);
+    matmul_M_6_64(A, B, C, M, K, M);
 
     for (int i = 0; i < M * N; i++)
     {
@@ -174,7 +174,7 @@ TEST_CASE("Tests the matmul_M8_6_64 microkernel function with random matrices an
     }
 }
 
-TEST_CASE("Tests the matmul_M8_6_64 microkernel function with random matrices and M=10", "[matmul_M8_6_64], M=10")
+TEST_CASE("Tests the matmul_M_6_64 microkernel function with random matrices and M=10", "[matmul_M_6_64], M=10")
 {
     const int M = 10;
     const int N = 6;
@@ -220,7 +220,7 @@ TEST_CASE("Tests the matmul_M8_6_64 microkernel function with random matrices an
         }
     }
 
-    matmul_M8_6_64(A, B, C, M, K, M);
+    matmul_M_6_64(A, B, C, M, K, M);
 
     for (int i = 0; i < M * N; i++)
     {
@@ -228,7 +228,7 @@ TEST_CASE("Tests the matmul_M8_6_64 microkernel function with random matrices an
     }
 }
 
-TEST_CASE("Tests the matmul_M8_6_64 microkernel function with random matrices and M=11", "[matmul_M8_6_64], M=11")
+TEST_CASE("Tests the matmul_M_6_64 microkernel function with random matrices and M=11", "[matmul_M_6_64], M=11")
 {
     const int M = 11;
     const int N = 6;
@@ -274,7 +274,7 @@ TEST_CASE("Tests the matmul_M8_6_64 microkernel function with random matrices an
         }
     }
 
-    matmul_M8_6_64(A, B, C, M, K, M);
+    matmul_M_6_64(A, B, C, M, K, M);
 
     for (int i = 0; i < M * N; i++)
     {
@@ -282,7 +282,7 @@ TEST_CASE("Tests the matmul_M8_6_64 microkernel function with random matrices an
     }
 }
 
-TEST_CASE("Tests the matmul_M8_6_64 microkernel function with random matrices and M=12", "[matmul_M8_6_64], M=12")
+TEST_CASE("Tests the matmul_M_6_64 microkernel function with random matrices and M=12", "[matmul_M_6_64], M=12")
 {
     const int M = 12;
     const int N = 6;
@@ -328,7 +328,7 @@ TEST_CASE("Tests the matmul_M8_6_64 microkernel function with random matrices an
         }
     }
 
-    matmul_M8_6_64(A, B, C, M, K, M);
+    matmul_M_6_64(A, B, C, M, K, M);
 
     for (int i = 0; i < M * N; i++)
     {
@@ -336,7 +336,7 @@ TEST_CASE("Tests the matmul_M8_6_64 microkernel function with random matrices an
     }
 }
 
-TEST_CASE("Tests the matmul_M8_6_64 microkernel function with random matrices and M=13", "[matmul_M8_6_64], M=13")
+TEST_CASE("Tests the matmul_M_6_64 microkernel function with random matrices and M=13", "[matmul_M_6_64], M=13")
 {
     const int M = 13;
     const int N = 6;
@@ -382,7 +382,7 @@ TEST_CASE("Tests the matmul_M8_6_64 microkernel function with random matrices an
         }
     }
 
-    matmul_M8_6_64(A, B, C, M, K, M);
+    matmul_M_6_64(A, B, C, M, K, M);
 
     for (int i = 0; i < M * N; i++)
     {
@@ -390,7 +390,7 @@ TEST_CASE("Tests the matmul_M8_6_64 microkernel function with random matrices an
     }
 }
 
-TEST_CASE("Tests the matmul_M8_6_64 microkernel function with random matrices and M=14", "[matmul_M8_6_64], M=14")
+TEST_CASE("Tests the matmul_M_6_64 microkernel function with random matrices and M=14", "[matmul_M_6_64], M=14")
 {
     const int M = 14;
     const int N = 6;
@@ -436,7 +436,7 @@ TEST_CASE("Tests the matmul_M8_6_64 microkernel function with random matrices an
         }
     }
 
-    matmul_M8_6_64(A, B, C, M, K, M);
+    matmul_M_6_64(A, B, C, M, K, M);
 
     for (int i = 0; i < M * N; i++)
     {
@@ -444,7 +444,7 @@ TEST_CASE("Tests the matmul_M8_6_64 microkernel function with random matrices an
     }
 }
 
-TEST_CASE("Tests the matmul_M8_6_64 microkernel function with random matrices and M=15", "[matmul_M8_6_64], M=15")
+TEST_CASE("Tests the matmul_M_6_64 microkernel function with random matrices and M=15", "[matmul_M_6_64], M=15")
 {
     const int M = 15;
     const int N = 6;
@@ -490,7 +490,7 @@ TEST_CASE("Tests the matmul_M8_6_64 microkernel function with random matrices an
         }
     }
 
-    matmul_M8_6_64(A, B, C, M, K, M);
+    matmul_M_6_64(A, B, C, M, K, M);
 
     for (int i = 0; i < M * N; i++)
     {
