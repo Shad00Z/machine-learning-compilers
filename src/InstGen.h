@@ -181,10 +181,10 @@ public:
 
   /**
    * @brief Generates a MOV 16-bit immediate instruction.
-   * 
+   *
    * @param reg_dest destination register.
    * @param imm 16-bit unsigned immediate value.
-   * 
+   *
    * @return instruction.
    */
   static uint32_t mov_imm(gpr_t reg_dest,

@@ -83,15 +83,15 @@ uint32_t mini_jit::InstGen::mov_reg(gpr_t reg_dest,
 {
 
   return base_orr_shifted_reg(reg_dest,
-                              wzr,// 11111
+                              wzr, // 11111
                               reg_src,
                               0x0,
                               0x0);
 }
 
 uint32_t mini_jit::InstGen::movz(gpr_t reg_dest,
-                                  uint16_t imm16,
-                                  uint32_t shift)
+                                 uint16_t imm16,
+                                 uint32_t shift)
 {
   uint32_t l_ins = 0x52800000;
 
@@ -116,28 +116,25 @@ uint32_t mini_jit::InstGen::movz(gpr_t reg_dest,
 
 uint32_t mini_jit::InstGen::mov_imm(gpr_t reg_dest, uint64_t imm)
 {
-  // Determine whether the destination register is 64-bit or 32-bit
-  // Bit 5 (0x20) of the register ID typically indicates the register width
   bool is64bit = (reg_dest & 0x20) != 0;
 
-  // Try to encode the immediate value using a single MOVZ instruction.
-  // MOVZ allows placing a 16-bit immediate at bit positions 0, 16, 32, or 48.
-  for (int shift = 0; shift < (is64bit ? 64 : 32); shift += 16) {
+  // movz allows placing a 16-bit immediate at bit positions 0, 16, 32, or 48.
+  for (int shift = 0; shift < (is64bit ? 64 : 32); shift += 16)
+  {
     // Check if the immediate fits entirely within one 16-bit field at the given shift.
     // ~(0xFFFFULL << shift) creates a mask that zeros out the 16-bit field we're targeting,
     // and leaves 1s elsewhere.
     // If ANDing with this mask results in zero, it means the rest of the bits are zero.
-    if ((imm & ~(0xFFFFULL << shift)) == 0) {
+    if ((imm & ~(0xFFFFULL << shift)) == 0)
+    {
       // Extract the 16-bit portion of the immediate that we want to encode
       uint16_t imm16 = (imm >> shift) & 0xFFFF;
-
-      // Emit a MOVZ instruction with that 16-bit value and the appropriate left shift
       return movz(reg_dest, imm16, shift);
     }
   }
 
-  // If we get here, the immediate value could not be encoded using a single MOVZ.
-  // Fail fast for now, until full MOVZ+MOVK support is implemented
+  // immediate value could not be encoded using a single MOVZ
+  // need to implement MOVZ+MOVK support for larger immediates
   assert(false && "Immediate not representable with single MOVZ");
   return 0;
 }
