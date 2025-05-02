@@ -2,6 +2,7 @@
 build/
 _build/
 *.o
+*.d
 
 .vscode
 .DS_STORE
