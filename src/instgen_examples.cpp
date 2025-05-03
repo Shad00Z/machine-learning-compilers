@@ -47,6 +47,39 @@ int main()
   l_str = l_gen.to_string_bin(l_ins);
   std::cout << " " << l_str << std::endl;
 
+  // LDP (post-index)
+  std::cout << "ldp w0, w1, [x2], #8" << std::endl;
+  l_ins = l_gen.base_ldp_post(gpr_t::w0,
+                              gpr_t::w1,
+                              gpr_t::x2,
+                              8);
+  l_str = l_gen.to_string_hex(l_ins);
+  std::cout << " " << l_str << std::endl;
+  l_str = l_gen.to_string_bin(l_ins);
+  std::cout << " " << l_str << std::endl;
+  
+  // LDP (pre-index)
+  std::cout << "ldp w0, w1, [x2, #8]!" << std::endl;
+  l_ins = l_gen.base_ldp_pre(gpr_t::w0,
+                             gpr_t::w1,
+                             gpr_t::x2,
+                             8);
+  l_str = l_gen.to_string_hex(l_ins);
+  std::cout << " " << l_str << std::endl;
+  l_str = l_gen.to_string_bin(l_ins);
+  std::cout << " " << l_str << std::endl;
+
+  // LDP (signed offset)
+  std::cout << "ldp w0, w1, [x2, #8]" << std::endl;
+  l_ins = l_gen.base_ldp_soff(gpr_t::w0,
+                              gpr_t::w1,
+                              gpr_t::x2,
+                              8);
+  l_str = l_gen.to_string_hex(l_ins);
+  std::cout << " " << l_str << std::endl;
+  l_str = l_gen.to_string_bin(l_ins);
+  std::cout << " " << l_str << std::endl;
+
   // FMLA (vector)
   std::cout << "fmla v16.2s, v29.2s, v2.2s" << std::endl;
   l_ins = l_gen.neon_dp_fmla_vector(simd_fp_t::v16,

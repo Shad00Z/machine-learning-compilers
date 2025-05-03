@@ -130,6 +130,13 @@ public:
   } arr_spec_t;
 
   /**
+   * @brief Generates a RET instruction.
+   * 
+   * @return instruction.
+   */
+  static uint32_t ret();
+
+  /**
    * @brief Generates a CBNZ instruction.
    *
    * @param reg general-purpose register.
@@ -158,7 +165,7 @@ public:
                                        uint32_t amount);
 
   /**
-   * @brief Generates a MOV (register) instruction.
+   * @brief Generates an MOV (register) instruction.
    *
    * @param reg_dest destination register.
    * @param reg_src source register.
@@ -169,7 +176,7 @@ public:
                           gpr_t reg_src);
 
   /**
-   * @brief Generates a MOVZ instruction.
+   * @brief Generates an MOVZ instruction.
    *
    * @param reg_dest destination register.
    * @param imm16 16-bit unsigned immediate value.
@@ -180,15 +187,82 @@ public:
                        uint32_t shift);
 
   /**
-   * @brief Generates a MOV 16-bit immediate instruction.
+   * @brief Generates an MOV 16-bit immediate instruction.
    *
    * @param reg_dest destination register.
-   * @param imm 16-bit unsigned immediate value.
+   * @param imm16 16-bit unsigned immediate value.
    *
    * @return instruction.
    */
   static uint32_t mov_imm(gpr_t reg_dest,
-                          uint64_t imm);
+                          uint64_t imm16);
+
+  /**
+   * @brief Generates a base LDR (12-bit immediate) instruction using unsigned offset encoding.
+   *
+   * @param reg_dest destination register.
+   * @param reg_src source register (base address).
+   * @param imm12 12-bit immediate value.
+   */
+  static uint32_t base_ldr_imm_uoff(gpr_t reg_dest,
+                               gpr_t reg_src,
+                               uint32_t imm12);
+
+  /**
+   * @brief Helper function to generate LDP instructions.
+   *
+   * @param reg_dest1 first destination register.
+   * @param reg_dest2 second destination register.
+   * @param reg_src source register (base address).
+   * @param imm7 7-bit immediate value.
+   * @param opc operation code.
+   * @param encoding encoding type (signed offset, post-index, pre-index).
+   */
+  static uint32_t ldp_help(gpr_t reg_dest1,
+                           gpr_t reg_dest2,
+                           gpr_t reg_src,
+                           int32_t imm7,
+                           uint32_t opc,
+                           uint32_t encoding);
+
+  /**
+   * @brief Generates a base LDP instruction using signed offset encoding.
+   *
+   * @param reg_dest1 first destination register.
+   * @param reg_dest2 second destination register.
+   * @param reg_src source register (base address).
+   * @param imm7 7-bit immediate value.
+   */
+  static uint32_t base_ldp_soff(gpr_t reg_dest1,
+                           gpr_t reg_dest2,
+                           gpr_t reg_src,
+                           int32_t imm7);
+
+  /**
+   * @brief Generates a base LDP instruction using post-index encoding.
+   *
+   * @param reg_dest1 first destination register.
+   * @param reg_dest2 second destination register.
+   * @param reg_src source register (base address).
+   * @param imm7 7-bit immediate value.
+   */
+  static uint32_t base_ldp_post(gpr_t reg_dest1,
+                           gpr_t reg_dest2,
+                           gpr_t reg_src,
+                           int32_t imm7);
+
+  /**
+   * @brief Generates a base LDP instruction using pre-index encoding.
+   *
+   * @param reg_dest1 first destination register.
+   * @param reg_dest2 second destination register.
+   * @param reg_src source register (base address).
+   * @param imm7 7-bit immediate value.
+   */
+  static uint32_t base_ldp_pre(gpr_t reg_dest1,
+                          gpr_t reg_dest2,
+                          gpr_t reg_src,
+                          int32_t imm7);
 
   /**
    * @brief Generates an FMLA (vector) instruction.
