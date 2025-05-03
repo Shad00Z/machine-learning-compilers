@@ -88,7 +88,7 @@ uint32_t mini_jit::InstGen::mov_reg(gpr_t reg_dest,
 {
 
   return base_orr_shifted_reg(reg_dest,
-                              wzr, // 11111
+                              wzr,
                               reg_src,
                               0x0,
                               0x0);
@@ -109,7 +109,7 @@ uint32_t mini_jit::InstGen::movz(gpr_t reg_dest,
   l_ins |= l_reg_id;
 
   // set immediate value
-  uint32_t l_imm = imm16 & 0xffff;
+  uint32_t l_imm = imm16 & 0xFFFF;
   l_ins |= l_imm << 5;
 
   // set shift value
@@ -171,7 +171,7 @@ uint32_t mini_jit::InstGen::base_ldr_imm_uoff(gpr_t reg_dest,
 
   // scale the immediate for encoding (right-shift)
   uint32_t scaleShift = (l_sf) ? 3 : 2; // 64-bit? then /8 (>>3); else /4 (>>2)
-  uint32_t l_imm = (imm >> scaleShift) & 0xfff;
+  uint32_t l_imm = (imm >> scaleShift) & 0xFFF;
 
   // set 12 bit immediate value
   l_ins |= l_imm << 10;
