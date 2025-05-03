@@ -129,9 +129,17 @@ public:
     d2 = 0x40400000
   } arr_spec_t;
 
+  //! neon size specifiers
+  typedef enum : uint32_t
+  {
+    s = 0x0,
+    d = 0x1,
+    q = 0x2
+  } neon_size_spec_t;
+
   /**
    * @brief Generates a RET instruction.
-   * 
+   *
    * @return instruction.
    */
   static uint32_t ret();
@@ -205,25 +213,8 @@ public:
    * @param imm12 12-bit immediate value.
    */
   static uint32_t base_ldr_imm_uoff(gpr_t reg_dest,
-                               gpr_t reg_src,
-                               uint32_t imm12);
-
-  /**
-   * @brief Helper function to generate LDP instructions.
-   *
-   * @param reg_dest1 first destination register.
-   * @param reg_dest2 second destination register.
-   * @param reg_src source register (base address).
-   * @param imm7 7-bit immediate value.
-   * @param opc operation code.
-   * @param encoding encoding type (signed offset, post-index, pre-index).
-   */
-  static uint32_t ldp_help(gpr_t reg_dest1,
-                           gpr_t reg_dest2,
-                           gpr_t reg_src,
-                           int32_t imm7,
-                           uint32_t opc,
-                           uint32_t encoding);
+                                    gpr_t reg_src,
+                                    uint32_t imm12);
 
   /**
    * @brief Generates a base LDP instruction using signed offset encoding.
@@ -234,9 +225,9 @@ public:
    * @param imm7 7-bit immediate value.
    */
   static uint32_t base_ldp_soff(gpr_t reg_dest1,
-                           gpr_t reg_dest2,
-                           gpr_t reg_src,
-                           int32_t imm7);
+                                gpr_t reg_dest2,
+                                gpr_t reg_src,
+                                int32_t imm7);
 
   /**
    * @brief Generates a base LDP instruction using post-index encoding.
@@ -247,9 +238,9 @@ public:
    * @param imm7 7-bit immediate value.
    */
   static uint32_t base_ldp_post(gpr_t reg_dest1,
-                           gpr_t reg_dest2,
-                           gpr_t reg_src,
-                           int32_t imm7);
+                                gpr_t reg_dest2,
+                                gpr_t reg_src,
+                                int32_t imm7);
 
   /**
    * @brief Generates a base LDP instruction using pre-index encoding.
@@ -260,9 +251,54 @@ public:
    * @param imm7 7-bit immediate value.
    */
   static uint32_t base_ldp_pre(gpr_t reg_dest1,
-                          gpr_t reg_dest2,
-                          gpr_t reg_src,
-                          int32_t imm7);
+                               gpr_t reg_dest2,
+                               gpr_t reg_src,
+                               int32_t imm7);
+
+  /**
+   * @brief Generates a neon LDP instruction using signed offset encoding.
+   *
+   * @param reg_dest1 first destination register.
+   * @param reg_dest2 second destination register.
+   * @param reg_src source register (base address).
+   * @param imm7 7-bit immediate value.
+   * @param size_spec size specifier (s, d, q).
+   */
+  static uint32_t neon_ldp_soff(simd_fp_t reg_dest1,
+                                simd_fp_t reg_dest2,
+                                gpr_t reg_src,
+                                int32_t imm7,
+                                neon_size_spec_t size_spec);
+
+  /**
+   * @brief Generates a neon LDP instruction using post-index encoding.
+   *
+   * @param reg_dest1 first destination register.
+   * @param reg_dest2 second destination register.
+   * @param reg_src source register (base address).
+   * @param imm7 7-bit immediate value.
+   * @param size_spec size specifier (s, d, q).
+   */
+  static uint32_t neon_ldp_post(simd_fp_t reg_dest1,
+                                simd_fp_t reg_dest2,
+                                gpr_t reg_src,
+                                int32_t imm7,
+                                neon_size_spec_t size_spec);
+
+  /**
+   * @brief Generates a neon LDP instruction using pre-index encoding.
+   *
+   * @param reg_dest1 first destination register.
+   * @param reg_dest2 second destination register.
+   * @param reg_src source register (base address).
+   * @param imm7 7-bit immediate value.
+   * @param size_spec size specifier (s, d, q).
+   */
+  static uint32_t neon_ldp_pre(simd_fp_t reg_dest1,
+                               simd_fp_t reg_dest2,
+                               gpr_t reg_src,
+                               int32_t imm7,
+                               neon_size_spec_t size_spec);
 
   /**
    * @brief Generates an FMLA (vector) instruction.
@@ -296,6 +332,24 @@ public:
    * @return binary string.
    **/
   static std::string to_string_bin(uint32_t inst);
+
+private:
+  /**
+   * @brief Helper function to generate LDP instructions.
+   *
+   * @param reg_dest1 first destination register.
+   * @param reg_dest2 second destination register.
+   * @param reg_src source register (base address).
+   * @param imm7 7-bit immediate value.
+   * @param opc operation code.
+   * @param encoding encoding type (signed offset, post-index, pre-index).
+   */
+  static uint32_t ldp_help(uint32_t reg_dest1,
+                           uint32_t reg_dest2,
+                           uint32_t reg_src,
+                           int32_t imm7,
+                           uint32_t opc,
+                           uint32_t encoding);
 };
 
 #endif

@@ -178,38 +178,6 @@ uint32_t mini_jit::InstGen::base_ldr_imm_uoff(gpr_t reg_dest,
   return l_ins;
 }
 
-uint32_t mini_jit::InstGen::ldp_help(gpr_t reg_dest1,
-                                     gpr_t reg_dest2,
-                                     gpr_t reg_src,
-                                     int32_t imm7,
-                                     uint32_t opc,
-                                     uint32_t encoding)
-{
-  // LDP without VR
-  uint32_t l_ins = 0x28400000;
-
-  // set 2-bit opc
-  l_ins |= (opc & 0x3) << 30;
-
-  // set 4-bit VR encoding
-  l_ins |= (encoding & 0xF) << 23;
-
-  // set first destination register
-  uint32_t l_reg_id = reg_dest1 & 0x1f;
-  l_ins |= l_reg_id;
-  // set source register
-  l_reg_id = reg_src & 0x1f;
-  l_ins |= l_reg_id << 5;
-  // set second destination register
-  l_reg_id = reg_dest2 & 0x1f;
-  l_ins |= l_reg_id << 10;
-  // set immediate value
-  uint32_t l_imm = imm7 & 0x7f;
-  l_ins |= l_imm << 15;
-
-  return l_ins;
-}
-
 uint32_t mini_jit::InstGen::base_ldp_soff(gpr_t reg_dest1,
                                           gpr_t reg_dest2,
                                           gpr_t reg_src,
@@ -321,6 +289,105 @@ uint32_t mini_jit::InstGen::base_ldp_pre(gpr_t reg_dest1,
                   l_encoding);
 }
 
+uint32_t mini_jit::InstGen::neon_ldp_soff(simd_fp_t reg_dest1,
+                                          simd_fp_t reg_dest2,
+                                          gpr_t reg_src,
+                                          int32_t imm7,
+                                          neon_size_spec_t size_spec)
+{
+  // check if immediate can be encoded
+  uint32_t l_scale = (size_spec == neon_size_spec_t::s) ? 4 : (size_spec == neon_size_spec_t::d) ? 8
+                                                                                                 : 16;
+  if (imm7 % l_scale != 0)
+  {
+    throw std::invalid_argument("Immediate offset must be a multiple of 4 (32-bit) or 8 (64-bit) or 16 (128-bit)");
+  }
+
+  // scale the immediate for encoding (right-shift)
+  uint32_t l_scaleShift = (size_spec == neon_size_spec_t::s) ? 2 : (size_spec == neon_size_spec_t::d) ? 3
+                                                                                                      : 4;
+  uint32_t l_imm = (imm7 >> l_scaleShift) & 0x7f;
+
+  // set op code
+  uint32_t l_opc = size_spec & 0x3;
+
+  // encoding: 1010
+  uint32_t l_encoding = 0xA;
+
+  return ldp_help(reg_dest1,
+                  reg_dest2,
+                  reg_src,
+                  l_imm,
+                  l_opc,
+                  l_encoding);
+}
+
+uint32_t mini_jit::InstGen::neon_ldp_post(simd_fp_t reg_dest1,
+                                          simd_fp_t reg_dest2,
+                                          gpr_t reg_src,
+                                          int32_t imm7,
+                                          neon_size_spec_t size_spec)
+{
+  // check if immediate can be encoded
+  uint32_t l_scale = (size_spec == neon_size_spec_t::s) ? 4 : (size_spec == neon_size_spec_t::d) ? 8
+                                                                                                 : 16;
+  if (imm7 % l_scale != 0)
+  {
+    throw std::invalid_argument("Immediate offset must be a multiple of 4 (32-bit) or 8 (64-bit) or 16 (128-bit)");
+  }
+
+  // scale the immediate for encoding (right-shift)
+  uint32_t l_scaleShift = (size_spec == neon_size_spec_t::s) ? 2 : (size_spec == neon_size_spec_t::d) ? 3
+                                                                                                      : 4;
+  uint32_t l_imm = (imm7 >> l_scaleShift) & 0x7f;
+
+  // set op code
+  uint32_t l_opc = size_spec & 0x3;
+
+  // encoding: 1001
+  uint32_t l_encoding = 0x9;
+
+  return ldp_help(reg_dest1,
+                  reg_dest2,
+                  reg_src,
+                  l_imm,
+                  l_opc,
+                  l_encoding);
+}
+
+uint32_t mini_jit::InstGen::neon_ldp_pre(simd_fp_t reg_dest1,
+                                         simd_fp_t reg_dest2,
+                                         gpr_t reg_src,
+                                         int32_t imm7,
+                                         neon_size_spec_t size_spec)
+{
+  // check if immediate can be encoded
+  uint32_t l_scale = (size_spec == neon_size_spec_t::s) ? 4 : (size_spec == neon_size_spec_t::d) ? 8
+                                                                                                 : 16;
+  if (imm7 % l_scale != 0)
+  {
+    throw std::invalid_argument("Immediate offset must be a multiple of 4 (32-bit) or 8 (64-bit) or 16 (128-bit)");
+  }
+
+  // scale the immediate for encoding (right-shift)
+  uint32_t l_scaleShift = (size_spec == neon_size_spec_t::s) ? 2 : (size_spec == neon_size_spec_t::d) ? 3
+                                                                                                      : 4;
+  uint32_t l_imm = (imm7 >> l_scaleShift) & 0x7f;
+
+  // set op code
+  uint32_t l_opc = size_spec & 0x3;
+
+  // encoding: 1011
+  uint32_t l_encoding = 0xB;
+
+  return ldp_help(reg_dest1,
+                  reg_dest2,
+                  reg_src,
+                  l_imm,
+                  l_opc,
+                  l_encoding);
+}
+
 uint32_t mini_jit::InstGen::neon_dp_fmla_vector(simd_fp_t reg_dest,
                                                 simd_fp_t reg_src1,
                                                 simd_fp_t reg_src2,
@@ -345,4 +412,36 @@ uint32_t mini_jit::InstGen::neon_dp_fmla_vector(simd_fp_t reg_dest,
   l_ins |= l_arr_spec;
 
   return l_ins;
+}
+
+uint32_t mini_jit::InstGen::ldp_help(uint32_t reg_dest1,
+  uint32_t reg_dest2,
+  uint32_t reg_src,
+  int32_t imm7,
+  uint32_t opc,
+  uint32_t encoding)
+{
+// LDP without VR
+uint32_t l_ins = 0x28400000;
+
+// set 2-bit opc
+l_ins |= (opc & 0x3) << 30;
+
+// set 4-bit VR encoding
+l_ins |= (encoding & 0xF) << 23;
+
+// set first destination register
+uint32_t l_reg_id = reg_dest1 & 0x1f;
+l_ins |= l_reg_id;
+// set source register
+l_reg_id = reg_src & 0x1f;
+l_ins |= l_reg_id << 5;
+// set second destination register
+l_reg_id = reg_dest2 & 0x1f;
+l_ins |= l_reg_id << 10;
+// set immediate value
+uint32_t l_imm = imm7 & 0x7f;
+l_ins |= l_imm << 15;
+
+return l_ins;
 }
