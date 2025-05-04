@@ -373,7 +373,7 @@ Benchmarking this kernel we obtained the following results:
     :linenos:
     :caption: Benchmarking results for matmul_64_64_64 approaches
 
-To optimize the performance of this kernel, we made some minor changes to the computations of the strides. We also removed loads and stores of callee-saved registers that were not needed.
+V1 is the first version which we obtained by converting our best performing ``matmul_64_48_64`` kernel. Trying to squeeze out more performance, we made some minor changes to the computations of the strides (as shown below). We also removed loads and stores of callee-saved registers that were not used. This resulted in a performance increase of about 2-3 GFLOPs in V2 across multiple runs.
 
 .. literalinclude:: ../../../src/submissions/03_neon/05_accumulator_block_shapes/optimization/v1_matmul_64_64_64.s
     :language: asm
@@ -386,5 +386,3 @@ To optimize the performance of this kernel, we made some minor changes to the co
     :linenos:
     :lines: 37-44
     :caption: Optimized stride calculations
-
-These changes resulted in a performance increase of about 2-3 GFLOPs across multiple runs.

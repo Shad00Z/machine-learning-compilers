@@ -1344,7 +1344,7 @@ about <code class="docutils literal notranslate"><span class="pre">30</span> <sp
 </pre></div>
 </div>
 </div>
-<p>To optimize the performance of this kernel, we made some minor changes to the computations of the strides. We also removed loads and stores of callee-saved registers that were not needed.</p>
+<p>V1 is the first version which we obtained by converting our best performing <code class="docutils literal notranslate"><span class="pre">matmul_64_48_64</span></code> kernel. Trying to squeeze out more performance, we made some minor changes to the computations of the strides (as shown below). We also removed loads and stores of callee-saved registers that were not used. This resulted in a performance increase of about 2-3 GFLOPs in V2 across multiple runs.</p>
 <div class="literal-block-wrapper docutils container" id="id32">
 <div class="code-block-caption"><span class="caption-text">Naive stride calculations</span><a class="headerlink" href="#id32" title="Link to this code"></a></div>
 <div class="highlight-asm notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="w">    </span><span class="c1">// multiply strides with float size</span>
@@ -1372,7 +1372,6 @@ about <code class="docutils literal notranslate"><span class="pre">30</span> <sp
 </pre></div>
 </div>
 </div>
-<p>These changes resulted in a performance increase of about 2-3 GFLOPs across multiple runs.</p>
 </section>
 </section>
 
