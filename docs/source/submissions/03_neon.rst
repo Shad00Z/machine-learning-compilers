@@ -66,13 +66,12 @@ For this benchmarking task we obtained the following results:
     :lines: 1-23
     :caption: Throughput results for the three instructions
 
-It can be clearly seen that the FMLA (vector) with arrangement specifier ``4S`` instruction performs approximately 
+It can be seen that the FMLA (vector) with arrangement specifier ``4S`` instruction performs approximately 
 2.5 times as many floating point operations than the FMLA (vector) with arrangement specifier ``2S`` instruction. 
 Further the FMLA (vector) with arrangement specifier ``2S`` instructions performs at approximately 2.5 times more
 floating point operations than the FMADD (scalar) instruction. 
 
-This clearly shows that leveraging data-level parallelism (vector-based) can yield a much higher throughput, than
-using only scalar operations.
+This shows that leveraging data-level parallelism (vector-based) can yield a much higher throughput, than using only scalar operations.
 
 Latency
 ^^^^^^^^
@@ -289,7 +288,7 @@ When benchmarking our approaches we obtained the following results:
     :lines: 1-31
     :caption: Benchmarking results for matmul_14_6_64 approaches
 
-The results clearly indicate that performing the version with three different loads clearly performed
+The results indicate that the version with three different loads performed
 best, with an increase of about ``10 GFLOPs``. The switch from ``ldp`` to ``ld1`` however, didn't show 
 any significant changes in the number of GFLOPs.
 
@@ -342,7 +341,7 @@ performs much better than the other approach. This time, we even gain about
 Generic Approach
 ^^^^^^^^^^^^^^^^^
 
-...
+Simply as a proof of concept we also implemented a generic approach for the ``matmul_14_6_64`` and ``matmul_15_6_64`` kernels. This kernel works for any ``M > 0``. The idea is to write specific kernels for ``M = 1, 2, ..., 8``. We then divide M by 8 (shift right by 3) and use that to loop the kernel for ``M = 8``. This means that we divide the M dimension into 8 blocks of 8 elements. If there is a remainder, it will be between 1 and 7, which we handle with specific kernels. The selection of the specific kernels is done using a jump table.
 
 We also benchmarked the performance of this **generic kernel**:
 
