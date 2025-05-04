@@ -66,13 +66,12 @@ For this benchmarking task we obtained the following results:
     :lines: 1-23
     :caption: Throughput results for the three instructions
 
-It can be clearly seen that the FMLA (vector) with arrangement specifier ``4S`` instruction performs approximately 
+It can be seen that the FMLA (vector) with arrangement specifier ``4S`` instruction performs approximately 
 2.5 times as many floating point operations than the FMLA (vector) with arrangement specifier ``2S`` instruction. 
 Further the FMLA (vector) with arrangement specifier ``2S`` instructions performs at approximately 2.5 times more
 floating point operations than the FMADD (scalar) instruction. 
 
-This clearly shows that leveraging data-level parallelism (vector-based) can yield a much higher throughput, than
-using only scalar operations.
+This shows that leveraging data-level parallelism (vector-based) can yield a much higher throughput, than using only scalar operations.
 
 Latency
 ^^^^^^^^
@@ -227,3 +226,137 @@ The results that we obtained were:
 
 Our results indicate that the number of GFLOPs is very consistent, even when scaling the size of our matrix.
 
+
+SIMD Lanes
+------------
+
+For this task we were supposed to create two kernels, that should be able 
+to function, even if we don't have a multiple of 4 for the ``M`` dimension.
+We created several versions for both:
+
+1. the ``M=14``, ``N=6`` and ``K=64``, and
+2. the ``M=15``, ``N=6`` and ``K=64``
+
+Matmul_14_6_64
+^^^^^^^^^^^^^^^
+
+For the case ``M=14`` we considered four different versions:
+
+Our **first approach** was to use two loops. The first loop was used to calculate 
+a (12 x 64) block of matrix C. That means, we would load 12 column elements of matrix A. 
+The second loop was then used to calculate the remaining (2 x 64) block of matrix C.
+
+.. literalinclude:: ../../../src/submissions/03_neon/04_simd/matmul_14_6_64/v1_matmul_14_6_64.s
+    :language: asm
+    :linenos:
+    :lines: 157-200
+    :caption: Second loop for the (2 x 64) matrix calculation
+
+The **second approach** was to use a single loop. We would load the whole matrix C, and matrix A 
+column-wise using one ``ldp qXX, qXX, [x7]``, one ``ldr qXX, [x7, #32]`` and one ``ldr qXX, [x7, #48]`` instruction. 
+
+.. literalinclude:: ../../../src/submissions/03_neon/04_simd/matmul_14_6_64/v2_matmul_14_6_64.s
+    :language: asm
+    :linenos:
+    :lines: 86-144
+    :caption: Calculate matrix C with a single loop (using four loads)
+
+Our **third approach** was again to use a single loop. But this time we would load matrix A
+column-wise using two ``ldp qXX, qXX, [x7]`` instructions and then set the last two elements
+to zero using ``mov v27.s[2], wzr`` and ``mov v27.s[3], wzr``.
+
+.. literalinclude:: ../../../src/submissions/03_neon/04_simd/matmul_14_6_64/v3_matmul_14_6_64.s
+    :language: asm
+    :linenos:
+    :lines: 88-148
+    :caption: Calculate matrix C with a single loop (using two loads)
+
+In our **fourth approach** we simply copied the second version and changed
+our loads for matrix A and C. We used ``ld1`` instead of ``ldp``.
+
+.. literalinclude:: ../../../src/submissions/03_neon/04_simd/matmul_14_6_64/v4_matmul_14_6_64.s
+    :language: asm
+    :linenos:
+    :lines: 73-131
+    :caption: Calculate matrix C with a single loop (``ld1`` loads)
+
+When benchmarking our approaches we obtained the following results:
+
+.. literalinclude:: ../../../src/submissions/03_neon/04_simd/benchmarking_results.txt
+    :language: text
+    :linenos:
+    :lines: 1-31
+    :caption: Benchmarking results for matmul_14_6_64 approaches
+
+The results indicate that the version with three different loads performed
+best, with an increase of about ``10 GFLOPs``. The switch from ``ldp`` to ``ld1`` however, didn't show 
+any significant changes in the number of GFLOPs.
+
+Matmul_15_6_64
+^^^^^^^^^^^^^^^
+
+For the case ``M=15`` we considered three different versions:
+
+For our **first approach** we again considered two loops. Again, the first loop was used to calculate 
+a (12 x 64) block of matrix C. 
+The second loop was then used to calculate the remaining (3 x 64) block of matrix C.
+
+.. literalinclude:: ../../../src/submissions/03_neon/04_simd/matmul_15_6_64/v2_matmul_15_6_64.s
+    :language: asm
+    :linenos:
+    :lines: 99-158
+    :caption: Second loop for the (3 x 64) matrix calculation
+
+In the **second approach** we use one loop. We load matrix A column-wise using two 
+two ``ldp qXX, qXX, [x7]`` instructions and then set the last element
+to zero using ``mov v27.s[3], wzr``.
+
+.. literalinclude:: ../../../src/submissions/03_neon/04_simd/matmul_15_6_64/v2_matmul_15_6_64.s
+    :language: asm
+    :linenos:
+    :lines: 99-158
+    :caption: Calculate matrix C with a single loop (using two loads)
+
+In the **third approach** we again changed the load instructions from ``ldp`` to
+``ld1``.
+
+.. literalinclude:: ../../../src/submissions/03_neon/04_simd/matmul_15_6_64/v3_matmul_15_6_64.s
+    :language: asm
+    :linenos:
+    :lines: 81-140
+    :caption: Calculate matrix C with a single loop (``ld1`` loads)
+
+Again, we performed some benchmarks:
+
+.. literalinclude:: ../../../src/submissions/03_neon/04_simd/benchmarking_results.txt
+    :language: text
+    :linenos:
+    :lines: 41-63
+    :caption: Benchmarking results for matmul_15_6_64 approaches
+
+Similar to the benchmarks for the ``matmul_14_6_64`` the approach with the single loop
+performs much better than the other approach. This time, we even gain about 
+``23 GFLOPs`` with this approach.
+
+Generic Approach
+^^^^^^^^^^^^^^^^^
+
+Simply as a proof of concept we also implemented a generic approach for the ``matmul_14_6_64`` and ``matmul_15_6_64`` kernels. This kernel works for any ``M > 0``. The idea is to write specific kernels for ``M = 1, 2, ..., 8``. We then divide M by 8 (shift right by 3) and use that to loop the kernel for ``M = 8``. Basically we split the M dimension into blocks of 8 elements and compute the result using a ``matmul_8_6_64`` kernel. If there is a remainder, it is ``>=1 and <=7``, which we handle with specific kernels. The selection of the specific kernels is done using a jump table.
+
+We also benchmarked the performance of this **generic kernel**:
+
+.. literalinclude:: ../../../src/submissions/03_neon/04_simd/benchmarking_results.txt
+    :language: text
+    :linenos:
+    :lines: 33-39
+    :caption: Benchmarking results for matmul_14_6_64 approaches
+
+.. literalinclude:: ../../../src/submissions/03_neon/04_simd/benchmarking_results.txt
+    :language: text
+    :linenos:
+    :lines: 65-71
+    :caption: Benchmarking results for matmul_14_6_64 approaches
+
+Compared to our other approaches our obtained GFLOPs are slightly worse, losing
+about ``30 GFLOPs`` to our best approach for the ``matmul_14_6_64`` and about 
+``40 GFLOPs`` to our best approach for the ``matmul_15_6_64``.
