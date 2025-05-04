@@ -341,7 +341,7 @@ performs much better than the other approach. This time, we even gain about
 Generic Approach
 ^^^^^^^^^^^^^^^^^
 
-Simply as a proof of concept we also implemented a generic approach for the ``matmul_14_6_64`` and ``matmul_15_6_64`` kernels. This kernel works for any ``M > 0``. The idea is to write specific kernels for ``M = 1, 2, ..., 8``. We then divide M by 8 (shift right by 3) and use that to loop the kernel for ``M = 8``. This means that we divide the M dimension into 8 blocks of 8 elements. If there is a remainder, it will be between 1 and 7, which we handle with specific kernels. The selection of the specific kernels is done using a jump table.
+Simply as a proof of concept we also implemented a generic approach for the ``matmul_14_6_64`` and ``matmul_15_6_64`` kernels. This kernel works for any ``M > 0``. The idea is to write specific kernels for ``M = 1, 2, ..., 8``. We then divide M by 8 (shift right by 3) and use that to loop the kernel for ``M = 8``. Basically we split the M dimension into blocks of 8 elements and compute the result using a ``matmul_8_6_64`` kernel. If there is a remainder, it is ``>=1 and <=7``, which we handle with specific kernels. The selection of the specific kernels is done using a jump table.
 
 We also benchmarked the performance of this **generic kernel**:
 
