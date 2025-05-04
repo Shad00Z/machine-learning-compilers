@@ -360,3 +360,31 @@ We also benchmarked the performance of this **generic kernel**:
 Compared to our other approaches our obtained GFLOPs are slightly worse, losing
 about ``30 GFLOPs`` to our best approach for the ``matmul_14_6_64`` and about 
 ``40 GFLOPs`` to our best approach for the ``matmul_15_6_64``.
+
+Accumulator Block Shapes
+------------------------
+
+In this task we were supposed to implement a microkernel that computes C+=AB for M=64, N=64 and K=64. Recalling our ``matmul_64_48_64`` kernel, we only need to change the N dimension to 64. This kernel uses the ``matmul_16_6_64`` internally, which we changed to ``matmul_16_4_64``. Changing N from 6 to 4 allows us to divide the N dimension into 16 blocks of 4 elements. N = 8 was not suitable, as we ran into issues with the number of available SIMD lanes. We do not think it is necessary to show the code for this kernel, as it is very similar to the ``matmul_64_48_64`` kernel. The only difference is that we removed the logic for 2 of the 6 columns and increased the loop counter constant.
+
+Benchmarking this kernel we obtained the following results:
+
+.. literalinclude:: ../../../src/submissions/03_neon/05_accumulator_block_shapes/benchmarking_results.txt
+    :language: text
+    :linenos:
+    :caption: Benchmarking results for matmul_64_64_64 approaches
+
+To optimize the performance of this kernel, we made some minor changes to the computations of the strides. We also removed loads and stores of callee-saved registers that were not needed.
+
+.. literalinclude:: ../../../src/submissions/03_neon/05_accumulator_block_shapes/optimization/v1_matmul_64_64_64.s
+    :language: asm
+    :linenos:
+    :lines: 39-47
+    :caption: Naive stride calculations
+
+.. literalinclude:: ../../../src/submissions/03_neon/05_accumulator_block_shapes/optimization/v2_matmul_64_64_64.s
+    :language: asm
+    :linenos:
+    :lines: 37-44
+    :caption: Optimized stride calculations
+
+These changes resulted in a performance increase of about 2-3 GFLOPs across multiple runs.

@@ -75,6 +75,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#generic-approach">Generic Approach</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#accumulator-block-shapes">Accumulator Block Shapes</a></li>
 </ul>
 </li>
 </ul>
@@ -1318,6 +1319,60 @@ performs much better than the other approach. This time, we even gain about
 about <code class="docutils literal notranslate"><span class="pre">30</span> <span class="pre">GFLOPs</span></code> to our best approach for the <code class="docutils literal notranslate"><span class="pre">matmul_14_6_64</span></code> and about
 <code class="docutils literal notranslate"><span class="pre">40</span> <span class="pre">GFLOPs</span></code> to our best approach for the <code class="docutils literal notranslate"><span class="pre">matmul_15_6_64</span></code>.</p>
 </section>
+</section>
+<section id="accumulator-block-shapes">
+<h2>Accumulator Block Shapes<a class="headerlink" href="#accumulator-block-shapes" title="Link to this heading"></a></h2>
+<p>In this task we were supposed to implement a microkernel that computes C+=AB for M=64, N=64 and K=64. Recalling our <code class="docutils literal notranslate"><span class="pre">matmul_64_48_64</span></code> kernel, we only need to change the N dimension to 64. This kernel uses the <code class="docutils literal notranslate"><span class="pre">matmul_16_6_64</span></code> internally, which we changed to <code class="docutils literal notranslate"><span class="pre">matmul_16_4_64</span></code>. Changing N from 6 to 4 allows us to divide the N dimension into 16 blocks of 4 elements. N = 8 was not suitable, as we ran into issues with the number of available SIMD lanes. We do not think it is necessary to show the code for this kernel, as it is very similar to the <code class="docutils literal notranslate"><span class="pre">matmul_64_48_64</span></code> kernel. The only difference is that we removed the logic for 2 of the 6 columns and increased the loop counter constant.</p>
+<p>Benchmarking this kernel we obtained the following results:</p>
+<div class="literal-block-wrapper docutils container" id="id31">
+<div class="code-block-caption"><span class="caption-text">Benchmarking results for matmul_64_64_64 approaches</span><a class="headerlink" href="#id31" title="Link to this code"></a></div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span>Benchmarking V1 Matmul throughput ...
+<span class="linenos"> 2</span>-----------------------------------------------
+<span class="linenos"> 3</span>Measuring throughput for Instruction
+<span class="linenos"> 4</span>Total time (s):   1.27442
+<span class="linenos"> 5</span>Instructions per Second:   1.23418e+11
+<span class="linenos"> 6</span>Estimated GFLOPS:   123.418 GFLOPS/sec
+<span class="linenos"> 7</span>-----------------------------------------------
+<span class="linenos"> 8</span>
+<span class="linenos"> 9</span>Benchmarking V2 Matmul throughput ...
+<span class="linenos">10</span>-----------------------------------------------
+<span class="linenos">11</span>Measuring throughput for Instruction
+<span class="linenos">12</span>Total time (s):   1.246
+<span class="linenos">13</span>Instructions per Second:   1.26233e+11
+<span class="linenos">14</span>Estimated GFLOPS:   126.233 GFLOPS/sec
+<span class="linenos">15</span>-----------------------------------------------
+</pre></div>
+</div>
+</div>
+<p>To optimize the performance of this kernel, we made some minor changes to the computations of the strides. We also removed loads and stores of callee-saved registers that were not needed.</p>
+<div class="literal-block-wrapper docutils container" id="id32">
+<div class="code-block-caption"><span class="caption-text">Naive stride calculations</span><a class="headerlink" href="#id32" title="Link to this code"></a></div>
+<div class="highlight-asm notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="w">    </span><span class="c1">// multiply strides with float size</span>
+<span class="linenos">2</span><span class="w">    </span><span class="nf">mov</span><span class="w"> </span><span class="no">x6</span><span class="p">,</span><span class="w"> </span><span class="mi">#4</span>
+<span class="linenos">3</span><span class="w">    </span><span class="nf">mul</span><span class="w"> </span><span class="no">x3</span><span class="p">,</span><span class="w"> </span><span class="no">x3</span><span class="p">,</span><span class="w"> </span><span class="no">x6</span><span class="w"> </span><span class="c1">// lda</span>
+<span class="linenos">4</span><span class="w">    </span><span class="nf">mul</span><span class="w"> </span><span class="no">x4</span><span class="p">,</span><span class="w"> </span><span class="no">x4</span><span class="p">,</span><span class="w"> </span><span class="no">x6</span><span class="w"> </span><span class="c1">// ldb</span>
+<span class="linenos">5</span><span class="w">    </span><span class="nf">mul</span><span class="w"> </span><span class="no">x5</span><span class="p">,</span><span class="w"> </span><span class="no">x5</span><span class="p">,</span><span class="w"> </span><span class="no">x6</span><span class="w"> </span><span class="c1">// ldc</span>
+<span class="linenos">6</span>
+<span class="linenos">7</span><span class="w">    </span><span class="nf">mov</span><span class="w"> </span><span class="no">x6</span><span class="p">,</span><span class="w"> </span><span class="mi">#4</span>
+<span class="linenos">8</span><span class="w">    </span><span class="nf">mul</span><span class="w"> </span><span class="no">x22</span><span class="p">,</span><span class="w"> </span><span class="no">x4</span><span class="p">,</span><span class="w"> </span><span class="no">x6</span><span class="w"> </span><span class="c1">// ldb * 4 columns</span>
+<span class="linenos">9</span><span class="w">    </span><span class="nf">mul</span><span class="w"> </span><span class="no">x23</span><span class="p">,</span><span class="w"> </span><span class="no">x5</span><span class="p">,</span><span class="w"> </span><span class="no">x6</span><span class="w"> </span><span class="c1">// ldc * 4 columns</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id33">
+<div class="code-block-caption"><span class="caption-text">Optimized stride calculations</span><a class="headerlink" href="#id33" title="Link to this code"></a></div>
+<div class="highlight-asm notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="w">    </span><span class="c1">// multiply strides with float size</span>
+<span class="linenos">2</span><span class="w">    </span><span class="c1">// *4 = lsl #2</span>
+<span class="linenos">3</span><span class="w">    </span><span class="nf">lsl</span><span class="w"> </span><span class="no">x3</span><span class="p">,</span><span class="w"> </span><span class="no">x3</span><span class="p">,</span><span class="w"> </span><span class="mi">#2</span><span class="w"> </span><span class="c1">// lda</span>
+<span class="linenos">4</span><span class="w">    </span><span class="nf">lsl</span><span class="w"> </span><span class="no">x4</span><span class="p">,</span><span class="w"> </span><span class="no">x4</span><span class="p">,</span><span class="w"> </span><span class="mi">#2</span><span class="w"> </span><span class="c1">// ldb</span>
+<span class="linenos">5</span><span class="w">    </span><span class="nf">lsl</span><span class="w"> </span><span class="no">x5</span><span class="p">,</span><span class="w"> </span><span class="no">x5</span><span class="p">,</span><span class="w"> </span><span class="mi">#2</span><span class="w"> </span><span class="c1">// ldc</span>
+<span class="linenos">6</span>
+<span class="linenos">7</span><span class="w">    </span><span class="nf">lsl</span><span class="w"> </span><span class="no">x22</span><span class="p">,</span><span class="w"> </span><span class="no">x4</span><span class="p">,</span><span class="w"> </span><span class="mi">#2</span><span class="w"> </span><span class="c1">// ldb * 4 columns</span>
+<span class="linenos">8</span><span class="w">    </span><span class="nf">lsl</span><span class="w"> </span><span class="no">x23</span><span class="p">,</span><span class="w"> </span><span class="no">x5</span><span class="p">,</span><span class="w"> </span><span class="mi">#2</span><span class="w"> </span><span class="c1">// ldc * 4 columns</span>
+</pre></div>
+</div>
+</div>
+<p>These changes resulted in a performance increase of about 2-3 GFLOPs across multiple runs.</p>
 </section>
 </section>
 
