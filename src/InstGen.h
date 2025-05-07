@@ -256,6 +256,19 @@ public:
                                int32_t imm7);
 
   /**
+   * @brief Generates a neon LDR (12-bit immediate) instruction using unsigned offset encoding.
+   *
+   * @param reg_dest destination register.
+   * @param reg_src source register (base address).
+   * @param imm12 12-bit immediate value.
+   * @param size_spec size specifier (s, d, q).
+   */
+  static uint32_t neon_ldr_imm_uoff(simd_fp_t reg_dest,
+                                    gpr_t reg_src,
+                                    uint32_t imm12,
+                                    neon_size_spec_t size_spec);
+
+  /**
    * @brief Generates a neon LDP instruction using signed offset encoding.
    *
    * @param reg_dest1 first destination register.
@@ -301,6 +314,101 @@ public:
                                neon_size_spec_t size_spec);
 
   /**
+   * @brief Generates a base STR (12-bit immediate) instruction using unsigned offset encoding.
+   *
+   * @param reg_dest destination register.
+   * @param reg_src source register (base address).
+   * @param imm12 12-bit immediate value.
+   */
+  static uint32_t base_str_imm_uoff(gpr_t reg_dest,
+    gpr_t reg_src,
+    uint32_t imm12);
+
+  /**
+   * @brief Generates a base STP instruction using post-index encoding.
+   *
+   * @param reg_dest1 first destination register.
+   * @param reg_dest2 second destination register.
+   * @param reg_src source register (base address).
+   * @param imm7 7-bit immediate value.
+   */
+  static uint32_t base_stp_post(gpr_t reg_dest1,
+                                gpr_t reg_dest2,
+                                gpr_t reg_src,
+                                int32_t imm7);
+
+  /**
+   * @brief Generates a base STP instruction using pre-index encoding.
+   *
+   * @param reg_dest1 first destination register.
+   * @param reg_dest2 second destination register.
+   * @param reg_src source register (base address).
+   * @param imm7 7-bit immediate value.
+   */
+  static uint32_t base_stp_pre(gpr_t reg_dest1,
+                               gpr_t reg_dest2,
+                               gpr_t reg_src,
+                               int32_t imm7);
+
+  /**
+   * @brief Generates a base STP instruction using signed offset encoding.
+   *
+   * @param reg_dest1 first destination register.
+   * @param reg_dest2 second destination register.
+   * @param reg_src source register (base address).
+   * @param imm7 7-bit immediate value.
+   */
+  static uint32_t base_stp_soff(gpr_t reg_dest1,
+                                gpr_t reg_dest2,
+                                gpr_t reg_src,
+                                int32_t imm7);
+
+  /**
+   * @brief Generates a neon STP instruction using signed offset encoding.
+   *
+   * @param reg_dest1 first destination register.
+   * @param reg_dest2 second destination register.
+   * @param reg_src source register (base address).
+   * @param imm7 7-bit immediate value.
+   * @param size_spec size specifier (s, d, q).
+   */
+  static uint32_t neon_stp_soff(simd_fp_t reg_dest1,
+                                simd_fp_t reg_dest2,
+                                gpr_t reg_src,
+                                int32_t imm7,
+                                neon_size_spec_t size_spec);
+
+  /**
+   * @brief Generates a neon STP instruction using post-index encoding.
+   *
+   * @param reg_dest1 first destination register.
+   * @param reg_dest2 second destination register.
+   * @param reg_src source register (base address).
+   * @param imm7 7-bit immediate value.
+   * @param size_spec size specifier (s, d, q).
+   */
+  static uint32_t neon_stp_post(simd_fp_t reg_dest1,
+                                simd_fp_t reg_dest2,
+                                gpr_t reg_src,
+                                int32_t imm7,
+                                neon_size_spec_t size_spec);
+
+  /**
+   * @brief Generates a neon STP instruction using pre-index encoding.
+   *
+   * @param reg_dest1 first destination register.
+   * @param reg_dest2 second destination register.
+   * @param reg_src source register (base address).
+   * @param imm7 7-bit immediate value.
+   * @param size_spec size specifier (s, d, q).
+   */
+  static uint32_t neon_stp_pre(simd_fp_t reg_dest1,
+                               simd_fp_t reg_dest2,
+                               gpr_t reg_src,
+                               int32_t imm7,
+                               neon_size_spec_t size_spec);
+
+  /**
    * @brief Generates an FMLA (vector) instruction.
    *
    * @param reg_dest destination register.
@@ -314,6 +422,53 @@ public:
                                       simd_fp_t reg_src1,
                                       simd_fp_t reg_src2,
                                       arr_spec_t arr_spec);
+
+  /**
+   * @brief Generates an FMLA (by element) instruction.
+   *
+   * @param reg_dest destination register.
+   * @param reg_src1 first source register.
+   * @param reg_src2 second source register.
+   * @param arr_spec arrangement specifier.
+   *
+   * @return instruction.
+   **/
+  static uint32_t neon_vec_dp_fmla_by_element(simd_fp_t reg_dest,
+                                              simd_fp_t reg_src1,
+                                              simd_fp_t reg_src2,
+                                              arr_spec_t arr_spec);
+
+  /**
+   * @brief Generates an MUL instruction.
+   * 
+   * @param reg_dest destination register.
+   * @param reg_src1 first source register.
+   * @param reg_src2 second source register.
+   * 
+   * @return instruction.
+   */
+ static uint32_t mul_reg(gpr_t reg_dest,
+                         gpr_t reg_src1,
+                         gpr_t reg_src2);
+
+  /**
+   * @brief Generates an ADD instruction.
+   * 
+   * @param reg_dest destination register.
+   * @param reg_src1 first source register.
+   * @param reg_src2 second source register.
+   * @param imm6 6-bit immediate value.
+   * @param shift shift value.
+   * 
+   * @return instruction.
+   */
+  static uint32_t add_shifted_reg(gpr_t reg_dest,
+                                  gpr_t reg_src1,
+                                  gpr_t reg_src2,
+                                  uint32_t imm6,
+                                  uint32_t shift);
+
+                                  
 
   /**
    * @brief Converts the given instruction to a hex string.
@@ -340,11 +495,44 @@ private:
    * @param reg_dest1 first destination register.
    * @param reg_dest2 second destination register.
    * @param reg_src source register (base address).
+   * @param imm12 12-bit immediate value.
+   * @param opc operation code.
+   * @param encoding encoding type (signed offset, post-index, pre-index).
+   */
+  static uint32_t ldr_help(uint32_t reg_dest,
+                           uint32_t reg_src,
+                           int32_t imm12,
+                           uint32_t opc,
+                           uint32_t encoding);
+
+  /**
+   * @brief Helper function to generate LDP instructions.
+   *
+   * @param reg_dest1 first destination register.
+   * @param reg_dest2 second destination register.
+   * @param reg_src source register (base address).
    * @param imm7 7-bit immediate value.
    * @param opc operation code.
    * @param encoding encoding type (signed offset, post-index, pre-index).
    */
   static uint32_t ldp_help(uint32_t reg_dest1,
+                           uint32_t reg_dest2,
+                           uint32_t reg_src,
+                           int32_t imm7,
+                           uint32_t opc,
+                           uint32_t encoding);
+
+  /**
+   * @brief Helper function to generate LDP instructions.
+   *
+   * @param reg_dest1 first destination register.
+   * @param reg_dest2 second destination register.
+   * @param reg_src source register (base address).
+   * @param imm7 7-bit immediate value.
+   * @param opc operation code.
+   * @param encoding encoding type (signed offset, post-index, pre-index).
+   */
+  static uint32_t stp_help(uint32_t reg_dest1,
                            uint32_t reg_dest2,
                            uint32_t reg_src,
                            int32_t imm7,
