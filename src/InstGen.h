@@ -468,7 +468,33 @@ public:
                                   uint32_t imm6,
                                   uint32_t shift);
 
-                                  
+ /**
+  * @brief Generates an ADD (immediate) instruction.
+  * 
+  * @param reg_dest destination register.
+  * @param reg_src1 first source register.
+  * @param imm12 12-bit immediate value.
+  * @param shift shift value.
+  * 
+  * @return instruction.
+  */
+ static uint32_t add_immediate(gpr_t reg_dest,
+                               gpr_t reg_src,
+                               uint32_t imm12,
+                               uint32_t shift );   
+                               
+ /**
+  * @brief Generates an ADD (immediate) instruction.
+  * 
+  * @param reg_dest destination register.
+  * @param reg_src1 first source register.
+  * @param imm12 12-bit immediate value.
+  * @param shift shift value.
+  * 
+  * @return instruction.
+  */
+ static uint32_t mov_sp(gpr_t reg_dest,
+                        gpr_t reg_src);                        
 
   /**
    * @brief Converts the given instruction to a hex string.

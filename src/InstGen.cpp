@@ -904,3 +904,42 @@ uint32_t mini_jit::InstGen::add_shifted_reg(gpr_t reg_dest,
 
   return l_ins;
 }
+
+uint32_t mini_jit::InstGen::mov_sp(gpr_t reg_dest,
+                                    gpr_t reg_src)
+{
+    return add_immediate(reg_dest,
+                         reg_src,
+                         0,
+                         0);
+}
+
+uint32_t mini_jit::InstGen::add_immediate(gpr_t reg_dest,
+                                          gpr_t reg_src,
+                                          uint32_t imm12,
+                                          uint32_t shift)
+{
+  uint32_t l_ins = 0x11000000;
+
+  // set size
+  uint32_t l_sf = reg_dest & 0x20;
+  l_ins |= l_sf << 26; // set bit 31
+
+  // set destination register id
+  uint32_t l_reg_id = reg_dest & 0x1f;
+  l_ins |= l_reg_id;
+
+  // set first source register id
+  l_reg_id = reg_src & 0x1f;
+  l_ins |= l_reg_id << 5;
+
+  // set immediate value
+  uint32_t l_imm = imm12 & 0xfff;
+  l_ins |= l_imm << 10;
+
+  // set shift value
+  uint32_t l_shift = shift & 0x1;
+  l_ins |= l_shift << 22;
+
+  return l_ins;
+}
