@@ -148,5 +148,8 @@ kernel_examples: createdirs $(COMMON_OBJ) $(KERNEL_OBJ)
 
 .PHONY: clean
 
+run_tests: tests
+	$(BIN_DIR)/tests
+
 clean:
 	rm -rf $(BIN_DIR)/$(SRC_DIR)
