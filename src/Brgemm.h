@@ -1,6 +1,7 @@
 #ifndef MINI_JIT_BRGEMM_H
 #define MINI_JIT_BRGEMM_H
 
+#include "Kernel.h"
 #include <cstdint>
 
 namespace mini_jit {
@@ -8,6 +9,11 @@ namespace mini_jit {
 }
 
 class mini_jit::Brgemm {
+
+  private:
+    /// kernel
+    Kernel m_kernel;
+
   public:
     /// data type
     enum class dtype_t : uint32_t 
@@ -76,6 +82,8 @@ class mini_jit::Brgemm {
    * @return pointer to the generated kernel.
    **/
   kernel_t get_kernel() const;
+
+
 };
 
 #endif
