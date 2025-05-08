@@ -64,5 +64,5 @@ mini_jit::Brgemm::error_t mini_jit::Brgemm::generate( uint32_t m,
 // Return the generated kernel
 mini_jit::Brgemm::kernel_t mini_jit::Brgemm::get_kernel() const
 {
-    return m_kernel;
+    return nullptr;
 }

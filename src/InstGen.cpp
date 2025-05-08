@@ -841,7 +841,7 @@ throw std::invalid_argument("MUL: destination register must be of the same size 
 
 // set size
 uint32_t l_sf = reg_dest & 0x20;
-l_ins |= l_sf << 25; // set bit 30
+l_ins |= l_sf << 26; // set bit 31
 
 // set destination register id
 uint32_t l_reg_id = reg_dest & 0x1f;
@@ -880,7 +880,7 @@ uint32_t mini_jit::InstGen::add_shifted_reg(gpr_t reg_dest,
 
   // set size
   uint32_t l_sf = reg_dest & 0x20;
-  l_ins |= l_sf << 25; // set bit 30
+  l_ins |= l_sf << 26; // set bit 31
 
   // set immediate value
   uint32_t l_imm = imm6 & 0x3f;
