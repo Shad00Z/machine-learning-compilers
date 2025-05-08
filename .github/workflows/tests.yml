@@ -3,11 +3,12 @@
 # @section DESCRIPTION
 # Execute tests on GitHub Actions
 ##
-name: Execute tests
+name: Run Tests
 
 on: [push, pull_request]
 jobs:
-  test:
+  run-tests:
+    name: Run Tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
