@@ -472,7 +472,7 @@ public:
   * @brief Generates an ADD (immediate) instruction.
   * 
   * @param reg_dest destination register.
-  * @param reg_src1 first source register.
+  * @param reg_src1 source register.
   * @param imm12 12-bit immediate value.
   * @param shift shift value.
   * 
@@ -487,9 +487,7 @@ public:
   * @brief Generates an ADD (immediate) instruction.
   * 
   * @param reg_dest destination register.
-  * @param reg_src1 first source register.
-  * @param imm12 12-bit immediate value.
-  * @param shift shift value.
+  * @param reg_src1 source register.
   * 
   * @return instruction.
   */

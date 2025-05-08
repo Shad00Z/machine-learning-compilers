@@ -1,6 +1,22 @@
 #include <catch2/catch.hpp>
 #include "InstGen.h"
 
+TEST_CASE("Tests the hex string generation", "[HexToString]")
+{
+    mini_jit::InstGen l_gen;
+    uint32_t l_ins = 0x12345678;
+    std::string l_hex = l_gen.to_string_hex(l_ins);
+    REQUIRE(l_hex == "0x12345678");
+}
+
+TEST_CASE("Tests the binary string generation", "[HexToBinaryString]")
+{
+    mini_jit::InstGen l_gen;
+    uint32_t l_ins = 0x12345678;
+    std::string l_bin = l_gen.to_string_bin(l_ins);
+    REQUIRE(l_bin == "0b00010010001101000101011001111000");
+}
+
 TEST_CASE("Tests the ret instruction generation", "[RET]")
 {
     mini_jit::InstGen l_gen;
@@ -36,6 +52,15 @@ TEST_CASE("Tests the Base MOV (register) instruction generation", "[MOV_REG]")
                                                 mini_jit::InstGen::x1);
     std::string l_hex = l_gen.to_string_hex(l_ins);
     REQUIRE(l_hex == "0xaa0103e2");
+}
+
+TEST_CASE("Tests the Base MOV (SP) instruction generation", "[MOV_SP]")
+{
+    mini_jit::InstGen l_gen;
+    uint32_t l_ins = mini_jit::InstGen::mov_sp(mini_jit::InstGen::x0,
+                                               mini_jit::InstGen::sp);
+    std::string l_hex = l_gen.to_string_hex(l_ins);
+    REQUIRE(l_hex == "0x910003e0");
 }
 
 TEST_CASE("Tests the Base MOV (immediate) instruction generation", "[MOV_IMM]")
@@ -130,4 +155,31 @@ TEST_CASE("Tests the Neon STP instruction generation", "[Neon STP]")
     l_ins = mini_jit::InstGen::neon_stp_pre(mini_jit::InstGen::v1, mini_jit::InstGen::v2, mini_jit::InstGen::x0, 16, mini_jit::InstGen::d);
     l_hex = l_gen.to_string_hex(l_ins);
     REQUIRE(l_hex == "0x6d810801");
+}
+
+TEST_CASE("Tests the MUL (register) instruction generation", "[MUL_REG]")
+{
+    mini_jit::InstGen l_gen;
+
+    uint32_t l_ins = mini_jit::InstGen::mul_reg(mini_jit::InstGen::x2, mini_jit::InstGen::x0, mini_jit::InstGen::x1);
+    std::string l_hex = l_gen.to_string_hex(l_ins);
+    REQUIRE(l_hex == "0x9b017c02");
+}
+
+TEST_CASE("Tests the ADD (shifted register) instruction generation", "[ADD_SREG]")
+{
+    mini_jit::InstGen l_gen;
+
+    uint32_t l_ins = mini_jit::InstGen::add_shifted_reg(mini_jit::InstGen::x2, mini_jit::InstGen::x0, mini_jit::InstGen::x1, 4, 0);
+    std::string l_hex = l_gen.to_string_hex(l_ins);
+    REQUIRE(l_hex == "0x8b011002");
+}
+
+TEST_CASE("Tests the ADD (immediate) instruction generation", "[ADD_IMM]")
+{
+    mini_jit::InstGen l_gen;
+
+    uint32_t l_ins = mini_jit::InstGen::add_immediate(mini_jit::InstGen::x2, mini_jit::InstGen::x0, 16, 0);
+    std::string l_hex = l_gen.to_string_hex(l_ins);
+    REQUIRE(l_hex == "0x91004002");
 }
