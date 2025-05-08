@@ -67,5 +67,5 @@ mini_jit::Brgemm::error_t mini_jit::Brgemm::generate( uint32_t m,
 
 mini_jit::Brgemm::kernel_t mini_jit::Brgemm::get_kernel() const 
 {
-    return reinterpret_cast<kernel_t>( m_kernel.get_kernel() );
+    return reinterpret_cast<kernel_t>(const_cast<void*>(m_kernel.get_kernel()));
 }
