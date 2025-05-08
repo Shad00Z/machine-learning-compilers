@@ -294,9 +294,26 @@ uint32_t mini_jit::InstGen::neon_ldr_imm_uoff(simd_fp_t reg_dest,
                                               uint32_t imm12,
                                               neon_size_spec_t size_spec)
 {
+  uint32_t l_ins = 0x3D400000;
+
+  // set size
+  uint32_t l_size = (size_spec == neon_size_spec_t::s) ? 2 : (size_spec == neon_size_spec_t::d) ? 3
+                                                                                                 : 0;
+
+  uint32_t l_sf = l_size & 0x3;
+  l_ins |= l_sf << 30; // set bit 31, 30
+
+  // set destination register id
+  uint32_t l_reg_id = reg_dest & 0x1f;
+  l_ins |= l_reg_id;
+
+  // set first source register id
+  l_reg_id = reg_src & 0x1f;
+  l_ins |= l_reg_id << 5;
+
   // check if immediate can be encoded
   uint32_t l_scale = (size_spec == neon_size_spec_t::s) ? 4 : (size_spec == neon_size_spec_t::d) ? 8
-                                                      : 16;
+                                                                                                 : 16;
   if (imm12 % l_scale != 0)
   {
     throw std::invalid_argument("Immediate offset must be a multiple of 4 (32-bit) or 8 (64-bit) or 16 (128-bit)");
@@ -304,21 +321,16 @@ uint32_t mini_jit::InstGen::neon_ldr_imm_uoff(simd_fp_t reg_dest,
 
   // scale the immediate for encoding (right-shift)
   uint32_t l_scaleShift = (size_spec == neon_size_spec_t::s) ? 2 : (size_spec == neon_size_spec_t::d) ? 3
-                                                            : 4;
+                                                                                                      : 4;
   uint32_t l_imm = (imm12 >> l_scaleShift) & 0xfff;
+  l_ins |= l_imm << 10;
 
   // set op code
   uint32_t l_opc_pre = (size_spec == neon_size_spec_t::q) ? 3 : 1;
   uint32_t l_opc = l_opc_pre & 0x3;
+  l_ins |= l_opc << 22;
 
-  // encoding: 101
-  uint32_t l_encoding = 0x5;
-
-  return ldr_help( reg_dest,
-                   reg_src,
-                   l_imm,
-                   l_opc,
-                   l_encoding );
+  return l_ins;
 }
 
 uint32_t mini_jit::InstGen::neon_ldp_soff(simd_fp_t reg_dest1,
@@ -825,37 +837,37 @@ uint32_t mini_jit::InstGen::mul_reg( gpr_t reg_dest,
   gpr_t reg_src1,
   gpr_t reg_src2 )
 {
-uint32_t l_ins = 0x1B007C00;
+  uint32_t l_ins = 0x1B007C00;
 
-uint32_t l_sf1 = reg_src1 & 0x20;
-uint32_t l_sf2 = reg_src2 & 0x20;
-uint32_t l_sf_dest = reg_dest & 0x20;
-if (l_sf1 != l_sf2)
-{
-throw std::invalid_argument("MUL: both source registers must be of the same size");
-}
-else if ( l_sf1 != l_sf_dest )
-{
-throw std::invalid_argument("MUL: destination register must be of the same size as source registers");
-}
+  uint32_t l_sf1 = reg_src1 & 0x20;
+  uint32_t l_sf2 = reg_src2 & 0x20;
+  uint32_t l_sf_dest = reg_dest & 0x20;
+  if (l_sf1 != l_sf2)
+  {
+    throw std::invalid_argument("MUL: both source registers must be of the same size");
+  }
+  else if ( l_sf1 != l_sf_dest )
+  {
+    throw std::invalid_argument("MUL: destination register must be of the same size as source registers");
+  }
 
 // set size
 uint32_t l_sf = reg_dest & 0x20;
 l_ins |= l_sf << 26; // set bit 31
 
-// set destination register id
-uint32_t l_reg_id = reg_dest & 0x1f;
-l_ins |= l_reg_id;
+  // set destination register id
+  uint32_t l_reg_id = reg_dest & 0x1f;
+  l_ins |= l_reg_id;
 
-// set first source register id
-l_reg_id = reg_src1 & 0x1f;
-l_ins |= l_reg_id << 5;
+  // set first source register id
+  l_reg_id = reg_src1 & 0x1f;
+  l_ins |= l_reg_id << 5;
 
-// set second source register id
-l_reg_id = reg_src2 & 0x1f;
-l_ins |= l_reg_id << 16;
+  // set second source register id
+  l_reg_id = reg_src2 & 0x1f;
+  l_ins |= l_reg_id << 16;
 
-return l_ins;
+  return l_ins;
 }
 
 uint32_t mini_jit::InstGen::add_shifted_reg(gpr_t reg_dest,
