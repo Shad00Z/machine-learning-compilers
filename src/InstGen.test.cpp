@@ -97,6 +97,15 @@ TEST_CASE("Tests the Base LDP instruction generation", "[Base LDP]")
     REQUIRE(l_hex == "0xa9c10c02");
 }
 
+TEST_CASE("Tests the Base Neon instruction generation", "[Neon LDR]")
+{
+    mini_jit::InstGen l_gen;
+
+    uint32_t l_ins = mini_jit::InstGen::neon_ldr_imm_uoff(mini_jit::InstGen::v28, mini_jit::InstGen::x6, 0, mini_jit::InstGen::s);
+    std::string l_hex = l_gen.to_string_hex(l_ins);
+    REQUIRE(l_hex == "0xbd4000dc");
+}
+
 TEST_CASE("Tests the Neon LDP instruction generation", "[Neon LDP]")
 {
     mini_jit::InstGen l_gen;
@@ -182,4 +191,13 @@ TEST_CASE("Tests the ADD (immediate) instruction generation", "[ADD_IMM]")
     uint32_t l_ins = mini_jit::InstGen::add_immediate(mini_jit::InstGen::x2, mini_jit::InstGen::x0, 16, 0);
     std::string l_hex = l_gen.to_string_hex(l_ins);
     REQUIRE(l_hex == "0x91004002");
+}
+
+TEST_CASE("Tests the Neon FMLA (by element) instruction generation", "[Neon_FMLA_ELEM]")
+{
+    mini_jit::InstGen l_gen;
+
+    uint32_t l_ins = mini_jit::InstGen::neon_vec_dp_fmla_by_element(mini_jit::InstGen::v4, mini_jit::InstGen::v0, mini_jit::InstGen::v28, mini_jit::InstGen::arr_spec_t::s4);
+    std::string l_hex = l_gen.to_string_hex(l_ins);
+    REQUIRE(l_hex == "0x4f9c1004");
 }
