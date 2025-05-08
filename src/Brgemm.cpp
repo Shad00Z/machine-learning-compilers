@@ -1,4 +1,6 @@
 #include "Brgemm.h"
+#include "Kernel.h"
+#include "kernels/matmul_16_6_1.h"
 #include <iostream>
 
 /**
@@ -26,43 +28,44 @@ mini_jit::Brgemm::error_t mini_jit::Brgemm::generate( uint32_t m,
 
     if( m != 16 )
     {
-        throw std::invalid_argument( "M must be 16" );
+        std::cout << ( "M must be 16" ) << std::endl;
         return mini_jit::Brgemm::error_t::wrong_m_dimension;
     }
     else if ( n != 6 )
     {
-        throw std::invalid_argument( "N must be 6" );
+        std::cout << ( "N must be 6" ) << std::endl;
         return mini_jit::Brgemm::error_t::wrong_n_dimension;
     }
     else if ( k != 1 )
     {
-        throw std::invalid_argument( "K must be 1" );
+        std::cout << ( "K must be 1" ) << std::endl;
         return mini_jit::Brgemm::error_t::wrong_k_dimension;
     }
     else if ( br_size != 4 ) // for now, we don't check br_size
     {
-        throw std::invalid_argument( "BR_SIZE must be 4" );
+        std::cout << ( "BR_SIZE must be 4" ) << std::endl;
         return mini_jit::Brgemm::error_t::wrong_batch_reduce_size;
     }
     else if ( trans_a != 0 || trans_b != 0 || trans_c != 0 )
     {
-        throw std::invalid_argument( "Matrix ordering must be column-major" );
+        std::cout << ( "Matrix ordering must be column-major" ) << std::endl;
         return mini_jit::Brgemm::error_t::wrong_matrix_ordering_format;
     }
     else if ( dtype != dtype_t::fp32 )
     {
-        throw std::invalid_argument( "Matrix data type must be fp32" );
+        std::cout << ( "Matrix data type must be fp32" ) << std::endl;
         return mini_jit::Brgemm::error_t::wrong_matrix_datatype;
     }
     else
     {
+        mini_jit::kernels::matmul_16_6_1( m_kernel );
+
         // Valid matrix kernel
         return mini_jit::Brgemm::error_t::success;
     }
 }
 
-// Return the generated kernel
-mini_jit::Brgemm::kernel_t mini_jit::Brgemm::get_kernel() const
+mini_jit::Brgemm::kernel_t mini_jit::Brgemm::get_kernel() const 
 {
-    return nullptr;
+    return reinterpret_cast<kernel_t>( m_kernel.get_kernel() );
 }
