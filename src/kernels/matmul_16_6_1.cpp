@@ -71,7 +71,6 @@ void mini_jit::kernels::matmul_16_6_1( mini_jit::Kernel &kernel )
     // Load Column of Matrix B
     kernel.add_instr( l_gen.mov_reg(gpr_t::x6, gpr_t::x1) );
     kernel.add_instr( l_gen.neon_ldr_imm_uoff(simd_fp_t::v28, gpr_t::x6, 0, mini_jit::InstGen::neon_size_spec_t::s) );
-    kernel.add_instr( l_gen.mov_imm(gpr_t::x20, 4) );
     kernel.add_instr( l_gen.add_shifted_reg(gpr_t::x6, gpr_t::x6, gpr_t::x4, 0, 0) );
 
     // 1st Multiplication

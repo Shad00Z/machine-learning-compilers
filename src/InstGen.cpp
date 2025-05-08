@@ -31,20 +31,14 @@ uint32_t mini_jit::InstGen::ret()
 uint32_t mini_jit::InstGen::base_br_cbnz(gpr_t reg,
                                          int32_t imm19)
 {
-  uint32_t l_ins = 0x35000000;
+  uint32_t l_ins = 0;
+  uint32_t l_sf = reg & 0x20;
 
-  // set register id
-  uint32_t l_reg_id = reg & 0x1f;
-  l_ins |= l_reg_id;
-
-  // set size of the register
-  uint32_t l_reg_size = reg & 0x20;
-  l_ins |= l_reg_size << (32 - 6);
-
-  // set immediate
-  uint32_t l_imm = imm19 & 0x7ffff;
-  l_ins |= l_imm << 5;
-
+  l_ins |= l_sf << 26; // set bit 31
+  l_ins |= 0b0110101 << 24;
+  l_ins |= ((imm19 >> 2) & 0x510FFFFF) << 5;
+  l_ins |= reg & 0x1F;
+  
   return l_ins;
 }
 
@@ -954,4 +948,34 @@ uint32_t mini_jit::InstGen::add_immediate(gpr_t reg_dest,
   l_ins |= l_shift << 22;
 
   return l_ins;
+}
+
+uint32_t mini_jit::InstGen::sub_immediate( gpr_t reg_dest,
+                                           gpr_t reg_src,
+                                           uint32_t imm12,
+                                           uint32_t shift )
+{
+    uint32_t l_ins = 0x51000000;
+
+    // set size
+    uint32_t l_sf = reg_dest & 0x20;
+    l_ins |= l_sf << 26; // set bit 31
+
+    // set destination register id
+    uint32_t l_reg_id = reg_dest & 0x1f;
+    l_ins |= l_reg_id;
+
+    // set first source register id
+    l_reg_id = reg_src & 0x1f;
+    l_ins |= l_reg_id << 5;
+
+    // set immediate value
+    uint32_t l_imm = imm12 & 0xfff;
+    l_ins |= l_imm << 10;
+
+    // set shift value
+    uint32_t l_cond = shift & 0x1;
+    l_ins |= l_cond << 22;
+
+    return l_ins;
 }

@@ -1,5 +1,5 @@
-#ifndef MINI_JIT_MATMUL_16_6_1_H
-#define MINI_JIT_MATMUL_16_6_1_H
+#ifndef MINI_JIT_MATMUL_16_6_K_H
+#define MINI_JIT_MATMUL_16_6_K_H
 
 #include "../Kernel.h"
 #include <cstdint>
@@ -12,7 +12,7 @@ namespace mini_jit
          * @brief Kernel for batch-reduce matrix multiplication.
          * @param kernel Kernel object to be filled with instructions.
          */
-        void matmul_16_6_1( mini_jit::Kernel &kernel );      
+        void matmul_16_6_k( mini_jit::Kernel &kernel );      
     }
 };
 

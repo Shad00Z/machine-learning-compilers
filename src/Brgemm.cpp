@@ -1,6 +1,7 @@
 #include "Brgemm.h"
 #include "Kernel.h"
 #include "kernels/matmul_16_6_1.h"
+#include "kernels/matmul_16_6_k.h"
 #include <iostream>
 
 /**
@@ -36,9 +37,9 @@ mini_jit::Brgemm::error_t mini_jit::Brgemm::generate( uint32_t m,
         std::cout << ( "N must be 6" ) << std::endl;
         return mini_jit::Brgemm::error_t::wrong_n_dimension;
     }
-    else if ( k != 1 )
+    else if ( k == 0 )
     {
-        std::cout << ( "K must be 1" ) << std::endl;
+        std::cout << ( "K must not be 0" ) << std::endl;
         return mini_jit::Brgemm::error_t::wrong_k_dimension;
     }
     else if ( br_size != 4 ) // for now, we don't check br_size
@@ -58,7 +59,14 @@ mini_jit::Brgemm::error_t mini_jit::Brgemm::generate( uint32_t m,
     }
     else
     {
-        mini_jit::kernels::matmul_16_6_1( m_kernel );
+        if ( k == 1 )
+        {
+            mini_jit::kernels::matmul_16_6_1( m_kernel );
+        }
+        else
+        {
+            mini_jit::kernels::matmul_16_6_k( m_kernel );
+        }
 
         // Valid matrix kernel
         return mini_jit::Brgemm::error_t::success;
