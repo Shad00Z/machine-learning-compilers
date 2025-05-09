@@ -32,7 +32,7 @@ jobs:
     - name: Build docs
       run: cd docs
         && make html
-        && cd _build/html
+        && cd build/html
         && touch .nojekyll
     - name: Deploy to GitHub Pages
       uses: JamesIves/github-pages-deploy-action@v4
