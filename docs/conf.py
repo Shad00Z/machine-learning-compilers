@@ -91,10 +91,10 @@ html_static_path = ['_static']
 # -- Breathe configuration -------------------------------------------------
 
 breathe_projects = {
-    "Machine Learning Compilers": "build/xml/",
+    project: "build/xml/",
 }
 
-breathe_default_project = "Machine Learning Compilers"
+breathe_default_project = project
 breathe_default_members = (
     'members', 
     'undoc-members'
