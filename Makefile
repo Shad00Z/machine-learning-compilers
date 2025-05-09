@@ -52,6 +52,7 @@ endif
 # INCLUDES
 # INCFLAGS = -I$(LIB_DIR)
 INCFLAGS = -I$(INC_DIR)
+INCFLAGS += -I$(SRC_DIR)
 INCFLAGS += -I/usr/local/include
 ifeq ($(ARCH),arm64)
 	INCFLAGS += -I/opt/homebrew/include
@@ -100,31 +101,23 @@ else ifeq ($(OS),windows)
 endif
 
 # MAIN FILES FOR ENTRY POINTS
-INSTGEN_EXAMPLES_MAIN_SRC = $(SRC_DIR)/instgen_examples.cpp
-KERNEL_EXAMPLES_MAIN_SRC = $(SRC_DIR)/kernel_examples.cpp
 TESTS_MAIN_SRC = $(SRC_DIR)/tests.cpp
 BENCH_MAIN_SRC = $(SRC_DIR)/benchmark.cpp
 
 # COMMON SOURCES (EXCEPT MAIN FILES)
-COMMON_SRC = $(filter-out $(INSTGEN_EXAMPLES_MAIN_SRC) $(KERNEL_EXAMPLES_MAIN_SRC) $(TESTS_MAIN_SRC) $(SUBMISSIONS) $(TEST_SRC) $(BENCH_MAIN_SRC), $(SRC))
+COMMON_SRC = $(filter-out $(TESTS_MAIN_SRC) $(SUBMISSIONS) $(TEST_SRC) $(BENCH_MAIN_SRC), $(SRC))
 NOSUB_TEST_SRC = $(filter-out $(SUBMISSIONS), $(TEST_SRC))
 
 # DEP
 COMMON_DEP = $(COMMON_SRC:%.cpp=$(BIN_DIR)/%.d)
-INSTGEN_EXAMPLES_MAIN_DEP = $(INSTGEN_EXAMPLES_MAIN_SRC:%.cpp=$(BIN_DIR)/%.d)
-KERNEL_EXAMPLES_MAIN_DEP = $(KERNEL_EXAMPLES_MAIN_SRC:%.cpp=$(BIN_DIR)/%.d)
 TESTS_MAIN_DEP = $(TESTS_MAIN_SRC:%.cpp=$(BIN_DIR)/%.d)
 BENCH_MAIN_DEP = $(BENCH_MAIN_SRC:%.cpp=$(BIN_DIR)/%.d)
 -include $(COMMON_DEP)
--include $(INSTGEN_EXAMPLES_MAIN_DEP)
--include $(KERNEL_EXAMPLES_MAIN_DEP)
 -include $(TESTS_MAIN_DEP)
 -include $(BENCH_MAIN_DEP)
 
 # Convert sources to object files
 COMMON_OBJ = $(COMMON_SRC:%.cpp=$(BIN_DIR)/%.o)
-INSTGEN_OBJ = $(INSTGEN_EXAMPLES_MAIN_SRC:%.cpp=$(BIN_DIR)/%.o)
-KERNEL_OBJ = $(KERNEL_EXAMPLES_MAIN_SRC:%.cpp=$(BIN_DIR)/%.o)
 TESTS_OBJ = $(TESTS_MAIN_SRC:%.cpp=$(BIN_DIR)/%.o)
 NOSUB_TEST_OBJ = $(NOSUB_TEST_SRC:%.cpp=$(BIN_DIR)/%.o)
 BENCH_OBJ = $(BENCH_MAIN_SRC:%.cpp=$(BIN_DIR)/%.o)
@@ -143,12 +136,6 @@ $(BIN_DIR)/%.o: %.cpp
 
 tests: createdirs $(COMMON_OBJ) $(TESTS_OBJ) $(NOSUB_TEST_OBJ)
 	$(LD) -o $(BIN_DIR)/tests $(COMMON_OBJ) $(TESTS_OBJ) $(NOSUB_TEST_OBJ) $(LDFLAGS) $(LIBS)
-
-instgen_examples: createdirs $(COMMON_OBJ) $(INSTGEN_OBJ)
-	$(LD) -o $(BIN_DIR)/instgen_examples $(COMMON_OBJ) $(INSTGEN_OBJ) $(LDFLAGS) $(LIBS)
-
-kernel_examples: createdirs $(COMMON_OBJ) $(KERNEL_OBJ)
-	$(LD) -o $(BIN_DIR)/kernel_examples $(COMMON_OBJ) $(KERNEL_OBJ) $(LDFLAGS) $(LIBS)
 
 benchmark: createdirs $(COMMON_OBJ) $(BENCH_OBJ)
 	$(LD) -o $(BIN_DIR)/benchmark $(COMMON_OBJ) $(BENCH_OBJ) $(LDFLAGS) $(LIBS)

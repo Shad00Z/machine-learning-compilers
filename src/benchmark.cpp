@@ -1,4 +1,3 @@
-#include "InstGen.h"
 #include "Brgemm.h"
 #include "Kernel.h"
 #include <iostream>
@@ -10,9 +9,12 @@
 #include <chrono>
 #include <cstring>
 
-using gpr_t = mini_jit::InstGen::gpr_t;
-using simd_fp_t = mini_jit::InstGen::simd_fp_t;
-using arr_spec_t = mini_jit::InstGen::arr_spec_t;
+#include "registers/gp_registers.h"
+#include "registers/simd_fp_registers.h"
+
+using gpr_t = mini_jit::registers::gpr_t;
+using simd_fp_t = mini_jit::registers::simd_fp_t;
+using arr_spec_t = mini_jit::registers::arr_spec_t;
 
 using dtype_t = mini_jit::Brgemm::dtype_t;
 
