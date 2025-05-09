@@ -277,7 +277,7 @@ our loads for matrix A and C. We used ``ld1`` instead of ``ldp``.
 .. literalinclude:: ../../../src/submissions/03_neon/04_simd/matmul_14_6_64/v4_matmul_14_6_64.s
     :language: asm
     :linenos:
-    :lines: 73-131
+    :lines: 44-62
     :caption: Calculate matrix C with a single loop (``ld1`` loads)
 
 When benchmarking our approaches we obtained the following results:
@@ -323,7 +323,7 @@ In the **third approach** we again changed the load instructions from ``ldp`` to
 .. literalinclude:: ../../../src/submissions/03_neon/04_simd/matmul_15_6_64/v3_matmul_15_6_64.s
     :language: asm
     :linenos:
-    :lines: 81-140
+    :lines: 44-68
     :caption: Calculate matrix C with a single loop (``ld1`` loads)
 
 Again, we performed some benchmarks:
