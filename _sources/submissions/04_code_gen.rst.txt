@@ -16,7 +16,7 @@ In this function we are generating the code for the BRGEMM kernels.
 Firstly, we needed the instructions which a BRGEMM kernel consists of.
 Therefore we started wrapping the assembly code in C++ functions.
 
-.. literalinclude:: ../../src/InstGen.cpp
+.. literalinclude:: ../_static/InstGen.cpp
     :language: cpp
     :lines: 140-173
     :caption: Load instruction for a single general purpose register 

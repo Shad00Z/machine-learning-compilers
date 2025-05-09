@@ -25,7 +25,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="mini_jit" href="../api/mini_jit.html" />
+    <link rel="next" title="mini_jit" href="../api/namespaces/mini_jit.html" />
     <link rel="prev" title="3. Neon" href="03_neon.html" /> 
 </head>
 
@@ -62,7 +62,11 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../api/mini_jit.html">mini_jit</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/namespaces/mini_jit.html">mini_jit</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/namespaces/mini_jit_converters.html">mini_jit::converters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/namespaces/mini_jit_instructions.html">mini_jit::instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/namespaces/mini_jit_kernels.html">mini_jit::kernels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/namespaces/mini_jit_registers.html">mini_jit::registers</a></li>
 </ul>
 
         </div>
@@ -170,10 +174,48 @@ We are starting off by implementing / generating batch-reduce matrix-matrix mult
 <p>In this function we are generating the code for the BRGEMM kernels.</p>
 <p>Firstly, we needed the instructions which a BRGEMM kernel consists of.
 Therefore we started wrapping the assembly code in C++ functions.</p>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">Load instruction for a single general purpose register</span><a class="headerlink" href="#id2" title="Link to this code"></a></div>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">uint32_t</span><span class="w"> </span><span class="nf">InstGen::base_ldr_imm_uoff</span><span class="p">(</span><span class="n">gpr_t</span><span class="w"> </span><span class="n">reg_dest</span><span class="p">,</span>
+<span class="w">                                              </span><span class="n">gpr_t</span><span class="w"> </span><span class="n">reg_src</span><span class="p">,</span>
+<span class="w">                                              </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">imm</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">l_ins</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0xB9400000</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// set size</span>
+<span class="w">  </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">l_sf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">reg_dest</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mh">0x20</span><span class="p">;</span>
+<span class="w">  </span><span class="n">l_ins</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="n">l_sf</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">25</span><span class="p">;</span><span class="w"> </span><span class="c1">// set bit 30</span>
+
+<span class="w">  </span><span class="c1">// set destination register id</span>
+<span class="w">  </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">l_reg_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">reg_dest</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mh">0x1f</span><span class="p">;</span>
+<span class="w">  </span><span class="n">l_ins</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="n">l_reg_id</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// set first source register id</span>
+<span class="w">  </span><span class="n">l_reg_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">reg_src</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mh">0x1f</span><span class="p">;</span>
+<span class="w">  </span><span class="n">l_ins</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="n">l_reg_id</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// check if immediate can be encoded</span>
+<span class="w">  </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">scale</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">l_sf</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="mi">8</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="mi">4</span><span class="p">;</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">imm</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="n">scale</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">invalid_argument</span><span class="p">(</span><span class="s">&quot;Immediate offset must be a multiple of 4 (32-bit) or 8 (64-bit)&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">// scale the immediate for encoding (right-shift)</span>
+<span class="w">  </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">scaleShift</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">l_sf</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span><span class="w"> </span><span class="c1">// 64-bit? then /8 (&gt;&gt;3); else /4 (&gt;&gt;2)</span>
+<span class="w">  </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">l_imm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">imm</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">scaleShift</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mh">0xFFF</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// set 12 bit immediate value</span>
+<span class="w">  </span><span class="n">l_ins</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="n">l_imm</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">l_ins</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
 <p>After implementing all necessary instructions, we started implementing our first kernel.
 The first kernel that we implemented was a simple matrix multiplication kernel, in the form of a <code class="docutils literal notranslate"><span class="pre">matmul_16_6_1</span></code>.</p>
-<div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text">FMLA instructions for the <code class="docutils literal notranslate"><span class="pre">matmul_16_6_1</span></code> kernel</span><a class="headerlink" href="#id2" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">FMLA instructions for the <code class="docutils literal notranslate"><span class="pre">matmul_16_6_1</span></code> kernel</span><a class="headerlink" href="#id3" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="c1">// Load Column of Matrix B</span>
 <span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">base</span><span class="o">::</span><span class="n">mov</span><span class="p">(</span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x6</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x1</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
 <span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">simd_fp</span><span class="o">::</span><span class="n">ldr</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v28</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x6</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">neon_size_spec_t</span><span class="o">::</span><span class="n">s</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
@@ -239,8 +281,8 @@ The first kernel that we implemented was a simple matrix multiplication kernel, 
 </div>
 <p>After implementing this first kernel, we started implementing a more general version with a <code class="docutils literal notranslate"><span class="pre">matmul_16_6_k</span></code> kernel.
 For this kernel we needed a loop to iterate over the <code class="docutils literal notranslate"><span class="pre">k</span></code> dimension.</p>
-<div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-text">Loop instruction using code generation</span><a class="headerlink" href="#id3" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">Loop instruction using code generation</span><a class="headerlink" href="#id4" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="c1">// 6th Multiplication</span>
 <span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">simd_fp</span><span class="o">::</span><span class="n">fmlaElem</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v20</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v24</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v29</span><span class="p">,</span><span class="w"> </span><span class="n">arr_spec_t</span><span class="o">::</span><span class="n">s4</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
 <span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">simd_fp</span><span class="o">::</span><span class="n">fmlaElem</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v21</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v25</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v29</span><span class="p">,</span><span class="w"> </span><span class="n">arr_spec_t</span><span class="o">::</span><span class="n">s4</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
@@ -258,8 +300,8 @@ For this kernel we needed a loop to iterate over the <code class="docutils liter
 </div>
 </div>
 <p>As a last step we measured the performance of our generated code, resulting in the following results:</p>
-<div class="literal-block-wrapper docutils container" id="id4">
-<div class="code-block-caption"><span class="caption-text">GFLOPs results of the <code class="docutils literal notranslate"><span class="pre">matmul_16_6_1</span></code> and <code class="docutils literal notranslate"><span class="pre">matmul_16_6_k</span></code> kernels</span><a class="headerlink" href="#id4" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text">GFLOPs results of the <code class="docutils literal notranslate"><span class="pre">matmul_16_6_1</span></code> and <code class="docutils literal notranslate"><span class="pre">matmul_16_6_k</span></code> kernels</span><a class="headerlink" href="#id5" title="Link to this code"></a></div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Benchmarking Matmul_16_6_1 throughput ...
 -----------------------------------------------
 Measuring throughput for Instruction
@@ -287,7 +329,7 @@ However, for the <code class="docutils literal notranslate"><span class="pre">ma
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="03_neon.html" class="btn btn-neutral float-left" title="3. Neon" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../api/mini_jit.html" class="btn btn-neutral float-right" title="mini_jit" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../api/namespaces/mini_jit.html" class="btn btn-neutral float-right" title="mini_jit" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

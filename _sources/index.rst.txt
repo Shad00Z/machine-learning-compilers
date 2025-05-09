@@ -21,4 +21,4 @@ Machine Learning Compilers
    :caption: API
    :glob:
 
-   api/*
+   api/namespaces/*
