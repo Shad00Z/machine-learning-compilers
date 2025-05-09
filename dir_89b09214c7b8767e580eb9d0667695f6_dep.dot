@@ -1,0 +1,18 @@
+digraph "/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions"
+{
+ // LATEX_PDF_SIZE
+  bgcolor="transparent";
+  edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
+  node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
+  compound=true
+  subgraph clusterdir_68267d1309a1af8e8297ef4c3efbcdba {
+    graph [ bgcolor="#edf0f7", pencolor="grey25", label="src", fontname=Helvetica,fontsize=10 style="filled,dashed", URL="dir_68267d1309a1af8e8297ef4c3efbcdba.html",tooltip=""]
+  subgraph clusterdir_89b09214c7b8767e580eb9d0667695f6 {
+    graph [ bgcolor="#edf0f7", pencolor="grey25", label="", fontname=Helvetica,fontsize=10 style="filled,bold", URL="dir_89b09214c7b8767e580eb9d0667695f6.html",tooltip=""]
+    dir_89b09214c7b8767e580eb9d0667695f6 [shape=plaintext, label="submissions"];
+  dir_4943c33995f7629dbe8d56e3fd3c66f7 [label="01_assembly", fillcolor="#a2b4d6", color="grey25", style="filled", URL="dir_4943c33995f7629dbe8d56e3fd3c66f7.html",tooltip=""];
+  dir_8f3814d38748b7c73405fc75327b8ba3 [label="02_base", fillcolor="#a2b4d6", color="grey25", style="filled", URL="dir_8f3814d38748b7c73405fc75327b8ba3.html",tooltip=""];
+  dir_b2c563f7bf427f5a0c17c9a95cb1f2fd [label="03_neon", fillcolor="#a2b4d6", color="grey25", style="filled", URL="dir_b2c563f7bf427f5a0c17c9a95cb1f2fd.html",tooltip=""];
+  }
+  }
+}

@@ -9,6 +9,8 @@
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+      <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
@@ -18,6 +20,7 @@
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="_static/copybutton.js?v=f281be69"></script>
+      <script src="_static/design-tabs.js?v=f930bc37"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="#" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -49,10 +52,14 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Submissions</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="submissions/01_assembly.html">Assembly</a></li>
-<li class="toctree-l1"><a class="reference internal" href="submissions/02_base.html">Base</a></li>
-<li class="toctree-l1"><a class="reference internal" href="submissions/03_neon.html">Neon</a></li>
-<li class="toctree-l1"><a class="reference internal" href="submissions/04_code_gen.html">Code Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="submissions/01_assembly.html">1. Assembly</a></li>
+<li class="toctree-l1"><a class="reference internal" href="submissions/02_base.html">2. Base</a></li>
+<li class="toctree-l1"><a class="reference internal" href="submissions/03_neon.html">3. Neon</a></li>
+<li class="toctree-l1"><a class="reference internal" href="submissions/04_code_gen.html">4. Code Generation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/mini_jit.html">mini_jit</a></li>
 </ul>
 
         </div>
@@ -82,8 +89,363 @@
 <h1 id="index">Index</h1>
 
 <div class="genindex-jumpbox">
+ <a href="#M"><strong>M</strong></a>
  
 </div>
+<h2 id="M">M</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit6BrgemmE">mini_jit::mini_jit::Brgemm (C++ class)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit6Brgemm7dtype_tE">mini_jit::mini_jit::Brgemm::dtype_t (C++ enum)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit6Brgemm7dtype_t4fp32E">mini_jit::mini_jit::Brgemm::dtype_t::fp32 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit6Brgemm7dtype_t4fp64E">mini_jit::mini_jit::Brgemm::dtype_t::fp64 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit6Brgemm7error_tE">mini_jit::mini_jit::Brgemm::error_t (C++ enum)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit6Brgemm7error_t7successE">mini_jit::mini_jit::Brgemm::error_t::success (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit6Brgemm7error_t23wrong_batch_reduce_sizeE">mini_jit::mini_jit::Brgemm::error_t::wrong_batch_reduce_size (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit6Brgemm7error_t17wrong_k_dimensionE">mini_jit::mini_jit::Brgemm::error_t::wrong_k_dimension (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit6Brgemm7error_t17wrong_m_dimensionE">mini_jit::mini_jit::Brgemm::error_t::wrong_m_dimension (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit6Brgemm7error_t21wrong_matrix_datatypeE">mini_jit::mini_jit::Brgemm::error_t::wrong_matrix_datatype (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit6Brgemm7error_t28wrong_matrix_ordering_formatE">mini_jit::mini_jit::Brgemm::error_t::wrong_matrix_ordering_format (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit6Brgemm7error_t17wrong_n_dimensionE">mini_jit::mini_jit::Brgemm::error_t::wrong_n_dimension (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit6Brgemm8generateE8uint32_t8uint32_t8uint32_t8uint32_t8uint32_t8uint32_t8uint32_t7dtype_t">mini_jit::mini_jit::Brgemm::generate (C++ function)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4NK8mini_jit8mini_jit6Brgemm10get_kernelEv">mini_jit::mini_jit::Brgemm::get_kernel (C++ function)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit6Brgemm8kernel_tE">mini_jit::mini_jit::Brgemm::kernel_t (C++ type)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit6Brgemm8m_kernelE">mini_jit::mini_jit::Brgemm::m_kernel (C++ member)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGenE">mini_jit::mini_jit::InstGen (C++ class)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen13add_immediateE5gpr_t5gpr_t8uint32_t8uint32_t">mini_jit::mini_jit::InstGen::add_immediate (C++ function)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen15add_shifted_regE5gpr_t5gpr_t5gpr_t8uint32_t8uint32_t">mini_jit::mini_jit::InstGen::add_shifted_reg (C++ function)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen10arr_spec_tE">mini_jit::mini_jit::InstGen::arr_spec_t (C++ enum)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen10arr_spec_t2d2E">mini_jit::mini_jit::InstGen::arr_spec_t::d2 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen10arr_spec_t2s2E">mini_jit::mini_jit::InstGen::arr_spec_t::s2 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen10arr_spec_t2s4E">mini_jit::mini_jit::InstGen::arr_spec_t::s4 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen12base_br_cbnzE5gpr_t7int32_t">mini_jit::mini_jit::InstGen::base_br_cbnz (C++ function)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen13base_ldp_postE5gpr_t5gpr_t5gpr_t7int32_t">mini_jit::mini_jit::InstGen::base_ldp_post (C++ function)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen12base_ldp_preE5gpr_t5gpr_t5gpr_t7int32_t">mini_jit::mini_jit::InstGen::base_ldp_pre (C++ function)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen13base_ldp_soffE5gpr_t5gpr_t5gpr_t7int32_t">mini_jit::mini_jit::InstGen::base_ldp_soff (C++ function)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen17base_ldr_imm_uoffE5gpr_t5gpr_t8uint32_t">mini_jit::mini_jit::InstGen::base_ldr_imm_uoff (C++ function)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen20base_orr_shifted_regE5gpr_t5gpr_t5gpr_t8uint32_t8uint32_t">mini_jit::mini_jit::InstGen::base_orr_shifted_reg (C++ function)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen13base_stp_postE5gpr_t5gpr_t5gpr_t7int32_t">mini_jit::mini_jit::InstGen::base_stp_post (C++ function)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen12base_stp_preE5gpr_t5gpr_t5gpr_t7int32_t">mini_jit::mini_jit::InstGen::base_stp_pre (C++ function)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen13base_stp_soffE5gpr_t5gpr_t5gpr_t7int32_t">mini_jit::mini_jit::InstGen::base_stp_soff (C++ function)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen17base_str_imm_uoffE5gpr_t5gpr_t8uint32_t">mini_jit::mini_jit::InstGen::base_str_imm_uoff (C++ function)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_tE">mini_jit::mini_jit::InstGen::gpr_t (C++ enum)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t2spE">mini_jit::mini_jit::InstGen::gpr_t::sp (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t2w0E">mini_jit::mini_jit::InstGen::gpr_t::w0 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t2w1E">mini_jit::mini_jit::InstGen::gpr_t::w1 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t3w10E">mini_jit::mini_jit::InstGen::gpr_t::w10 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t3w11E">mini_jit::mini_jit::InstGen::gpr_t::w11 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t3w12E">mini_jit::mini_jit::InstGen::gpr_t::w12 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t3w13E">mini_jit::mini_jit::InstGen::gpr_t::w13 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t3w14E">mini_jit::mini_jit::InstGen::gpr_t::w14 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t3w15E">mini_jit::mini_jit::InstGen::gpr_t::w15 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t3w16E">mini_jit::mini_jit::InstGen::gpr_t::w16 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t3w17E">mini_jit::mini_jit::InstGen::gpr_t::w17 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t3w18E">mini_jit::mini_jit::InstGen::gpr_t::w18 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t3w19E">mini_jit::mini_jit::InstGen::gpr_t::w19 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t2w2E">mini_jit::mini_jit::InstGen::gpr_t::w2 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t3w20E">mini_jit::mini_jit::InstGen::gpr_t::w20 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t3w21E">mini_jit::mini_jit::InstGen::gpr_t::w21 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t3w22E">mini_jit::mini_jit::InstGen::gpr_t::w22 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t3w23E">mini_jit::mini_jit::InstGen::gpr_t::w23 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t3w24E">mini_jit::mini_jit::InstGen::gpr_t::w24 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t3w25E">mini_jit::mini_jit::InstGen::gpr_t::w25 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t3w26E">mini_jit::mini_jit::InstGen::gpr_t::w26 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t3w27E">mini_jit::mini_jit::InstGen::gpr_t::w27 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t3w28E">mini_jit::mini_jit::InstGen::gpr_t::w28 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t3w29E">mini_jit::mini_jit::InstGen::gpr_t::w29 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t2w3E">mini_jit::mini_jit::InstGen::gpr_t::w3 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t3w30E">mini_jit::mini_jit::InstGen::gpr_t::w30 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t2w4E">mini_jit::mini_jit::InstGen::gpr_t::w4 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t2w5E">mini_jit::mini_jit::InstGen::gpr_t::w5 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t2w6E">mini_jit::mini_jit::InstGen::gpr_t::w6 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t2w7E">mini_jit::mini_jit::InstGen::gpr_t::w7 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t2w8E">mini_jit::mini_jit::InstGen::gpr_t::w8 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t2w9E">mini_jit::mini_jit::InstGen::gpr_t::w9 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t3wzrE">mini_jit::mini_jit::InstGen::gpr_t::wzr (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t2x0E">mini_jit::mini_jit::InstGen::gpr_t::x0 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t2x1E">mini_jit::mini_jit::InstGen::gpr_t::x1 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t3x10E">mini_jit::mini_jit::InstGen::gpr_t::x10 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t3x11E">mini_jit::mini_jit::InstGen::gpr_t::x11 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t3x12E">mini_jit::mini_jit::InstGen::gpr_t::x12 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t3x13E">mini_jit::mini_jit::InstGen::gpr_t::x13 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t3x14E">mini_jit::mini_jit::InstGen::gpr_t::x14 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t3x15E">mini_jit::mini_jit::InstGen::gpr_t::x15 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t3x16E">mini_jit::mini_jit::InstGen::gpr_t::x16 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t3x17E">mini_jit::mini_jit::InstGen::gpr_t::x17 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t3x18E">mini_jit::mini_jit::InstGen::gpr_t::x18 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t3x19E">mini_jit::mini_jit::InstGen::gpr_t::x19 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t2x2E">mini_jit::mini_jit::InstGen::gpr_t::x2 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t3x20E">mini_jit::mini_jit::InstGen::gpr_t::x20 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t3x21E">mini_jit::mini_jit::InstGen::gpr_t::x21 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t3x22E">mini_jit::mini_jit::InstGen::gpr_t::x22 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t3x23E">mini_jit::mini_jit::InstGen::gpr_t::x23 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t3x24E">mini_jit::mini_jit::InstGen::gpr_t::x24 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t3x25E">mini_jit::mini_jit::InstGen::gpr_t::x25 (C++ enumerator)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t3x26E">mini_jit::mini_jit::InstGen::gpr_t::x26 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t3x27E">mini_jit::mini_jit::InstGen::gpr_t::x27 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t3x28E">mini_jit::mini_jit::InstGen::gpr_t::x28 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t3x29E">mini_jit::mini_jit::InstGen::gpr_t::x29 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t2x3E">mini_jit::mini_jit::InstGen::gpr_t::x3 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t3x30E">mini_jit::mini_jit::InstGen::gpr_t::x30 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t2x4E">mini_jit::mini_jit::InstGen::gpr_t::x4 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t2x5E">mini_jit::mini_jit::InstGen::gpr_t::x5 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t2x6E">mini_jit::mini_jit::InstGen::gpr_t::x6 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t2x7E">mini_jit::mini_jit::InstGen::gpr_t::x7 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t2x8E">mini_jit::mini_jit::InstGen::gpr_t::x8 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t2x9E">mini_jit::mini_jit::InstGen::gpr_t::x9 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen5gpr_t3xzrE">mini_jit::mini_jit::InstGen::gpr_t::xzr (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen8ldp_helpE8uint32_t8uint32_t8uint32_t7int32_t8uint32_t8uint32_t">mini_jit::mini_jit::InstGen::ldp_help (C++ function)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen8ldr_helpE8uint32_t8uint32_t7int32_t8uint32_t8uint32_t">mini_jit::mini_jit::InstGen::ldr_help (C++ function)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen7mov_immE5gpr_t8uint64_t">mini_jit::mini_jit::InstGen::mov_imm (C++ function)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen7mov_regE5gpr_t5gpr_t">mini_jit::mini_jit::InstGen::mov_reg (C++ function)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen6mov_spE5gpr_t5gpr_t">mini_jit::mini_jit::InstGen::mov_sp (C++ function)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen4movzE5gpr_t8uint16_t8uint32_t">mini_jit::mini_jit::InstGen::movz (C++ function)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen7mul_regE5gpr_t5gpr_t5gpr_t">mini_jit::mini_jit::InstGen::mul_reg (C++ function)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen19neon_dp_fmla_vectorE9simd_fp_t9simd_fp_t9simd_fp_t10arr_spec_t">mini_jit::mini_jit::InstGen::neon_dp_fmla_vector (C++ function)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen13neon_ldp_postE9simd_fp_t9simd_fp_t5gpr_t7int32_t16neon_size_spec_t">mini_jit::mini_jit::InstGen::neon_ldp_post (C++ function)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen12neon_ldp_preE9simd_fp_t9simd_fp_t5gpr_t7int32_t16neon_size_spec_t">mini_jit::mini_jit::InstGen::neon_ldp_pre (C++ function)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen13neon_ldp_soffE9simd_fp_t9simd_fp_t5gpr_t7int32_t16neon_size_spec_t">mini_jit::mini_jit::InstGen::neon_ldp_soff (C++ function)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen17neon_ldr_imm_uoffE9simd_fp_t5gpr_t8uint32_t16neon_size_spec_t">mini_jit::mini_jit::InstGen::neon_ldr_imm_uoff (C++ function)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen16neon_size_spec_tE">mini_jit::mini_jit::InstGen::neon_size_spec_t (C++ enum)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen16neon_size_spec_t1dE">mini_jit::mini_jit::InstGen::neon_size_spec_t::d (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen16neon_size_spec_t1qE">mini_jit::mini_jit::InstGen::neon_size_spec_t::q (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen16neon_size_spec_t1sE">mini_jit::mini_jit::InstGen::neon_size_spec_t::s (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen13neon_stp_postE9simd_fp_t9simd_fp_t5gpr_t7int32_t16neon_size_spec_t">mini_jit::mini_jit::InstGen::neon_stp_post (C++ function)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen12neon_stp_preE9simd_fp_t9simd_fp_t5gpr_t7int32_t16neon_size_spec_t">mini_jit::mini_jit::InstGen::neon_stp_pre (C++ function)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen13neon_stp_soffE9simd_fp_t9simd_fp_t5gpr_t7int32_t16neon_size_spec_t">mini_jit::mini_jit::InstGen::neon_stp_soff (C++ function)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen27neon_vec_dp_fmla_by_elementE9simd_fp_t9simd_fp_t9simd_fp_t10arr_spec_t">mini_jit::mini_jit::InstGen::neon_vec_dp_fmla_by_element (C++ function)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen3retEv">mini_jit::mini_jit::InstGen::ret (C++ function)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen9simd_fp_tE">mini_jit::mini_jit::InstGen::simd_fp_t (C++ enum)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen9simd_fp_t2v0E">mini_jit::mini_jit::InstGen::simd_fp_t::v0 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen9simd_fp_t2v1E">mini_jit::mini_jit::InstGen::simd_fp_t::v1 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen9simd_fp_t3v10E">mini_jit::mini_jit::InstGen::simd_fp_t::v10 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen9simd_fp_t3v11E">mini_jit::mini_jit::InstGen::simd_fp_t::v11 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen9simd_fp_t3v12E">mini_jit::mini_jit::InstGen::simd_fp_t::v12 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen9simd_fp_t3v13E">mini_jit::mini_jit::InstGen::simd_fp_t::v13 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen9simd_fp_t3v14E">mini_jit::mini_jit::InstGen::simd_fp_t::v14 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen9simd_fp_t3v15E">mini_jit::mini_jit::InstGen::simd_fp_t::v15 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen9simd_fp_t3v16E">mini_jit::mini_jit::InstGen::simd_fp_t::v16 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen9simd_fp_t3v17E">mini_jit::mini_jit::InstGen::simd_fp_t::v17 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen9simd_fp_t3v18E">mini_jit::mini_jit::InstGen::simd_fp_t::v18 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen9simd_fp_t3v19E">mini_jit::mini_jit::InstGen::simd_fp_t::v19 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen9simd_fp_t2v2E">mini_jit::mini_jit::InstGen::simd_fp_t::v2 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen9simd_fp_t3v20E">mini_jit::mini_jit::InstGen::simd_fp_t::v20 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen9simd_fp_t3v21E">mini_jit::mini_jit::InstGen::simd_fp_t::v21 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen9simd_fp_t3v22E">mini_jit::mini_jit::InstGen::simd_fp_t::v22 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen9simd_fp_t3v23E">mini_jit::mini_jit::InstGen::simd_fp_t::v23 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen9simd_fp_t3v24E">mini_jit::mini_jit::InstGen::simd_fp_t::v24 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen9simd_fp_t3v25E">mini_jit::mini_jit::InstGen::simd_fp_t::v25 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen9simd_fp_t3v26E">mini_jit::mini_jit::InstGen::simd_fp_t::v26 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen9simd_fp_t3v27E">mini_jit::mini_jit::InstGen::simd_fp_t::v27 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen9simd_fp_t3v28E">mini_jit::mini_jit::InstGen::simd_fp_t::v28 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen9simd_fp_t3v29E">mini_jit::mini_jit::InstGen::simd_fp_t::v29 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen9simd_fp_t2v3E">mini_jit::mini_jit::InstGen::simd_fp_t::v3 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen9simd_fp_t3v30E">mini_jit::mini_jit::InstGen::simd_fp_t::v30 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen9simd_fp_t3v31E">mini_jit::mini_jit::InstGen::simd_fp_t::v31 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen9simd_fp_t2v4E">mini_jit::mini_jit::InstGen::simd_fp_t::v4 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen9simd_fp_t2v5E">mini_jit::mini_jit::InstGen::simd_fp_t::v5 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen9simd_fp_t2v6E">mini_jit::mini_jit::InstGen::simd_fp_t::v6 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen9simd_fp_t2v7E">mini_jit::mini_jit::InstGen::simd_fp_t::v7 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen9simd_fp_t2v8E">mini_jit::mini_jit::InstGen::simd_fp_t::v8 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen9simd_fp_t2v9E">mini_jit::mini_jit::InstGen::simd_fp_t::v9 (C++ enumerator)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen8stp_helpE8uint32_t8uint32_t8uint32_t7int32_t8uint32_t8uint32_t">mini_jit::mini_jit::InstGen::stp_help (C++ function)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen13sub_immediateE5gpr_t5gpr_t8uint32_t8uint32_t">mini_jit::mini_jit::InstGen::sub_immediate (C++ function)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen13to_string_binE8uint32_t">mini_jit::mini_jit::InstGen::to_string_bin (C++ function)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit7InstGen13to_string_hexE8uint32_t">mini_jit::mini_jit::InstGen::to_string_hex (C++ function)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit6KernelE">mini_jit::mini_jit::Kernel (C++ class)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit6Kernel9add_instrE8uint32_t">mini_jit::mini_jit::Kernel::add_instr (C++ function)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4NK8mini_jit8mini_jit6Kernel10alloc_mmapENSt6size_tE">mini_jit::mini_jit::Kernel::alloc_mmap (C++ function)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4NK8mini_jit8mini_jit6Kernel10get_kernelEv">mini_jit::mini_jit::Kernel::get_kernel (C++ function)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4NK8mini_jit8mini_jit6Kernel8get_sizeEv">mini_jit::mini_jit::Kernel::get_size (C++ function)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit6Kernel6KernelERK6Kernel">mini_jit::mini_jit::Kernel::Kernel (C++ function)</a>, <a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit6Kernel6KernelERR6Kernel">[1]</a>, <a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit6Kernel6KernelEv">[2]</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit6Kernel8m_bufferE">mini_jit::mini_jit::Kernel::m_buffer (C++ member)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit6Kernel8m_kernelE">mini_jit::mini_jit::Kernel::m_kernel (C++ member)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit6Kernel12m_size_allocE">mini_jit::mini_jit::Kernel::m_size_alloc (C++ member)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit6KernelaSERK6Kernel">mini_jit::mini_jit::Kernel::operator= (C++ function)</a>, <a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit6KernelaSERR6Kernel">[1]</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit6Kernel14release_memoryEv">mini_jit::mini_jit::Kernel::release_memory (C++ function)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4NK8mini_jit8mini_jit6Kernel12release_mmapENSt6size_tEPv">mini_jit::mini_jit::Kernel::release_mmap (C++ function)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4NK8mini_jit8mini_jit6Kernel8set_execENSt6size_tEPv">mini_jit::mini_jit::Kernel::set_exec (C++ function)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit6Kernel10set_kernelEv">mini_jit::mini_jit::Kernel::set_kernel (C++ function)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4NK8mini_jit8mini_jit6Kernel5writeEPKc">mini_jit::mini_jit::Kernel::write (C++ function)</a>
+</li>
+      <li><a href="api/mini_jit.html#_CPPv4N8mini_jit8mini_jit6KernelD0Ev">mini_jit::mini_jit::Kernel::~Kernel (C++ function)</a>
+</li>
+  </ul></td>
+</tr></table>
+
 
 
            </div>

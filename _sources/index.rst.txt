@@ -14,3 +14,11 @@ Machine Learning Compilers
    :glob:
 
    submissions/*
+
+
+.. toctree::
+   :maxdepth: 2
+   :caption: API
+   :glob:
+
+   api/*

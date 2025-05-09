@@ -6,10 +6,12 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Base &mdash; Machine Learning Compilers  documentation</title>
+  <title>2. Base &mdash; Machine Learning Compilers  documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
@@ -19,12 +21,13 @@
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../_static/copybutton.js?v=f281be69"></script>
+      <script src="../_static/design-tabs.js?v=f930bc37"></script>
       <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Neon" href="03_neon.html" />
-    <link rel="prev" title="Assembly" href="01_assembly.html" /> 
+    <link rel="next" title="3. Neon" href="03_neon.html" />
+    <link rel="prev" title="1. Assembly" href="01_assembly.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -53,22 +56,26 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Submissions</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="01_assembly.html">Assembly</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Base</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#copying-data">Copying Data</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#task-1-2">Task 1 &amp; 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="01_assembly.html">1. Assembly</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">2. Base</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#copying-data">2.1 Copying Data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#task-2-1-1-2-1-2">Task 2.1.1 &amp; 2.1.2</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#instruction-throughput-and-latency">Instruction Throughput and Latency</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#throughput">Throughput</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#latency">Latency</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#results">Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#instruction-throughput-and-latency">2.2 Instruction Throughput and Latency</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#throughput">2.2.1 Throughput</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#latency">2.2.2 Latency</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#results">2.2.3 Results</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="03_neon.html">Neon</a></li>
-<li class="toctree-l1"><a class="reference internal" href="04_code_gen.html">Code Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03_neon.html">3. Neon</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04_code_gen.html">4. Code Generation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/mini_jit.html">mini_jit</a></li>
 </ul>
 
         </div>
@@ -85,7 +92,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Base</li>
+      <li class="breadcrumb-item active">2. Base</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/submissions/02_base.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -96,9 +103,9 @@
            <div itemprop="articleBody">
              
   <section id="base">
-<h1>Base<a class="headerlink" href="#base" title="Link to this heading"></a></h1>
+<h1>2. Base<a class="headerlink" href="#base" title="Link to this heading"></a></h1>
 <section id="copying-data">
-<h2>Copying Data<a class="headerlink" href="#copying-data" title="Link to this heading"></a></h2>
+<h2>2.1 Copying Data<a class="headerlink" href="#copying-data" title="Link to this heading"></a></h2>
 <p>For this task, we have been given a C++ driver that makes calls to C and assembly functions. The first C function copies 7 32-bit integers from an array to another. The second C function does the same, but with a variable number of integers which is passed as the first argument. The two assembly functions are supposed to have the same functionality as the C functions, however they were not implemented yet.</p>
 <p>For context, the C functions are as follows:</p>
 <div class="literal-block-wrapper docutils container" id="id1">
@@ -134,8 +141,8 @@
 </pre></div>
 </div>
 </div>
-<section id="task-1-2">
-<h3>Task 1 &amp; 2<a class="headerlink" href="#task-1-2" title="Link to this heading"></a></h3>
+<section id="task-2-1-1-2-1-2">
+<h3>Task 2.1.1 &amp; 2.1.2<a class="headerlink" href="#task-2-1-1-2-1-2" title="Link to this heading"></a></h3>
 <p>Given the C functions, our task is to implement the assembly functions that match the C functions in functionality by using only base instructions. For the first function, we simply load and store the 7 32-bit integers from the source to the destination using the <cite>ldr</cite> and <cite>str</cite> instructions. We use the given addresses and an immediate offset that is incremented by 4 for each 32-bit integer (4 bytes = 32 bit).</p>
 <p>For the second function, we need to use a loop to copy the values from the source to the destination. We use two registers to keep track of number of elements copied and the current byte offset. The loop then starts by copying the first 32-bit integer, and then increase the number of elements copied by 1 and the byte offset by 4 (since each integer is 4 bytes). Next, we use the <cite>cmp</cite> instruction to check if we have copied the specified number of integers. If not, we go back to the beginning of the loop and repeat the process. If we have copied the specified number of integers, we exit the loop and return from the function.</p>
 <div class="literal-block-wrapper docutils container" id="id2">
@@ -234,11 +241,11 @@ copy_asm_1:<span class="w"> </span>copy<span class="w"> </span>succeeded
 </section>
 </section>
 <section id="instruction-throughput-and-latency">
-<h2>Instruction Throughput and Latency<a class="headerlink" href="#instruction-throughput-and-latency" title="Link to this heading"></a></h2>
+<h2>2.2 Instruction Throughput and Latency<a class="headerlink" href="#instruction-throughput-and-latency" title="Link to this heading"></a></h2>
 <p>For this task, we were supposed to write a micro-benchmarking script to measure the
 throughput and the latency of the ADD (shifted register) and the MUL instruction.</p>
 <section id="throughput">
-<h3>Throughput<a class="headerlink" href="#throughput" title="Link to this heading"></a></h3>
+<h3>2.2.1 Throughput<a class="headerlink" href="#throughput" title="Link to this heading"></a></h3>
 <p>To measure the <strong>throughput</strong> of the instructions we have developed an assembly function
 for each of the two instructions. The idea for measuring the throughput is that for
 every consecutive add instructions there shouldn’t be any dependencies on the add
@@ -321,7 +328,7 @@ and the MUL instruction was:</p>
 </div>
 </section>
 <section id="latency">
-<h3>Latency<a class="headerlink" href="#latency" title="Link to this heading"></a></h3>
+<h3>2.2.2 Latency<a class="headerlink" href="#latency" title="Link to this heading"></a></h3>
 <p>To measure the <strong>latency</strong> of the two instructions we have developed two more assembly
 functions. The idea for measuring the latency is to have consecutive instructions that
 dependent on the result from the last executed instruction. That meant we had to slightly
@@ -363,7 +370,7 @@ ADD (shifted register) and the MUL instruction:</p>
 </div>
 </section>
 <section id="results">
-<h3>Results<a class="headerlink" href="#results" title="Link to this heading"></a></h3>
+<h3>2.2.3 Results<a class="headerlink" href="#results" title="Link to this heading"></a></h3>
 <p>To test our assembly functions we implemented a microbenchmark in C++ that would
 1. call these functions several times
 2. measure the time it took to complete these computations
@@ -468,8 +475,8 @@ is slightly higher than expected.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="01_assembly.html" class="btn btn-neutral float-left" title="Assembly" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="03_neon.html" class="btn btn-neutral float-right" title="Neon" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="01_assembly.html" class="btn btn-neutral float-left" title="1. Assembly" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="03_neon.html" class="btn btn-neutral float-right" title="3. Neon" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

@@ -6,10 +6,12 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Neon &mdash; Machine Learning Compilers  documentation</title>
+  <title>3. Neon &mdash; Machine Learning Compilers  documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
@@ -19,12 +21,13 @@
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../_static/copybutton.js?v=f281be69"></script>
+      <script src="../_static/design-tabs.js?v=f930bc37"></script>
       <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Code Generation" href="04_code_gen.html" />
-    <link rel="prev" title="Base" href="02_base.html" /> 
+    <link rel="next" title="4. Code Generation" href="04_code_gen.html" />
+    <link rel="prev" title="2. Base" href="02_base.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -53,33 +56,37 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Submissions</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="01_assembly.html">Assembly</a></li>
-<li class="toctree-l1"><a class="reference internal" href="02_base.html">Base</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Neon</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#execution-throughput-and-latency">Execution Throughput and Latency</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#throughput">Throughput</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#latency">Latency</a></li>
+<li class="toctree-l1"><a class="reference internal" href="01_assembly.html">1. Assembly</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02_base.html">2. Base</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">3. Neon</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#execution-throughput-and-latency">3.1 Execution Throughput and Latency</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#throughput">3.1.1 Throughput</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#latency">3.1.2 Latency</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#microkernel">Microkernel</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#neon-microkernel">Neon Microkernel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#testing-and-benchmarking">Testing and Benchmarking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#microkernel">3.2 Microkernel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#neon-microkernel">3.2.1 Neon Microkernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#testing-and-benchmarking">3.2.2 Testing and Benchmarking</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#loops">Loops</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id1">Testing and Benchmarking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#loops">3.3 Loops</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">3.3.1 Testing and Benchmarking</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#simd-lanes">SIMD Lanes</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#matmul-14-6-64">Matmul_14_6_64</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#matmul-15-6-64">Matmul_15_6_64</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#generic-approach">Generic Approach</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#simd-lanes">3.4 SIMD Lanes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#matmul-14-6-64">3.4.1 Matmul_14_6_64</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#matmul-15-6-64">3.4.2 Matmul_15_6_64</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#generic-approach">3.4.3 Generic Approach</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#accumulator-block-shapes">Accumulator Block Shapes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#accumulator-block-shapes">3.5 Accumulator Block Shapes</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="04_code_gen.html">Code Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04_code_gen.html">4. Code Generation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/mini_jit.html">mini_jit</a></li>
 </ul>
 
         </div>
@@ -96,7 +103,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Neon</li>
+      <li class="breadcrumb-item active">3. Neon</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/submissions/03_neon.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -107,9 +114,9 @@
            <div itemprop="articleBody">
              
   <section id="neon">
-<h1>Neon<a class="headerlink" href="#neon" title="Link to this heading"></a></h1>
+<h1>3. Neon<a class="headerlink" href="#neon" title="Link to this heading"></a></h1>
 <section id="execution-throughput-and-latency">
-<h2>Execution Throughput and Latency<a class="headerlink" href="#execution-throughput-and-latency" title="Link to this heading"></a></h2>
+<h2>3.1 Execution Throughput and Latency<a class="headerlink" href="#execution-throughput-and-latency" title="Link to this heading"></a></h2>
 <p>For this task, we were benchmarking the execution throughput and latency for FP32 neon instructions.
 Specifically, we were looking at:</p>
 <ol class="arabic simple">
@@ -117,7 +124,7 @@ Specifically, we were looking at:</p>
 <li><p><a class="reference external" href="https://developer.arm.com/documentation/ddi0602/2025-03/SIMD-FP-Instructions/FMADD--Floating-point-fused-multiply-add--scalar--?lang=en">FMADD (scalar)</a> instruction</p></li>
 </ol>
 <section id="throughput">
-<h3>Throughput<a class="headerlink" href="#throughput" title="Link to this heading"></a></h3>
+<h3>3.1.1 Throughput<a class="headerlink" href="#throughput" title="Link to this heading"></a></h3>
 <p>As a first step we were comparing the throughput of:</p>
 <ol class="arabic simple">
 <li><p>FMLA (vector) with arrangement specifier <code class="docutils literal notranslate"><span class="pre">4S</span></code></p></li>
@@ -346,7 +353,7 @@ floating point operations than the FMADD (scalar) instruction.</p>
 <p>This shows that leveraging data-level parallelism (vector-based) can yield a much higher throughput, than using only scalar operations.</p>
 </section>
 <section id="latency">
-<h3>Latency<a class="headerlink" href="#latency" title="Link to this heading"></a></h3>
+<h3>3.1.2 Latency<a class="headerlink" href="#latency" title="Link to this heading"></a></h3>
 <p>To measure the execution latency for FMLA (vector) instructions with arrangement specifier <code class="docutils literal notranslate"><span class="pre">4S</span></code>, we examined two scenarios:</p>
 <ol class="arabic simple">
 <li><p>Each instruction depends on the destination register and one of the source register of the previous instruction</p></li>
@@ -398,7 +405,7 @@ Estimated GOPS:   11.6291 GFLOPs/sec
 </section>
 </section>
 <section id="microkernel">
-<h2>Microkernel<a class="headerlink" href="#microkernel" title="Link to this heading"></a></h2>
+<h2>3.2 Microkernel<a class="headerlink" href="#microkernel" title="Link to this heading"></a></h2>
 <p>For the second task we were implementing a microkernel to execute a matrix multiplication for matrices with the dimensions:</p>
 <ol class="arabic simple">
 <li><p>Matrix A: 16 x 1</p></li>
@@ -406,7 +413,7 @@ Estimated GOPS:   11.6291 GFLOPs/sec
 <li><p>Matrix C: 16 x 6</p></li>
 </ol>
 <section id="neon-microkernel">
-<h3>Neon Microkernel<a class="headerlink" href="#neon-microkernel" title="Link to this heading"></a></h3>
+<h3>3.2.1 Neon Microkernel<a class="headerlink" href="#neon-microkernel" title="Link to this heading"></a></h3>
 <p>We developed three different versions of this microkernel in order to optimize its performance.</p>
 <p>In the <strong>first version</strong> we:</p>
 <ol class="arabic simple">
@@ -428,7 +435,7 @@ Estimated GOPS:   11.6291 GFLOPs/sec
 </ol>
 </section>
 <section id="testing-and-benchmarking">
-<h3>Testing and Benchmarking<a class="headerlink" href="#testing-and-benchmarking" title="Link to this heading"></a></h3>
+<h3>3.2.2 Testing and Benchmarking<a class="headerlink" href="#testing-and-benchmarking" title="Link to this heading"></a></h3>
 <p>To test and compare our versions with one another we:</p>
 <ol class="arabic simple">
 <li><p>implemented a microkernel that would give us a visual indication of the results</p></li>
@@ -482,7 +489,7 @@ about <code class="docutils literal notranslate"><span class="pre">1.7</span></c
 </section>
 </section>
 <section id="loops">
-<h2>Loops<a class="headerlink" href="#loops" title="Link to this heading"></a></h2>
+<h2>3.3 Loops<a class="headerlink" href="#loops" title="Link to this heading"></a></h2>
 <p>In this task, we had to add loops to the matrix multiplication kernel which we wrote in the previous task. The goal was to enable the 16x6x1 kernel to be used for larger matrices.</p>
 <p>The first step was to implement a loop in the K dimension, resulting in a 16x6x64 kernel. The loading and storing of matrix C was left unchanged. The relevant code is shown below:</p>
 <div class="literal-block-wrapper docutils container" id="id14">
@@ -706,7 +713,7 @@ about <code class="docutils literal notranslate"><span class="pre">1.7</span></c
 </div>
 <p>Since we are extending the kernel from 6 to 48 in the N dimension, we need to divide the N dimension into 8 blocks of 6 elements. This means that the loop will have 8 iterations. For each N loop, it is important to first reset the pointer of A to the original address. After each iteration, we need to move the pointers of B and C to the next block. To do this, we jump by elements in the N dimension, that is specifically 6 columns of B and C. We do this by adding 6 times the stride of B and C to the pointers.</p>
 <section id="id1">
-<h3>Testing and Benchmarking<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<h3>3.3.1 Testing and Benchmarking<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
 <p>For all three kernels we have written unit tests. To execute the tests, one first needs to compile the code by invoking <code class="docutils literal notranslate"><span class="pre">make</span></code> from within the <code class="docutils literal notranslate"><span class="pre">src/submissions/03_neon/03_loops</span></code> directory. This will create an executable that can be run with <code class="docutils literal notranslate"><span class="pre">./build/test</span></code>.</p>
 <p>We also calculated the GFLOPs for each of these matrix multiplications.
 To calculate them we followed the simple formula:</p>
@@ -745,7 +752,7 @@ Estimated GFLOPS:   131.297 GFLOPS/sec
 </section>
 </section>
 <section id="simd-lanes">
-<h2>SIMD Lanes<a class="headerlink" href="#simd-lanes" title="Link to this heading"></a></h2>
+<h2>3.4 SIMD Lanes<a class="headerlink" href="#simd-lanes" title="Link to this heading"></a></h2>
 <p>For this task we were supposed to create two kernels, that should be able
 to function, even if we don’t have a multiple of 4 for the <code class="docutils literal notranslate"><span class="pre">M</span></code> dimension.
 We created several versions for both:</p>
@@ -754,7 +761,7 @@ We created several versions for both:</p>
 <li><p>the <code class="docutils literal notranslate"><span class="pre">M=15</span></code>, <code class="docutils literal notranslate"><span class="pre">N=6</span></code> and <code class="docutils literal notranslate"><span class="pre">K=64</span></code></p></li>
 </ol>
 <section id="matmul-14-6-64">
-<h3>Matmul_14_6_64<a class="headerlink" href="#matmul-14-6-64" title="Link to this heading"></a></h3>
+<h3>3.4.1 Matmul_14_6_64<a class="headerlink" href="#matmul-14-6-64" title="Link to this heading"></a></h3>
 <p>For the case <code class="docutils literal notranslate"><span class="pre">M=14</span></code> we considered four different versions:</p>
 <p>Our <strong>first approach</strong> was to use two loops. The first loop was used to calculate
 a (12 x 64) block of matrix C. That means, we would load 12 column elements of matrix A.
@@ -1050,7 +1057,7 @@ best, with an increase of about <code class="docutils literal notranslate"><span
 any significant changes in the number of GFLOPs.</p>
 </section>
 <section id="matmul-15-6-64">
-<h3>Matmul_15_6_64<a class="headerlink" href="#matmul-15-6-64" title="Link to this heading"></a></h3>
+<h3>3.4.2 Matmul_15_6_64<a class="headerlink" href="#matmul-15-6-64" title="Link to this heading"></a></h3>
 <p>For the case <code class="docutils literal notranslate"><span class="pre">M=15</span></code> we considered three different versions:</p>
 <p>For our <strong>first approach</strong> we again considered two loops. Again, the first loop was used to calculate
 a (12 x 64) block of matrix C.
@@ -1274,7 +1281,7 @@ performs much better than the other approach. This time, we even gain about
 <code class="docutils literal notranslate"><span class="pre">23</span> <span class="pre">GFLOPs</span></code> with this approach.</p>
 </section>
 <section id="generic-approach">
-<h3>Generic Approach<a class="headerlink" href="#generic-approach" title="Link to this heading"></a></h3>
+<h3>3.4.3 Generic Approach<a class="headerlink" href="#generic-approach" title="Link to this heading"></a></h3>
 <p>Simply as a proof of concept we also implemented a generic approach for the <code class="docutils literal notranslate"><span class="pre">matmul_14_6_64</span></code> and <code class="docutils literal notranslate"><span class="pre">matmul_15_6_64</span></code> kernels. This kernel works for any <code class="docutils literal notranslate"><span class="pre">M</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>. The idea is to write specific kernels for <code class="docutils literal notranslate"><span class="pre">M</span> <span class="pre">=</span> <span class="pre">1,</span> <span class="pre">2,</span> <span class="pre">...,</span> <span class="pre">8</span></code>. We then divide M by 8 (shift right by 3) and use that to loop the kernel for <code class="docutils literal notranslate"><span class="pre">M</span> <span class="pre">=</span> <span class="pre">8</span></code>. Basically we split the M dimension into blocks of 8 elements and compute the result using a <code class="docutils literal notranslate"><span class="pre">matmul_8_6_64</span></code> kernel. If there is a remainder, it is <code class="docutils literal notranslate"><span class="pre">&gt;=1</span> <span class="pre">and</span> <span class="pre">&lt;=7</span></code>, which we handle with specific kernels. The selection of the specific kernels is done using a jump table.</p>
 <p>We also benchmarked the performance of this <strong>generic kernel</strong>:</p>
 <div class="literal-block-wrapper docutils container" id="id29">
@@ -1307,7 +1314,7 @@ about <code class="docutils literal notranslate"><span class="pre">30</span> <sp
 </section>
 </section>
 <section id="accumulator-block-shapes">
-<h2>Accumulator Block Shapes<a class="headerlink" href="#accumulator-block-shapes" title="Link to this heading"></a></h2>
+<h2>3.5 Accumulator Block Shapes<a class="headerlink" href="#accumulator-block-shapes" title="Link to this heading"></a></h2>
 <p>In this task we were supposed to implement a microkernel that computes C+=AB for M=64, N=64 and K=64. Recalling our <code class="docutils literal notranslate"><span class="pre">matmul_64_48_64</span></code> kernel, we only need to change the N dimension to 64. This kernel uses the <code class="docutils literal notranslate"><span class="pre">matmul_16_6_64</span></code> internally, which we changed to <code class="docutils literal notranslate"><span class="pre">matmul_16_4_64</span></code>. Changing N from 6 to 4 allows us to divide the N dimension into 16 blocks of 4 elements. N = 8 was not suitable, as we ran into issues with the number of available SIMD lanes. We do not think it is necessary to show the code for this kernel, as it is very similar to the <code class="docutils literal notranslate"><span class="pre">matmul_64_48_64</span></code> kernel. The only difference is that we removed the logic for 2 of the 6 columns and increased the loop counter constant.</p>
 <p>Benchmarking this kernel we obtained the following results:</p>
 <div class="literal-block-wrapper docutils container" id="id31">
@@ -1365,8 +1372,8 @@ about <code class="docutils literal notranslate"><span class="pre">30</span> <sp
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="02_base.html" class="btn btn-neutral float-left" title="Base" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="04_code_gen.html" class="btn btn-neutral float-right" title="Code Generation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="02_base.html" class="btn btn-neutral float-left" title="2. Base" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="04_code_gen.html" class="btn btn-neutral float-right" title="4. Code Generation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
