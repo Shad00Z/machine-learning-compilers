@@ -1,23 +1,23 @@
-Assembly
+1. Assembly
 ===========
 
-Hello Assembly
---------------
+1.1 Hello Assembly
+-------------------
 
 We have been given two files:
 
-.. literalinclude:: ../../../src/submissions/01_assembly/data/hello_assembly.c
+.. literalinclude:: ../../src/submissions/01_assembly/data/hello_assembly.c
     :language: c
     :linenos:
     :caption: hello_assembly.c
 
-.. literalinclude:: ../../../src/submissions/01_assembly/data/add_values.s 
+.. literalinclude:: ../../src/submissions/01_assembly/data/add_values.s 
     :language: asm
     :linenos:
     :caption: add_values.s
 
-Task 1
-^^^^^^
+Task 1.1.1
+^^^^^^^^^^^^
 
 First we would like to compile :code:`hello_assembly.c` using the GCC and Clang compiler.
 
@@ -34,8 +34,8 @@ The **Clang** compiler can be used with the following statement.
     clang -S hello_assembly.c
 
 
-Task 2
-^^^^^^
+Task 1.1.2
+^^^^^^^^^^^^
 
 After compilation we would like for each generated assembly file to:
 
@@ -48,7 +48,7 @@ GCC
 
 The **GCC** :code:`gcc_hello_assembly.s` looks like:
 
-.. literalinclude:: ../../../src/submissions/01_assembly/01_task/gcc_hello_assembly.s 
+.. literalinclude:: ../../src/submissions/01_assembly/01_task/gcc_hello_assembly.s 
     :language: asm
     :linenos:
     :caption: GCC compiled file
@@ -74,7 +74,7 @@ Clang
 
 The **Clang** :code:`clang_hello_assembly.s` looks like:
 
-.. literalinclude:: ../../../src/submissions/01_assembly/01_task/clang_hello_assembly.s 
+.. literalinclude:: ../../src/submissions/01_assembly/01_task/clang_hello_assembly.s 
     :language: asm
     :linenos:
     :caption: Clang compiled file
@@ -95,12 +95,12 @@ The **Clang** :code:`clang_hello_assembly.s` looks like:
 
     bl	printf
 
-Task 3
-^^^^^^
+Task 1.1.3
+^^^^^^^^^^^^
 
 Now we would like to test the :code:`hello_assembly` function with a C++ driver. 
 
-.. literalinclude:: ../../../src/submissions/01_assembly/01_task/driver_hello_assembly.cpp 
+.. literalinclude:: ../../src/submissions/01_assembly/01_task/driver_hello_assembly.cpp 
     :language: cpp
     :linenos:
     :caption: C++ driver
@@ -121,13 +121,13 @@ The output is then:
     ... returned from function call!
 
 
-Assembly Function
------------------
+1.2 Assembly Function
+----------------------
 
 Now we want to work with the :code:`add_values.s` file.
 
-Task 1
-^^^^^^
+Task 1.2.1
+^^^^^^^^^^^
 
 As a first step we want to assemble the file. We can do that by calling:
 
@@ -135,8 +135,8 @@ As a first step we want to assemble the file. We can do that by calling:
 
     as add_values.s -o add_values.o
 
-Task 2
-^^^^^^
+Task 1.2.2
+^^^^^^^^^^^
 
 With :code:`add_values.o` we are now creating different files:
 
@@ -146,7 +146,7 @@ To get a hexadecimal dump we used:
 
     hexdump add_values.o > hexdump_add_values.hex
 
-.. literalinclude:: ../../../src/submissions/01_assembly/02_task/hexdump_add_values.hex
+.. literalinclude:: ../../src/submissions/01_assembly/02_task/hexdump_add_values.hex
     :language: none
     :linenos:
     :caption: Hexadecimal dump
@@ -157,7 +157,7 @@ To get the section headers we used:
 
     readelf -S add_values.o > sec_headers_add_values.relf
 
-.. literalinclude:: ../../../src/submissions/01_assembly/02_task/sec_headers_add_values.relf
+.. literalinclude:: ../../src/submissions/01_assembly/02_task/sec_headers_add_values.relf
     :language: none
     :linenos:
     :caption: Section headers
@@ -168,17 +168,17 @@ To get the disassembled file we used:
 
     objdump --syms -S -d add_values.o > dis_add_values.dis
 
-.. literalinclude:: ../../../src/submissions/01_assembly/02_task/dis_add_values.dis
+.. literalinclude:: ../../src/submissions/01_assembly/02_task/dis_add_values.dis
     :language: none
     :linenos:
     :caption: Disassembled file
 
-Task 3
-^^^^^^
+Task 1.2.3
+^^^^^^^^^^^
 
 The *size* of the :code:`.text` section can be found in the section headers in *line 9*.
 
-.. literalinclude:: ../../../src/submissions/01_assembly/02_task/sec_headers_add_values.relf
+.. literalinclude:: ../../src/submissions/01_assembly/02_task/sec_headers_add_values.relf
     :language: none
     :lines: 8-9
     :caption: Lines 8 and 9
@@ -186,7 +186,7 @@ The *size* of the :code:`.text` section can be found in the section headers in *
 The *size* of the text section is :code:`0000000000000020` or :code:`0x20` which translates to 32 bytes.
 These 32 bytes correspond to 8 assembly instructions (each 4 bytes) that the function :code:`add_values` performs.
 
-.. literalinclude:: ../../../src/submissions/01_assembly/02_task/dis_add_values.dis
+.. literalinclude:: ../../src/submissions/01_assembly/02_task/dis_add_values.dis
     :language: none
     :lines: 15-22
     :caption: Lines 8 and 9
@@ -195,12 +195,12 @@ Starting at :code:`0x00`, incrementing always by 4 bytes per instruction (perfor
 we ultimately finish at the :code:`ret` instruction located at :code:`0xc1`, which marks the end of the :code:`.text` section.
 Therefore, from :code:`0x00` to :code:`0xc1` there are exactly 8 instructions covered, which equal a *size* of 32 bytes.
 
-Task 4
-^^^^^^
+Task 1.2.4
+^^^^^^^^^^^
 
 To test the functionality of the :code:`add_values` function we implemented a C++ driver:
 
-.. literalinclude:: ../../../src/submissions/01_assembly/02_task/driver_add_values.cpp
+.. literalinclude:: ../../src/submissions/01_assembly/02_task/driver_add_values.cpp
     :language: cpp
     :linenos:
     :caption: driver_add_values.cpp
@@ -219,8 +219,8 @@ Where :code:`driver_add_values` results in:
     l_data_1 / l_value_2 / l_value_o
     4 / 7 / 11
 
-Task 5
-^^^^^^
+Task 1.2.5
+^^^^^^^^^^^
 
 To get an idea how the contents of the general purpose registers look like, when calling the :code:`add_values` function
 we stepped through a function call using the GNU Project Debugger.
