@@ -1,0 +1,346 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Code Generation &mdash; Machine Learning Compilers  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Neon" href="03_neon.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Machine Learning Compilers
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Project Overview</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../project_overview/01_project_information.html">Machine Learning Compilers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../project_overview/02_docu_setup.html">Documentation Setup</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Submissions</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="01_assembly.html">Assembly</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02_base.html">Base</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03_neon.html">Neon</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Code Generation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Machine Learning Compilers</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Code Generation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/submissions/04_code_gen.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="code-generation">
+<h1>Code Generation<a class="headerlink" href="#code-generation" title="Link to this heading"></a></h1>
+<p>This section sets the foundation for our machine learning compiler.
+We are starting off by implementing / generating batch-reduce matrix-matrix multiplications (BRGEMMS).</p>
+<p>The first step was to implement a <code class="docutils literal notranslate"><span class="pre">generate</span></code> function, which is supposed to be the entry for all BRGEMM code generation:</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">implementation of the <code class="docutils literal notranslate"><span class="pre">generate</span></code> function</span><a class="headerlink" href="#id1" title="Link to this code"></a></div>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/**</span>
+<span class="cm"> * @brief Generate a kernel for batch-reduce matrix multiplication if</span>
+<span class="cm"> *        all conditions are met.</span>
+<span class="cm"> */</span>
+<span class="n">mini_jit</span><span class="o">::</span><span class="n">Brgemm</span><span class="o">::</span><span class="n">error_t</span><span class="w"> </span><span class="nf">mini_jit::Brgemm::generate</span><span class="p">(</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">m</span><span class="p">,</span>
+<span class="w">                                                      </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">n</span><span class="p">,</span>
+<span class="w">                                                      </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">k</span><span class="p">,</span>
+<span class="w">                                                      </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">br_size</span><span class="p">,</span><span class="w"> </span>
+<span class="w">                                                      </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">trans_a</span><span class="p">,</span>
+<span class="w">                                                      </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">trans_b</span><span class="p">,</span>
+<span class="w">                                                      </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">trans_c</span><span class="p">,</span>
+<span class="w">                                                      </span><span class="n">dtype_t</span><span class="w">  </span><span class="n">dtype</span><span class="w"> </span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="cm">/**</span>
+<span class="cm">     * Currently supported:</span>
+<span class="cm">     * M = 16</span>
+<span class="cm">     * N =  6</span>
+<span class="cm">     * K =  1</span>
+<span class="cm">     * BR_SIZE: Not defined</span>
+<span class="cm">     * trans_a, trans_b, trans_c: Column-major</span>
+<span class="cm">     * dtype: fp32</span>
+<span class="cm">     */</span>
+
+<span class="w">    </span><span class="k">if</span><span class="p">(</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">16</span><span class="w"> </span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="s">&quot;M must be 16&quot;</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">mini_jit</span><span class="o">::</span><span class="n">Brgemm</span><span class="o">::</span><span class="n">error_t</span><span class="o">::</span><span class="n">wrong_m_dimension</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">6</span><span class="w"> </span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="s">&quot;N must be 6&quot;</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">mini_jit</span><span class="o">::</span><span class="n">Brgemm</span><span class="o">::</span><span class="n">error_t</span><span class="o">::</span><span class="n">wrong_n_dimension</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="s">&quot;K must not be 0&quot;</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">mini_jit</span><span class="o">::</span><span class="n">Brgemm</span><span class="o">::</span><span class="n">error_t</span><span class="o">::</span><span class="n">wrong_k_dimension</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">br_size</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="c1">// for now, we don&#39;t check br_size</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="s">&quot;BR_SIZE must be 4&quot;</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">mini_jit</span><span class="o">::</span><span class="n">Brgemm</span><span class="o">::</span><span class="n">error_t</span><span class="o">::</span><span class="n">wrong_batch_reduce_size</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">trans_a</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">trans_b</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">trans_c</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="s">&quot;Matrix ordering must be column-major&quot;</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">mini_jit</span><span class="o">::</span><span class="n">Brgemm</span><span class="o">::</span><span class="n">error_t</span><span class="o">::</span><span class="n">wrong_matrix_ordering_format</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">dtype</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">dtype_t</span><span class="o">::</span><span class="n">fp32</span><span class="w"> </span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="s">&quot;Matrix data type must be fp32&quot;</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">mini_jit</span><span class="o">::</span><span class="n">Brgemm</span><span class="o">::</span><span class="n">error_t</span><span class="o">::</span><span class="n">wrong_matrix_datatype</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">else</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">)</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="n">mini_jit</span><span class="o">::</span><span class="n">kernels</span><span class="o">::</span><span class="n">matmul_16_6_1</span><span class="p">(</span><span class="w"> </span><span class="n">m_kernel</span><span class="w"> </span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="k">else</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="n">mini_jit</span><span class="o">::</span><span class="n">kernels</span><span class="o">::</span><span class="n">matmul_16_6_k</span><span class="p">(</span><span class="w"> </span><span class="n">m_kernel</span><span class="w"> </span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+
+<span class="w">        </span><span class="c1">// Valid matrix kernel</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">mini_jit</span><span class="o">::</span><span class="n">Brgemm</span><span class="o">::</span><span class="n">error_t</span><span class="o">::</span><span class="n">success</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p>In this function we are generating the code for the BRGEMM kernels.</p>
+<p>Firstly, we needed the instructions which a BRGEMM kernel consists of.
+Therefore we started wrapping the assembly code in C++ functions.</p>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">Load instruction for a single general purpose register</span><a class="headerlink" href="#id2" title="Link to this code"></a></div>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">uint32_t</span><span class="w"> </span><span class="nf">mini_jit::InstGen::base_ldr_imm_uoff</span><span class="p">(</span><span class="n">gpr_t</span><span class="w"> </span><span class="n">reg_dest</span><span class="p">,</span>
+<span class="w">                                              </span><span class="n">gpr_t</span><span class="w"> </span><span class="n">reg_src</span><span class="p">,</span>
+<span class="w">                                              </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">imm</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">l_ins</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0xB9400000</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// set size</span>
+<span class="w">  </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">l_sf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">reg_dest</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mh">0x20</span><span class="p">;</span>
+<span class="w">  </span><span class="n">l_ins</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="n">l_sf</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">25</span><span class="p">;</span><span class="w"> </span><span class="c1">// set bit 30</span>
+
+<span class="w">  </span><span class="c1">// set destination register id</span>
+<span class="w">  </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">l_reg_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">reg_dest</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mh">0x1f</span><span class="p">;</span>
+<span class="w">  </span><span class="n">l_ins</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="n">l_reg_id</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// set first source register id</span>
+<span class="w">  </span><span class="n">l_reg_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">reg_src</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mh">0x1f</span><span class="p">;</span>
+<span class="w">  </span><span class="n">l_ins</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="n">l_reg_id</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// check if immediate can be encoded</span>
+<span class="w">  </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">scale</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">l_sf</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="mi">8</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="mi">4</span><span class="p">;</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">imm</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="n">scale</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">invalid_argument</span><span class="p">(</span><span class="s">&quot;Immediate offset must be a multiple of 4 (32-bit) or 8 (64-bit)&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">// scale the immediate for encoding (right-shift)</span>
+<span class="w">  </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">scaleShift</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">l_sf</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span><span class="w"> </span><span class="c1">// 64-bit? then /8 (&gt;&gt;3); else /4 (&gt;&gt;2)</span>
+<span class="w">  </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">l_imm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">imm</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">scaleShift</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mh">0xFFF</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// set 12 bit immediate value</span>
+<span class="w">  </span><span class="n">l_ins</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="n">l_imm</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">l_ins</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p>After implementing all necessary instructions, we started implementing our first kernel.
+The first kernel that we implemented was a simple matrix multiplication kernel, in the form of a <code class="docutils literal notranslate"><span class="pre">matmul_16_6_1</span></code>.</p>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">FMLA instructions for the <code class="docutils literal notranslate"><span class="pre">matmul_16_6_1</span></code> kernel</span><a class="headerlink" href="#id3" title="Link to this code"></a></div>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="c1">// Load Column of Matrix B</span>
+<span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">l_gen</span><span class="p">.</span><span class="n">mov_reg</span><span class="p">(</span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x6</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x1</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
+<span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">l_gen</span><span class="p">.</span><span class="n">neon_ldr_imm_uoff</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v28</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x6</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">mini_jit</span><span class="o">::</span><span class="n">InstGen</span><span class="o">::</span><span class="n">neon_size_spec_t</span><span class="o">::</span><span class="n">s</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
+<span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">l_gen</span><span class="p">.</span><span class="n">add_shifted_reg</span><span class="p">(</span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x6</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x6</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x4</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// 1st Multiplication</span>
+<span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">l_gen</span><span class="p">.</span><span class="n">neon_vec_dp_fmla_by_element</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v4</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v28</span><span class="p">,</span><span class="w"> </span><span class="n">arr_spec_t</span><span class="o">::</span><span class="n">s4</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
+<span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">l_gen</span><span class="p">.</span><span class="n">neon_vec_dp_fmla_by_element</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v5</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v28</span><span class="p">,</span><span class="w"> </span><span class="n">arr_spec_t</span><span class="o">::</span><span class="n">s4</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
+<span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">l_gen</span><span class="p">.</span><span class="n">neon_vec_dp_fmla_by_element</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v6</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v2</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v28</span><span class="p">,</span><span class="w"> </span><span class="n">arr_spec_t</span><span class="o">::</span><span class="n">s4</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
+<span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">l_gen</span><span class="p">.</span><span class="n">neon_vec_dp_fmla_by_element</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v7</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v3</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v28</span><span class="p">,</span><span class="w"> </span><span class="n">arr_spec_t</span><span class="o">::</span><span class="n">s4</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// Load Column of Matrix B</span>
+<span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">l_gen</span><span class="p">.</span><span class="n">neon_ldr_imm_uoff</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v29</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x6</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">mini_jit</span><span class="o">::</span><span class="n">InstGen</span><span class="o">::</span><span class="n">neon_size_spec_t</span><span class="o">::</span><span class="n">s</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
+<span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">l_gen</span><span class="p">.</span><span class="n">add_shifted_reg</span><span class="p">(</span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x6</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x6</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x4</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// 2nd Multiplication</span>
+<span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">l_gen</span><span class="p">.</span><span class="n">neon_vec_dp_fmla_by_element</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v8</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v29</span><span class="p">,</span><span class="w"> </span><span class="n">arr_spec_t</span><span class="o">::</span><span class="n">s4</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
+<span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">l_gen</span><span class="p">.</span><span class="n">neon_vec_dp_fmla_by_element</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v9</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v29</span><span class="p">,</span><span class="w"> </span><span class="n">arr_spec_t</span><span class="o">::</span><span class="n">s4</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
+<span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">l_gen</span><span class="p">.</span><span class="n">neon_vec_dp_fmla_by_element</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v10</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v2</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v29</span><span class="p">,</span><span class="w"> </span><span class="n">arr_spec_t</span><span class="o">::</span><span class="n">s4</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
+<span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">l_gen</span><span class="p">.</span><span class="n">neon_vec_dp_fmla_by_element</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v11</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v3</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v29</span><span class="p">,</span><span class="w"> </span><span class="n">arr_spec_t</span><span class="o">::</span><span class="n">s4</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// Load Column of Matrix B</span>
+<span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">l_gen</span><span class="p">.</span><span class="n">neon_ldr_imm_uoff</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v30</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x6</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">mini_jit</span><span class="o">::</span><span class="n">InstGen</span><span class="o">::</span><span class="n">neon_size_spec_t</span><span class="o">::</span><span class="n">s</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
+<span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">l_gen</span><span class="p">.</span><span class="n">add_shifted_reg</span><span class="p">(</span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x6</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x6</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x4</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// 3rd Multiplication</span>
+<span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">l_gen</span><span class="p">.</span><span class="n">neon_vec_dp_fmla_by_element</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v12</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v30</span><span class="p">,</span><span class="w"> </span><span class="n">arr_spec_t</span><span class="o">::</span><span class="n">s4</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
+<span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">l_gen</span><span class="p">.</span><span class="n">neon_vec_dp_fmla_by_element</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v13</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v30</span><span class="p">,</span><span class="w"> </span><span class="n">arr_spec_t</span><span class="o">::</span><span class="n">s4</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
+<span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">l_gen</span><span class="p">.</span><span class="n">neon_vec_dp_fmla_by_element</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v14</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v2</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v30</span><span class="p">,</span><span class="w"> </span><span class="n">arr_spec_t</span><span class="o">::</span><span class="n">s4</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
+<span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">l_gen</span><span class="p">.</span><span class="n">neon_vec_dp_fmla_by_element</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v15</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v3</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v30</span><span class="p">,</span><span class="w"> </span><span class="n">arr_spec_t</span><span class="o">::</span><span class="n">s4</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// Load Column of Matrix B</span>
+<span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">l_gen</span><span class="p">.</span><span class="n">neon_ldr_imm_uoff</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v31</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x6</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">mini_jit</span><span class="o">::</span><span class="n">InstGen</span><span class="o">::</span><span class="n">neon_size_spec_t</span><span class="o">::</span><span class="n">s</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
+<span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">l_gen</span><span class="p">.</span><span class="n">add_shifted_reg</span><span class="p">(</span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x6</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x6</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x4</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// 4th Multiplication</span>
+<span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">l_gen</span><span class="p">.</span><span class="n">neon_vec_dp_fmla_by_element</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v16</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v31</span><span class="p">,</span><span class="w"> </span><span class="n">arr_spec_t</span><span class="o">::</span><span class="n">s4</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
+<span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">l_gen</span><span class="p">.</span><span class="n">neon_vec_dp_fmla_by_element</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v17</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v31</span><span class="p">,</span><span class="w"> </span><span class="n">arr_spec_t</span><span class="o">::</span><span class="n">s4</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
+<span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">l_gen</span><span class="p">.</span><span class="n">neon_vec_dp_fmla_by_element</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v18</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v2</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v31</span><span class="p">,</span><span class="w"> </span><span class="n">arr_spec_t</span><span class="o">::</span><span class="n">s4</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
+<span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">l_gen</span><span class="p">.</span><span class="n">neon_vec_dp_fmla_by_element</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v19</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v3</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v31</span><span class="p">,</span><span class="w"> </span><span class="n">arr_spec_t</span><span class="o">::</span><span class="n">s4</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// Load Column of Matrix B</span>
+<span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">l_gen</span><span class="p">.</span><span class="n">neon_ldr_imm_uoff</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v28</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x6</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">mini_jit</span><span class="o">::</span><span class="n">InstGen</span><span class="o">::</span><span class="n">neon_size_spec_t</span><span class="o">::</span><span class="n">s</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
+<span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">l_gen</span><span class="p">.</span><span class="n">add_shifted_reg</span><span class="p">(</span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x6</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x6</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x4</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// 5th Multiplication</span>
+<span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">l_gen</span><span class="p">.</span><span class="n">neon_vec_dp_fmla_by_element</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v20</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v28</span><span class="p">,</span><span class="w"> </span><span class="n">arr_spec_t</span><span class="o">::</span><span class="n">s4</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
+<span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">l_gen</span><span class="p">.</span><span class="n">neon_vec_dp_fmla_by_element</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v21</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v28</span><span class="p">,</span><span class="w"> </span><span class="n">arr_spec_t</span><span class="o">::</span><span class="n">s4</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
+<span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">l_gen</span><span class="p">.</span><span class="n">neon_vec_dp_fmla_by_element</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v22</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v2</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v28</span><span class="p">,</span><span class="w"> </span><span class="n">arr_spec_t</span><span class="o">::</span><span class="n">s4</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
+<span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">l_gen</span><span class="p">.</span><span class="n">neon_vec_dp_fmla_by_element</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v23</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v3</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v28</span><span class="p">,</span><span class="w"> </span><span class="n">arr_spec_t</span><span class="o">::</span><span class="n">s4</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// Load Column of Matrix B</span>
+<span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">l_gen</span><span class="p">.</span><span class="n">neon_ldr_imm_uoff</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v29</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x6</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">mini_jit</span><span class="o">::</span><span class="n">InstGen</span><span class="o">::</span><span class="n">neon_size_spec_t</span><span class="o">::</span><span class="n">s</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
+<span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">l_gen</span><span class="p">.</span><span class="n">add_shifted_reg</span><span class="p">(</span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x6</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x6</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x4</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// 6th Multiplication</span>
+<span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">l_gen</span><span class="p">.</span><span class="n">neon_vec_dp_fmla_by_element</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v24</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v29</span><span class="p">,</span><span class="w"> </span><span class="n">arr_spec_t</span><span class="o">::</span><span class="n">s4</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
+<span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">l_gen</span><span class="p">.</span><span class="n">neon_vec_dp_fmla_by_element</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v25</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v29</span><span class="p">,</span><span class="w"> </span><span class="n">arr_spec_t</span><span class="o">::</span><span class="n">s4</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
+<span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">l_gen</span><span class="p">.</span><span class="n">neon_vec_dp_fmla_by_element</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v26</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v2</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v29</span><span class="p">,</span><span class="w"> </span><span class="n">arr_spec_t</span><span class="o">::</span><span class="n">s4</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
+<span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">l_gen</span><span class="p">.</span><span class="n">neon_vec_dp_fmla_by_element</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v27</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v3</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v29</span><span class="p">,</span><span class="w"> </span><span class="n">arr_spec_t</span><span class="o">::</span><span class="n">s4</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<p>After implementing this first kernel, we started implementing a more general version with a <code class="docutils literal notranslate"><span class="pre">matmul_16_6_k</span></code> kernel.
+For this kernel we needed a loop to iterate over the <code class="docutils literal notranslate"><span class="pre">k</span></code> dimension.</p>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">Loop instruction using code generation</span><a class="headerlink" href="#id4" title="Link to this code"></a></div>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="c1">// 6th Multiplication</span>
+<span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">l_gen</span><span class="p">.</span><span class="n">neon_vec_dp_fmla_by_element</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v20</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v24</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v29</span><span class="p">,</span><span class="w"> </span><span class="n">arr_spec_t</span><span class="o">::</span><span class="n">s4</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
+<span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">l_gen</span><span class="p">.</span><span class="n">neon_vec_dp_fmla_by_element</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v21</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v25</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v29</span><span class="p">,</span><span class="w"> </span><span class="n">arr_spec_t</span><span class="o">::</span><span class="n">s4</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
+<span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">l_gen</span><span class="p">.</span><span class="n">neon_vec_dp_fmla_by_element</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v22</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v26</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v29</span><span class="p">,</span><span class="w"> </span><span class="n">arr_spec_t</span><span class="o">::</span><span class="n">s4</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
+<span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">l_gen</span><span class="p">.</span><span class="n">neon_vec_dp_fmla_by_element</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v23</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v27</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v29</span><span class="p">,</span><span class="w"> </span><span class="n">arr_spec_t</span><span class="o">::</span><span class="n">s4</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// Decrement K</span>
+<span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">l_gen</span><span class="p">.</span><span class="n">add_shifted_reg</span><span class="p">(</span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x7</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x7</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x3</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
+<span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">l_gen</span><span class="p">.</span><span class="n">mov_reg</span><span class="p">(</span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x8</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x1</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
+<span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">l_gen</span><span class="p">.</span><span class="n">add_immediate</span><span class="p">(</span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x9</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x9</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
+<span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">l_gen</span><span class="p">.</span><span class="n">add_shifted_reg</span><span class="p">(</span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x8</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x8</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x9</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">l_gen</span><span class="p">.</span><span class="n">sub_immediate</span><span class="p">(</span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x6</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x6</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
+<span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">l_gen</span><span class="p">.</span><span class="n">base_br_cbnz</span><span class="p">(</span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x6</span><span class="p">,</span><span class="w"> </span><span class="mi">-168</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<p>As a last step we measured the performance of our generated code, resulting in the following results:</p>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text">GFLOPs results of the <code class="docutils literal notranslate"><span class="pre">matmul_16_6_1</span></code> and <code class="docutils literal notranslate"><span class="pre">matmul_16_6_k</span></code> kernels</span><a class="headerlink" href="#id5" title="Link to this code"></a></div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Benchmarking Matmul_16_6_1 throughput ...
+-----------------------------------------------
+Measuring throughput for Instruction
+Total time (s):   1.19943
+Instructions per Second:   2.40114e+10
+Estimated GFLOPS:   24.0114 GFLOPS/sec
+-----------------------------------------------
+
+Benchmarking Matmul_16_6_64 throughput ...
+-----------------------------------------------
+Measuring throughput for Instruction
+Total time (s):   1.82951
+Instructions per Second:   1.34331e+11
+Estimated GFLOPS:   134.331 GFLOPS/sec
+-----------------------------------------------
+</pre></div>
+</div>
+</div>
+<p>Comparing our <code class="docutils literal notranslate"><span class="pre">matmul_16_6_1</span></code> kernel to our previous implementations, we are slightly worse, loosing about <code class="docutils literal notranslate"><span class="pre">8</span> <span class="pre">GFLOPs</span></code>.
+However, for the <code class="docutils literal notranslate"><span class="pre">matmul_16_6_k</span></code> we reach the same number of GFLOPs that we reached with our best implementations.</p>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="03_neon.html" class="btn btn-neutral float-left" title="Neon" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Lucas Obitz, Luca-Philipp Grumbach.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
