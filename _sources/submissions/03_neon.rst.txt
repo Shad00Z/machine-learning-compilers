@@ -253,13 +253,13 @@ The second loop was then used to calculate the remaining (2 x 64) block of matri
     :caption: Second loop for the (2 x 64) matrix calculation
 
 The **second approach** was to use a single loop. We would load the whole matrix C, and matrix A 
-column-wise using one ``ldp qXX, qXX, [x7]``, one ``ldr qXX, [x7, #32]`` and one ``ldr qXX, [x7, #48]`` instruction. 
+column-wise using one ``ldp qXX, qXX, [x7]``, one ``ldr qXX, [x7, #32]`` and one ``ldr dXX, [x7, #48]`` instruction. 
 
 .. literalinclude:: ../../../src/submissions/03_neon/04_simd/matmul_14_6_64/v2_matmul_14_6_64.s
     :language: asm
     :linenos:
     :lines: 86-144
-    :caption: Calculate matrix C with a single loop (using four loads)
+    :caption: Calculate matrix C with a single loop using four loads
 
 Our **third approach** was again to use a single loop. But this time we would load matrix A
 column-wise using two ``ldp qXX, qXX, [x7]`` instructions and then set the last two elements
@@ -269,7 +269,7 @@ to zero using ``mov v27.s[2], wzr`` and ``mov v27.s[3], wzr``.
     :language: asm
     :linenos:
     :lines: 88-148
-    :caption: Calculate matrix C with a single loop (using two loads)
+    :caption: Calculate matrix C with a single loop using ``ldp`` loads
 
 In our **fourth approach** we simply copied the second version and changed
 our loads for matrix A and C. We used ``ld1`` instead of ``ldp``.
@@ -277,8 +277,8 @@ our loads for matrix A and C. We used ``ld1`` instead of ``ldp``.
 .. literalinclude:: ../../../src/submissions/03_neon/04_simd/matmul_14_6_64/v4_matmul_14_6_64.s
     :language: asm
     :linenos:
-    :lines: 44-62
-    :caption: Calculate matrix C with a single loop (``ld1`` loads)
+    :lines: 73-130
+    :caption: Calculate matrix C with a single loop and ``ld1`` loads
 
 When benchmarking our approaches we obtained the following results:
 
@@ -301,10 +301,10 @@ For our **first approach** we again considered two loops. Again, the first loop 
 a (12 x 64) block of matrix C. 
 The second loop was then used to calculate the remaining (3 x 64) block of matrix C.
 
-.. literalinclude:: ../../../src/submissions/03_neon/04_simd/matmul_15_6_64/v2_matmul_15_6_64.s
+.. literalinclude:: ../../../src/submissions/03_neon/04_simd/matmul_15_6_64/v1_matmul_15_6_64.s
     :language: asm
     :linenos:
-    :lines: 99-158
+    :lines: 211-256
     :caption: Second loop for the (3 x 64) matrix calculation
 
 In the **second approach** we use one loop. We load matrix A column-wise using two 
@@ -315,7 +315,7 @@ to zero using ``mov v27.s[3], wzr``.
     :language: asm
     :linenos:
     :lines: 99-158
-    :caption: Calculate matrix C with a single loop (using two loads)
+    :caption: Calculate matrix C with a single loop using ``ldp`` loads
 
 In the **third approach** we again changed the load instructions from ``ldp`` to
 ``ld1``.
@@ -323,8 +323,8 @@ In the **third approach** we again changed the load instructions from ``ldp`` to
 .. literalinclude:: ../../../src/submissions/03_neon/04_simd/matmul_15_6_64/v3_matmul_15_6_64.s
     :language: asm
     :linenos:
-    :lines: 44-68
-    :caption: Calculate matrix C with a single loop (``ld1`` loads)
+    :lines: 81-139
+    :caption: Calculate matrix C with a single loop using ``ld1`` loads
 
 Again, we performed some benchmarks:
 
@@ -349,13 +349,13 @@ We also benchmarked the performance of this **generic kernel**:
     :language: text
     :linenos:
     :lines: 33-39
-    :caption: Benchmarking results for matmul_14_6_64 approaches
+    :caption: Benchmarking results for ``matmul_M_6_64`` (M = 14) approach
 
 .. literalinclude:: ../../../src/submissions/03_neon/04_simd/benchmarking_results.txt
     :language: text
     :linenos:
     :lines: 65-71
-    :caption: Benchmarking results for matmul_14_6_64 approaches
+    :caption: Benchmarking results for ``matmul_M_6_64`` (M = 15) approach
 
 Compared to our other approaches our obtained GFLOPs are slightly worse, losing
 about ``30 GFLOPs`` to our best approach for the ``matmul_14_6_64`` and about 
