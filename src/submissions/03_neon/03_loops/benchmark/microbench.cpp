@@ -69,7 +69,7 @@ extern "C" {
                             64, 
                             16 );
         }
-        std::memset( c, 0, sizeof( c ) );
+        std::memset( c, 0, 16 * 6 * sizeof( float ) );
 
         auto l_start_time = std::chrono::high_resolution_clock::now();
         for ( int i = 0; i < n; i++ )
@@ -99,7 +99,7 @@ extern "C" {
                             64, 
                             64 );
         }
-        std::memset( c, 0, sizeof( c ) );
+        std::memset( c, 0, 64 * 6 * sizeof( float ) );
 
         auto l_start_time = std::chrono::high_resolution_clock::now();
         for ( int i = 0; i < n; i++ )
@@ -129,7 +129,7 @@ extern "C" {
                              64, 
                              64 );
         }
-        std::memset( c, 0, sizeof( c ) );
+        std::memset( c, 0, 64 * 48 * sizeof( float ) );
 
         auto l_start_time = std::chrono::high_resolution_clock::now();
         for ( int i = 0; i < n; i++ )
@@ -180,7 +180,7 @@ int main()
     {
         B_l1[j] = static_cast<float>( j );
     }
-    std::memset( C_l1, 0, sizeof( C_l1 ) );
+    std::memset( C_l1, 0, 16 * 6 * sizeof( float ) );
 
     int64_t l_iter = 10000 * 2000;
     std::string l1_matmul( "l1_matmul" );
@@ -191,7 +191,7 @@ int main()
 
     std::cout << "\nBenchmarking Matmul_16_6_64 throughput ...\n";
     benchmark_thr( l_iter, l1_matmul, A_l1, B_l1, C_l1 );
-    std::memset( C_l1, 0, sizeof( C_l1 ) );
+    std::memset( C_l1, 0, 16 * 6 * sizeof( float ) );
 
 
     l_iter = 10000 * 500;
@@ -213,10 +213,10 @@ int main()
     {
         B_l2[j] = static_cast<float>( j );
     }
-    std::memset( C_l2, 0, sizeof( C_l2 ) );
+    std::memset( C_l2, 0, 64 * 6 * sizeof( float ) );
 
     std::cout << "\nBenchmarking Matmul_64_6_64 Matmul throughput ...\n";
-    benchmark_thr( l_iter, l2_matmul, A_l2, B_l2, C_l2 );
+    std::memset( C_l2, 0, 64 * 6 * sizeof( float ) );
 
 
     l_iter = 10000 * 50;
@@ -238,7 +238,7 @@ int main()
     {
         B_l3[j] = static_cast<float>( j );
     }
-    std::memset( C_l3, 0, sizeof( C_l3 ) );
+    std::memset( C_l3, 0, 64 * 48 * sizeof( float ) );
 
     std::cout << "\nBenchmarking Matmul_64_48_64 Matmul throughput ...\n";
     benchmark_thr( l_iter, l3_matmul, A_l3, B_l3, C_l3 );

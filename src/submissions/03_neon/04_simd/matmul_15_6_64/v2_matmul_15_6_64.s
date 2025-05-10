@@ -182,7 +182,7 @@ _k1_loop:
     // sixth column
     add x8, x8, x5
     stp q20, q21, [x8]
-    str q22, q23, [x8, #32]
+    stp q22, q23, [x8, #32]
 
 
     

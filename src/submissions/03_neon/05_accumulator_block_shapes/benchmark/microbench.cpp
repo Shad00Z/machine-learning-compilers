@@ -58,6 +58,7 @@ void benchmark_thr( int64_t loop_iters,
                                 64, 
                                 64 );
         }
+        std::memset( c, 0, 64 * 64 * sizeof( float ) );
 
         auto l_start_time = std::chrono::high_resolution_clock::now();
         for ( int j = 0; j < loop_iters; j++ )
@@ -84,6 +85,7 @@ void benchmark_thr( int64_t loop_iters,
                                 64, 
                                 64 );
         }
+        std::memset( c, 0, 64 * 64 * sizeof( float ) );
 
         auto l_start_time = std::chrono::high_resolution_clock::now();
         for ( int j = 0; j < loop_iters; j++ )
@@ -143,6 +145,7 @@ int main()
     
     std::cout << "\nBenchmarking V1 Matmul throughput ...\n";
     benchmark_thr( l_iter, v1_matmul, A, B, C );
+    std::memset( C, 0, M * N * sizeof( float ) );
 
     std::cout << "\nBenchmarking V2 Matmul throughput ...\n";
     benchmark_thr( l_iter, v2_matmul, A, B, C );

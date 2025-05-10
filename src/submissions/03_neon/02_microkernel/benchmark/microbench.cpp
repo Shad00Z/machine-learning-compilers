@@ -54,6 +54,7 @@ void benchmark_thr( int64_t loop_iters,
     int res_3 = v3_matmul.compare( instruction );
 
     double elapsedTime = 1;
+    double loopIterations = loop_iters;
 
     // Time measuring
     if ( res_1 == 0 )
@@ -68,6 +69,7 @@ void benchmark_thr( int64_t loop_iters,
                               1, 
                               16 );
         }
+        std::memset( c, 0, 16 * 6 * sizeof( float ) );
 
         auto l_start_time = std::chrono::high_resolution_clock::now();
         for ( int j = 0; j < loop_iters; j++ )
@@ -81,6 +83,7 @@ void benchmark_thr( int64_t loop_iters,
         }
         auto l_end_time = std::chrono::high_resolution_clock::now();
         elapsedTime = std::chrono::duration_cast<std::chrono::microseconds>( l_end_time - l_start_time ).count() / 1e6;
+        loopIterations *= 500;
     }
     else if ( res_2 == 0 )
     {
@@ -94,6 +97,7 @@ void benchmark_thr( int64_t loop_iters,
                               1, 
                               16 );
         }
+        std::memset( c, 0, 16 * 6 * sizeof( float ) );
 
         auto l_start_time = std::chrono::high_resolution_clock::now();
         for ( int j = 0; j < loop_iters; j++ )
@@ -107,6 +111,7 @@ void benchmark_thr( int64_t loop_iters,
         }
         auto l_end_time = std::chrono::high_resolution_clock::now();
         elapsedTime = std::chrono::duration_cast<std::chrono::microseconds>( l_end_time - l_start_time ).count() / 1e6;
+        loopIterations *= 500;
     }
     else if ( res_3 == 0 )
     {
@@ -120,6 +125,7 @@ void benchmark_thr( int64_t loop_iters,
                               1, 
                               16 );
         }
+        std::memset( c, 0, 16 * 6 * sizeof( float ) );
 
         auto l_start_time = std::chrono::high_resolution_clock::now();
         for ( int j = 0; j < loop_iters; j++ )
@@ -136,7 +142,6 @@ void benchmark_thr( int64_t loop_iters,
     }
 
     double totalOps = ( 6 * 16 ) * 2;
-    double loopIterations = loop_iters * 500;
     double opsPerIteration = totalOps * loopIterations;
 
     double opsPerSec = opsPerIteration / elapsedTime;
@@ -168,7 +173,7 @@ int main()
     {
         B[j] = static_cast<float>( j );
     }
-    std::memset( C, 0, sizeof( C ) );
+    std::memset( C, 0, 16 * 6 * sizeof( float ) );
 
     int64_t l_iter = 1000 * 1000;
     std::string v1_matmul( "v1_matmul" );
@@ -177,10 +182,13 @@ int main()
     
     std::cout << "\nBenchmarking V1 Matmul throughput ...\n";
     benchmark_thr( l_iter, v1_matmul, A, B, C );
+    std::memset( C, 0, 16 * 6 * sizeof( float ) );
 
     std::cout << "\nBenchmarking V2 Matmul throughput ...\n";
     benchmark_thr( l_iter, v2_matmul, A, B, C );
+    std::memset( C, 0, 16 * 6 * sizeof( float ) );
 
+    l_iter *= 500;
     std::cout << "\nBenchmarking V3 Matmul throughput ...\n";
     benchmark_thr( l_iter, v3_matmul, A, B, C );
 

@@ -6,11 +6,11 @@ default: microbench test
 
 test:
 	mkdir -p build
-	g++ tests.cpp matmul_64_64_64.test.cpp matmul_64_64_64.s -I$(INCLUDE_DIR) -o build/test
+	g++ tests/tests.cpp tests/matmul_64_64_64.test.cpp tests/matmul_64_64_64.s -I$(INCLUDE_DIR) -o build/test
 
 microbench:
 	mkdir -p build
-	g++ microbench.cpp optimization/v1_matmul_64_64_64.s optimization/v2_matmul_64_64_64.s -I$(INCLUDE_DIR) -o build/microbench
+	g++ benchmark/microbench.cpp optimization/v1_matmul_64_64_64.s optimization/v2_matmul_64_64_64.s -I$(INCLUDE_DIR) -o build/microbench
 
 clean:
 	rm -rf build

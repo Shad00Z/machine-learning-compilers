@@ -116,23 +116,23 @@ extern "C" {
         for ( int i = 0; i < 1000; i++ )
         {
             v1_matmul_14_6_64( a, 
-                            b, 
-                            c, 
-                            14, 
-                            64, 
-                            14 );
+                               b, 
+                               c, 
+                               14, 
+                               64, 
+                               14 );
         }
-        std::memset( c, 0, sizeof( c ) );
+        std::memset( c, 0, 14 * 6 * sizeof( float ) );
 
         auto l_start_time = std::chrono::high_resolution_clock::now();
         for ( int i = 0; i < n; i++ )
         {
             v1_matmul_14_6_64( a, 
-                            b, 
-                            c, 
-                            14, 
-                            64, 
-                            14 );
+                               b, 
+                               c, 
+                               14, 
+                               64, 
+                               14 );
         }
         auto l_end_time = std::chrono::high_resolution_clock::now();
         elapsedTime = std::chrono::duration_cast<std::chrono::microseconds>( l_end_time - l_start_time ).count() / 1e6;
@@ -146,23 +146,23 @@ extern "C" {
         for ( int i = 0; i < 1000; i++ )
         {
             v2_matmul_14_6_64( a, 
-                            b, 
-                            c, 
-                            14, 
-                            64, 
-                            14 );
+                               b, 
+                               c, 
+                               14, 
+                               64, 
+                               14 );
         }
-        std::memset( c, 0, sizeof( c ) );
+        std::memset( c, 0, 14 * 6 * sizeof( float ) );
 
         auto l_start_time = std::chrono::high_resolution_clock::now();
         for ( int i = 0; i < n; i++ )
         {
             v2_matmul_14_6_64( a, 
-                            b, 
-                            c, 
-                            14, 
-                            64, 
-                            14 );
+                               b, 
+                               c, 
+                               14, 
+                               64, 
+                               14 );
         }
         auto l_end_time = std::chrono::high_resolution_clock::now();
         elapsedTime = std::chrono::duration_cast<std::chrono::microseconds>( l_end_time - l_start_time ).count() / 1e6;
@@ -176,23 +176,23 @@ extern "C" {
         for ( int i = 0; i < 1000; i++ )
         {
             v3_matmul_14_6_64( a, 
-                             b, 
-                             c, 
-                             14, 
-                             64, 
-                             14 );
+                               b, 
+                               c, 
+                               14, 
+                               64, 
+                               14 );
         }
-        std::memset( c, 0, sizeof( c ) );
+        std::memset( c, 0, 14 * 6 * sizeof( float ) );
 
         auto l_start_time = std::chrono::high_resolution_clock::now();
         for ( int i = 0; i < n; i++ )
         {
             v3_matmul_14_6_64( a, 
-                             b, 
-                             c, 
-                             14, 
-                             64, 
-                             14 );
+                               b, 
+                               c, 
+                               14, 
+                               64, 
+                               14 );
         }
         auto l_end_time = std::chrono::high_resolution_clock::now();
         elapsedTime = std::chrono::duration_cast<std::chrono::microseconds>( l_end_time - l_start_time ).count() / 1e6;
@@ -206,13 +206,13 @@ extern "C" {
         for ( int i = 0; i < 1000; i++ )
         {
             v4_matmul_14_6_64( a, 
-                             b, 
-                             c, 
-                             14, 
-                             64, 
-                             14 );
+                               b, 
+                               c, 
+                               14, 
+                               64, 
+                               14 );
         }
-        std::memset( c, 0, sizeof( c ) );
+        std::memset( c, 0, 14 * 6 * sizeof( float ) );
 
         auto l_start_time = std::chrono::high_resolution_clock::now();
         for ( int i = 0; i < n; i++ )
@@ -236,23 +236,23 @@ extern "C" {
         for ( int i = 0; i < 1000; i++ )
         {
             v1_matmul_15_6_64( a, 
-                             b, 
-                             c, 
-                             15, 
-                             64, 
-                             15 );
+                               b, 
+                               c, 
+                               15, 
+                               64, 
+                               15 );
         }
-        std::memset( c, 0, sizeof( c ) );
+        std::memset( c, 0, 15 * 6 * sizeof( float ) );
 
         auto l_start_time = std::chrono::high_resolution_clock::now();
         for ( int i = 0; i < n; i++ )
         {
             v1_matmul_15_6_64( a, 
-                             b, 
-                             c, 
-                             15, 
-                             64, 
-                             15 );
+                               b, 
+                               c, 
+                               15, 
+                               64, 
+                               15 );
         }
         auto l_end_time = std::chrono::high_resolution_clock::now();
         elapsedTime = std::chrono::duration_cast<std::chrono::microseconds>( l_end_time - l_start_time ).count() / 1e6;
@@ -266,23 +266,23 @@ extern "C" {
         for ( int i = 0; i < 1000; i++ )
         {
             v2_matmul_15_6_64( a, 
-                             b, 
-                             c, 
-                             15, 
-                             64, 
-                             15 );
+                               b, 
+                               c, 
+                               15, 
+                               64, 
+                               15 );
         }
-        std::memset( c, 0, sizeof( c ) );
+        std::memset( c, 0, 15 * 6 * sizeof( float ) );
 
         auto l_start_time = std::chrono::high_resolution_clock::now();
         for ( int i = 0; i < n; i++ )
         {
             v2_matmul_15_6_64( a, 
-                             b, 
-                             c, 
-                             15, 
-                             64, 
-                             15 );
+                               b, 
+                               c, 
+                               15, 
+                               64, 
+                               15 );
         }
         auto l_end_time = std::chrono::high_resolution_clock::now();
         elapsedTime = std::chrono::duration_cast<std::chrono::microseconds>( l_end_time - l_start_time ).count() / 1e6;
@@ -296,23 +296,23 @@ extern "C" {
         for ( int i = 0; i < 1000; i++ )
         {
             v3_matmul_15_6_64( a, 
-                             b, 
-                             c, 
-                             15, 
-                             64, 
-                             15 );
+                               b, 
+                               c, 
+                               15, 
+                               64, 
+                               15 );
         }
-        std::memset( c, 0, sizeof( c ) );
+        std::memset( c, 0, 15 * 6 * sizeof( float ) );
 
         auto l_start_time = std::chrono::high_resolution_clock::now();
         for ( int i = 0; i < n; i++ )
         {
             v3_matmul_15_6_64( a, 
-                             b, 
-                             c, 
-                             15, 
-                             64, 
-                             15 );
+                               b, 
+                               c, 
+                               15, 
+                               64, 
+                               15 );
         }
         auto l_end_time = std::chrono::high_resolution_clock::now();
         elapsedTime = std::chrono::duration_cast<std::chrono::microseconds>( l_end_time - l_start_time ).count() / 1e6;
@@ -332,7 +332,7 @@ extern "C" {
                            64, 
                            14 );
         }
-        std::memset( c, 0, sizeof( c ) );
+        std::memset( c, 0, 14 * 6 * sizeof( float ) );
 
         auto l_start_time = std::chrono::high_resolution_clock::now();
         for ( int i = 0; i < n; i++ )
@@ -362,7 +362,7 @@ extern "C" {
                            64, 
                            15 );
         }
-        std::memset( c, 0, sizeof( c ) );
+        std::memset( c, 0, 15 * 6 * sizeof( float ) );
 
         auto l_start_time = std::chrono::high_resolution_clock::now();
         for ( int i = 0; i < n; i++ )
@@ -424,23 +424,23 @@ int main()
 
     std::cout << "\nBenchmarking V1_Matmul_14_6_64 throughput ...\n";
     benchmark_thr( l_iter, v1_matmul_14, A, B, C );
-    std::memset( C, 0, sizeof( C ) );
+    std::memset( C, 0, 14 * 6 * sizeof( float ) );
 
     std::cout << "\nBenchmarking V2_Matmul_14_6_64 throughput ...\n";
     benchmark_thr( l_iter, v2_matmul_14, A, B, C );
-    std::memset( C, 0, sizeof( C ) );
+    std::memset( C, 0, 14 * 6 * sizeof( float ) );
 
     std::cout << "\nBenchmarking V3_Matmul_14_6_64 throughput ...\n";
     benchmark_thr( l_iter, v3_matmul_14, A, B, C );
-    std::memset( C, 0, sizeof( C ) );
+    std::memset( C, 0, 14 * 6 * sizeof( float ) );
 
     std::cout << "\nBenchmarking V4_Matmul_14_6_64 throughput ...\n";
     benchmark_thr( l_iter, v4_matmul_14, A, B, C );
-    std::memset( C, 0, sizeof( C ) );
+    std::memset( C, 0, 14 * 6 * sizeof( float ) );
 
     std::cout << "\nBenchmarking Matmul_M_6_64 M=14 throughput ...\n";
     benchmark_thr( l_iter, g_matmul_14, A, B, C );
-    std::memset( C, 0, sizeof( C ) );
+    std::memset( C, 0, 14 * 6 * sizeof( float ) );
 
 
     const int m = 15;
@@ -469,19 +469,19 @@ int main()
 
     std::cout << "\nBenchmarking V1_Matmul_15_6_64 throughput ...\n";
     benchmark_thr( l_iter, v1_matmul_15, a, b, c );
-    std::memset( c, 0, sizeof( c ) );
+    std::memset( c, 0, 15 * 6 * sizeof( float ) );
 
     std::cout << "\nBenchmarking V2_Matmul_15_6_64 throughput ...\n";
     benchmark_thr( l_iter, v2_matmul_15, a, b, c );
-    std::memset( c, 0, sizeof( c ) );
+    std::memset( c, 0, 15 * 6 * sizeof( float ) );
 
     std::cout << "\nBenchmarking V3_Matmul_15_6_64 throughput ...\n";
     benchmark_thr( l_iter, v3_matmul_15, a, b, c );
-    std::memset( c, 0, sizeof( c ) );
+    std::memset( c, 0, 15 * 6 * sizeof( float ) );
 
     std::cout << "\nBenchmarking Matmul_M_6_64 M=15 throughput ...\n";
     benchmark_thr( l_iter, g_matmul_15, a, b, c );
-    std::memset( c, 0, sizeof( c ) );
+    std::memset( c, 0, 15 * 6 * sizeof( float ) );
 
     return 0;
 }
