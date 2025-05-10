@@ -7,6 +7,10 @@ digraph "/home/runner/work/machine-learning-compilers/machine-learning-compilers
   compound=true
   subgraph clusterdir_b2c563f7bf427f5a0c17c9a95cb1f2fd {
     graph [ bgcolor="#edf0f7", pencolor="grey50", label="03_neon", fontname=Helvetica,fontsize=10 style="filled,dashed", URL="dir_b2c563f7bf427f5a0c17c9a95cb1f2fd.html",tooltip=""]
-  dir_db0c44b6c99babc115391fee31ffffd2 [label="01_execution_throughput\l_and_latency", fillcolor="#edf0f7", color="grey25", style="filled,bold", URL="dir_db0c44b6c99babc115391fee31ffffd2.html",tooltip=""];
+  subgraph clusterdir_db0c44b6c99babc115391fee31ffffd2 {
+    graph [ bgcolor="#edf0f7", pencolor="grey25", label="", fontname=Helvetica,fontsize=10 style="filled,bold", URL="dir_db0c44b6c99babc115391fee31ffffd2.html",tooltip=""]
+    dir_db0c44b6c99babc115391fee31ffffd2 [shape=plaintext, label="01_execution_throughput\l_and_latency"];
+  dir_6a45cead0ad97b9b328c87f0c486e1d8 [label="benchmark", fillcolor="#a2b4d6", color="grey25", style="filled", URL="dir_6a45cead0ad97b9b328c87f0c486e1d8.html",tooltip=""];
+  }
   }
 }

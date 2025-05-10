@@ -427,7 +427,7 @@ The changes we made were:
     :language: asm
     :linenos:
     :lines: 78-96
-    :caption: Replacing all ``LDP``'s with ``LD1``'s and ``STP``s with ``ST1``'s
+    :caption: Replacing all ``LDP``'s with ``LD1``'s and ``STP``'s with ``ST1``'s
 
 These optimizations resulted in a performance increase of about ``3-4 GFLOPs``.
 

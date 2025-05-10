@@ -7,6 +7,11 @@ digraph "/home/runner/work/machine-learning-compilers/machine-learning-compilers
   compound=true
   subgraph clusterdir_b2c563f7bf427f5a0c17c9a95cb1f2fd {
     graph [ bgcolor="#edf0f7", pencolor="grey50", label="03_neon", fontname=Helvetica,fontsize=10 style="filled,dashed", URL="dir_b2c563f7bf427f5a0c17c9a95cb1f2fd.html",tooltip=""]
-  dir_fdaeb624d648c5eadf33e2657c6f49fc [label="03_loops", fillcolor="#edf0f7", color="grey25", style="filled,bold", URL="dir_fdaeb624d648c5eadf33e2657c6f49fc.html",tooltip=""];
+  subgraph clusterdir_fdaeb624d648c5eadf33e2657c6f49fc {
+    graph [ bgcolor="#edf0f7", pencolor="grey25", label="", fontname=Helvetica,fontsize=10 style="filled,bold", URL="dir_fdaeb624d648c5eadf33e2657c6f49fc.html",tooltip=""]
+    dir_fdaeb624d648c5eadf33e2657c6f49fc [shape=plaintext, label="03_loops"];
+  dir_6eccd4aac8c7502a6176500c4f67d84c [label="benchmark", fillcolor="#a2b4d6", color="grey25", style="filled", URL="dir_6eccd4aac8c7502a6176500c4f67d84c.html",tooltip=""];
+  dir_e5a450447a6bc952b2050a1e2deda141 [label="tests", fillcolor="#a2b4d6", color="grey25", style="filled", URL="dir_e5a450447a6bc952b2050a1e2deda141.html",tooltip=""];
+  }
   }
 }
