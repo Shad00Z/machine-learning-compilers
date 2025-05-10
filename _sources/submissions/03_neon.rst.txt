@@ -402,13 +402,13 @@ Similar to the previous tasks we implemented several versions of this kernel to 
 In our **first version** we simply used our ``matmul_64_48_64`` kernel from our :ref:`loops <3.3 Loops>` task and looped 16 times around that kernel.
 Key points that we needed to consider were the following:
 
-.. literalinclude:: ../../src/submissions/03_neon/06_batch_reduce_gemm/optimization/v1_matmul_64_48_64_16.s
+.. literalinclude:: ../../src/submissions/03_neon/06_batch_reduce_gemm/optimization/v1_matmul_64_48_64_16.S
     :language: asm
     :linenos:
     :lines: 56-59
     :caption: Setting the batch counter
 
-.. literalinclude:: ../../src/submissions/03_neon/06_batch_reduce_gemm/optimization/v1_matmul_64_48_64_16.s
+.. literalinclude:: ../../src/submissions/03_neon/06_batch_reduce_gemm/optimization/v1_matmul_64_48_64_16.S
     :language: asm
     :linenos:
     :lines: 230-244
@@ -417,13 +417,13 @@ Key points that we needed to consider were the following:
 In our **second version** we made some optimizations to the kernel.
 The changes we made were:
 
-.. literalinclude:: ../../src/submissions/03_neon/06_batch_reduce_gemm/optimization/v2_matmul_64_48_64_16.s
+.. literalinclude:: ../../src/submissions/03_neon/06_batch_reduce_gemm/optimization/v2_matmul_64_48_64_16.S
     :language: asm
     :linenos:
     :lines: 39-44
     :caption: Replacing ``MUL``'s with ``LSL``'s
 
-.. literalinclude:: ../../src/submissions/03_neon/06_batch_reduce_gemm/optimization/v2_matmul_64_48_64_16.s
+.. literalinclude:: ../../src/submissions/03_neon/06_batch_reduce_gemm/optimization/v2_matmul_64_48_64_16.S
     :language: asm
     :linenos:
     :lines: 78-96

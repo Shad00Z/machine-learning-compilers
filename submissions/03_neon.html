@@ -1380,11 +1380,75 @@ For now we are only implementing the case where the batch size is 16.</p>
 <p>Similar to the previous tasks we implemented several versions of this kernel to optimize the performance.</p>
 <p>In our <strong>first version</strong> we simply used our <code class="docutils literal notranslate"><span class="pre">matmul_64_48_64</span></code> kernel from our <a class="reference internal" href="#loops"><span class="std std-ref">loops</span></a> task and looped 16 times around that kernel.
 Key points that we needed to consider were the following:</p>
+<div class="literal-block-wrapper docutils container" id="id35">
+<div class="code-block-caption"><span class="caption-text">Setting the batch counter</span><a class="headerlink" href="#id35" title="Link to this code"></a></div>
+<div class="highlight-asm notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="w">    </span><span class="c1">// Batch counter</span>
+<span class="linenos">2</span><span class="w">    </span><span class="nf">mov</span><span class="w"> </span><span class="no">x24</span><span class="p">,</span><span class="w"> </span><span class="mi">#16</span>
+<span class="linenos">3</span>
+<span class="linenos">4</span><span class="nl">_n_batch:</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id36">
+<div class="code-block-caption"><span class="caption-text">Jumping to the next matrix A and B in the batch</span><a class="headerlink" href="#id36" title="Link to this code"></a></div>
+<div class="highlight-asm notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="w">    </span><span class="c1">// next A matrix</span>
+<span class="linenos"> 2</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x0</span><span class="p">,</span><span class="w"> </span><span class="no">x0</span><span class="p">,</span><span class="w"> </span><span class="no">x6</span><span class="w"> </span><span class="c1">// A</span>
+<span class="linenos"> 3</span><span class="w">    </span><span class="nf">mov</span><span class="w"> </span><span class="no">x8</span><span class="p">,</span><span class="w"> </span><span class="no">x0</span><span class="w">     </span><span class="c1">// A</span>
+<span class="linenos"> 4</span>
+<span class="linenos"> 5</span><span class="w">    </span><span class="c1">// next B matrix</span>
+<span class="linenos"> 6</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="no">x7</span><span class="w"> </span><span class="c1">// B</span>
+<span class="linenos"> 7</span><span class="w">    </span><span class="nf">mov</span><span class="w"> </span><span class="no">x20</span><span class="p">,</span><span class="w"> </span><span class="no">x1</span><span class="w">    </span><span class="c1">// B</span>
+<span class="linenos"> 8</span>
+<span class="linenos"> 9</span><span class="w">    </span><span class="c1">// restore Pointer for matrix C</span>
+<span class="linenos">10</span><span class="w">    </span><span class="nf">mov</span><span class="w"> </span><span class="no">x21</span><span class="p">,</span><span class="w"> </span><span class="no">x2</span><span class="w">    </span><span class="c1">// C</span>
+<span class="linenos">11</span><span class="w">    </span><span class="nf">mov</span><span class="w"> </span><span class="no">x10</span><span class="p">,</span><span class="w"> </span><span class="no">x21</span><span class="w">   </span><span class="c1">// C</span>
+<span class="linenos">12</span>
+<span class="linenos">13</span><span class="w">    </span><span class="nf">sub</span><span class="w"> </span><span class="no">x24</span><span class="p">,</span><span class="w"> </span><span class="no">x24</span><span class="p">,</span><span class="w"> </span><span class="mi">#1</span>
+<span class="linenos">14</span>
+<span class="linenos">15</span><span class="w">    </span><span class="nf">cbnz</span><span class="w"> </span><span class="no">x24</span><span class="p">,</span><span class="w"> </span><span class="no">_n_batch</span>
+</pre></div>
+</div>
+</div>
 <p>In our <strong>second version</strong> we made some optimizations to the kernel.
 The changes we made were:</p>
+<div class="literal-block-wrapper docutils container" id="id37">
+<div class="code-block-caption"><span class="caption-text">Replacing <code class="docutils literal notranslate"><span class="pre">MUL</span></code>’s with <code class="docutils literal notranslate"><span class="pre">LSL</span></code>’s</span><a class="headerlink" href="#id37" title="Link to this code"></a></div>
+<div class="highlight-asm notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="w">    </span><span class="c1">// multiply strides with float size</span>
+<span class="linenos">2</span><span class="w">    </span><span class="nf">lsl</span><span class="w"> </span><span class="no">x3</span><span class="p">,</span><span class="w"> </span><span class="no">x3</span><span class="p">,</span><span class="w"> </span><span class="mi">#2</span><span class="w"> </span><span class="c1">// lda in bytes</span>
+<span class="linenos">3</span><span class="w">    </span><span class="nf">lsl</span><span class="w"> </span><span class="no">x4</span><span class="p">,</span><span class="w"> </span><span class="no">x4</span><span class="p">,</span><span class="w"> </span><span class="mi">#2</span><span class="w"> </span><span class="c1">// ldb in bytes</span>
+<span class="linenos">4</span><span class="w">    </span><span class="nf">lsl</span><span class="w"> </span><span class="no">x5</span><span class="p">,</span><span class="w"> </span><span class="no">x5</span><span class="p">,</span><span class="w"> </span><span class="mi">#2</span><span class="w"> </span><span class="c1">// ldc in bytes</span>
+<span class="linenos">5</span><span class="w">    </span><span class="nf">lsl</span><span class="w"> </span><span class="no">x6</span><span class="p">,</span><span class="w"> </span><span class="no">x6</span><span class="p">,</span><span class="w"> </span><span class="mi">#2</span><span class="w"> </span><span class="c1">// br_stride_a in bytes</span>
+<span class="linenos">6</span><span class="w">    </span><span class="nf">lsl</span><span class="w"> </span><span class="no">x7</span><span class="p">,</span><span class="w"> </span><span class="no">x7</span><span class="p">,</span><span class="w"> </span><span class="mi">#2</span><span class="w"> </span><span class="c1">// br_stride_b in bytes</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id38">
+<div class="code-block-caption"><span class="caption-text">Replacing all <code class="docutils literal notranslate"><span class="pre">LDP</span></code>’s with <code class="docutils literal notranslate"><span class="pre">LD1</span></code>’s and <code class="docutils literal notranslate"><span class="pre">STP``s</span> <span class="pre">with</span> <span class="pre">``ST1</span></code>’s</span><a class="headerlink" href="#id38" title="Link to this code"></a></div>
+<div class="highlight-asm notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="w">    </span><span class="c1">// LOAD MATRIX C</span>
+<span class="linenos"> 2</span><span class="w">    </span><span class="nf">mov</span><span class="w"> </span><span class="no">x12</span><span class="p">,</span><span class="w"> </span><span class="no">x10</span>
+<span class="linenos"> 3</span><span class="w">    </span><span class="c1">// first column</span>
+<span class="linenos"> 4</span><span class="w">    </span><span class="nf">ld1</span><span class="w"> </span><span class="p">{</span><span class="no">v0.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v1.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v2.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v3.4s</span><span class="p">},</span><span class="w"> </span><span class="p">[</span><span class="no">x12</span><span class="p">]</span>
+<span class="linenos"> 5</span><span class="w">    </span><span class="c1">// second column</span>
+<span class="linenos"> 6</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x12</span><span class="p">,</span><span class="w"> </span><span class="no">x12</span><span class="p">,</span><span class="w"> </span><span class="no">x5</span>
+<span class="linenos"> 7</span><span class="w">    </span><span class="nf">ld1</span><span class="w"> </span><span class="p">{</span><span class="no">v4.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v5.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v6.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v7.4s</span><span class="p">},</span><span class="w"> </span><span class="p">[</span><span class="no">x12</span><span class="p">]</span>
+<span class="linenos"> 8</span><span class="w">    </span><span class="c1">// third column</span>
+<span class="linenos"> 9</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x12</span><span class="p">,</span><span class="w"> </span><span class="no">x12</span><span class="p">,</span><span class="w"> </span><span class="no">x5</span>
+<span class="linenos">10</span><span class="w">    </span><span class="nf">ld1</span><span class="w"> </span><span class="p">{</span><span class="no">v8.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v9.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v10.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v11.4s</span><span class="p">},</span><span class="w"> </span><span class="p">[</span><span class="no">x12</span><span class="p">]</span>
+<span class="linenos">11</span><span class="w">    </span><span class="c1">// fourth column</span>
+<span class="linenos">12</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x12</span><span class="p">,</span><span class="w"> </span><span class="no">x12</span><span class="p">,</span><span class="w"> </span><span class="no">x5</span>
+<span class="linenos">13</span><span class="w">    </span><span class="nf">ld1</span><span class="w"> </span><span class="p">{</span><span class="no">v12.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v13.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v14.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v15.4s</span><span class="p">},</span><span class="w"> </span><span class="p">[</span><span class="no">x12</span><span class="p">]</span>
+<span class="linenos">14</span><span class="w">    </span><span class="c1">// fifth column</span>
+<span class="linenos">15</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x12</span><span class="p">,</span><span class="w"> </span><span class="no">x12</span><span class="p">,</span><span class="w"> </span><span class="no">x5</span>
+<span class="linenos">16</span><span class="w">    </span><span class="nf">ld1</span><span class="w"> </span><span class="p">{</span><span class="no">v16.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v17.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v18.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v19.4s</span><span class="p">},</span><span class="w"> </span><span class="p">[</span><span class="no">x12</span><span class="p">]</span>
+<span class="linenos">17</span><span class="w">    </span><span class="c1">// sixth column</span>
+<span class="linenos">18</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x12</span><span class="p">,</span><span class="w"> </span><span class="no">x12</span><span class="p">,</span><span class="w"> </span><span class="no">x5</span>
+<span class="linenos">19</span><span class="w">    </span><span class="nf">ld1</span><span class="w"> </span><span class="p">{</span><span class="no">v20.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v21.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v22.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v23.4s</span><span class="p">},</span><span class="w"> </span><span class="p">[</span><span class="no">x12</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
 <p>These optimizations resulted in a performance increase of about <code class="docutils literal notranslate"><span class="pre">3-4</span> <span class="pre">GFLOPs</span></code>.</p>
-<div class="literal-block-wrapper docutils container" id="id35">
-<div class="code-block-caption"><span class="caption-text">Benchmarking results for the batch-reduce GEMM kernels</span><a class="headerlink" href="#id35" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id39">
+<div class="code-block-caption"><span class="caption-text">Benchmarking results for the batch-reduce GEMM kernels</span><a class="headerlink" href="#id39" title="Link to this code"></a></div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span>Benchmarking V1_Matmul_64_48_64_16 throughput ...
 <span class="linenos"> 2</span>-----------------------------------------------
 <span class="linenos"> 3</span>Measuring throughput for Instruction
