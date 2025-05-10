@@ -57,7 +57,7 @@ using dtype_t = mini_jit::Brgemm::dtype_t;
             mini_jit::Brgemm::kernel_t l_func = l_brgemm.get_kernel();
             l_func( a, b, c, 16, 1, 16, 0, 0 );
         }
-        std::memset( c, 0, sizeof( c ) );
+        std::memset(c, 0, 16 * 6 * sizeof(float));
 
         auto l_start_time = std::chrono::high_resolution_clock::now();
         for ( int i = 0; i < n; i++ )
@@ -82,7 +82,7 @@ using dtype_t = mini_jit::Brgemm::dtype_t;
             mini_jit::Brgemm::kernel_t l_func = l_brgemm.get_kernel();
             l_func( a, b, c, 16, 64, 16, 0, 0 );
         }
-        std::memset( c, 0, sizeof( c ) );
+        std::memset(c, 0, 16 * 6 * sizeof(float));
 
         auto l_start_time = std::chrono::high_resolution_clock::now();
         for ( int i = 0; i < n; i++ )
@@ -130,14 +130,14 @@ int main()
     {
         B_l1[j] = static_cast<float>(j);
     }
-    std::memset(C_l1, 0, sizeof(C_l1));
+    std::memset(C_l1, 0, M_l1 * N_l1 * sizeof(float));
 
     int64_t l_iter = 10000 * 15000;
     std::string l1_matmul( "matmul_16_6_1" );
 
     std::cout << "\nBenchmarking Matmul_16_6_1 throughput ...\n";
     benchmark_thr( l_iter, l1_matmul, A_l1, B_l1, C_l1 );
-    std::memset(C_l1, 0, sizeof(C_l1));
+    std::memset(C_l1, 0, M_l1 * N_l1 * sizeof(float));
 
     const int M_l2 = 16;
     const int N_l2 = 6;
@@ -156,14 +156,14 @@ int main()
     {
         B_l2[j] = static_cast<float>(j);
     }
-    std::memset(C_l2, 0, sizeof(C_l2));
+    std::memset(C_l2, 0, M_l2 * N_l2 * sizeof(float));
 
     int64_t l2_iter = 10000 * 2000;
     std::string l2_matmul( "matmul_16_6_k" );
 
     std::cout << "\nBenchmarking Matmul_16_6_64 throughput ...\n";
     benchmark_thr( l2_iter, l2_matmul, A_l2, B_l2, C_l2 );
-    std::memset(C_l2, 0, sizeof(C_l2));
+    std::memset(C_l2, 0, M_l2 * N_l2 * sizeof(float));
 
     return 0;
 }
