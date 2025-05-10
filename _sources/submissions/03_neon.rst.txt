@@ -161,6 +161,8 @@ Using this approach we obtained the following results:
 The GLFOPs results indicate that with every version we obtained slightly better results, resulting in 
 about ``1.7`` GLOPs in difference comparing our best with our worst approach.
 
+.. _3.3 Loops:
+
 3.3 Loops
 ------------
 
@@ -386,3 +388,50 @@ V1 is the first version which we obtained by converting our best performing ``ma
     :linenos:
     :lines: 37-44
     :caption: Optimized stride calculations
+
+3.6 Batch-Reduce GEMM
+-----------------------------
+
+Based on the previous tasks, we are now implementing a batch-reduce GEMM kernel. 
+The goal is to implement a kernel that computes :math:`C+=\sum_i A_i B_i` for M=64, N=48 and K=64 matrices. 
+The kernel should be able to handle batches of matrices. 
+For now we are only implementing the case where the batch size is 16.
+
+Similar to the previous tasks we implemented several versions of this kernel to optimize the performance.
+
+In our **first version** we simply used our ``matmul_64_48_64`` kernel from our :ref:`loops <3.3 Loops>` task and looped 16 times around that kernel.
+Key points that we needed to consider were the following:
+
+.. literalinclude:: ../../src/submissions/03_neon/06_batch_reduce_gemm/optimization/v1_matmul_64_48_64_16.s
+    :language: asm
+    :linenos:
+    :lines: 56-59
+    :caption: Setting the batch counter
+
+.. literalinclude:: ../../src/submissions/03_neon/06_batch_reduce_gemm/optimization/v1_matmul_64_48_64_16.s
+    :language: asm
+    :linenos:
+    :lines: 230-244
+    :caption: Jumping to the next matrix A and B in the batch
+
+In our **second version** we made some optimizations to the kernel.
+The changes we made were:
+
+.. literalinclude:: ../../src/submissions/03_neon/06_batch_reduce_gemm/optimization/v2_matmul_64_48_64_16.s
+    :language: asm
+    :linenos:
+    :lines: 39-44
+    :caption: Replacing ``MUL``'s with ``LSL``'s
+
+.. literalinclude:: ../../src/submissions/03_neon/06_batch_reduce_gemm/optimization/v2_matmul_64_48_64_16.s
+    :language: asm
+    :linenos:
+    :lines: 78-96
+    :caption: Replacing all ``LDP``'s with ``LD1``'s and ``STP``s with ``ST1``'s
+
+These optimizations resulted in a performance increase of about ``3-4 GFLOPs``.
+
+.. literalinclude:: ../../src/submissions/03_neon/06_batch_reduce_gemm/benchmark/benchmarking_results_64_48_64_16.txt
+    :language: text
+    :linenos:
+    :caption: Benchmarking results for the batch-reduce GEMM kernels
