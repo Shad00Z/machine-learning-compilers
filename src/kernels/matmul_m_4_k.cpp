@@ -55,7 +55,7 @@ void mini_jit::kernels::matmul_m_4_k(mini_jit::Kernel &kernel,
     if (mLoopIterations > 0)
     {
         mini_jit::kernels::internal::generateMLoop(kernel, mLoopIterations, k);
-    }    
+    }
 
     if (mLoopRemainder > 0)
     {
@@ -106,16 +106,19 @@ void mini_jit::kernels::matmul_m_4_k(mini_jit::Kernel &kernel,
 
     kernel.add_instr(inst::ret());
 
-    kernel.write("matmul_m_6_k.bin");
+    kernel.write("matmul_m_4_k.bin");
     kernel.set_kernel();
 }
 
 void mini_jit::kernels::internal::generateMLoop(mini_jit::Kernel &kernel,
-                                                int m,
+                                                int mLoopIterations,
                                                 int k)
 {
-    // START M_LOOP
+    // prepare the kernel
+    kernel.add_instr(base::mov(gpr_t::x11, mLoopIterations));
 
+    // START M_LOOP
+    kernel.add_label("m_loop");
     // Load Matrix C
     kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x9));
     kernel.add_instr(simd_fp::ldp(simd_fp_t::v0, simd_fp_t::v1, gpr_t::x12, 0, neon_size_spec_t::q));
@@ -142,8 +145,8 @@ void mini_jit::kernels::internal::generateMLoop(mini_jit::Kernel &kernel,
     kernel.add_instr(base::mov(gpr_t::x17, 0));         // Row index for Matrix B
 
     // START K_LOOP
-
-    // Load column of A (8 values)
+    kernel.add_label("k_loop");
+    //  Load column of A (8 values)
     kernel.add_instr(simd_fp::ldp(simd_fp_t::v24, simd_fp_t::v25, gpr_t::x15, 0, neon_size_spec_t::q));
 
     // Load Column of Matrix B
@@ -187,12 +190,13 @@ void mini_jit::kernels::internal::generateMLoop(mini_jit::Kernel &kernel,
 
     // END K_LOOP
     kernel.add_instr(base::sub(gpr_t::x14, gpr_t::x14, 1, 0));
-    kernel.add_instr(base::cbnz(gpr_t::x14, -21*4));
+    int l_kLoopInstrCount = kernel.getInstrCountFromLabel("k_loop");
+    kernel.add_instr(base::cbnz(gpr_t::x14, -l_kLoopInstrCount * 4));
 
     // Store Matrix C
     kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x9));
     kernel.add_instr(simd_fp::stp(simd_fp_t::v0, simd_fp_t::v1, gpr_t::x12, 0, neon_size_spec_t::q));
-    
+
     kernel.add_instr(base::add(gpr_t::x12, gpr_t::x12, gpr_t::x5, 0, 0));
     kernel.add_instr(simd_fp::stp(simd_fp_t::v4, simd_fp_t::v5, gpr_t::x12, 0, neon_size_spec_t::q));
 
@@ -209,17 +213,18 @@ void mini_jit::kernels::internal::generateMLoop(mini_jit::Kernel &kernel,
     kernel.add_instr(simd_fp::stp(simd_fp_t::v20, simd_fp_t::v21, gpr_t::x12, 0, neon_size_spec_t::q));
 
     // increase A and C pointers for next block
-    kernel.add_instr(base::add(gpr_t::x7, gpr_t::x7, 8*4, 0));
-    kernel.add_instr(base::add(gpr_t::x9, gpr_t::x9, 8*4, 0));
+    kernel.add_instr(base::add(gpr_t::x7, gpr_t::x7, 8 * 4, 0));
+    kernel.add_instr(base::add(gpr_t::x9, gpr_t::x9, 8 * 4, 0));
 
     // END M_LOOP
     // decrement M loop counter
     kernel.add_instr(base::sub(gpr_t::x11, gpr_t::x11, 1, 0));
-    kernel.add_instr(base::cbnz(gpr_t::x11, -53*4));
+
+    int l_mLoopInstrCount = kernel.getInstrCountFromLabel("m_loop");
+    kernel.add_instr(base::cbnz(gpr_t::x11, -l_mLoopInstrCount * 4));
 }
 
 void mini_jit::kernels::internal::generateM1Loop(mini_jit::Kernel &kernel,
                                                  int k)
 {
-
 }

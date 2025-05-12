@@ -12,11 +12,11 @@ namespace mini_jit
             /**
              * @brief Generates on M loop for matrix multiplication.
              * @param kernel Kernel object to be filled with instructions.
-             * @param m number of rows in A and C.
+             * @param mLoopIterations number of M loop iterations.
              * @param k number of columns in A and rows in B.
              */
             void generateMLoop( mini_jit::Kernel &kernel, 
-                                int m, 
+                                int mLoopIterations, 
                                 int k );
 
             void generateM1Loop( mini_jit::Kernel &kernel, 

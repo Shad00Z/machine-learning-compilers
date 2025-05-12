@@ -12,6 +12,26 @@ mini_jit::Kernel::~Kernel() noexcept {
 
 void mini_jit::Kernel::add_instr( uint32_t ins ) {
   m_buffer.push_back( ins );
+
+  // update labels
+  for (auto &label : m_labels) {
+    label.second += 1;
+  }
+}
+
+void mini_jit::Kernel::add_label( std::string const & label ) {
+  if( m_labels.find( label ) != m_labels.end() ) {
+    throw std::runtime_error( "Label already exists: " + label );
+  }
+  m_labels[label] = 0;
+}
+
+int mini_jit::Kernel::getInstrCountFromLabel( std::string const & label ) const {
+  auto it = m_labels.find( label );
+  if( it == m_labels.end() ) {
+    throw std::runtime_error( "Label not found: " + label );
+  }
+  return it->second;
 }
 
 std::size_t mini_jit::Kernel::get_size() const {

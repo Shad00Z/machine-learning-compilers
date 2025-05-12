@@ -1,6 +1,8 @@
 #include <cstdint>
 #include <cstddef>
 #include <vector>
+#include <string>
+#include <map>
 
 #ifndef MINI_JIT_KERNEL_H
 #define MINI_JIT_KERNEL_H
@@ -13,6 +15,9 @@ class mini_jit::Kernel {
   private:
     //! high-level code buffer
     std::vector< uint32_t > m_buffer;
+
+    //! high-level label buffer
+    std::map<std::string, int> m_labels;
 
     //! size of the kernel
     std::size_t m_size_alloc = 0;
@@ -72,6 +77,21 @@ class mini_jit::Kernel {
      * @param ins instruction which is added.
      **/
     void add_instr( uint32_t ins );
+
+    /**
+     * Adds a label to the code buffer.
+     *
+     * @param label label which is added.
+     **/
+    void add_label( std::string const & label );
+
+    /**
+     * Returns how many instructions come after the given label.
+     * 
+     * @param label label to search for.
+     * @return number of instructions after the label.
+     */
+    int getInstrCountFromLabel( std::string const & label ) const;
 
     /**
      * Gets the size of the code buffer.

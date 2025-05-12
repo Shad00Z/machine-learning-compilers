@@ -29,7 +29,7 @@ TEST_CASE("Tests the matmul_m_4_k microkernel function with random matrices", "[
 
     mini_jit::Brgemm::kernel_t l_kernel = l_brgemm.get_kernel();
     l_kernel( A, B, C, M, K, M, 0, 0 );
-
+    std::cout << "C: " << std::endl;
     // Check the result
     for ( int i = 0; i < M * N; i++ )
     {
