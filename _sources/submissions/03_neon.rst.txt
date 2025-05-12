@@ -61,7 +61,7 @@ For the ``2S`` and the FMADD (scalar) instructions, we simply adjusted the calcu
 
 For this benchmarking task we obtained the following results:
 
-.. literalinclude:: ../../src/submissions/03_neon/01_execution_throughput_and_latency/benchmarking_results.txt
+.. literalinclude:: ../../src/submissions/03_neon/01_execution_throughput_and_latency/benchmark/benchmarking_results.txt
     :language: text
     :lines: 1-23
     :caption: Throughput results for the three instructions
@@ -94,7 +94,7 @@ To measure the execution latency for FMLA (vector) instructions with arrangement
 
 Both files contain 32 fmla instructions each, which are executed 100 times. The results of our benchmark is shown below:
 
-.. literalinclude:: ../../src/submissions/03_neon/01_execution_throughput_and_latency/benchmarking_results.txt
+.. literalinclude:: ../../src/submissions/03_neon/01_execution_throughput_and_latency/benchmark/benchmarking_results.txt
     :language: text
     :lines: 25-39
     :caption: Latency results for the two scenarios
@@ -154,7 +154,7 @@ The GFLOPs were calculated using the following formula:
 For each version we would perform ``50,000`` iterations as a warmup to guarantee similar results for each execution of the benchmark.
 Using this approach we obtained the following results:
 
-.. literalinclude:: ../../src/submissions/03_neon/02_microkernel/benchmarking_results.txt
+.. literalinclude:: ../../src/submissions/03_neon/02_microkernel/benchmark/benchmarking_results.txt
     :language: text
     :caption: GFLOPs calculations
 
@@ -222,7 +222,7 @@ To calculate them we followed the simple formula:
 
 The results that we obtained were:
 
-.. literalinclude:: ../../src/submissions/03_neon/03_loops/benchmarking_results.txt
+.. literalinclude:: ../../src/submissions/03_neon/03_loops/benchmark/benchmarking_results.txt
     :language: text
     :caption: GFLOPs calculations for MatMuls
 
@@ -284,7 +284,7 @@ our loads for matrix A and C. We used ``ld1`` instead of ``ldp``.
 
 When benchmarking our approaches we obtained the following results:
 
-.. literalinclude:: ../../src/submissions/03_neon/04_simd/benchmarking_results.txt
+.. literalinclude:: ../../src/submissions/03_neon/04_simd/benchmark/benchmarking_results.txt
     :language: text
     :linenos:
     :lines: 1-31
@@ -330,7 +330,7 @@ In the **third approach** we again changed the load instructions from ``ldp`` to
 
 Again, we performed some benchmarks:
 
-.. literalinclude:: ../../src/submissions/03_neon/04_simd/benchmarking_results.txt
+.. literalinclude:: ../../src/submissions/03_neon/04_simd/benchmark/benchmarking_results.txt
     :language: text
     :linenos:
     :lines: 41-63
@@ -347,13 +347,13 @@ Simply as a proof of concept we also implemented a generic approach for the ``ma
 
 We also benchmarked the performance of this **generic kernel**:
 
-.. literalinclude:: ../../src/submissions/03_neon/04_simd/benchmarking_results.txt
+.. literalinclude:: ../../src/submissions/03_neon/04_simd/benchmark/benchmarking_results.txt
     :language: text
     :linenos:
     :lines: 33-39
     :caption: Benchmarking results for ``matmul_M_6_64`` (M = 14) approach
 
-.. literalinclude:: ../../src/submissions/03_neon/04_simd/benchmarking_results.txt
+.. literalinclude:: ../../src/submissions/03_neon/04_simd/benchmark/benchmarking_results.txt
     :language: text
     :linenos:
     :lines: 65-71
@@ -370,7 +370,7 @@ In this task we were supposed to implement a microkernel that computes C+=AB for
 
 Benchmarking this kernel we obtained the following results:
 
-.. literalinclude:: ../../src/submissions/03_neon/05_accumulator_block_shapes/benchmarking_results.txt
+.. literalinclude:: ../../src/submissions/03_neon/05_accumulator_block_shapes/benchmark/benchmarking_results.txt
     :language: text
     :linenos:
     :caption: Benchmarking results for matmul_64_64_64 approaches

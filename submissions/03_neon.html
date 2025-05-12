@@ -285,6 +285,34 @@ The calculations that we were ending up with were:</p>
 For each instruction we firstly performed a warm up, measured the time, counted the operations and then calculated the GFLOPs.</p>
 <p>For the <code class="docutils literal notranslate"><span class="pre">2S</span></code> and the FMADD (scalar) instructions, we simply adjusted the calculations for the operations slightly:</p>
 <p>For this benchmarking task we obtained the following results:</p>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text">Throughput results for the three instructions</span><a class="headerlink" href="#id6" title="Link to this code"></a></div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Benchmarking FMLA 4s throughput ...
+-----------------------------------------------
+Measuring throughput for FMLA_4sInstruction
+Total time (s):   1.96706
+Instructions per Second:   1.30144e+11
+Estimated GOPS:   130.144 GFLOPs/sec
+-----------------------------------------------
+
+Benchmarking FMLA 2s throughput ...
+-----------------------------------------------
+Measuring throughput for FMLA_2sInstruction
+Total time (s):   2.53647
+Instructions per Second:   5.04638e+10
+Estimated GOPS:   50.4638 GFLOPs/sec
+-----------------------------------------------
+
+Benchmarking FMADD throughput ...
+-----------------------------------------------
+Measuring throughput for FMADDInstruction
+Total time (s):   3.52918
+Instructions per Second:   1.81345e+10
+Estimated GOPS:   18.1345 GFLOPs/sec
+-----------------------------------------------
+</pre></div>
+</div>
+</div>
 <p>It can be seen that the FMLA (vector) with arrangement specifier <code class="docutils literal notranslate"><span class="pre">4S</span></code> instruction performs approximately
 2.5 times as many floating point operations than the FMLA (vector) with arrangement specifier <code class="docutils literal notranslate"><span class="pre">2S</span></code> instruction.
 Further the FMLA (vector) with arrangement specifier <code class="docutils literal notranslate"><span class="pre">2S</span></code> instructions performs at approximately 2.5 times more
@@ -297,8 +325,8 @@ floating point operations than the FMADD (scalar) instruction.</p>
 <ol class="arabic simple">
 <li><p>Each instruction depends on the destination register and one of the source register of the previous instruction</p></li>
 </ol>
-<div class="literal-block-wrapper docutils container" id="id6">
-<div class="code-block-caption"><span class="caption-text">fmla instructions with dependencies on the destination register and one of the source registers</span><a class="headerlink" href="#id6" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text">fmla instructions with dependencies on the destination register and one of the source registers</span><a class="headerlink" href="#id7" title="Link to this code"></a></div>
 <div class="highlight-asm notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v0.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v0.4s</span><span class="p">,</span><span class="w">  </span><span class="no">v1.4s</span>
 <span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v0.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v0.4s</span><span class="p">,</span><span class="w">  </span><span class="no">v2.4s</span>
 <span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v0.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v0.4s</span><span class="p">,</span><span class="w">  </span><span class="no">v3.4s</span>
@@ -309,8 +337,8 @@ floating point operations than the FMADD (scalar) instruction.</p>
 <ol class="arabic simple" start="2">
 <li><p>Each instruction depends only on the destination register of the previous instruction</p></li>
 </ol>
-<div class="literal-block-wrapper docutils container" id="id7">
-<div class="code-block-caption"><span class="caption-text">fmla instructions with dependencies on the destination register</span><a class="headerlink" href="#id7" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id8">
+<div class="code-block-caption"><span class="caption-text">fmla instructions with dependencies on the destination register</span><a class="headerlink" href="#id8" title="Link to this code"></a></div>
 <div class="highlight-asm notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v0.4s</span><span class="p">,</span><span class="w">  </span><span class="no">v1.4s</span><span class="p">,</span><span class="w">  </span><span class="no">v9.4s</span>
 <span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v0.4s</span><span class="p">,</span><span class="w">  </span><span class="no">v2.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v10.4s</span>
 <span class="w">    </span><span class="nf">fmla</span><span class="w"> </span><span class="no">v0.4s</span><span class="p">,</span><span class="w">  </span><span class="no">v3.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v11.4s</span>
@@ -319,6 +347,26 @@ floating point operations than the FMADD (scalar) instruction.</p>
 </div>
 </div>
 <p>Both files contain 32 fmla instructions each, which are executed 100 times. The results of our benchmark is shown below:</p>
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text">Latency results for the two scenarios</span><a class="headerlink" href="#id9" title="Link to this code"></a></div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Benchmarking FMLA 4s source register latency ...
+-----------------------------------------------
+Measuring latency for FMLA_SourceInstruction
+Total time (s):   3.30277
+Instructions per Second:   1.16266e+10
+Estimated GOPS:   11.6266 GFLOPs/sec
+-----------------------------------------------
+
+Benchmarking FMLA 4s destination register latency ...
+-----------------------------------------------
+Measuring latency for FMLA_DestinationInstruction
+Total time (s):   3.30207
+Instructions per Second:   1.16291e+10
+Estimated GOPS:   11.6291 GFLOPs/sec
+-----------------------------------------------
+</pre></div>
+</div>
+</div>
 <p>We can see that both scenarios have similar results, which is why we computed the latency only for the first scenario.</p>
 <p>We measured <span class="math notranslate nohighlight">\(1.16266 \times 10^{10}\)</span> instructions per second, which means that the latency of the FMLA (vector) instruction with arrangement specifier <code class="docutils literal notranslate"><span class="pre">4S</span></code> is approximately <span class="math notranslate nohighlight">\(\frac{1}{1.16266 \times 10^{10}} \approx 8.6 \times 10^{-11}\)</span> seconds. Using a known clock frequency of 4.4 GHz, we computed the latency as <span class="math notranslate nohighlight">\(8.6 \times 10^{-11} \times 4.4 \times 10^9 = 0.3784\)</span> cycles.</p>
 </section>
@@ -364,6 +412,34 @@ floating point operations than the FMADD (scalar) instruction.</p>
 <p>The GFLOPs were calculated using the following formula:</p>
 <p>For each version we would perform <code class="docutils literal notranslate"><span class="pre">50,000</span></code> iterations as a warmup to guarantee similar results for each execution of the benchmark.
 Using this approach we obtained the following results:</p>
+<div class="literal-block-wrapper docutils container" id="id10">
+<div class="code-block-caption"><span class="caption-text">GFLOPs calculations</span><a class="headerlink" href="#id10" title="Link to this code"></a></div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Benchmarking V1 Matmul throughput ...
+-----------------------------------------------
+Measuring throughput for Instruction
+Total time (s):   2.93595
+Instructions per Second:   3.26981e+10
+Estimated GFLOPS:   32.6981 GFLOPS/sec
+-----------------------------------------------
+
+Benchmarking V2 Matmul throughput ...
+-----------------------------------------------
+Measuring throughput for Instruction
+Total time (s):   2.90291
+Instructions per Second:   3.30702e+10
+Estimated GFLOPS:   33.0702 GFLOPS/sec
+-----------------------------------------------
+
+Benchmarking V3 Matmul throughput ...
+-----------------------------------------------
+Measuring throughput for Instruction
+Total time (s):   2.79132
+Instructions per Second:   3.43923e+10
+Estimated GFLOPS:   34.3923 GFLOPS/sec
+-----------------------------------------------
+</pre></div>
+</div>
+</div>
 <p>The GLFOPs results indicate that with every version we obtained slightly better results, resulting in
 about <code class="docutils literal notranslate"><span class="pre">1.7</span></code> GLOPs in difference comparing our best with our worst approach.</p>
 </section>
@@ -385,6 +461,34 @@ To calculate them we followed the simple formula:</p>
 <div class="math notranslate nohighlight">
 \[M \cdot N \cdot K \cdot \text{Ops Per FMLA}\]</div>
 <p>The results that we obtained were:</p>
+<div class="literal-block-wrapper docutils container" id="id11">
+<div class="code-block-caption"><span class="caption-text">GFLOPs calculations for MatMuls</span><a class="headerlink" href="#id11" title="Link to this code"></a></div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Benchmarking Matmul_16_6_64 throughput ...
+-----------------------------------------------
+Measuring throughput for Instruction
+Total time (s):   1.89248
+Instructions per Second:   1.29861e+11
+Estimated GFLOPS:   129.861 GFLOPS/sec
+-----------------------------------------------
+
+Benchmarking Matmul_64_6_64 Matmul throughput ...
+-----------------------------------------------
+Measuring throughput for Instruction
+Total time (s):   1.84635
+Instructions per Second:   1.33106e+11
+Estimated GFLOPS:   133.106 GFLOPS/sec
+-----------------------------------------------
+
+Benchmarking Matmul_64_48_64 Matmul throughput ...
+-----------------------------------------------
+Measuring throughput for Instruction
+Total time (s):   1.49743
+Instructions per Second:   1.31297e+11
+Estimated GFLOPS:   131.297 GFLOPS/sec
+-----------------------------------------------
+</pre></div>
+</div>
+</div>
 <p>Our results indicate that the number of GFLOPs is very consistent, even when scaling the size of our matrix.</p>
 </section>
 </section>
@@ -403,8 +507,8 @@ We created several versions for both:</p>
 <p>Our <strong>first approach</strong> was to use two loops. The first loop was used to calculate
 a (12 x 64) block of matrix C. That means, we would load 12 column elements of matrix A.
 The second loop was then used to calculate the remaining (2 x 64) block of matrix C.</p>
-<div class="literal-block-wrapper docutils container" id="id8">
-<div class="code-block-caption"><span class="caption-text">Second loop for the (2 x 64) matrix calculation</span><a class="headerlink" href="#id8" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id12">
+<div class="code-block-caption"><span class="caption-text">Second loop for the (2 x 64) matrix calculation</span><a class="headerlink" href="#id12" title="Link to this code"></a></div>
 <div class="highlight-asm notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nl">_k2_loop:</span>
 <span class="linenos"> 2</span><span class="w">    </span><span class="c1">// load column of A</span>
 <span class="linenos"> 3</span><span class="w">    </span><span class="nf">ldr</span><span class="w"> </span><span class="no">d24</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x7</span><span class="p">]</span><span class="w">   </span><span class="c1">// 2 values</span>
@@ -454,8 +558,8 @@ The second loop was then used to calculate the remaining (2 x 64) block of matri
 </div>
 <p>The <strong>second approach</strong> was to use a single loop. We would load the whole matrix C, and matrix A
 column-wise using one <code class="docutils literal notranslate"><span class="pre">ldp</span> <span class="pre">qXX,</span> <span class="pre">qXX,</span> <span class="pre">[x7]</span></code>, one <code class="docutils literal notranslate"><span class="pre">ldr</span> <span class="pre">qXX,</span> <span class="pre">[x7,</span> <span class="pre">#32]</span></code> and one <code class="docutils literal notranslate"><span class="pre">ldr</span> <span class="pre">dXX,</span> <span class="pre">[x7,</span> <span class="pre">#48]</span></code> instruction.</p>
-<div class="literal-block-wrapper docutils container" id="id9">
-<div class="code-block-caption"><span class="caption-text">Calculate matrix C with a single loop using four loads</span><a class="headerlink" href="#id9" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id13">
+<div class="code-block-caption"><span class="caption-text">Calculate matrix C with a single loop using four loads</span><a class="headerlink" href="#id13" title="Link to this code"></a></div>
 <div class="highlight-asm notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nl">_k1_loop:</span>
 <span class="linenos"> 2</span><span class="w">    </span><span class="c1">// load column of A</span>
 <span class="linenos"> 3</span><span class="w">    </span><span class="nf">ldp</span><span class="w"> </span><span class="no">q24</span><span class="p">,</span><span class="w"> </span><span class="no">q25</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x7</span><span class="p">]</span><span class="w"> </span><span class="c1">// 4 + 4 values</span>
@@ -521,8 +625,8 @@ column-wise using one <code class="docutils literal notranslate"><span class="pr
 <p>Our <strong>third approach</strong> was again to use a single loop. But this time we would load matrix A
 column-wise using two <code class="docutils literal notranslate"><span class="pre">ldp</span> <span class="pre">qXX,</span> <span class="pre">qXX,</span> <span class="pre">[x7]</span></code> instructions and then set the last two elements
 to zero using <code class="docutils literal notranslate"><span class="pre">mov</span> <span class="pre">v27.s[2],</span> <span class="pre">wzr</span></code> and <code class="docutils literal notranslate"><span class="pre">mov</span> <span class="pre">v27.s[3],</span> <span class="pre">wzr</span></code>.</p>
-<div class="literal-block-wrapper docutils container" id="id10">
-<div class="code-block-caption"><span class="caption-text">Calculate matrix C with a single loop using <code class="docutils literal notranslate"><span class="pre">ldp</span></code> loads</span><a class="headerlink" href="#id10" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id14">
+<div class="code-block-caption"><span class="caption-text">Calculate matrix C with a single loop using <code class="docutils literal notranslate"><span class="pre">ldp</span></code> loads</span><a class="headerlink" href="#id14" title="Link to this code"></a></div>
 <div class="highlight-asm notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nl">_k1_loop:</span>
 <span class="linenos"> 2</span><span class="w">    </span><span class="c1">// load column of A</span>
 <span class="linenos"> 3</span><span class="w">    </span><span class="nf">ldp</span><span class="w"> </span><span class="no">q24</span><span class="p">,</span><span class="w"> </span><span class="no">q25</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x7</span><span class="p">]</span><span class="w"> </span><span class="c1">// 4 + 4 values</span>
@@ -589,8 +693,8 @@ to zero using <code class="docutils literal notranslate"><span class="pre">mov</
 </div>
 <p>In our <strong>fourth approach</strong> we simply copied the second version and changed
 our loads for matrix A and C. We used <code class="docutils literal notranslate"><span class="pre">ld1</span></code> instead of <code class="docutils literal notranslate"><span class="pre">ldp</span></code>.</p>
-<div class="literal-block-wrapper docutils container" id="id11">
-<div class="code-block-caption"><span class="caption-text">Calculate matrix C with a single loop and <code class="docutils literal notranslate"><span class="pre">ld1</span></code> loads</span><a class="headerlink" href="#id11" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id15">
+<div class="code-block-caption"><span class="caption-text">Calculate matrix C with a single loop and <code class="docutils literal notranslate"><span class="pre">ld1</span></code> loads</span><a class="headerlink" href="#id15" title="Link to this code"></a></div>
 <div class="highlight-asm notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nl">_k1_loop:</span>
 <span class="linenos"> 2</span><span class="w">    </span><span class="c1">// load column of A</span>
 <span class="linenos"> 3</span><span class="w">    </span><span class="nf">ld1</span><span class="w"> </span><span class="p">{</span><span class="no">v24.4s-v27.4s</span><span class="p">},</span><span class="w"> </span><span class="p">[</span><span class="no">x7</span><span class="p">]</span>
@@ -653,6 +757,42 @@ our loads for matrix A and C. We used <code class="docutils literal notranslate"
 </div>
 </div>
 <p>When benchmarking our approaches we obtained the following results:</p>
+<div class="literal-block-wrapper docutils container" id="id16">
+<div class="code-block-caption"><span class="caption-text">Benchmarking results for matmul_14_6_64 approaches</span><a class="headerlink" href="#id16" title="Link to this code"></a></div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span>Benchmarking V1_Matmul_14_6_64 throughput ...
+<span class="linenos"> 2</span>-----------------------------------------------
+<span class="linenos"> 3</span>Measuring throughput for Instruction
+<span class="linenos"> 4</span>Total time (s):   2.54314
+<span class="linenos"> 5</span>Instructions per Second:   8.45568e+10
+<span class="linenos"> 6</span>Estimated GFLOPS:   84.5568 GFLOPS/sec
+<span class="linenos"> 7</span>-----------------------------------------------
+<span class="linenos"> 8</span>
+<span class="linenos"> 9</span>Benchmarking V2_Matmul_14_6_64 throughput ...
+<span class="linenos">10</span>-----------------------------------------------
+<span class="linenos">11</span>Measuring throughput for Instruction
+<span class="linenos">12</span>Total time (s):   1.88243
+<span class="linenos">13</span>Instructions per Second:   1.14235e+11
+<span class="linenos">14</span>Estimated GFLOPS:   114.235 GFLOPS/sec
+<span class="linenos">15</span>-----------------------------------------------
+<span class="linenos">16</span>
+<span class="linenos">17</span>Benchmarking V3_Matmul_14_6_64 throughput ...
+<span class="linenos">18</span>-----------------------------------------------
+<span class="linenos">19</span>Measuring throughput for Instruction
+<span class="linenos">20</span>Total time (s):   2.08544
+<span class="linenos">21</span>Instructions per Second:   1.03115e+11
+<span class="linenos">22</span>Estimated GFLOPS:   103.115 GFLOPS/sec
+<span class="linenos">23</span>-----------------------------------------------
+<span class="linenos">24</span>
+<span class="linenos">25</span>Benchmarking V4_Matmul_14_6_64 throughput ...
+<span class="linenos">26</span>-----------------------------------------------
+<span class="linenos">27</span>Measuring throughput for Instruction
+<span class="linenos">28</span>Total time (s):   1.89444
+<span class="linenos">29</span>Instructions per Second:   1.13511e+11
+<span class="linenos">30</span>Estimated GFLOPS:   113.511 GFLOPS/sec
+<span class="linenos">31</span>-----------------------------------------------
+</pre></div>
+</div>
+</div>
 <p>The results indicate that the version with three different loads performed
 best, with an increase of about <code class="docutils literal notranslate"><span class="pre">10</span> <span class="pre">GFLOPs</span></code>. The switch from <code class="docutils literal notranslate"><span class="pre">ldp</span></code> to <code class="docutils literal notranslate"><span class="pre">ld1</span></code> however, didn’t show
 any significant changes in the number of GFLOPs.</p>
@@ -663,8 +803,8 @@ any significant changes in the number of GFLOPs.</p>
 <p>For our <strong>first approach</strong> we again considered two loops. Again, the first loop was used to calculate
 a (12 x 64) block of matrix C.
 The second loop was then used to calculate the remaining (3 x 64) block of matrix C.</p>
-<div class="literal-block-wrapper docutils container" id="id12">
-<div class="code-block-caption"><span class="caption-text">Second loop for the (3 x 64) matrix calculation</span><a class="headerlink" href="#id12" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id17">
+<div class="code-block-caption"><span class="caption-text">Second loop for the (3 x 64) matrix calculation</span><a class="headerlink" href="#id17" title="Link to this code"></a></div>
 <div class="highlight-asm notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nl">_k2_loop:</span>
 <span class="linenos"> 2</span><span class="w">    </span><span class="c1">// load column of A</span>
 <span class="linenos"> 3</span><span class="w">    </span><span class="nf">ldr</span><span class="w"> </span><span class="no">d24</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x7</span><span class="p">]</span><span class="w">   </span><span class="c1">// 2 values</span>
@@ -717,8 +857,8 @@ The second loop was then used to calculate the remaining (3 x 64) block of matri
 <p>In the <strong>second approach</strong> we use one loop. We load matrix A column-wise using two
 two <code class="docutils literal notranslate"><span class="pre">ldp</span> <span class="pre">qXX,</span> <span class="pre">qXX,</span> <span class="pre">[x7]</span></code> instructions and then set the last element
 to zero using <code class="docutils literal notranslate"><span class="pre">mov</span> <span class="pre">v27.s[3],</span> <span class="pre">wzr</span></code>.</p>
-<div class="literal-block-wrapper docutils container" id="id13">
-<div class="code-block-caption"><span class="caption-text">Calculate matrix C with a single loop using <code class="docutils literal notranslate"><span class="pre">ldp</span></code> loads</span><a class="headerlink" href="#id13" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id18">
+<div class="code-block-caption"><span class="caption-text">Calculate matrix C with a single loop using <code class="docutils literal notranslate"><span class="pre">ldp</span></code> loads</span><a class="headerlink" href="#id18" title="Link to this code"></a></div>
 <div class="highlight-asm notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nl">_k1_loop:</span>
 <span class="linenos"> 2</span><span class="w">    </span><span class="c1">// load column of A</span>
 <span class="linenos"> 3</span><span class="w">    </span><span class="nf">ldp</span><span class="w"> </span><span class="no">q24</span><span class="p">,</span><span class="w"> </span><span class="no">q25</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x7</span><span class="p">]</span><span class="w"> </span><span class="c1">// 4 + 4 values</span>
@@ -784,8 +924,8 @@ to zero using <code class="docutils literal notranslate"><span class="pre">mov</
 </div>
 <p>In the <strong>third approach</strong> we again changed the load instructions from <code class="docutils literal notranslate"><span class="pre">ldp</span></code> to
 <code class="docutils literal notranslate"><span class="pre">ld1</span></code>.</p>
-<div class="literal-block-wrapper docutils container" id="id14">
-<div class="code-block-caption"><span class="caption-text">Calculate matrix C with a single loop using <code class="docutils literal notranslate"><span class="pre">ld1</span></code> loads</span><a class="headerlink" href="#id14" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id19">
+<div class="code-block-caption"><span class="caption-text">Calculate matrix C with a single loop using <code class="docutils literal notranslate"><span class="pre">ld1</span></code> loads</span><a class="headerlink" href="#id19" title="Link to this code"></a></div>
 <div class="highlight-asm notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nl">_k1_loop:</span>
 <span class="linenos"> 2</span><span class="w">    </span><span class="c1">// load column of A</span>
 <span class="linenos"> 3</span><span class="w">    </span><span class="nf">ld1</span><span class="w"> </span><span class="p">{</span><span class="no">v24.4s-v27.4s</span><span class="p">},</span><span class="w"> </span><span class="p">[</span><span class="no">x7</span><span class="p">]</span>
@@ -849,6 +989,34 @@ to zero using <code class="docutils literal notranslate"><span class="pre">mov</
 </div>
 </div>
 <p>Again, we performed some benchmarks:</p>
+<div class="literal-block-wrapper docutils container" id="id20">
+<div class="code-block-caption"><span class="caption-text">Benchmarking results for matmul_15_6_64 approaches</span><a class="headerlink" href="#id20" title="Link to this code"></a></div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span>Benchmarking V1_Matmul_15_6_64 throughput ...
+<span class="linenos"> 2</span>-----------------------------------------------
+<span class="linenos"> 3</span>Measuring throughput for Instruction
+<span class="linenos"> 4</span>Total time (s):   2.80305
+<span class="linenos"> 5</span>Instructions per Second:   8.21963e+10
+<span class="linenos"> 6</span>Estimated GFLOPS:   82.1963 GFLOPS/sec
+<span class="linenos"> 7</span>-----------------------------------------------
+<span class="linenos"> 8</span>
+<span class="linenos"> 9</span>Benchmarking V2_Matmul_15_6_64 throughput ...
+<span class="linenos">10</span>-----------------------------------------------
+<span class="linenos">11</span>Measuring throughput for Instruction
+<span class="linenos">12</span>Total time (s):   2.18569
+<span class="linenos">13</span>Instructions per Second:   1.05413e+11
+<span class="linenos">14</span>Estimated GFLOPS:   105.413 GFLOPS/sec
+<span class="linenos">15</span>-----------------------------------------------
+<span class="linenos">16</span>
+<span class="linenos">17</span>Benchmarking V3_Matmul_15_6_64 throughput ...
+<span class="linenos">18</span>-----------------------------------------------
+<span class="linenos">19</span>Measuring throughput for Instruction
+<span class="linenos">20</span>Total time (s):   2.18658
+<span class="linenos">21</span>Instructions per Second:   1.0537e+11
+<span class="linenos">22</span>Estimated GFLOPS:   105.37 GFLOPS/sec
+<span class="linenos">23</span>-----------------------------------------------
+</pre></div>
+</div>
+</div>
 <p>Similar to the benchmarks for the <code class="docutils literal notranslate"><span class="pre">matmul_14_6_64</span></code> the approach with the single loop
 performs much better than the other approach. This time, we even gain about
 <code class="docutils literal notranslate"><span class="pre">23</span> <span class="pre">GFLOPs</span></code> with this approach.</p>
@@ -857,6 +1025,30 @@ performs much better than the other approach. This time, we even gain about
 <h3>3.4.3 Generic Approach<a class="headerlink" href="#generic-approach" title="Link to this heading"></a></h3>
 <p>Simply as a proof of concept we also implemented a generic approach for the <code class="docutils literal notranslate"><span class="pre">matmul_14_6_64</span></code> and <code class="docutils literal notranslate"><span class="pre">matmul_15_6_64</span></code> kernels. This kernel works for any <code class="docutils literal notranslate"><span class="pre">M</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>. The idea is to write specific kernels for <code class="docutils literal notranslate"><span class="pre">M</span> <span class="pre">=</span> <span class="pre">1,</span> <span class="pre">2,</span> <span class="pre">...,</span> <span class="pre">8</span></code>. We then divide M by 8 (shift right by 3) and use that to loop the kernel for <code class="docutils literal notranslate"><span class="pre">M</span> <span class="pre">=</span> <span class="pre">8</span></code>. Basically we split the M dimension into blocks of 8 elements and compute the result using a <code class="docutils literal notranslate"><span class="pre">matmul_8_6_64</span></code> kernel. If there is a remainder, it is <code class="docutils literal notranslate"><span class="pre">&gt;=1</span> <span class="pre">and</span> <span class="pre">&lt;=7</span></code>, which we handle with specific kernels. The selection of the specific kernels is done using a jump table.</p>
 <p>We also benchmarked the performance of this <strong>generic kernel</strong>:</p>
+<div class="literal-block-wrapper docutils container" id="id21">
+<div class="code-block-caption"><span class="caption-text">Benchmarking results for <code class="docutils literal notranslate"><span class="pre">matmul_M_6_64</span></code> (M = 14) approach</span><a class="headerlink" href="#id21" title="Link to this code"></a></div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span>Benchmarking Matmul_M_6_64 M=14 throughput ...
+<span class="linenos">2</span>-----------------------------------------------
+<span class="linenos">3</span>Measuring throughput for Instruction
+<span class="linenos">4</span>Total time (s):   2.4066
+<span class="linenos">5</span>Instructions per Second:   8.93543e+10
+<span class="linenos">6</span>Estimated GFLOPS:   89.3543 GFLOPS/sec
+<span class="linenos">7</span>-----------------------------------------------
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id22">
+<div class="code-block-caption"><span class="caption-text">Benchmarking results for <code class="docutils literal notranslate"><span class="pre">matmul_M_6_64</span></code> (M = 15) approach</span><a class="headerlink" href="#id22" title="Link to this code"></a></div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span>Benchmarking Matmul_M_6_64 M=15 throughput ...
+<span class="linenos">2</span>-----------------------------------------------
+<span class="linenos">3</span>Measuring throughput for Instruction
+<span class="linenos">4</span>Total time (s):   3.68161
+<span class="linenos">5</span>Instructions per Second:   6.25814e+10
+<span class="linenos">6</span>Estimated GFLOPS:   62.5814 GFLOPS/sec
+<span class="linenos">7</span>-----------------------------------------------
+</pre></div>
+</div>
+</div>
 <p>Compared to our other approaches our obtained GFLOPs are slightly worse, losing
 about <code class="docutils literal notranslate"><span class="pre">30</span> <span class="pre">GFLOPs</span></code> to our best approach for the <code class="docutils literal notranslate"><span class="pre">matmul_14_6_64</span></code> and about
 <code class="docutils literal notranslate"><span class="pre">40</span> <span class="pre">GFLOPs</span></code> to our best approach for the <code class="docutils literal notranslate"><span class="pre">matmul_15_6_64</span></code>.</p>
@@ -866,9 +1058,29 @@ about <code class="docutils literal notranslate"><span class="pre">30</span> <sp
 <h2>3.5 Accumulator Block Shapes<a class="headerlink" href="#accumulator-block-shapes" title="Link to this heading"></a></h2>
 <p>In this task we were supposed to implement a microkernel that computes C+=AB for M=64, N=64 and K=64. Recalling our <code class="docutils literal notranslate"><span class="pre">matmul_64_48_64</span></code> kernel, we only need to change the N dimension to 64. This kernel uses the <code class="docutils literal notranslate"><span class="pre">matmul_16_6_64</span></code> internally, which we changed to <code class="docutils literal notranslate"><span class="pre">matmul_16_4_64</span></code>. Changing N from 6 to 4 allows us to divide the N dimension into 16 blocks of 4 elements. N = 8 was not suitable, as we ran into issues with the number of available SIMD lanes. We do not think it is necessary to show the code for this kernel, as it is very similar to the <code class="docutils literal notranslate"><span class="pre">matmul_64_48_64</span></code> kernel. The only difference is that we removed the logic for 2 of the 6 columns and increased the loop counter constant.</p>
 <p>Benchmarking this kernel we obtained the following results:</p>
+<div class="literal-block-wrapper docutils container" id="id23">
+<div class="code-block-caption"><span class="caption-text">Benchmarking results for matmul_64_64_64 approaches</span><a class="headerlink" href="#id23" title="Link to this code"></a></div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span>Benchmarking V1 Matmul throughput ...
+<span class="linenos"> 2</span>-----------------------------------------------
+<span class="linenos"> 3</span>Measuring throughput for Instruction
+<span class="linenos"> 4</span>Total time (s):   1.27442
+<span class="linenos"> 5</span>Instructions per Second:   1.23418e+11
+<span class="linenos"> 6</span>Estimated GFLOPS:   123.418 GFLOPS/sec
+<span class="linenos"> 7</span>-----------------------------------------------
+<span class="linenos"> 8</span>
+<span class="linenos"> 9</span>Benchmarking V2 Matmul throughput ...
+<span class="linenos">10</span>-----------------------------------------------
+<span class="linenos">11</span>Measuring throughput for Instruction
+<span class="linenos">12</span>Total time (s):   1.246
+<span class="linenos">13</span>Instructions per Second:   1.26233e+11
+<span class="linenos">14</span>Estimated GFLOPS:   126.233 GFLOPS/sec
+<span class="linenos">15</span>-----------------------------------------------
+</pre></div>
+</div>
+</div>
 <p>V1 is the first version which we obtained by converting our best performing <code class="docutils literal notranslate"><span class="pre">matmul_64_48_64</span></code> kernel. Trying to squeeze out more performance, we made some minor changes to the computations of the strides (as shown below). We also removed loads and stores of callee-saved registers that were not used. This resulted in a performance increase of about 2-3 GFLOPs in V2 across multiple runs.</p>
-<div class="literal-block-wrapper docutils container" id="id15">
-<div class="code-block-caption"><span class="caption-text">Naive stride calculations</span><a class="headerlink" href="#id15" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id24">
+<div class="code-block-caption"><span class="caption-text">Naive stride calculations</span><a class="headerlink" href="#id24" title="Link to this code"></a></div>
 <div class="highlight-asm notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="w">    </span><span class="c1">// multiply strides with float size</span>
 <span class="linenos">2</span><span class="w">    </span><span class="nf">mov</span><span class="w"> </span><span class="no">x6</span><span class="p">,</span><span class="w"> </span><span class="mi">#4</span>
 <span class="linenos">3</span><span class="w">    </span><span class="nf">mul</span><span class="w"> </span><span class="no">x3</span><span class="p">,</span><span class="w"> </span><span class="no">x3</span><span class="p">,</span><span class="w"> </span><span class="no">x6</span><span class="w"> </span><span class="c1">// lda</span>
@@ -881,8 +1093,8 @@ about <code class="docutils literal notranslate"><span class="pre">30</span> <sp
 </pre></div>
 </div>
 </div>
-<div class="literal-block-wrapper docutils container" id="id16">
-<div class="code-block-caption"><span class="caption-text">Optimized stride calculations</span><a class="headerlink" href="#id16" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id25">
+<div class="code-block-caption"><span class="caption-text">Optimized stride calculations</span><a class="headerlink" href="#id25" title="Link to this code"></a></div>
 <div class="highlight-asm notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="w">    </span><span class="c1">// multiply strides with float size</span>
 <span class="linenos">2</span><span class="w">    </span><span class="c1">// *4 = lsl #2</span>
 <span class="linenos">3</span><span class="w">    </span><span class="nf">lsl</span><span class="w"> </span><span class="no">x3</span><span class="p">,</span><span class="w"> </span><span class="no">x3</span><span class="p">,</span><span class="w"> </span><span class="mi">#2</span><span class="w"> </span><span class="c1">// lda</span>
@@ -904,8 +1116,8 @@ For now we are only implementing the case where the batch size is 16.</p>
 <p>Similar to the previous tasks we implemented several versions of this kernel to optimize the performance.</p>
 <p>In our <strong>first version</strong> we simply used our <code class="docutils literal notranslate"><span class="pre">matmul_64_48_64</span></code> kernel from our <a class="reference internal" href="#loops"><span class="std std-ref">loops</span></a> task and looped 16 times around that kernel.
 Key points that we needed to consider were the following:</p>
-<div class="literal-block-wrapper docutils container" id="id17">
-<div class="code-block-caption"><span class="caption-text">Setting the batch counter</span><a class="headerlink" href="#id17" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id26">
+<div class="code-block-caption"><span class="caption-text">Setting the batch counter</span><a class="headerlink" href="#id26" title="Link to this code"></a></div>
 <div class="highlight-asm notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="w">    </span><span class="c1">// Batch counter</span>
 <span class="linenos">2</span><span class="w">    </span><span class="nf">mov</span><span class="w"> </span><span class="no">x24</span><span class="p">,</span><span class="w"> </span><span class="mi">#16</span>
 <span class="linenos">3</span>
@@ -913,8 +1125,8 @@ Key points that we needed to consider were the following:</p>
 </pre></div>
 </div>
 </div>
-<div class="literal-block-wrapper docutils container" id="id18">
-<div class="code-block-caption"><span class="caption-text">Jumping to the next matrix A and B in the batch</span><a class="headerlink" href="#id18" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id27">
+<div class="code-block-caption"><span class="caption-text">Jumping to the next matrix A and B in the batch</span><a class="headerlink" href="#id27" title="Link to this code"></a></div>
 <div class="highlight-asm notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="w">    </span><span class="c1">// next A matrix</span>
 <span class="linenos"> 2</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x0</span><span class="p">,</span><span class="w"> </span><span class="no">x0</span><span class="p">,</span><span class="w"> </span><span class="no">x6</span><span class="w"> </span><span class="c1">// A</span>
 <span class="linenos"> 3</span><span class="w">    </span><span class="nf">mov</span><span class="w"> </span><span class="no">x8</span><span class="p">,</span><span class="w"> </span><span class="no">x0</span><span class="w">     </span><span class="c1">// A</span>
@@ -935,8 +1147,8 @@ Key points that we needed to consider were the following:</p>
 </div>
 <p>In our <strong>second version</strong> we made some optimizations to the kernel.
 The changes we made were:</p>
-<div class="literal-block-wrapper docutils container" id="id19">
-<div class="code-block-caption"><span class="caption-text">Replacing <code class="docutils literal notranslate"><span class="pre">MUL</span></code>’s with <code class="docutils literal notranslate"><span class="pre">LSL</span></code>’s</span><a class="headerlink" href="#id19" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id28">
+<div class="code-block-caption"><span class="caption-text">Replacing <code class="docutils literal notranslate"><span class="pre">MUL</span></code>’s with <code class="docutils literal notranslate"><span class="pre">LSL</span></code>’s</span><a class="headerlink" href="#id28" title="Link to this code"></a></div>
 <div class="highlight-asm notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="w">    </span><span class="c1">// multiply strides with float size</span>
 <span class="linenos">2</span><span class="w">    </span><span class="nf">lsl</span><span class="w"> </span><span class="no">x3</span><span class="p">,</span><span class="w"> </span><span class="no">x3</span><span class="p">,</span><span class="w"> </span><span class="mi">#2</span><span class="w"> </span><span class="c1">// lda in bytes</span>
 <span class="linenos">3</span><span class="w">    </span><span class="nf">lsl</span><span class="w"> </span><span class="no">x4</span><span class="p">,</span><span class="w"> </span><span class="no">x4</span><span class="p">,</span><span class="w"> </span><span class="mi">#2</span><span class="w"> </span><span class="c1">// ldb in bytes</span>
@@ -946,8 +1158,8 @@ The changes we made were:</p>
 </pre></div>
 </div>
 </div>
-<div class="literal-block-wrapper docutils container" id="id20">
-<div class="code-block-caption"><span class="caption-text">Replacing all <code class="docutils literal notranslate"><span class="pre">LDP</span></code>’s with <code class="docutils literal notranslate"><span class="pre">LD1</span></code>’s and <code class="docutils literal notranslate"><span class="pre">STP</span></code>’s with <code class="docutils literal notranslate"><span class="pre">ST1</span></code>’s</span><a class="headerlink" href="#id20" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id29">
+<div class="code-block-caption"><span class="caption-text">Replacing all <code class="docutils literal notranslate"><span class="pre">LDP</span></code>’s with <code class="docutils literal notranslate"><span class="pre">LD1</span></code>’s and <code class="docutils literal notranslate"><span class="pre">STP</span></code>’s with <code class="docutils literal notranslate"><span class="pre">ST1</span></code>’s</span><a class="headerlink" href="#id29" title="Link to this code"></a></div>
 <div class="highlight-asm notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="w">    </span><span class="c1">// LOAD MATRIX C</span>
 <span class="linenos"> 2</span><span class="w">    </span><span class="nf">mov</span><span class="w"> </span><span class="no">x12</span><span class="p">,</span><span class="w"> </span><span class="no">x10</span>
 <span class="linenos"> 3</span><span class="w">    </span><span class="c1">// first column</span>
@@ -971,8 +1183,8 @@ The changes we made were:</p>
 </div>
 </div>
 <p>These optimizations resulted in a performance increase of about <code class="docutils literal notranslate"><span class="pre">3-4</span> <span class="pre">GFLOPs</span></code>.</p>
-<div class="literal-block-wrapper docutils container" id="id21">
-<div class="code-block-caption"><span class="caption-text">Benchmarking results for the batch-reduce GEMM kernels</span><a class="headerlink" href="#id21" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id30">
+<div class="code-block-caption"><span class="caption-text">Benchmarking results for the batch-reduce GEMM kernels</span><a class="headerlink" href="#id30" title="Link to this code"></a></div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span>Benchmarking V1_Matmul_64_48_64_16 throughput ...
 <span class="linenos"> 2</span>-----------------------------------------------
 <span class="linenos"> 3</span>Measuring throughput for Instruction
