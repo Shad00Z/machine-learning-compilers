@@ -2,6 +2,7 @@
 #include "Kernel.h"
 #include "kernels/matmul_16_6_1.h"
 #include "kernels/matmul_16_6_k.h"
+#include "kernels/matmul_m_4_k.h"
 #include <iostream>
 
 /**
@@ -27,14 +28,14 @@ mini_jit::Brgemm::error_t mini_jit::Brgemm::generate( uint32_t m,
      * dtype: fp32
      */
 
-    if( m != 16 )
+    if( m == 0 )
     {
-        std::cout << ( "M must be 16" ) << std::endl;
+        std::cout << ( "M must not be 0" ) << std::endl;
         return mini_jit::Brgemm::error_t::wrong_m_dimension;
     }
-    else if ( n != 6 )
+    else if ( n == 0 )
     {
-        std::cout << ( "N must be 6" ) << std::endl;
+        std::cout << ( "N must not be 0" ) << std::endl;
         return mini_jit::Brgemm::error_t::wrong_n_dimension;
     }
     else if ( k == 0 )
@@ -59,7 +60,10 @@ mini_jit::Brgemm::error_t mini_jit::Brgemm::generate( uint32_t m,
     }
     else
     {
-        if ( k == 1 )
+        if(n == 4){
+            mini_jit::kernels::matmul_m_4_k( m_kernel, m, k );
+        }
+        else if ( k == 1 )
         {
             mini_jit::kernels::matmul_16_6_1( m_kernel );
         }

@@ -56,7 +56,7 @@ TEST_CASE("Tests the matmul_16_6_k microkernel function with random matrices", "
         }
 
         mini_jit::Brgemm l_brgemm;
-        mini_jit::Brgemm::error_t l_ret = l_brgemm.generate(16, 6, K, 4, 0, 0, 0, mini_jit::Brgemm::dtype_t::fp32);
+        mini_jit::Brgemm::error_t l_ret = l_brgemm.generate(M, N, K, 4, 0, 0, 0, mini_jit::Brgemm::dtype_t::fp32);
         REQUIRE(l_ret == mini_jit::Brgemm::error_t::success);
 
         mini_jit::Brgemm::kernel_t l_kernel = l_brgemm.get_kernel();

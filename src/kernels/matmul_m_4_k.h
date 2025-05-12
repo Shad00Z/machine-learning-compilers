@@ -18,6 +18,9 @@ namespace mini_jit
             void generateMLoop( mini_jit::Kernel &kernel, 
                                 int m, 
                                 int k );
+
+            void generateM1Loop( mini_jit::Kernel &kernel, 
+                                 int k );
         }
 
         /**
@@ -26,7 +29,7 @@ namespace mini_jit
          * @param m number of rows in A and C.
          * @param k number of columns in A and rows in B.
          */
-        void matmul_m_6_k( mini_jit::Kernel &kernel, 
+        void matmul_m_4_k( mini_jit::Kernel &kernel, 
                            int m, 
                            int k );      
     }
