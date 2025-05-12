@@ -90,6 +90,9 @@
 <li class="toctree-l2"><a class="reference internal" href="#mini-jit-instructions-simd-fp">mini_jit::instructions::simd_fp</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit12instructions7simd_fp7fmlaVecE9simd_fp_t9simd_fp_t9simd_fp_t10arr_spec_t"><code class="docutils literal notranslate"><span class="pre">fmlaVec()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit12instructions7simd_fp8fmlaElemE9simd_fp_t9simd_fp_t9simd_fp_t10arr_spec_t"><code class="docutils literal notranslate"><span class="pre">fmlaElem()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit12instructions7simd_fp3ld1E9simd_fp_t5gpr_t8uint32_t16neon_size_spec_t"><code class="docutils literal notranslate"><span class="pre">ld1()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit12instructions7simd_fp3ld1E9simd_fp_t5gpr_t8uint32_t16neon_size_spec_t5gpr_t"><code class="docutils literal notranslate"><span class="pre">ld1()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit12instructions7simd_fp3ld1E9simd_fp_t5gpr_t8uint32_t16neon_size_spec_t8uint32_t"><code class="docutils literal notranslate"><span class="pre">ld1()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit12instructions7simd_fp3ldpE9simd_fp_t9simd_fp_t5gpr_t7int32_t16neon_size_spec_t"><code class="docutils literal notranslate"><span class="pre">ldp()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit12instructions7simd_fp7ldpPostE9simd_fp_t9simd_fp_t5gpr_t7int32_t16neon_size_spec_t"><code class="docutils literal notranslate"><span class="pre">ldpPost()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit12instructions7simd_fp6ldpPreE9simd_fp_t9simd_fp_t5gpr_t7int32_t16neon_size_spec_t"><code class="docutils literal notranslate"><span class="pre">ldpPre()</span></code></a></li>
@@ -486,6 +489,59 @@
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>instruction. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit12instructions7simd_fp3ld1E9simd_fp_t5gpr_t8uint32_t16neon_size_spec_t">
+<span id="_CPPv3N8mini_jit12instructions7simd_fp3ld1E9simd_fp_t5gpr_t8uint32_t16neon_size_spec_t"></span><span id="_CPPv2N8mini_jit12instructions7simd_fp3ld1E9simd_fp_t5gpr_t8uint32_t16neon_size_spec_t"></span><span id="mini_jit::instructions::simd_fp::ld1__simd_fp_t.gpr_t.uint32_t.neon_size_spec_tCE"></span><span class="target" id="ld1_8h_1a5ce00080c0604f11b724bd451966aea2"></span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">instructions</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">simd_fp</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">ld1</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">simd_fp_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">reg_dst</span></span>, <span class="n"><span class="pre">gpr_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">reg_src</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span>, <span class="n"><span class="pre">neon_size_spec_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">size</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit12instructions7simd_fp3ld1E9simd_fp_t5gpr_t8uint32_t16neon_size_spec_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Generates an LD1 instruction (single structure) with a lane index, e.g. LD1 {V0.S}[0], [X0]. </p>
+<p>! </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reg_dst</strong> – Destination SIMD register. </p></li>
+<li><p><strong>reg_src</strong> – Source general-purpose register containing the address. </p></li>
+<li><p><strong>index</strong> – Index of the lane to load to. </p></li>
+<li><p><strong>size</strong> – Size of the SIMD register (s or d). </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit12instructions7simd_fp3ld1E9simd_fp_t5gpr_t8uint32_t16neon_size_spec_t5gpr_t">
+<span id="_CPPv3N8mini_jit12instructions7simd_fp3ld1E9simd_fp_t5gpr_t8uint32_t16neon_size_spec_t5gpr_t"></span><span id="_CPPv2N8mini_jit12instructions7simd_fp3ld1E9simd_fp_t5gpr_t8uint32_t16neon_size_spec_t5gpr_t"></span><span id="mini_jit::instructions::simd_fp::ld1__simd_fp_t.gpr_t.uint32_t.neon_size_spec_t.gpr_tCE"></span><span class="target" id="ld1_8h_1ab5baa92c24834ca2ebf8aa92e654533b"></span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">instructions</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">simd_fp</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">ld1</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">simd_fp_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">reg_dst</span></span>, <span class="n"><span class="pre">gpr_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">reg_src</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span>, <span class="n"><span class="pre">neon_size_spec_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">size</span></span>, <span class="n"><span class="pre">gpr_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">reg_post_index</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit12instructions7simd_fp3ld1E9simd_fp_t5gpr_t8uint32_t16neon_size_spec_t5gpr_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Generates an LD1 instruction (single structure) with a lane index and a register post-index, e.g. LD1 {V0.S}[0], [X0], X1. </p>
+<p>! </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reg_dst</strong> – Destination SIMD register. </p></li>
+<li><p><strong>reg_src</strong> – Source general-purpose register containing the address. </p></li>
+<li><p><strong>index</strong> – Index of the lane to load to. </p></li>
+<li><p><strong>size</strong> – Size of the SIMD register (s or d). </p></li>
+<li><p><strong>post_index</strong> – Post-index register to add to the address in reg_src. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit12instructions7simd_fp3ld1E9simd_fp_t5gpr_t8uint32_t16neon_size_spec_t8uint32_t">
+<span id="_CPPv3N8mini_jit12instructions7simd_fp3ld1E9simd_fp_t5gpr_t8uint32_t16neon_size_spec_t8uint32_t"></span><span id="_CPPv2N8mini_jit12instructions7simd_fp3ld1E9simd_fp_t5gpr_t8uint32_t16neon_size_spec_t8uint32_t"></span><span id="mini_jit::instructions::simd_fp::ld1__simd_fp_t.gpr_t.uint32_t.neon_size_spec_t.uint32_tCE"></span><span class="target" id="ld1_8h_1a13dc2ed821bd3106e8bea4c0166e488d"></span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">instructions</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">simd_fp</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">ld1</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">simd_fp_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">reg_dst</span></span>, <span class="n"><span class="pre">gpr_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">reg_src</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span>, <span class="n"><span class="pre">neon_size_spec_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">size</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">post_index</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit12instructions7simd_fp3ld1E9simd_fp_t5gpr_t8uint32_t16neon_size_spec_t8uint32_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Generates an LD1 instruction (single structure) with a lane index and a post-index immediate, e.g. LD1 {V0.S}[0], [X0], #4. </p>
+<p>! </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reg_dst</strong> – Destination SIMD register. </p></li>
+<li><p><strong>reg_src</strong> – Source general-purpose register containing the address. </p></li>
+<li><p><strong>index</strong> – Index of the lane to load to. </p></li>
+<li><p><strong>size</strong> – Size of the SIMD register (s or d). </p></li>
+<li><p><strong>post_index</strong> – Post-index immediate to add to the address in reg_src. </p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
