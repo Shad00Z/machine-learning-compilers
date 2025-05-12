@@ -18,7 +18,7 @@ namespace mini_jit
             namespace internal
             {
                 //! Helper function to check if the size is valid
-                inline void checkSize(neon_size_spec_t size)
+                constexpr void checkSize(neon_size_spec_t size)
                 {
                     if (size != neon_size_spec_t::s && size != neon_size_spec_t::d)
                     {
@@ -27,7 +27,7 @@ namespace mini_jit
                 }
 
                 //! Helper function to check if the index is valid
-                inline void checkIndex(neon_size_spec_t size, uint32_t index)
+                constexpr void checkIndex(neon_size_spec_t size, uint32_t index)
                 {
                     if (size == neon_size_spec_t::s && index > 3)
                     {
@@ -40,7 +40,7 @@ namespace mini_jit
                 }
 
                 //! Helper function to check if the post-index immediate is valid
-                inline void checkPostIndex(neon_size_spec_t size, uint32_t post_index)
+                constexpr void checkPostIndex(neon_size_spec_t size, uint32_t post_index)
                 {
                     if (size == neon_size_spec_t::s && post_index != 4)
                     {
