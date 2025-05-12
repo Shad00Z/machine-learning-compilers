@@ -1,5 +1,5 @@
-#ifndef MINI_JIT_INSTRUCTIONS_SIMD_FP_LDR_H
-#define MINI_JIT_INSTRUCTIONS_SIMD_FP_LDR_H
+#ifndef MINI_JIT_INSTRUCTIONS_SIMD_FP_STR_H
+#define MINI_JIT_INSTRUCTIONS_SIMD_FP_STR_H
 
 #include <cstdint>
 #include <stdexcept>
@@ -16,19 +16,19 @@ namespace mini_jit
         namespace simd_fp
         {
             /**
-             * @brief Generates an LDR (12-bit immediate) instruction using unsigned offset encoding.
+             * @brief Generates an STR (12-bit immediate) instruction using unsigned offset encoding.
              *
              * @param reg_dest destination register.
              * @param reg_src source register (base address).
              * @param imm12 12-bit immediate value.
              * @param size_spec size specifier (s, d, q).
              */
-            constexpr uint32_t ldr(simd_fp_t reg_dest,
+            constexpr uint32_t str(simd_fp_t reg_dest,
                                    gpr_t reg_src,
                                    uint32_t imm12,
                                    neon_size_spec_t size_spec)
             {
-                uint32_t l_ins = 0x3D400000;
+                uint32_t l_ins = 0x3D000000;
 
                 // set size
                 uint32_t l_size = (size_spec == neon_size_spec_t::s) ? 2 : (size_spec == neon_size_spec_t::d) ? 3
@@ -60,7 +60,7 @@ namespace mini_jit
                 l_ins |= l_imm << 10;
 
                 // set op code
-                uint32_t l_opc = (size_spec == neon_size_spec_t::q) ? 3 : 1;
+                uint32_t l_opc = (size_spec == neon_size_spec_t::q) ? 2 : 0;
                 l_ins |= l_opc << 22;
 
                 return l_ins;
@@ -69,4 +69,4 @@ namespace mini_jit
     }
 }
 
-#endif // MINI_JIT_INSTRUCTIONS_SIMD_FP_LDR_H
+#endif // MINI_JIT_INSTRUCTIONS_SIMD_FP_STR_H

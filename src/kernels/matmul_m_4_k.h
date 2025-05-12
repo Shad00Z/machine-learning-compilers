@@ -19,8 +19,7 @@ namespace mini_jit
                                 int mLoopIterations, 
                                 int k );
 
-            void generateM1Loop( mini_jit::Kernel &kernel, 
-                                 int k );
+            void generateM1Loop( mini_jit::Kernel &kernel );
         }
 
         /**

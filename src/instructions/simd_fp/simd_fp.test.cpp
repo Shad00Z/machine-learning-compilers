@@ -37,6 +37,13 @@ TEST_CASE("Tests the Neon LDP instruction generation", "[Neon LDP]")
     REQUIRE(l_hex == "0x6dc10801");
 }
 
+TEST_CASE("Tests the Neon STR instruction generation", "[Neon STR]")
+{
+    uint32_t l_ins = simd_fp::str(simd_fp_t::v0, gpr_t::x12, 0, neon_size_spec_t::s);
+    std::string l_hex = to_string_hex(l_ins);
+    REQUIRE(l_hex == "0xbd000180");
+}
+
 TEST_CASE("Tests the Neon STP instruction generation", "[Neon STP]")
 {
     uint32_t l_ins = simd_fp::stp(simd_fp_t::v1, simd_fp_t::v2, gpr_t::x0, -16, neon_size_spec_t::d);
