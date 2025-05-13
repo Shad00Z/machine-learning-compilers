@@ -156,3 +156,14 @@ TEST_CASE("Tests the Neon MOV (from general-purpose register) instruction genera
 
     CHECK_THROWS_AS(simd_fp::mov(simd_fp_t::v0, gpr_t::wzr, 3, neon_size_spec_t::q), std::invalid_argument);
 }
+
+TEST_CASE("Tests the Neon FMADD instruction generation", "[Neon FMADD]")
+{
+    uint32_t l_ins = simd_fp::fmadd(simd_fp_t::v1, simd_fp_t::v25, simd_fp_t::v29, simd_fp_t::v1, neon_size_spec_t::s);
+    std::string l_hex = to_string_hex(l_ins);
+    REQUIRE(l_hex == "0x1f1d0721");
+
+    l_ins = simd_fp::fmadd(simd_fp_t::v1, simd_fp_t::v25, simd_fp_t::v29, simd_fp_t::v1, neon_size_spec_t::d);
+    l_hex = to_string_hex(l_ins);
+    REQUIRE(l_hex == "0x1f5d0721");
+}
