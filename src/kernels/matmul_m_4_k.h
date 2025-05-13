@@ -19,7 +19,19 @@ namespace mini_jit
                                 int mLoopIterations, 
                                 int k );
 
-            void generateM1Loop( mini_jit::Kernel &kernel );
+            void generateMLoopRest1( mini_jit::Kernel &kernel );
+
+            void generateMLoopRest2( mini_jit::Kernel &kernel );
+
+            void generateMLoopRest3( mini_jit::Kernel &kernel );
+
+            void generateMLoopRest4( mini_jit::Kernel &kernel );
+
+            void generateMLoopRest5( mini_jit::Kernel &kernel );
+
+            void generateMLoopRest6( mini_jit::Kernel &kernel );
+
+            void generateMLoopRest7( mini_jit::Kernel &kernel );
         }
 
         /**

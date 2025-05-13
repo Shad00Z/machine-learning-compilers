@@ -1,5 +1,3 @@
-
-
 #include "registers/gp_registers.h"
 #include "registers/simd_fp_registers.h"
 #include "instructions/all_instructions.h"
@@ -68,25 +66,31 @@ void mini_jit::kernels::matmul_m_4_k(mini_jit::Kernel &kernel,
 
         if (mLoopRemainder == 1)
         {
-            mini_jit::kernels::internal::generateM1Loop(kernel);
+            mini_jit::kernels::internal::generateMLoopRest1(kernel);
         }
         else if (mLoopRemainder == 2)
         {
+            mini_jit::kernels::internal::generateMLoopRest2(kernel);
         }
         else if (mLoopRemainder == 3)
         {
+            mini_jit::kernels::internal::generateMLoopRest3(kernel);
         }
         else if (mLoopRemainder == 4)
         {
+            mini_jit::kernels::internal::generateMLoopRest4(kernel);
         }
         else if (mLoopRemainder == 5)
         {
+            mini_jit::kernels::internal::generateMLoopRest5(kernel);
         }
         else if (mLoopRemainder == 6)
         {
+            mini_jit::kernels::internal::generateMLoopRest6(kernel);
         }
         else if (mLoopRemainder == 7)
         {
+            mini_jit::kernels::internal::generateMLoopRest7(kernel);
         }
     }
 
@@ -225,100 +229,678 @@ void mini_jit::kernels::internal::generateMLoop(mini_jit::Kernel &kernel,
     kernel.add_instr(base::cbnz(gpr_t::x11, -l_mLoopInstrCount * 4));
 }
 
-void mini_jit::kernels::internal::generateM1Loop(mini_jit::Kernel &kernel)
+void mini_jit::kernels::internal::generateMLoopRest1(mini_jit::Kernel &kernel)
 {
     // Load Matrix C (1 value)
     kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x9));
-    //     // first column
-    //     ldr s0, [x12]
+    // first column
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v0, gpr_t::x12, 0, neon_size_spec_t::s));
-    //     // second column
-    //     add x12, x12, x5
+    // second column
     kernel.add_instr(base::add(gpr_t::x12, gpr_t::x12, gpr_t::x5, 0, 0));
-    //     ldr s1, [x12]
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v1, gpr_t::x12, 0, neon_size_spec_t::s));
-    //     // third column
-    //     add x12, x12, x5
+    // third column
     kernel.add_instr(base::add(gpr_t::x12, gpr_t::x12, gpr_t::x5, 0, 0));
-    //     ldr s2, [x12]
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v2, gpr_t::x12, 0, neon_size_spec_t::s));
-    //     // fourth column
-    //     add x12, x12, x5
+    // fourth column
     kernel.add_instr(base::add(gpr_t::x12, gpr_t::x12, gpr_t::x5, 0, 0));
-    //     ldr s3, [x12]
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v3, gpr_t::x12, 0, neon_size_spec_t::s));
 
     // case_1_k_loop:
     kernel.add_label("case_1_k_loop");
-    //     // load column of A (1 value)
-    //     ldr s24, [x15]
+    // load column of A (1 value)
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v24, gpr_t::x15, 0, neon_size_spec_t::s));
 
-    //     // B: COLUMN 0
-    //     ldr s29, [x16]
+    // B: COLUMN 0
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v29, gpr_t::x16, 0, neon_size_spec_t::s));
-    //     fmadd s0, s24, s29, s0
     kernel.add_instr(simd_fp::fmlaElem(simd_fp_t::v0, simd_fp_t::v24, simd_fp_t::v29, arr_spec_t::s4));
-    //     // B: COLUMN 1
-    //     add x16, x16, x4
+    // B: COLUMN 1
     kernel.add_instr(base::add(gpr_t::x16, gpr_t::x16, gpr_t::x4, 0, 0));
-    //     ldr s29, [x16]
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v29, gpr_t::x16, 0, neon_size_spec_t::s));
-    //     fmadd s1, s24, s29, s1
     kernel.add_instr(simd_fp::fmlaElem(simd_fp_t::v1, simd_fp_t::v24, simd_fp_t::v29, arr_spec_t::s4));
-    //     // B: COLUMN 2
-    //     add x16, x16, x4
+    // B: COLUMN 2
     kernel.add_instr(base::add(gpr_t::x16, gpr_t::x16, gpr_t::x4, 0, 0));
-    //     ldr s29, [x16]
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v29, gpr_t::x16, 0, neon_size_spec_t::s));
-    //     fmadd s2, s24, s29, s2
     kernel.add_instr(simd_fp::fmlaElem(simd_fp_t::v2, simd_fp_t::v24, simd_fp_t::v29, arr_spec_t::s4));
-    //     // B: COLUMN 3
-    //     add x16, x16, x4
+    // B: COLUMN 3
     kernel.add_instr(base::add(gpr_t::x16, gpr_t::x16, gpr_t::x4, 0, 0));
-    //     ldr s29, [x16]
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v29, gpr_t::x16, 0, neon_size_spec_t::s));
-    //     fmadd s3, s24, s29, s3
     kernel.add_instr(simd_fp::fmlaElem(simd_fp_t::v3, simd_fp_t::v24, simd_fp_t::v29, arr_spec_t::s4));
 
-    //     // move to next column of A
-    //     add x15, x15, x3
+    // move to next column of A
     kernel.add_instr(base::add(gpr_t::x15, gpr_t::x15, gpr_t::x3, 0, 0));
-    //     // move to next row of B
-    //     mov x16, x8
+    // move to next row of B
     kernel.add_instr(base::mov(gpr_t::x16, gpr_t::x8));
-    //     add x17, x17, #4
     kernel.add_instr(base::add(gpr_t::x17, gpr_t::x17, 4, 0));
-    //     add x16, x16, x17
     kernel.add_instr(base::add(gpr_t::x16, gpr_t::x16, gpr_t::x17, 0, 0));
 
-    //     // decrement loop counter
-    //     sub x14, x14, #1
+    // decrement loop counter
     kernel.add_instr(base::sub(gpr_t::x14, gpr_t::x14, 1, 0));
-    //     // check if loop counter is zero
-    //     cbnz x14, case_1_k_loop
+    // check if loop counter is zero
     int l_kLoopInstrCount = kernel.getInstrCountFromLabel("case_1_k_loop");
     kernel.add_instr(base::cbnz(gpr_t::x14, -l_kLoopInstrCount * 4));
 
-    //     // STORE MATRIX C
-    //     mov x12, x9
+    // STORE MATRIX C
     kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x9));
-    //     // first column
-    //     str s0, [x12]
+    // first column
     kernel.add_instr(simd_fp::str(simd_fp_t::v0, gpr_t::x12, 0, neon_size_spec_t::s));
-    //     // second column
-    //     add x12, x12, x5
+    // second column
     kernel.add_instr(base::add(gpr_t::x12, gpr_t::x12, gpr_t::x5, 0, 0));
-    //     str s1, [x12]
     kernel.add_instr(simd_fp::str(simd_fp_t::v1, gpr_t::x12, 0, neon_size_spec_t::s));
-    //     // third column
-    //     add x12, x12, x5
+    // third column
     kernel.add_instr(base::add(gpr_t::x12, gpr_t::x12, gpr_t::x5, 0, 0));
-    //     str s2, [x12]
     kernel.add_instr(simd_fp::str(simd_fp_t::v2, gpr_t::x12, 0, neon_size_spec_t::s));
-    //     // fourth column
-    //     add x12, x12, x5
+    // fourth column
     kernel.add_instr(base::add(gpr_t::x12, gpr_t::x12, gpr_t::x5, 0, 0));
-    //     str s3, [x12]
     kernel.add_instr(simd_fp::str(simd_fp_t::v3, gpr_t::x12, 0, neon_size_spec_t::s));
+}
+
+void mini_jit::kernels::internal::generateMLoopRest2(mini_jit::Kernel &kernel)
+{
+    // LOAD MATRIX C (2 values)
+    kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x9));
+    // first column
+    kernel.add_instr(simd_fp::ldr(simd_fp_t::v0, gpr_t::x12, 0, neon_size_spec_t::d));
+    // second column
+    kernel.add_instr(base::add(gpr_t::x12, gpr_t::x12, gpr_t::x5, 0, 0));
+    kernel.add_instr(simd_fp::ldr(simd_fp_t::v1, gpr_t::x12, 0, neon_size_spec_t::d));
+    // third column
+    kernel.add_instr(base::add(gpr_t::x12, gpr_t::x12, gpr_t::x5, 0, 0));
+    kernel.add_instr(simd_fp::ldr(simd_fp_t::v2, gpr_t::x12, 0, neon_size_spec_t::d));
+    // fourth column
+    kernel.add_instr(base::add(gpr_t::x12, gpr_t::x12, gpr_t::x5, 0, 0));
+    kernel.add_instr(simd_fp::ldr(simd_fp_t::v3, gpr_t::x12, 0, neon_size_spec_t::d));
+
+    // case_2_k_loop:
+    kernel.add_label("case_2_k_loop");
+    // load column of A (2 values)
+    kernel.add_instr(simd_fp::ldr(simd_fp_t::v24, gpr_t::x15, 0, neon_size_spec_t::d));
+
+    // B: COLUMN 0
+    kernel.add_instr(simd_fp::ldr(simd_fp_t::v29, gpr_t::x16, 0, neon_size_spec_t::s));
+    kernel.add_instr(simd_fp::fmlaElem(simd_fp_t::v0, simd_fp_t::v24, simd_fp_t::v29, arr_spec_t::s2));
+    // B: COLUMN 1
+    kernel.add_instr(base::add(gpr_t::x16, gpr_t::x16, gpr_t::x4, 0, 0));
+    kernel.add_instr(simd_fp::ldr(simd_fp_t::v29, gpr_t::x16, 0, neon_size_spec_t::s));
+    kernel.add_instr(simd_fp::fmlaElem(simd_fp_t::v1, simd_fp_t::v24, simd_fp_t::v29, arr_spec_t::s2));
+    // B: COLUMN 2
+    kernel.add_instr(base::add(gpr_t::x16, gpr_t::x16, gpr_t::x4, 0, 0));
+    kernel.add_instr(simd_fp::ldr(simd_fp_t::v29, gpr_t::x16, 0, neon_size_spec_t::s));
+    kernel.add_instr(simd_fp::fmlaElem(simd_fp_t::v2, simd_fp_t::v24, simd_fp_t::v29, arr_spec_t::s2));
+    // B: COLUMN 3
+    kernel.add_instr(base::add(gpr_t::x16, gpr_t::x16, gpr_t::x4, 0, 0));
+    kernel.add_instr(simd_fp::ldr(simd_fp_t::v29, gpr_t::x16, 0, neon_size_spec_t::s));
+    kernel.add_instr(simd_fp::fmlaElem(simd_fp_t::v3, simd_fp_t::v24, simd_fp_t::v29, arr_spec_t::s2));
+
+    // move to next column of A
+    kernel.add_instr(base::add(gpr_t::x15, gpr_t::x15, gpr_t::x3, 0, 0));
+    // move to next row of B
+    kernel.add_instr(base::mov(gpr_t::x16, gpr_t::x8));
+    kernel.add_instr(base::add(gpr_t::x17, gpr_t::x17, 4, 0));
+    kernel.add_instr(base::add(gpr_t::x16, gpr_t::x16, gpr_t::x17, 0, 0));
+
+    // decrement loop counter
+    kernel.add_instr(base::sub(gpr_t::x14, gpr_t::x14, 1, 0));
+    // check if loop counter is zero
+    int l_kLoopInstrCount = kernel.getInstrCountFromLabel("case_2_k_loop");
+    kernel.add_instr(base::cbnz(gpr_t::x14, -l_kLoopInstrCount * 4));
+
+    // STORE MATRIX C
+    kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x9));
+    // first column
+    kernel.add_instr(simd_fp::str(simd_fp_t::v0, gpr_t::x12, 0, neon_size_spec_t::d));
+    // second column
+    kernel.add_instr(base::add(gpr_t::x12, gpr_t::x12, gpr_t::x5, 0, 0));
+    kernel.add_instr(simd_fp::str(simd_fp_t::v1, gpr_t::x12, 0, neon_size_spec_t::d));
+    // third column
+    kernel.add_instr(base::add(gpr_t::x12, gpr_t::x12, gpr_t::x5, 0, 0));
+    kernel.add_instr(simd_fp::str(simd_fp_t::v2, gpr_t::x12, 0, neon_size_spec_t::d));
+    // fourth column
+    kernel.add_instr(base::add(gpr_t::x12, gpr_t::x12, gpr_t::x5, 0, 0));
+    kernel.add_instr(simd_fp::str(simd_fp_t::v3, gpr_t::x12, 0, neon_size_spec_t::d));
+}
+
+void mini_jit::kernels::internal::generateMLoopRest3(mini_jit::Kernel &kernel)
+{
+//     // LOAD MATRIX C (3 values)
+//     mov x12, x9
+    kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x9));
+//     // first column
+//     mov x20, x12
+    kernel.add_instr(base::mov(gpr_t::x20, gpr_t::x12));
+//     ld1 {v0.s}[0], [x20], #4
+    kernel.add_instr(simd_fp::ld1(simd_fp_t::v0, gpr_t::x20, 0, neon_size_spec_t::s, 4));
+//     ld1 {v0.s}[1], [x20], #4
+    kernel.add_instr(simd_fp::ld1(simd_fp_t::v0, gpr_t::x20, 1, neon_size_spec_t::s, 4));
+//     ld1 {v0.s}[2], [x20]
+    kernel.add_instr(simd_fp::ld1(simd_fp_t::v0, gpr_t::x20, 2, neon_size_spec_t::s));
+//     mov  v0.s[3], wzr
+
+//     // second column
+//     add x12, x12, x5
+//     mov x20, x12
+//     ld1 {v1.s}[0], [x20], #4
+//     ld1 {v1.s}[1], [x20], #4
+//     ld1 {v1.s}[2], [x20]
+//     mov  v1.s[3], wzr
+//     // third column
+//     add x12, x12, x5
+//     mov x20, x12
+//     ld1 {v2.s}[0], [x20], #4
+//     ld1 {v2.s}[1], [x20], #4
+//     ld1 {v2.s}[2], [x20]
+//     mov  v2.s[3], wzr
+//     // fourth column
+//     add x12, x12, x5
+//     mov x20, x12
+//     ld1 {v3.s}[0], [x20], #4
+//     ld1 {v3.s}[1], [x20], #4
+//     ld1 {v3.s}[2], [x20]
+//     mov  v3.s[3], wzr
+
+// case_3_k_loop:
+//     // load column of A (3 values)
+//     mov x20, x15
+//     ld1 {v24.s}[0], [x20], #4
+//     ld1 {v24.s}[1], [x20], #4
+//     ld1 {v24.s}[2], [x20]
+//     mov  v24.s[3], wzr
+
+//     // B: COLUMN 0
+//     ldr s29, [x16]
+//     fmla v0.4s, v24.4s, v29.s[0]
+//     // B: COLUMN 1
+//     add x16, x16, x4
+//     ldr s29, [x16]
+//     fmla v1.4s, v24.4s, v29.s[0]
+//     // B: COLUMN 2
+//     add x16, x16, x4
+//     ldr s29, [x16]
+//     fmla v2.4s, v24.4s, v29.s[0]
+//     // B: COLUMN 3
+//     add x16, x16, x4
+//     ldr s29, [x16]
+//     fmla v3.4s, v24.4s, v29.s[0]
+
+//     // move to next column of A
+//     add x15, x15, x3
+//     // move to next row of B
+//     mov x16, x8
+//     add x17, x17, #4
+//     add x16, x16, x17
+
+//     // decrement loop counter
+//     sub x14, x14, #1
+//     // check if loop counter is zero
+//     cbnz x14, case_3_k_loop
+
+//     // STORE MATRIX C (3 values)
+//     mov x12, x9
+//     // first column
+//     mov x20, x12
+//     st1 {v0.s}[0], [x20], #4
+//     st1 {v0.s}[1], [x20], #4
+//     st1 {v0.s}[2], [x20]
+//     mov  v0.s[3], wzr
+//     // second column
+//     add x12, x12, x5
+//     mov x20, x12
+//     st1 {v1.s}[0], [x20], #4
+//     st1 {v1.s}[1], [x20], #4
+//     st1 {v1.s}[2], [x20]
+//     mov  v1.s[3], wzr
+//     // third column
+//     add x12, x12, x5
+//     mov x20, x12
+//     st1 {v2.s}[0], [x20], #4
+//     st1 {v2.s}[1], [x20], #4
+//     st1 {v2.s}[2], [x20]
+//     mov  v2.s[3], wzr
+//     // fourth column
+//     add x12, x12, x5
+//     mov x20, x12
+//     st1 {v3.s}[0], [x20], #4
+//     st1 {v3.s}[1], [x20], #4
+//     st1 {v3.s}[2], [x20]
+//     mov  v3.s[3], wzr
+}
+
+void mini_jit::kernels::internal::generateMLoopRest4(mini_jit::Kernel &kernel)
+{
+//     // LOAD MATRIX C (4 values)
+//     mov x12, x9
+//     // first column
+//     ldr q0, [x12]
+//     // second column
+//     add x12, x12, x5
+//     ldr q1, [x12]
+//     // third column
+//     add x12, x12, x5
+//     ldr q2, [x12]
+//     // fourth column
+//     add x12, x12, x5
+//     ldr q3, [x12]
+//     // fifth column
+//     add x12, x12, x5
+//     ldr q4, [x12]
+//     // sixth column
+//     add x12, x12, x5
+//     ldr q5, [x12]
+
+// case_4_k_loop:
+//     // load column of A (4 values)
+//     ldr q24, [x15]
+
+//     // B: COLUMN 0
+//     ldr s29, [x16]
+//     fmla v0.4s, v24.4s, v29.s[0]
+//     // B: COLUMN 1
+//     add x16, x16, x4
+//     ldr s29, [x16]
+//     fmla v1.4s, v24.4s, v29.s[0]
+//     // B: COLUMN 2
+//     add x16, x16, x4
+//     ldr s29, [x16]
+//     fmla v2.4s, v24.4s, v29.s[0]
+//     // B: COLUMN 3
+//     add x16, x16, x4
+//     ldr s29, [x16]
+//     fmla v3.4s, v24.4s, v29.s[0]
+//     // B: COLUMN 4
+//     add x16, x16, x4
+//     ldr s29, [x16]
+//     fmla v4.4s, v24.4s, v29.s[0]
+//     // B: COLUMN 5
+//     add x16, x16, x4
+//     ldr s29, [x16]
+//     fmla v5.4s, v24.4s, v29.s[0]
+
+//     // move to next column of A
+//     add x15, x15, x3
+//     // move to next row of B
+//     mov x16, x8
+//     add x17, x17, #4
+//     add x16, x16, x17
+
+//     // decrement loop counter
+//     sub x14, x14, #1
+//     // check if loop counter is zero
+//     cbnz x14, case_4_k_loop
+
+//     // STORE MATRIX C
+//     mov x12, x9
+//     // first column
+//     str q0, [x12]
+//     // second column
+//     add x12, x12, x5
+//     str q1, [x12]
+//     // third column
+//     add x12, x12, x5
+//     str q2, [x12]
+//     // fourth column
+//     add x12, x12, x5
+//     str q3, [x12]
+//     // fifth column
+//     add x12, x12, x5
+//     str q4, [x12]
+//     // sixth column
+//     add x12, x12, x5
+//     str q5, [x12]
+}
+
+void mini_jit::kernels::internal::generateMLoopRest5(mini_jit::Kernel &kernel)
+{
+//     // LOAD MATRIX C (5 values)
+//     mov x12, x9
+//     // first column
+//     ldr q0, [x12]
+//     ldr s1, [x12, #16]
+//     // second column
+//     add x12, x12, x5
+//     ldr q2, [x12]
+//     ldr s3, [x12, #16]
+//     // third column
+//     add x12, x12, x5
+//     ldr q4, [x12]
+//     ldr s5, [x12, #16]
+//     // fourth column
+//     add x12, x12, x5
+//     ldr q6, [x12]
+//     ldr s7, [x12, #16]
+//     // fifth column
+//     add x12, x12, x5
+//     ldr q8, [x12]
+//     ldr s9, [x12, #16]
+//     // sixth column
+//     add x12, x12, x5
+//     ldr q10, [x12]
+//     ldr s11, [x12, #16]
+
+// case_5_k_loop:
+//     // load column of A (5 values)
+//     ldr q24, [x15]
+//     ldr s25, [x15, #16]
+
+//     // B: COLUMN 0
+//     ldr s29, [x16]
+//     fmla v0.4s, v24.4s, v29.s[0]
+//     fmadd s1, s25, s29, s1 
+//     // B: COLUMN 1
+//     add x16, x16, x4
+//     ldr s29, [x16]
+//     fmla v2.4s, v24.4s, v29.s[0]
+//     fmadd s3, s25, s29, s3
+//     // B: COLUMN 2
+//     add x16, x16, x4
+//     ldr s29, [x16]
+//     fmla v4.4s, v24.4s, v29.s[0]
+//     fmadd s5, s25, s29, s5
+//     // B: COLUMN 3
+//     add x16, x16, x4
+//     ldr s29, [x16]
+//     fmla v6.4s, v24.4s, v29.s[0]
+//     fmadd s7, s25, s29, s7
+//     // B: COLUMN 4
+//     add x16, x16, x4
+//     ldr s29, [x16]
+//     fmla v8.4s, v24.4s, v29.s[0]
+//     fmadd s9, s25, s29, s9
+//     // B: COLUMN 5
+//     add x16, x16, x4
+//     ldr s29, [x16]
+//     fmla v10.4s, v24.4s, v29.s[0]
+//     fmadd s11, s25, s29, s11
+
+//     // move to next column of A
+//     add x15, x15, x3
+//     // move to next row of B
+//     mov x16, x8
+//     add x17, x17, #4
+//     add x16, x16, x17
+
+//     // decrement loop counter
+//     sub x14, x14, #1
+//     // check if loop counter is zero
+//     cbnz x14, case_5_k_loop
+
+//      // STORE MATRIX C (5 values)
+//     mov x12, x9
+//     // first column
+//     str q0, [x12]
+//     str s1, [x12, #16]
+//     // second column
+//     add x12, x12, x5
+//     str q2, [x12]
+//     str s3, [x12, #16]
+//     // third column
+//     add x12, x12, x5
+//     str q4, [x12]
+//     str s5, [x12, #16]
+//     // fourth column
+//     add x12, x12, x5
+//     str q6, [x12]
+//     str s7, [x12, #16]
+//     // fifth column
+//     add x12, x12, x5
+//     str q8, [x12]
+//     str s9, [x12, #16]
+//     // sixth column
+//     add x12, x12, x5
+//     str q10, [x12]
+//     str s11, [x12, #16]
+}
+
+void mini_jit::kernels::internal::generateMLoopRest6(mini_jit::Kernel &kernel)
+{
+//     // LOAD MATRIX C (6 values)
+//     mov x12, x9
+//     // first column
+//     ldr q0, [x12]
+//     ldr d1, [x12, #16]
+//     // second column
+//     add x12, x12, x5
+//     ldr q2, [x12]
+//     ldr d3, [x12, #16]
+//     // third column
+//     add x12, x12, x5
+//     ldr q4, [x12]
+//     ldr d5, [x12, #16]
+//     // fourth column
+//     add x12, x12, x5
+//     ldr q6, [x12]
+//     ldr d7, [x12, #16]
+//     // fifth column
+//     add x12, x12, x5
+//     ldr q8, [x12]
+//     ldr d9, [x12, #16]
+//     // sixth column
+//     add x12, x12, x5
+//     ldr q10, [x12]
+//     ldr d11, [x12, #16]
+
+// case_6_k_loop:
+//     // load column of A (5 values)
+//     ldr q24, [x15]
+//     ldr d25, [x15, #16]
+
+//     // B: COLUMN 0
+//     ldr s29, [x16]
+//     fmla v0.4s, v24.4s, v29.s[0]
+//     fmla v1.2s, v25.2s, v29.s[0]
+//     // B: COLUMN 1
+//     add x16, x16, x4
+//     ldr s29, [x16]
+//     fmla v2.4s, v24.4s, v29.s[0]
+//     fmla v3.2s, v25.2s, v29.s[0]
+//     // B: COLUMN 2
+//     add x16, x16, x4
+//     ldr s29, [x16]
+//     fmla v4.4s, v24.4s, v29.s[0]
+//     fmla v5.2s, v25.2s, v29.s[0]
+//     // B: COLUMN 3
+//     add x16, x16, x4
+//     ldr s29, [x16]
+//     fmla v6.4s, v24.4s, v29.s[0]
+//     fmla v7.2s, v25.2s, v29.s[0]
+//     // B: COLUMN 4
+//     add x16, x16, x4
+//     ldr s29, [x16]
+//     fmla v8.4s, v24.4s, v29.s[0]
+//     fmla v9.2s, v25.2s, v29.s[0]
+//     // B: COLUMN 5
+//     add x16, x16, x4
+//     ldr s29, [x16]
+//     fmla v10.4s, v24.4s, v29.s[0]
+//     fmla v11.2s, v25.2s, v29.s[0]
+
+//     // move to next column of A
+//     add x15, x15, x3
+//     // move to next row of B
+//     mov x16, x8
+//     add x17, x17, #4
+//     add x16, x16, x17
+
+//     // decrement loop counter
+//     sub x14, x14, #1
+//     // check if loop counter is zero
+//     cbnz x14, case_6_k_loop
+
+//      // STORE MATRIX C (5 values)
+//     mov x12, x9
+//     // first column
+//     str q0, [x12]
+//     str d1, [x12, #16]
+//     // second column
+//     add x12, x12, x5
+//     str q2, [x12]
+//     str d3, [x12, #16]
+//     // third column
+//     add x12, x12, x5
+//     str q4, [x12]
+//     str d5, [x12, #16]
+//     // fourth column
+//     add x12, x12, x5
+//     str q6, [x12]
+//     str d7, [x12, #16]
+//     // fifth column
+//     add x12, x12, x5
+//     str q8, [x12]
+//     str d9, [x12, #16]
+//     // sixth column
+//     add x12, x12, x5
+//     str q10, [x12]
+//     str d11, [x12, #16]
+}
+
+void mini_jit::kernels::internal::generateMLoopRest7(mini_jit::Kernel &kernel)
+{
+//     // LOAD MATRIX C (7 values)
+//     mov x12, x9
+//     // first column
+//     mov x20, x12
+//     ldr q0, [x20], #16
+//     ld1 {v1.s}[0], [x20], #4
+//     ld1 {v1.s}[1], [x20], #4
+//     ld1 {v1.s}[2], [x20]
+//     mov  v1.s[3], wzr
+//     // second column
+//     add x12, x12, x5
+//     mov x20, x12
+//     ldr q2, [x20], #16
+//     ld1 {v3.s}[0], [x20], #4
+//     ld1 {v3.s}[1], [x20], #4
+//     ld1 {v3.s}[2], [x20]
+//     mov  v3.s[3], wzr
+//     // third column
+//     add x12, x12, x5
+//     mov x20, x12
+//     ldr q4, [x20], #16
+//     ld1 {v5.s}[0], [x20], #4
+//     ld1 {v5.s}[1], [x20], #4
+//     ld1 {v5.s}[2], [x20]
+//     mov  v5.s[3], wzr
+//     // fourth column
+//     add x12, x12, x5
+//     mov x20, x12
+//     ldr q6, [x20], #16
+//     ld1 {v7.s}[0], [x20], #4
+//     ld1 {v7.s}[1], [x20], #4
+//     ld1 {v7.s}[2], [x20]
+//     mov  v7.s[3], wzr
+//     // fifth column
+//     add x12, x12, x5
+//     mov x20, x12
+//     ldr q8, [x20], #16
+//     ld1 {v9.s}[0], [x20], #4
+//     ld1 {v9.s}[1], [x20], #4
+//     ld1 {v9.s}[2], [x20]
+//     mov  v9.s[3], wzr
+//     // sixth column
+//     add x12, x12, x5
+//     mov x20, x12
+//     ldr q10, [x20], #16
+//     ld1 {v11.s}[0], [x20], #4
+//     ld1 {v11.s}[1], [x20], #4
+//     ld1 {v11.s}[2], [x20]
+//     mov  v11.s[3], wzr
+
+// case_7_k_loop:
+//     // load column of A (7 values)
+//     mov x20, x15
+//     ldr q24, [x20], #16
+//     ld1 {v25.s}[0], [x20], #4
+//     ld1 {v25.s}[1], [x20], #4
+//     ld1 {v25.s}[2], [x20]
+//     mov  v25.s[3], wzr
+
+//     // B: COLUMN 0
+//     ldr s29, [x16]
+//     fmla v0.4s, v24.4s, v29.s[0]
+//     fmla v1.4s, v25.4s, v29.s[0]
+//     // B: COLUMN 1
+//     add x16, x16, x4
+//     ldr s29, [x16]
+//     fmla v2.4s, v24.4s, v29.s[0]
+//     fmla v3.4s, v25.4s, v29.s[0]
+//     // B: COLUMN 2
+//     add x16, x16, x4
+//     ldr s29, [x16]
+//     fmla v4.4s, v24.4s, v29.s[0]
+//     fmla v5.4s, v25.4s, v29.s[0]
+//     // B: COLUMN 3
+//     add x16, x16, x4
+//     ldr s29, [x16]
+//     fmla v6.4s, v24.4s, v29.s[0]
+//     fmla v7.4s, v25.4s, v29.s[0]
+//     // B: COLUMN 4
+//     add x16, x16, x4
+//     ldr s29, [x16]
+//     fmla v8.4s, v24.4s, v29.s[0]
+//     fmla v9.4s, v25.4s, v29.s[0]
+//     // B: COLUMN 5
+//     add x16, x16, x4
+//     ldr s29, [x16]
+//     fmla v10.4s, v24.4s, v29.s[0]
+//     fmla v11.4s, v25.4s, v29.s[0]
+
+//     // move to next column of A
+//     add x15, x15, x3
+//     // move to next row of B
+//     mov x16, x8
+//     add x17, x17, #4
+//     add x16, x16, x17
+
+//     // decrement loop counter
+//     sub x14, x14, #1
+//     // check if loop counter is zero
+//     cbnz x14, case_7_k_loop
+
+//     // STORE MATRIX C (7 values)
+//     mov x12, x9
+//     // first column
+//     mov x20, x12
+//     str q0, [x20], #16
+//     st1 {v1.s}[0], [x20], #4
+//     st1 {v1.s}[1], [x20], #4
+//     st1 {v1.s}[2], [x20]
+//     mov  v1.s[3], wzr
+//     // second column
+//     add x12, x12, x5
+//     mov x20, x12
+//     str q2, [x20], #16
+//     st1 {v3.s}[0], [x20], #4
+//     st1 {v3.s}[1], [x20], #4
+//     st1 {v3.s}[2], [x20]
+//     mov  v3.s[3], wzr
+//     // third column
+//     add x12, x12, x5
+//     mov x20, x12
+//     str q4, [x20], #16
+//     st1 {v5.s}[0], [x20], #4
+//     st1 {v5.s}[1], [x20], #4
+//     st1 {v5.s}[2], [x20]
+//     mov  v5.s[3], wzr
+//     // fourth column
+//     add x12, x12, x5
+//     mov x20, x12
+//     str q6, [x20], #16
+//     st1 {v7.s}[0], [x20], #4
+//     st1 {v7.s}[1], [x20], #4
+//     st1 {v7.s}[2], [x20]
+//     mov  v7.s[3], wzr
+//     // fifth column
+//     add x12, x12, x5
+//     mov x20, x12
+//     str q8, [x20], #16
+//     st1 {v9.s}[0], [x20], #4
+//     st1 {v9.s}[1], [x20], #4
+//     st1 {v9.s}[2], [x20]
+//     mov  v9.s[3], wzr
+//     // sixth column
+//     add x12, x12, x5
+//     mov x20, x12
+//     str q10, [x20], #16
+//     st1 {v11.s}[0], [x20], #4
+//     st1 {v11.s}[1], [x20], #4
+//     st1 {v11.s}[2], [x20]
+//     mov  v11.s[3], wzr
 }
