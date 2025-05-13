@@ -3,6 +3,7 @@
 #include "kernels/matmul_16_6_1.h"
 #include "kernels/matmul_16_6_k.h"
 #include "kernels/matmul_m_4_k.h"
+#include "kernels/matmul_m_n_k.h"
 #include <iostream>
 
 /**
@@ -62,6 +63,10 @@ mini_jit::Brgemm::error_t mini_jit::Brgemm::generate( uint32_t m,
     {
         if(n == 4){
             mini_jit::kernels::matmul_m_4_k( m_kernel, m, k );
+        }
+        else if (n == 8)
+        {
+            mini_jit::kernels::matmul_m_n_k( m_kernel, m, n, k );
         }
         else if ( k == 1 )
         {
