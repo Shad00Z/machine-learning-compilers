@@ -1,5 +1,5 @@
-#ifndef MINI_JIT_INSTRUCTIONS_SIMD_FP_LD1_H
-#define MINI_JIT_INSTRUCTIONS_SIMD_FP_LD1_H
+#ifndef MINI_JIT_INSTRUCTIONS_SIMD_FP_ST1_H
+#define MINI_JIT_INSTRUCTIONS_SIMD_FP_ST1_H
 
 #include <cstdint>
 #include <stdexcept>
@@ -18,16 +18,16 @@ namespace mini_jit
             namespace internal
             {
                 //! Helper function to check if the size is valid
-                constexpr void checkSizeLD1(neon_size_spec_t size)
+                constexpr void checkSizeST1(neon_size_spec_t size)
                 {
                     if (size != neon_size_spec_t::s && size != neon_size_spec_t::d)
                     {
-                        throw std::invalid_argument("Only s and d sizes are currently supported for LD1 instructions.");
+                        throw std::invalid_argument("Only s and d sizes are currently supported for ST1 instructions.");
                     }
                 }
 
                 //! Helper function to check if the index is valid
-                constexpr void checkIndexLD1(neon_size_spec_t size, uint32_t index)
+                constexpr void checkIndexST1(neon_size_spec_t size, uint32_t index)
                 {
                     if (size == neon_size_spec_t::s && index > 3)
                     {
@@ -40,7 +40,7 @@ namespace mini_jit
                 }
 
                 //! Helper function to check if the post-index immediate is valid
-                constexpr void checkPostIndexLD1(neon_size_spec_t size, uint32_t post_index)
+                constexpr void checkPostIndexST1(neon_size_spec_t size, uint32_t post_index)
                 {
                     if (size == neon_size_spec_t::s && post_index != 4)
                     {
@@ -55,21 +55,21 @@ namespace mini_jit
             }
 
             /**!
-             * @brief Generates an LD1 instruction (single structure) with a lane index, e.g. LD1 {V0.S}[0], [X0]
+             * @brief Generates an st1 instruction (single structure) with a lane index, e.g. st1 {V0.S}[0], [X0]
              * @param reg_dst Destination SIMD register.
              * @param reg_src Source general-purpose register containing the address.
              * @param index Index of the lane to load to.
              * @param size Size of the SIMD register (s or d).
              */
-            constexpr uint32_t ld1(simd_fp_t reg_dst,
+            constexpr uint32_t st1(simd_fp_t reg_dst,
                                    gpr_t reg_src,
                                    uint32_t index,
                                    neon_size_spec_t size)
             {
-                internal::checkSizeLD1(size);
-                internal::checkIndexLD1(size, index);
+                internal::checkSizeST1(size);
+                internal::checkIndexST1(size, index);
 
-                uint32_t l_ins = 0xD400000;
+                uint32_t l_ins = 0xD000000;
                 uint32_t l_opc = 0x4; // 100
                 uint32_t Q = 0x0;
                 uint32_t S = 0x0;
@@ -99,23 +99,23 @@ namespace mini_jit
             }
 
             /**!
-             * @brief Generates an LD1 instruction (single structure) with a lane index and a register post-index, e.g. LD1 {V0.S}[0], [X0], X1
+             * @brief Generates an st1 instruction (single structure) with a lane index and a register post-index, e.g. st1 {V0.S}[0], [X0], X1
              * @param reg_dst Destination SIMD register.
              * @param reg_src Source general-purpose register containing the address.
              * @param index Index of the lane to load to.
              * @param size Size of the SIMD register (s or d).
              * @param post_index Post-index register to add to the address in reg_src.
              */
-            constexpr uint32_t ld1(simd_fp_t reg_dst,
+            constexpr uint32_t st1(simd_fp_t reg_dst,
                                    gpr_t reg_src,
                                    uint32_t index,
                                    neon_size_spec_t size,
                                    gpr_t reg_post_index)
             {
-                internal::checkSizeLD1(size);
-                internal::checkIndexLD1(size, index);
+                internal::checkSizeST1(size);
+                internal::checkIndexST1(size, index);
 
-                uint32_t l_ins = 0xDC00000;
+                uint32_t l_ins = 0xD800000;
                 uint32_t l_opc = 0x4; // 100
                 uint32_t Q = 0x0;
                 uint32_t S = 0x0;
@@ -148,26 +148,26 @@ namespace mini_jit
             }
 
             /**!
-             * @brief Generates an LD1 instruction (single structure) with a lane index and a post-index immediate, e.g. LD1 {V0.S}[0], [X0], #4
+             * @brief Generates an st1 instruction (single structure) with a lane index and a post-index immediate, e.g. st1 {V0.S}[0], [X0], #4
              * @param reg_dst Destination SIMD register.
              * @param reg_src Source general-purpose register containing the address.
              * @param index Index of the lane to load to.
              * @param size Size of the SIMD register (s or d).
              * @param post_index Post-index immediate to add to the address in reg_src.
              */
-            constexpr uint32_t ld1(simd_fp_t reg_dst,
+            constexpr uint32_t st1(simd_fp_t reg_dst,
                                    gpr_t reg_src,
                                    uint32_t index,
                                    neon_size_spec_t size,
                                    uint32_t post_index)
             {
-                internal::checkPostIndexLD1(size, post_index);
+                internal::checkPostIndexST1(size, post_index);
                 /*
                  * the post_index is not used in the instruction encoding!
                  * seems like #4 and #8 are used implicitly when the register
                  * is set to all 1s
                  */ 
-                return ld1(reg_dst,
+                return st1(reg_dst,
                            reg_src,
                            index,
                            size,
@@ -178,4 +178,4 @@ namespace mini_jit
     }
 }
 
-#endif // MINI_JIT_INSTRUCTIONS_SIMD_FP_LD1_H
+#endif // MINI_JIT_INSTRUCTIONS_SIMD_FP_ST1_H
