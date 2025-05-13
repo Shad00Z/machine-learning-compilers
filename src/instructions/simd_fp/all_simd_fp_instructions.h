@@ -5,6 +5,7 @@
 #include "ld1.h"
 #include "ldp.h"
 #include "ldr.h"
+#include "mov.h"
 #include "stp.h"
 #include "str.h"
 
