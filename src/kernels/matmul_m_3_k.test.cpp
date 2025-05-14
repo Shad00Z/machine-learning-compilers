@@ -21,13 +21,10 @@ TEST_CASE("Tests the matmul_m_3_k microkernel function with random matrices and 
         0.0f, 2.0f,  4.0f,  6.0f,  8.0f, 10.0f, 12.0f, 14.0f, 16.0f, 18.0f, 20.0f, 22.0f, 24.0f, 26.0f, 28.0f, 30.0f
     };
 
-    mini_jit::Brgemm l_brgemm;
-    
-    mini_jit::Brgemm::error_t l_ret = l_brgemm.generate(M, N, K, 4, 0, 0, 0, mini_jit::Brgemm::dtype_t::fp32);
-    REQUIRE( l_ret == mini_jit::Brgemm::error_t::success );
-
-    mini_jit::Brgemm::kernel_t l_kernel = l_brgemm.get_kernel();
-    l_kernel( A, B, C, M, K, M, 0, 0 );
+    mini_jit::Kernel l_kernel;
+    mini_jit::kernels::matmul_m_3_k(l_kernel, M, K);
+    mini_jit::Brgemm::kernel_t l_kernel_t = reinterpret_cast<mini_jit::Brgemm::kernel_t>(const_cast<void *>(l_kernel.get_kernel()));
+    l_kernel_t( A, B, C, M, K, M, 0, 0 );
 
     for ( int i = 0; i < M * N; i++ )
     {
@@ -81,13 +78,10 @@ TEST_CASE("Tests the matmul_m_3_k microkernel function with random matrices and 
         }
     }
 
-    mini_jit::Brgemm l_brgemm;
-    
-    mini_jit::Brgemm::error_t l_ret = l_brgemm.generate(M, N, K, 4, 0, 0, 0, mini_jit::Brgemm::dtype_t::fp32);
-    REQUIRE( l_ret == mini_jit::Brgemm::error_t::success );
-
-    mini_jit::Brgemm::kernel_t l_kernel = l_brgemm.get_kernel();
-    l_kernel( A, B, C, M, K, M, 0, 0 );
+    mini_jit::Kernel l_kernel;
+    mini_jit::kernels::matmul_m_3_k(l_kernel, M, K);
+    mini_jit::Brgemm::kernel_t l_kernel_t = reinterpret_cast<mini_jit::Brgemm::kernel_t>(const_cast<void *>(l_kernel.get_kernel()));
+    l_kernel_t( A, B, C, M, K, M, 0, 0 );
 
     for ( int i = 0; i < M * N; i++ )
     {
@@ -141,13 +135,10 @@ TEST_CASE("Tests the matmul_m_3_k microkernel function with random matrices and 
         }
     }
 
-    mini_jit::Brgemm l_brgemm;
-    
-    mini_jit::Brgemm::error_t l_ret = l_brgemm.generate(M, N, K, 4, 0, 0, 0, mini_jit::Brgemm::dtype_t::fp32);
-    REQUIRE( l_ret == mini_jit::Brgemm::error_t::success );
-
-    mini_jit::Brgemm::kernel_t l_kernel = l_brgemm.get_kernel();
-    l_kernel( A, B, C, M, K, M, 0, 0 );
+    mini_jit::Kernel l_kernel;
+    mini_jit::kernels::matmul_m_3_k(l_kernel, M, K);
+    mini_jit::Brgemm::kernel_t l_kernel_t = reinterpret_cast<mini_jit::Brgemm::kernel_t>(const_cast<void *>(l_kernel.get_kernel()));
+    l_kernel_t( A, B, C, M, K, M, 0, 0 );
 
     for ( int i = 0; i < M * N; i++ )
     {
@@ -201,13 +192,10 @@ TEST_CASE("Tests the matmul_m_3_k microkernel function with random matrices and 
         }
     }
 
-    mini_jit::Brgemm l_brgemm;
-    
-    mini_jit::Brgemm::error_t l_ret = l_brgemm.generate(M, N, K, 4, 0, 0, 0, mini_jit::Brgemm::dtype_t::fp32);
-    REQUIRE( l_ret == mini_jit::Brgemm::error_t::success );
-
-    mini_jit::Brgemm::kernel_t l_kernel = l_brgemm.get_kernel();
-    l_kernel( A, B, C, M, K, M, 0, 0 );
+    mini_jit::Kernel l_kernel;
+    mini_jit::kernels::matmul_m_3_k(l_kernel, M, K);
+    mini_jit::Brgemm::kernel_t l_kernel_t = reinterpret_cast<mini_jit::Brgemm::kernel_t>(const_cast<void *>(l_kernel.get_kernel()));
+    l_kernel_t( A, B, C, M, K, M, 0, 0 );
 
     for ( int i = 0; i < M * N; i++ )
     {
@@ -261,13 +249,10 @@ TEST_CASE("Tests the matmul_m_3_k microkernel function with random matrices and 
         }
     }
 
-    mini_jit::Brgemm l_brgemm;
-    
-    mini_jit::Brgemm::error_t l_ret = l_brgemm.generate(M, N, K, 4, 0, 0, 0, mini_jit::Brgemm::dtype_t::fp32);
-    REQUIRE( l_ret == mini_jit::Brgemm::error_t::success );
-
-    mini_jit::Brgemm::kernel_t l_kernel = l_brgemm.get_kernel();
-    l_kernel( A, B, C, M, K, M, 0, 0 );
+    mini_jit::Kernel l_kernel;
+    mini_jit::kernels::matmul_m_3_k(l_kernel, M, K);
+    mini_jit::Brgemm::kernel_t l_kernel_t = reinterpret_cast<mini_jit::Brgemm::kernel_t>(const_cast<void *>(l_kernel.get_kernel()));
+    l_kernel_t( A, B, C, M, K, M, 0, 0 );
 
     for ( int i = 0; i < M * N; i++ )
     {
@@ -321,13 +306,10 @@ TEST_CASE("Tests the matmul_m_3_k microkernel function with random matrices and 
         }
     }
 
-    mini_jit::Brgemm l_brgemm;
-    
-    mini_jit::Brgemm::error_t l_ret = l_brgemm.generate(M, N, K, 4, 0, 0, 0, mini_jit::Brgemm::dtype_t::fp32);
-    REQUIRE( l_ret == mini_jit::Brgemm::error_t::success );
-
-    mini_jit::Brgemm::kernel_t l_kernel = l_brgemm.get_kernel();
-    l_kernel( A, B, C, M, K, M, 0, 0 );
+    mini_jit::Kernel l_kernel;
+    mini_jit::kernels::matmul_m_3_k(l_kernel, M, K);
+    mini_jit::Brgemm::kernel_t l_kernel_t = reinterpret_cast<mini_jit::Brgemm::kernel_t>(const_cast<void *>(l_kernel.get_kernel()));
+    l_kernel_t( A, B, C, M, K, M, 0, 0 );
 
     for ( int i = 0; i < M * N; i++ )
     {
@@ -381,13 +363,10 @@ TEST_CASE("Tests the matmul_m_3_k microkernel function with random matrices and 
         }
     }
 
-    mini_jit::Brgemm l_brgemm;
-    
-    mini_jit::Brgemm::error_t l_ret = l_brgemm.generate(M, N, K, 4, 0, 0, 0, mini_jit::Brgemm::dtype_t::fp32);
-    REQUIRE( l_ret == mini_jit::Brgemm::error_t::success );
-
-    mini_jit::Brgemm::kernel_t l_kernel = l_brgemm.get_kernel();
-    l_kernel( A, B, C, M, K, M, 0, 0 );
+    mini_jit::Kernel l_kernel;
+    mini_jit::kernels::matmul_m_3_k(l_kernel, M, K);
+    mini_jit::Brgemm::kernel_t l_kernel_t = reinterpret_cast<mini_jit::Brgemm::kernel_t>(const_cast<void *>(l_kernel.get_kernel()));
+    l_kernel_t( A, B, C, M, K, M, 0, 0 );
 
     for ( int i = 0; i < M * N; i++ )
     {
@@ -441,13 +420,10 @@ TEST_CASE("Tests the matmul_m_3_k microkernel function with random matrices and 
         }
     }
 
-    mini_jit::Brgemm l_brgemm;
-    
-    mini_jit::Brgemm::error_t l_ret = l_brgemm.generate(M, N, K, 4, 0, 0, 0, mini_jit::Brgemm::dtype_t::fp32);
-    REQUIRE( l_ret == mini_jit::Brgemm::error_t::success );
-
-    mini_jit::Brgemm::kernel_t l_kernel = l_brgemm.get_kernel();
-    l_kernel( A, B, C, M, K, M, 0, 0 );
+    mini_jit::Kernel l_kernel;
+    mini_jit::kernels::matmul_m_3_k(l_kernel, M, K);
+    mini_jit::Brgemm::kernel_t l_kernel_t = reinterpret_cast<mini_jit::Brgemm::kernel_t>(const_cast<void *>(l_kernel.get_kernel()));
+    l_kernel_t( A, B, C, M, K, M, 0, 0 );
 
     for ( int i = 0; i < M * N; i++ )
     {
