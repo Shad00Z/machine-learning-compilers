@@ -20,6 +20,18 @@ TEST_CASE("Tests the Neon LDR instruction generation", "[Neon LDR]")
     uint32_t l_ins = simd_fp::ldr(simd_fp_t::v28, gpr_t::x6, 0, neon_size_spec_t::s);
     std::string l_hex = to_string_hex(l_ins);
     REQUIRE(l_hex == "0xbd4000dc");
+
+    l_ins = simd_fp::ldrPost(simd_fp_t::v28, gpr_t::x6, 16, neon_size_spec_t::s);
+    l_hex = to_string_hex(l_ins);
+    REQUIRE(l_hex == "0xbc4104dc");
+
+    l_ins = simd_fp::ldrPost(simd_fp_t::v12, gpr_t::x9, 24, neon_size_spec_t::d);
+    l_hex = to_string_hex(l_ins);
+    REQUIRE(l_hex == "0xfc41852c");
+
+    l_ins = simd_fp::ldrPost(simd_fp_t::v7, gpr_t::x11, 32, neon_size_spec_t::q);
+    l_hex = to_string_hex(l_ins);
+    REQUIRE(l_hex == "0x3cc20567");
 }
 
 TEST_CASE("Tests the Neon LDP instruction generation", "[Neon LDP]")
