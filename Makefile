@@ -147,3 +147,4 @@ run_tests: tests
 
 clean:
 	rm -rf $(BIN_DIR)/$(SRC_DIR)
+	rm -rf *.bin
