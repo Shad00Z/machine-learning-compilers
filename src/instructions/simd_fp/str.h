@@ -65,6 +65,54 @@ namespace mini_jit
 
                 return l_ins;
             }
+
+            /**
+             * @brief Generates an STR (9-bit immediate) instruction using post-index encoding.
+             *
+             * @param reg_dest destination register.
+             * @param reg_src source register (base address).
+             * @param imm9 9-bit immediate value.
+             * @param size_spec size specifier (s, d, q).
+             */
+            constexpr uint32_t strPost(simd_fp_t reg_dest,
+                                       gpr_t reg_src,
+                                       uint32_t imm9,
+                                       neon_size_spec_t size_spec)
+            {
+                uint32_t l_ins = 0x3C000400;
+
+                // set size
+                uint32_t l_size = (size_spec == neon_size_spec_t::s) ? 2 : (size_spec == neon_size_spec_t::d) ? 3
+                                                                                                              : 0;
+
+                uint32_t l_sf = l_size & 0x3;
+                l_ins |= l_sf << 30; // set bit 31, 30
+
+                // set destination register id
+                uint32_t l_reg_id = reg_dest & 0x1f;
+                l_ins |= l_reg_id;
+
+                // set first source register id
+                l_reg_id = reg_src & 0x1f;
+                l_ins |= l_reg_id << 5;
+
+                // check if immediate can be encoded
+                uint32_t l_scale = (size_spec == neon_size_spec_t::s) ? 4 : (size_spec == neon_size_spec_t::d) ? 8
+                                                                                                               : 16;
+                if (imm9 % l_scale != 0)
+                {
+                    throw std::invalid_argument("Immediate offset must be a multiple of 4 (32-bit) or 8 (64-bit) or 16 (128-bit)");
+                }
+
+                uint32_t l_imm = imm9 & 0x1ff;
+                l_ins |= l_imm << 12;
+
+                // set op code
+                uint32_t l_opc = (size_spec == neon_size_spec_t::q) ? 1 : 0;
+                l_ins |= l_opc << 23;
+
+                return l_ins;
+            }
         }
     }
 }

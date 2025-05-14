@@ -54,6 +54,18 @@ TEST_CASE("Tests the Neon STR instruction generation", "[Neon STR]")
     uint32_t l_ins = simd_fp::str(simd_fp_t::v0, gpr_t::x12, 0, neon_size_spec_t::s);
     std::string l_hex = to_string_hex(l_ins);
     REQUIRE(l_hex == "0xbd000180");
+
+    l_ins = simd_fp::strPost(simd_fp_t::v28, gpr_t::x6, 16, neon_size_spec_t::s);
+    l_hex = to_string_hex(l_ins);
+    REQUIRE(l_hex == "0xbc0104dc");
+
+    l_ins = simd_fp::strPost(simd_fp_t::v12, gpr_t::x9, 24, neon_size_spec_t::d);
+    l_hex = to_string_hex(l_ins);
+    REQUIRE(l_hex == "0xfc01852c");
+
+    l_ins = simd_fp::strPost(simd_fp_t::v7, gpr_t::x11, 32, neon_size_spec_t::q);
+    l_hex = to_string_hex(l_ins);
+    REQUIRE(l_hex == "0x3c820567");
 }
 
 TEST_CASE("Tests the Neon STP instruction generation", "[Neon STP]")
