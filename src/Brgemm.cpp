@@ -2,6 +2,7 @@
 #include "Kernel.h"
 #include "kernels/matmul_16_6_1.h"
 #include "kernels/matmul_16_6_k.h"
+#include "kernels/matmul_m_3_k.h"
 #include "kernels/matmul_m_4_k.h"
 #include "kernels/matmul_m_n_k.h"
 #include <iostream>
@@ -34,14 +35,29 @@ mini_jit::Brgemm::error_t mini_jit::Brgemm::generate( uint32_t m,
         std::cout << ( "M must not be 0" ) << std::endl;
         return mini_jit::Brgemm::error_t::wrong_m_dimension;
     }
+    else if ( m >= 1025 )
+    {
+        std::cout << ( "M must not greater than 1024" ) << std::endl;
+        return mini_jit::Brgemm::error_t::wrong_m_dimension;
+    }
     else if ( n == 0 )
     {
         std::cout << ( "N must not be 0" ) << std::endl;
         return mini_jit::Brgemm::error_t::wrong_n_dimension;
     }
+    else if ( n >= 1025 )
+    {
+        std::cout << ( "N must not be greater than 1024" ) << std::endl;
+        return mini_jit::Brgemm::error_t::wrong_n_dimension;
+    }
     else if ( k == 0 )
     {
         std::cout << ( "K must not be 0" ) << std::endl;
+        return mini_jit::Brgemm::error_t::wrong_k_dimension;
+    }
+    else if ( k >= 2049 )
+    {
+        std::cout << ( "K must not be greater than 2048" ) << std::endl;
         return mini_jit::Brgemm::error_t::wrong_k_dimension;
     }
     else if ( br_size != 4 ) // for now, we don't check br_size

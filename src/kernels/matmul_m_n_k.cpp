@@ -2,6 +2,9 @@
 #include "registers/simd_fp_registers.h"
 #include "instructions/all_instructions.h"
 #include "matmul_m_n_k.h"
+#include "matmul_m_1_k.h"
+#include "matmul_m_2_k.h"
+#include "matmul_m_3_k.h"
 #include "matmul_m_4_k.h"
 
 #include <iostream>
@@ -59,68 +62,99 @@ void mini_jit::kernels::matmul_m_n_k(mini_jit::Kernel &kernel,
     // N loop counter
     kernel.add_instr(base::mov(gpr_t::x19, nLoopIterations));
 
-    //n_loop:
-    kernel.add_label("n_loop");
-
-    // Save base matrix pointers
-    kernel.add_instr(base::mov(gpr_t::x7, gpr_t::x0)); // A
-    kernel.add_instr(base::mov(gpr_t::x8, gpr_t::x20)); // B
-    kernel.add_instr(base::mov(gpr_t::x9, gpr_t::x21)); // C
-
-    if (mLoopIterations > 0)
+    if (nLoopIterations > 0)
     {
-        mini_jit::kernels::internal::generateMLoop(kernel, mLoopIterations, k);
+
+        //n_loop:
+        kernel.add_label("n_loop");
+
+        // Save base matrix pointers
+        kernel.add_instr(base::mov(gpr_t::x7, gpr_t::x0)); // A
+        kernel.add_instr(base::mov(gpr_t::x8, gpr_t::x20)); // B
+        kernel.add_instr(base::mov(gpr_t::x9, gpr_t::x21)); // C
+
+        if (mLoopIterations > 0)
+        {
+            mini_jit::kernels::internal::generateM1N4Loop(kernel, mLoopIterations, k);
+        }
+    
+        if (mLoopRemainder > 0)
+        {
+            // set up k loop counter
+            kernel.add_instr(base::mov(gpr_t::x14, k));
+            // save base matrix pointers
+            kernel.add_instr(base::mov(gpr_t::x15, gpr_t::x7)); // A
+            kernel.add_instr(base::mov(gpr_t::x16, gpr_t::x8)); // B
+            kernel.add_instr(base::mov(gpr_t::x17, 0));         // row count B
+    
+            if (mLoopRemainder == 1)
+            {
+                mini_jit::kernels::internal::generateM1N4LoopRest1(kernel);
+            }
+            else if (mLoopRemainder == 2)
+            {
+                mini_jit::kernels::internal::generateM1N4LoopRest2(kernel);
+            }
+            else if (mLoopRemainder == 3)
+            {
+                mini_jit::kernels::internal::generateM1N4LoopRest3(kernel, k);
+            }
+            else if (mLoopRemainder == 4)
+            {
+                mini_jit::kernels::internal::generateM1N4LoopRest4(kernel);
+            }
+            else if (mLoopRemainder == 5)
+            {
+                mini_jit::kernels::internal::generateM1N4LoopRest5(kernel);
+            }
+            else if (mLoopRemainder == 6)
+            {
+                mini_jit::kernels::internal::generateM1N4LoopRest6(kernel);
+            }
+            else if (mLoopRemainder == 7)
+            {
+                mini_jit::kernels::internal::generateM1N4LoopRest7(kernel, k);
+            }
+        }
+
+        // increase B and C pointers for next block
+        // (jump 4 columns) 4*x4, 4*x5
+        kernel.add_instr(base::add(gpr_t::x20, gpr_t::x20, gpr_t::x22, 0, 0));
+        kernel.add_instr(base::add(gpr_t::x21, gpr_t::x21, gpr_t::x23, 0, 0));
+        // decrement n loop counter
+        kernel.add_instr(base::sub(gpr_t::x19, gpr_t::x19, 1, 0));
+
+        // check if loop counter is zero
+        int l_nLoopInstrCount = kernel.getInstrCountFromLabel("n_loop");
+        kernel.add_instr(base::cbnz(gpr_t::x19, -l_nLoopInstrCount * 4));
+        // END N LOOP
     }
 
-    if (mLoopRemainder > 0)
+    if (nLoopRemainder > 0)
     {
-        // set up k loop counter
-        kernel.add_instr(base::mov(gpr_t::x14, k));
-        // save base matrix pointers
-        kernel.add_instr(base::mov(gpr_t::x15, gpr_t::x7)); // A
-        kernel.add_instr(base::mov(gpr_t::x16, gpr_t::x8)); // B
-        kernel.add_instr(base::mov(gpr_t::x17, 0));         // row count B
+        // // increase B and C pointers for next block
+        // // (jump 6 columns) 6*x4, 6*x5
+        // Save base matrix pointers
+        kernel.add_instr(base::mov(gpr_t::x7, gpr_t::x0)); // A
+        kernel.add_instr(base::mov(gpr_t::x8, gpr_t::x20)); // B
+        kernel.add_instr(base::mov(gpr_t::x9, gpr_t::x21)); // C
 
-        if (mLoopRemainder == 1)
+        // prepare the kernel
+        kernel.add_instr(base::mov(gpr_t::x11, mLoopIterations));
+
+        if (nLoopRemainder == 1)
         {
-            mini_jit::kernels::internal::generateMLoopRest1(kernel);
+            mini_jit::kernels::internal::generateNLoopRest1(kernel, mLoopIterations, mLoopRemainder, k);
         }
-        else if (mLoopRemainder == 2)
+        else if (nLoopRemainder == 2)
         {
-            mini_jit::kernels::internal::generateMLoopRest2(kernel);
+            mini_jit::kernels::internal::generateNLoopRest2(kernel, mLoopIterations, mLoopRemainder, k);
         }
-        else if (mLoopRemainder == 3)
+        else if (nLoopRemainder == 3)
         {
-            mini_jit::kernels::internal::generateMLoopRest3(kernel);
-        }
-        else if (mLoopRemainder == 4)
-        {
-            mini_jit::kernels::internal::generateMLoopRest4(kernel);
-        }
-        else if (mLoopRemainder == 5)
-        {
-            mini_jit::kernels::internal::generateMLoopRest5(kernel);
-        }
-        else if (mLoopRemainder == 6)
-        {
-            mini_jit::kernels::internal::generateMLoopRest6(kernel);
-        }
-        else if (mLoopRemainder == 7)
-        {
-            mini_jit::kernels::internal::generateMLoopRest7(kernel);
+            mini_jit::kernels::internal::generateNLoopRest3(kernel, mLoopIterations, mLoopRemainder, k);
         }
     }
-
-    // increase B and C pointers for next block
-    // (jump 4 columns) 4*x4, 4*x5
-    kernel.add_instr(base::add(gpr_t::x20, gpr_t::x20, gpr_t::x22, 0, 0));
-    kernel.add_instr(base::add(gpr_t::x21, gpr_t::x21, gpr_t::x23, 0, 0));
-    // decrement n loop counter
-    kernel.add_instr(base::sub(gpr_t::x19, gpr_t::x19, 1, 0));
-    // check if loop counter is zero
-    int l_nLoopInstrCount = kernel.getInstrCountFromLabel("n_loop");
-    kernel.add_instr(base::cbnz(gpr_t::x19, -l_nLoopInstrCount * 4));
-    // END N LOOP
 
     // Restore callee-saved registers
     kernel.add_instr(simd_fp::ldpPost(simd_fp_t::v14, simd_fp_t::v15, gpr_t::sp, 16, neon_size_spec_t::d));
@@ -141,4 +175,154 @@ void mini_jit::kernels::matmul_m_n_k(mini_jit::Kernel &kernel,
 
     kernel.write("matmul_m_n_k.bin");
     kernel.set_kernel();
+}
+
+void mini_jit::kernels::internal::generateNLoopRest3(mini_jit::Kernel &kernel,
+                                                     int mLoopIterations,
+                                                     int mLoopRemainder,
+                                                     int k)
+{
+    if (mLoopIterations > 0)
+    {
+        mini_jit::kernels::internal::generateMN3Loop(kernel, mLoopIterations, k);
+    }
+
+    if (mLoopRemainder > 0)
+    {
+        // set up k loop counter
+        kernel.add_instr(base::mov(gpr_t::x14, k));
+        // save base matrix pointers
+        kernel.add_instr(base::mov(gpr_t::x15, gpr_t::x7)); // A
+        kernel.add_instr(base::mov(gpr_t::x16, gpr_t::x8)); // B
+        kernel.add_instr(base::mov(gpr_t::x17, 0));         // row count B
+
+        if (mLoopRemainder == 1)
+        {
+            mini_jit::kernels::internal::generateM1N3LoopRest1(kernel);
+        }
+        else if (mLoopRemainder == 2)
+        {
+            mini_jit::kernels::internal::generateM1N3LoopRest2(kernel);
+        }
+        else if (mLoopRemainder == 3)
+        {
+            mini_jit::kernels::internal::generateM1N3LoopRest3(kernel);
+        }
+        else if (mLoopRemainder == 4)
+        {
+            mini_jit::kernels::internal::generateM1N3LoopRest4(kernel);
+        }
+        else if (mLoopRemainder == 5)
+        {
+            mini_jit::kernels::internal::generateM1N3LoopRest5(kernel);
+        }
+        else if (mLoopRemainder == 6)
+        {
+            mini_jit::kernels::internal::generateM1N3LoopRest6(kernel);
+        }
+        else if (mLoopRemainder == 7)
+        {
+            mini_jit::kernels::internal::generateM1N3LoopRest7(kernel);
+        }
+    }
+}
+
+void mini_jit::kernels::internal::generateNLoopRest2(mini_jit::Kernel &kernel,
+                                                     int mLoopIterations,
+                                                     int mLoopRemainder,
+                                                     int k)
+{
+    if (mLoopIterations > 0)
+    {
+        mini_jit::kernels::internal::generateMN2Loop(kernel, mLoopIterations, k);
+    }
+
+    if (mLoopRemainder > 0)
+    {
+        // set up k loop counter
+        kernel.add_instr(base::mov(gpr_t::x14, k));
+        // save base matrix pointers
+        kernel.add_instr(base::mov(gpr_t::x15, gpr_t::x7)); // A
+        kernel.add_instr(base::mov(gpr_t::x16, gpr_t::x8)); // B
+        kernel.add_instr(base::mov(gpr_t::x17, 0));         // row count B
+
+        if (mLoopRemainder == 1)
+        {
+            mini_jit::kernels::internal::generateM1N2LoopRest1(kernel);
+        }
+        else if (mLoopRemainder == 2)
+        {
+            mini_jit::kernels::internal::generateM1N2LoopRest2(kernel);
+        }
+        else if (mLoopRemainder == 3)
+        {
+            mini_jit::kernels::internal::generateM1N2LoopRest3(kernel);
+        }
+        else if (mLoopRemainder == 4)
+        {
+            mini_jit::kernels::internal::generateM1N2LoopRest4(kernel);
+        }
+        else if (mLoopRemainder == 5)
+        {
+            mini_jit::kernels::internal::generateM1N2LoopRest5(kernel);
+        }
+        else if (mLoopRemainder == 6)
+        {
+            mini_jit::kernels::internal::generateM1N2LoopRest6(kernel);
+        }
+        else if (mLoopRemainder == 7)
+        {
+            mini_jit::kernels::internal::generateM1N2LoopRest7(kernel);
+        }
+    }
+}
+
+void mini_jit::kernels::internal::generateNLoopRest1(mini_jit::Kernel &kernel,
+                                                     int mLoopIterations,
+                                                     int mLoopRemainder,
+                                                     int k)
+{
+    if (mLoopIterations > 0)
+    {
+        mini_jit::kernels::internal::generateMN1Loop(kernel, mLoopIterations, k);
+    }
+
+    if (mLoopRemainder > 0)
+    {
+        // set up k loop counter
+        kernel.add_instr(base::mov(gpr_t::x14, k));
+        // save base matrix pointers
+        kernel.add_instr(base::mov(gpr_t::x15, gpr_t::x7)); // A
+        kernel.add_instr(base::mov(gpr_t::x16, gpr_t::x8)); // B
+        kernel.add_instr(base::mov(gpr_t::x17, 0));         // row count B
+
+        if (mLoopRemainder == 1)
+        {
+            mini_jit::kernels::internal::generateM1N1LoopRest1(kernel);
+        }
+        else if (mLoopRemainder == 2)
+        {
+            mini_jit::kernels::internal::generateM1N1LoopRest2(kernel);
+        }
+        else if (mLoopRemainder == 3)
+        {
+            mini_jit::kernels::internal::generateM1N1LoopRest3(kernel);
+        }
+        else if (mLoopRemainder == 4)
+        {
+            mini_jit::kernels::internal::generateM1N1LoopRest4(kernel);
+        }
+        else if (mLoopRemainder == 5)
+        {
+            mini_jit::kernels::internal::generateM1N1LoopRest5(kernel);
+        }
+        else if (mLoopRemainder == 6)
+        {
+            mini_jit::kernels::internal::generateM1N1LoopRest6(kernel);
+        }
+        else if (mLoopRemainder == 7)
+        {
+            mini_jit::kernels::internal::generateM1N1LoopRest7(kernel);
+        }
+    }
 }
