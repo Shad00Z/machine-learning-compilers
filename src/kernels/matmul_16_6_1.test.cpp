@@ -2,7 +2,7 @@
 #include <iostream>
 
 #include "matmul_16_6_1.h"
-#include "Brgemm.h"
+#include "../Brgemm.h"
 
 TEST_CASE( "Tests the matmul_16_6_1 microkernel", "[matmul_16_6_1]" )
 {

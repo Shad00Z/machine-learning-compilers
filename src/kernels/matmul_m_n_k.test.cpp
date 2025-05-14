@@ -4,7 +4,7 @@
 #include <iostream>
 
 #include "matmul_m_n_k.h"
-#include "Brgemm.h"
+#include "../Brgemm.h"
 
 
 TEST_CASE("Reference test for matmul kernel with variable M, N, K", "[matmul][parameterized]") {

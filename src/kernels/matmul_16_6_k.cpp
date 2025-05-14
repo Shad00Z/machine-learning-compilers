@@ -1,8 +1,8 @@
 
 
-#include "registers/gp_registers.h"
-#include "registers/simd_fp_registers.h"
-#include "instructions/all_instructions.h"
+#include "../registers/gp_registers.h"
+#include "../registers/simd_fp_registers.h"
+#include "../instructions/all_instructions.h"
 #include "matmul_16_6_k.h"
 
 #include <iostream>

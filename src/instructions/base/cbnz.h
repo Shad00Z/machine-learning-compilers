@@ -2,7 +2,7 @@
 #define MINI_JIT_INSTRUCTIONS_BASE_CBNZ_H
 
 #include <cstdint>
-#include "registers/gp_registers.h"
+#include "../../registers/gp_registers.h"
 using gpr_t = mini_jit::registers::gpr_t;
 
 namespace mini_jit

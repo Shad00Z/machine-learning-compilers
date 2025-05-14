@@ -4,7 +4,7 @@
 #include <iostream>
 
 #include "matmul_m_3_k.h"
-#include "Brgemm.h"
+#include "../Brgemm.h"
 
 TEST_CASE("Tests the matmul_m_3_k microkernel function with random matrices and M=16", "[matmul_M16_3_k]")
 {
