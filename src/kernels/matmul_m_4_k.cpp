@@ -126,22 +126,17 @@ void mini_jit::kernels::internal::generateMLoop(mini_jit::Kernel &kernel,
     kernel.add_label("m_loop");
     // Load Matrix C
     kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x9));
+    // first column
     kernel.add_instr(simd_fp::ldp(simd_fp_t::v0, simd_fp_t::v1, gpr_t::x12, 0, neon_size_spec_t::q));
-
+    // second column
     kernel.add_instr(base::add(gpr_t::x12, gpr_t::x12, gpr_t::x5, 0, 0));
     kernel.add_instr(simd_fp::ldp(simd_fp_t::v2, simd_fp_t::v3, gpr_t::x12, 0, neon_size_spec_t::q));
-
+    // third column
     kernel.add_instr(base::add(gpr_t::x12, gpr_t::x12, gpr_t::x5, 0, 0));
     kernel.add_instr(simd_fp::ldp(simd_fp_t::v4, simd_fp_t::v5, gpr_t::x12, 0, neon_size_spec_t::q));
-
+    // fourth column
     kernel.add_instr(base::add(gpr_t::x12, gpr_t::x12, gpr_t::x5, 0, 0));
     kernel.add_instr(simd_fp::ldp(simd_fp_t::v6, simd_fp_t::v7, gpr_t::x12, 0, neon_size_spec_t::q));
-
-    kernel.add_instr(base::add(gpr_t::x12, gpr_t::x12, gpr_t::x5, 0, 0));
-    kernel.add_instr(simd_fp::ldp(simd_fp_t::v8, simd_fp_t::v9, gpr_t::x12, 0, neon_size_spec_t::q));
-
-    kernel.add_instr(base::add(gpr_t::x12, gpr_t::x12, gpr_t::x5, 0, 0));
-    kernel.add_instr(simd_fp::ldp(simd_fp_t::v10, simd_fp_t::v11, gpr_t::x12, 0, neon_size_spec_t::q));
 
     // Setup for Loop
     kernel.add_instr(base::mov(gpr_t::x14, k));         // K loop counter
@@ -200,33 +195,28 @@ void mini_jit::kernels::internal::generateMLoop(mini_jit::Kernel &kernel,
 
     // Store Matrix C
     kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x9));
+    // first column
     kernel.add_instr(simd_fp::stp(simd_fp_t::v0, simd_fp_t::v1, gpr_t::x12, 0, neon_size_spec_t::q));
-
+    // second column
     kernel.add_instr(base::add(gpr_t::x12, gpr_t::x12, gpr_t::x5, 0, 0));
     kernel.add_instr(simd_fp::stp(simd_fp_t::v2, simd_fp_t::v3, gpr_t::x12, 0, neon_size_spec_t::q));
-
+    // third column
     kernel.add_instr(base::add(gpr_t::x12, gpr_t::x12, gpr_t::x5, 0, 0));
     kernel.add_instr(simd_fp::stp(simd_fp_t::v4, simd_fp_t::v5, gpr_t::x12, 0, neon_size_spec_t::q));
-
+    // fourth column
     kernel.add_instr(base::add(gpr_t::x12, gpr_t::x12, gpr_t::x5, 0, 0));
     kernel.add_instr(simd_fp::stp(simd_fp_t::v6, simd_fp_t::v7, gpr_t::x12, 0, neon_size_spec_t::q));
-
-    kernel.add_instr(base::add(gpr_t::x12, gpr_t::x12, gpr_t::x5, 0, 0));
-    kernel.add_instr(simd_fp::stp(simd_fp_t::v8, simd_fp_t::v9, gpr_t::x12, 0, neon_size_spec_t::q));
-
-    kernel.add_instr(base::add(gpr_t::x12, gpr_t::x12, gpr_t::x5, 0, 0));
-    kernel.add_instr(simd_fp::stp(simd_fp_t::v10, simd_fp_t::v11, gpr_t::x12, 0, neon_size_spec_t::q));
 
     // increase A and C pointers for next block
     kernel.add_instr(base::add(gpr_t::x7, gpr_t::x7, 8 * 4, 0));
     kernel.add_instr(base::add(gpr_t::x9, gpr_t::x9, 8 * 4, 0));
 
-    // END M_LOOP
     // decrement M loop counter
     kernel.add_instr(base::sub(gpr_t::x11, gpr_t::x11, 1, 0));
 
     int l_mLoopInstrCount = kernel.getInstrCountFromLabel("m_loop");
     kernel.add_instr(base::cbnz(gpr_t::x11, -l_mLoopInstrCount * 4));
+    // END M_LOOP
 }
 
 void mini_jit::kernels::internal::generateMLoopRest1(mini_jit::Kernel &kernel)

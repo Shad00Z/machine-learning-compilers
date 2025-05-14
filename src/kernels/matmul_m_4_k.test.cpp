@@ -382,13 +382,10 @@ TEST_CASE("Tests the matmul_m_4_k microkernel function with random matrices and 
         }
     }
 
-    mini_jit::Brgemm l_brgemm;
-    
-    mini_jit::Brgemm::error_t l_ret = l_brgemm.generate(M, N, K, 4, 0, 0, 0, mini_jit::Brgemm::dtype_t::fp32);
-    REQUIRE( l_ret == mini_jit::Brgemm::error_t::success );
-
-    mini_jit::Brgemm::kernel_t l_kernel = l_brgemm.get_kernel();
-    l_kernel( A, B, C, M, K, M, 0, 0 );
+    mini_jit::Kernel l_kernel;
+    mini_jit::kernels::matmul_m_4_k(l_kernel, M, K);
+    mini_jit::Brgemm::kernel_t l_kernel_t = reinterpret_cast<mini_jit::Brgemm::kernel_t>(const_cast<void *>(l_kernel.get_kernel()));
+    l_kernel_t(A, B, C, M, K, M, 0, 0);
 
     for ( int i = 0; i < M * N; i++ )
     {

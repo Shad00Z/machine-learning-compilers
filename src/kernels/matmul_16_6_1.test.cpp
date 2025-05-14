@@ -22,13 +22,10 @@ TEST_CASE( "Tests the matmul_16_6_1 microkernel", "[matmul_16_6_1]" )
         0.0f, 5.0f, 10.0f, 15.0f, 20.0f, 25.0f, 30.0f, 35.0f, 40.0f, 45.0f, 50.0f, 55.0f, 60.0f, 65.0f, 70.0f, 75.0f
     };
 
-    mini_jit::Brgemm l_brgemm;
-    
-    mini_jit::Brgemm::error_t l_ret = l_brgemm.generate(M, N, K, 4, 0, 0, 0, mini_jit::Brgemm::dtype_t::fp32);
-    REQUIRE( l_ret == mini_jit::Brgemm::error_t::success );
-
-    mini_jit::Brgemm::kernel_t l_kernel = l_brgemm.get_kernel();
-    l_kernel( A, B, C, M, K, M, 0, 0 );
+    mini_jit::Kernel l_kernel;
+    mini_jit::kernels::matmul_16_6_1(l_kernel);
+    mini_jit::Brgemm::kernel_t l_kernel_t = reinterpret_cast<mini_jit::Brgemm::kernel_t>(const_cast<void*>(l_kernel.get_kernel()));
+    l_kernel_t( A, B, C, M, K, M, 0, 0 );
 
     // Check the result
     for ( int i = 0; i < M * N; i++ )
