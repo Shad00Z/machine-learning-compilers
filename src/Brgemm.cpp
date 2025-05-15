@@ -5,6 +5,7 @@
 #include "kernels/matmul_m_3_k.h"
 #include "kernels/matmul_m_4_k.h"
 #include "kernels/matmul_m_n_k.h"
+#include "kernels/matmul_br_m_n_k.h"
 #include <iostream>
 
 /**
@@ -79,7 +80,14 @@ mini_jit::Brgemm::error_t mini_jit::Brgemm::generate( uint32_t m,
     }
     else
     {
-        mini_jit::kernels::matmul_m_n_k(m_kernel, m, n, k);
+        if (br_size == 1)
+        {
+            mini_jit::kernels::matmul_m_n_k(m_kernel, m, n, k);
+        }
+        else
+        {
+            mini_jit::kernels::matmul_br_m_n_k(m_kernel, m, n, k, br_size);
+        }
 
         // Valid matrix kernel
         return mini_jit::Brgemm::error_t::success;
