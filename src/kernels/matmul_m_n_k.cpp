@@ -75,7 +75,7 @@ void mini_jit::kernels::matmul_m_n_k(mini_jit::Kernel &kernel,
 
         if (mLoopIterations > 0)
         {
-            mini_jit::kernels::internal::generateM1N4Loop(kernel, mLoopIterations, k);
+            mini_jit::kernels::internal::generateM8N4Loop(kernel, mLoopIterations, k);
         }
     
         if (mLoopRemainder > 0)
@@ -87,33 +87,31 @@ void mini_jit::kernels::matmul_m_n_k(mini_jit::Kernel &kernel,
             kernel.add_instr(base::mov(gpr_t::x16, gpr_t::x8)); // B
             kernel.add_instr(base::mov(gpr_t::x17, 0));         // row count B
     
-            if (mLoopRemainder == 1)
+            switch (mLoopRemainder)
             {
-                mini_jit::kernels::internal::generateM1N4LoopRest1(kernel);
-            }
-            else if (mLoopRemainder == 2)
-            {
-                mini_jit::kernels::internal::generateM1N4LoopRest2(kernel);
-            }
-            else if (mLoopRemainder == 3)
-            {
-                mini_jit::kernels::internal::generateM1N4LoopRest3(kernel, k);
-            }
-            else if (mLoopRemainder == 4)
-            {
-                mini_jit::kernels::internal::generateM1N4LoopRest4(kernel);
-            }
-            else if (mLoopRemainder == 5)
-            {
-                mini_jit::kernels::internal::generateM1N4LoopRest5(kernel);
-            }
-            else if (mLoopRemainder == 6)
-            {
-                mini_jit::kernels::internal::generateM1N4LoopRest6(kernel);
-            }
-            else if (mLoopRemainder == 7)
-            {
-                mini_jit::kernels::internal::generateM1N4LoopRest7(kernel, k);
+            case 1:
+                mini_jit::kernels::internal::generateM1N4Loop(kernel);
+                break;
+            case 2:
+                mini_jit::kernels::internal::generateM2N4Loop(kernel);
+                break;
+            case 3:
+                mini_jit::kernels::internal::generateM3N4Loop(kernel, k);
+                break;
+            case 4:
+                mini_jit::kernels::internal::generateM4N4Loop(kernel);
+                break;
+            case 5:
+                mini_jit::kernels::internal::generateM5N4Loop(kernel);
+                break;
+            case 6:
+                mini_jit::kernels::internal::generateM6N4Loop(kernel);
+                break;
+            case 7:
+                mini_jit::kernels::internal::generateM7N4Loop(kernel, k);
+                break;
+            default:
+                break;
             }
         }
 
@@ -142,17 +140,19 @@ void mini_jit::kernels::matmul_m_n_k(mini_jit::Kernel &kernel,
         // prepare the kernel
         kernel.add_instr(base::mov(gpr_t::x11, mLoopIterations));
 
-        if (nLoopRemainder == 1)
+        switch (nLoopRemainder)
         {
-            mini_jit::kernels::internal::generateNLoopRest1(kernel, mLoopIterations, mLoopRemainder, k);
-        }
-        else if (nLoopRemainder == 2)
-        {
-            mini_jit::kernels::internal::generateNLoopRest2(kernel, mLoopIterations, mLoopRemainder, k);
-        }
-        else if (nLoopRemainder == 3)
-        {
-            mini_jit::kernels::internal::generateNLoopRest3(kernel, mLoopIterations, mLoopRemainder, k);
+        case 1:
+            mini_jit::kernels::internal::generateN1Loop(kernel, mLoopIterations, mLoopRemainder, k);
+            break;
+        case 2:
+            mini_jit::kernels::internal::generateN2Loop(kernel, mLoopIterations, mLoopRemainder, k);
+            break;
+        case 3:
+            mini_jit::kernels::internal::generateN3Loop(kernel, mLoopIterations, mLoopRemainder, k);
+            break;
+        default:
+            break;
         }
     }
 
@@ -177,14 +177,14 @@ void mini_jit::kernels::matmul_m_n_k(mini_jit::Kernel &kernel,
     kernel.set_kernel();
 }
 
-void mini_jit::kernels::internal::generateNLoopRest3(mini_jit::Kernel &kernel,
+void mini_jit::kernels::internal::generateN1Loop(mini_jit::Kernel &kernel,
                                                      int mLoopIterations,
                                                      int mLoopRemainder,
                                                      int k)
 {
     if (mLoopIterations > 0)
     {
-        mini_jit::kernels::internal::generateMN3Loop(kernel, mLoopIterations, k);
+        mini_jit::kernels::internal::generateM8N1Loop(kernel, mLoopIterations, k);
     }
 
     if (mLoopRemainder > 0)
@@ -196,45 +196,43 @@ void mini_jit::kernels::internal::generateNLoopRest3(mini_jit::Kernel &kernel,
         kernel.add_instr(base::mov(gpr_t::x16, gpr_t::x8)); // B
         kernel.add_instr(base::mov(gpr_t::x17, 0));         // row count B
 
-        if (mLoopRemainder == 1)
+        switch (mLoopRemainder)
         {
-            mini_jit::kernels::internal::generateM1N3LoopRest1(kernel);
-        }
-        else if (mLoopRemainder == 2)
-        {
-            mini_jit::kernels::internal::generateM1N3LoopRest2(kernel);
-        }
-        else if (mLoopRemainder == 3)
-        {
-            mini_jit::kernels::internal::generateM1N3LoopRest3(kernel);
-        }
-        else if (mLoopRemainder == 4)
-        {
-            mini_jit::kernels::internal::generateM1N3LoopRest4(kernel);
-        }
-        else if (mLoopRemainder == 5)
-        {
-            mini_jit::kernels::internal::generateM1N3LoopRest5(kernel);
-        }
-        else if (mLoopRemainder == 6)
-        {
-            mini_jit::kernels::internal::generateM1N3LoopRest6(kernel);
-        }
-        else if (mLoopRemainder == 7)
-        {
-            mini_jit::kernels::internal::generateM1N3LoopRest7(kernel);
+        case 1:
+            mini_jit::kernels::internal::generateM1N1Loop(kernel);
+            break;
+        case 2:
+            mini_jit::kernels::internal::generateM2N1Loop(kernel);
+            break;
+        case 3:
+            mini_jit::kernels::internal::generateM3N1Loop(kernel);
+            break;
+        case 4:
+            mini_jit::kernels::internal::generateM4N1Loop(kernel);
+            break;
+        case 5:
+            mini_jit::kernels::internal::generateM5N1Loop(kernel);
+            break;
+        case 6:
+            mini_jit::kernels::internal::generateM6N1Loop(kernel);
+            break;
+        case 7:
+            mini_jit::kernels::internal::generateM7N1Loop(kernel);
+            break;
+        default:
+            break;
         }
     }
 }
 
-void mini_jit::kernels::internal::generateNLoopRest2(mini_jit::Kernel &kernel,
-                                                     int mLoopIterations,
-                                                     int mLoopRemainder,
-                                                     int k)
+void mini_jit::kernels::internal::generateN2Loop( mini_jit::Kernel &kernel,
+                                                  int mLoopIterations,
+                                                  int mLoopRemainder,
+                                                  int k)
 {
     if (mLoopIterations > 0)
     {
-        mini_jit::kernels::internal::generateMN2Loop(kernel, mLoopIterations, k);
+        mini_jit::kernels::internal::generateM8N2Loop(kernel, mLoopIterations, k);
     }
 
     if (mLoopRemainder > 0)
@@ -246,45 +244,43 @@ void mini_jit::kernels::internal::generateNLoopRest2(mini_jit::Kernel &kernel,
         kernel.add_instr(base::mov(gpr_t::x16, gpr_t::x8)); // B
         kernel.add_instr(base::mov(gpr_t::x17, 0));         // row count B
 
-        if (mLoopRemainder == 1)
+        switch (mLoopRemainder)
         {
-            mini_jit::kernels::internal::generateM1N2LoopRest1(kernel);
-        }
-        else if (mLoopRemainder == 2)
-        {
-            mini_jit::kernels::internal::generateM1N2LoopRest2(kernel);
-        }
-        else if (mLoopRemainder == 3)
-        {
-            mini_jit::kernels::internal::generateM1N2LoopRest3(kernel);
-        }
-        else if (mLoopRemainder == 4)
-        {
-            mini_jit::kernels::internal::generateM1N2LoopRest4(kernel);
-        }
-        else if (mLoopRemainder == 5)
-        {
-            mini_jit::kernels::internal::generateM1N2LoopRest5(kernel);
-        }
-        else if (mLoopRemainder == 6)
-        {
-            mini_jit::kernels::internal::generateM1N2LoopRest6(kernel);
-        }
-        else if (mLoopRemainder == 7)
-        {
-            mini_jit::kernels::internal::generateM1N2LoopRest7(kernel);
+        case 1:
+            mini_jit::kernels::internal::generateM1N2Loop(kernel);
+            break;
+        case 2:
+            mini_jit::kernels::internal::generateM2N2Loop(kernel);
+            break;
+        case 3:
+            mini_jit::kernels::internal::generateM3N2Loop(kernel);
+            break;
+        case 4:
+            mini_jit::kernels::internal::generateM4N2Loop(kernel);
+            break;
+        case 5:
+            mini_jit::kernels::internal::generateM5N2Loop(kernel);
+            break;
+        case 6:
+            mini_jit::kernels::internal::generateM6N2Loop(kernel);
+            break;
+        case 7:
+            mini_jit::kernels::internal::generateM7N2Loop(kernel);
+            break;
+        default:
+            break;
         }
     }
 }
 
-void mini_jit::kernels::internal::generateNLoopRest1(mini_jit::Kernel &kernel,
-                                                     int mLoopIterations,
-                                                     int mLoopRemainder,
-                                                     int k)
+void mini_jit::kernels::internal::generateN3Loop( mini_jit::Kernel &kernel,
+                                                  int mLoopIterations,
+                                                  int mLoopRemainder,
+                                                  int k)
 {
     if (mLoopIterations > 0)
     {
-        mini_jit::kernels::internal::generateMN1Loop(kernel, mLoopIterations, k);
+        mini_jit::kernels::internal::generateM8N3Loop(kernel, mLoopIterations, k);
     }
 
     if (mLoopRemainder > 0)
@@ -296,33 +292,31 @@ void mini_jit::kernels::internal::generateNLoopRest1(mini_jit::Kernel &kernel,
         kernel.add_instr(base::mov(gpr_t::x16, gpr_t::x8)); // B
         kernel.add_instr(base::mov(gpr_t::x17, 0));         // row count B
 
-        if (mLoopRemainder == 1)
+        switch (mLoopRemainder)
         {
-            mini_jit::kernels::internal::generateM1N1LoopRest1(kernel);
-        }
-        else if (mLoopRemainder == 2)
-        {
-            mini_jit::kernels::internal::generateM1N1LoopRest2(kernel);
-        }
-        else if (mLoopRemainder == 3)
-        {
-            mini_jit::kernels::internal::generateM1N1LoopRest3(kernel);
-        }
-        else if (mLoopRemainder == 4)
-        {
-            mini_jit::kernels::internal::generateM1N1LoopRest4(kernel);
-        }
-        else if (mLoopRemainder == 5)
-        {
-            mini_jit::kernels::internal::generateM1N1LoopRest5(kernel);
-        }
-        else if (mLoopRemainder == 6)
-        {
-            mini_jit::kernels::internal::generateM1N1LoopRest6(kernel);
-        }
-        else if (mLoopRemainder == 7)
-        {
-            mini_jit::kernels::internal::generateM1N1LoopRest7(kernel);
+        case 1:
+            mini_jit::kernels::internal::generateM1N3Loop(kernel);
+            break;
+        case 2:
+            mini_jit::kernels::internal::generateM2N3Loop(kernel);
+            break;
+        case 3:
+            mini_jit::kernels::internal::generateM3N3Loop(kernel);
+            break;
+        case 4:
+            mini_jit::kernels::internal::generateM4N3Loop(kernel);
+            break;
+        case 5:
+            mini_jit::kernels::internal::generateM5N3Loop(kernel);
+            break;
+        case 6:
+            mini_jit::kernels::internal::generateM6N3Loop(kernel);
+            break;
+        case 7:
+            mini_jit::kernels::internal::generateM7N3Loop(kernel);
+            break;
+        default:
+            break;
         }
     }
 }

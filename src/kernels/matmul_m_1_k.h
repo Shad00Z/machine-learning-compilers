@@ -10,56 +10,56 @@ namespace mini_jit
         namespace internal
         {
             /**
-             * @brief Generates an M loop for matrix multiplication where M % 8 = 0.
+             * @brief Generates an M loop for matrix multiplication where M % 8 = 0 and N = 1.
              * @param kernel Kernel object to be filled with instructions.
              * @param mLoopIterations number of M loop iterations.
              * @param k number of columns in A and rows in B.
              */
-            void generateMN1Loop( mini_jit::Kernel &kernel, 
-                                int mLoopIterations, 
-                                int k );
+            void generateM8N1Loop( mini_jit::Kernel &kernel, 
+                                   int mLoopIterations, 
+                                   int k );
 
             /**
-             * @brief Generates an M loop for matrix multiplication where M = 1.
+             * @brief Generates an M loop for matrix multiplication where M = 1 and N = 1.
              * @param kernel Kernel object to be filled with instructions.
              */
-            void generateM1N1LoopRest1( mini_jit::Kernel &kernel );
+            void generateM1N1Loop( mini_jit::Kernel &kernel );
 
             /**
-             * @brief Generates an M loop for matrix multiplication where M = 2.
+             * @brief Generates an M loop for matrix multiplication where M = 2 and N = 1.
              * @param kernel Kernel object to be filled with instructions.
              */
-            void generateM1N1LoopRest2( mini_jit::Kernel &kernel );
+            void generateM2N1Loop( mini_jit::Kernel &kernel );
 
             /**
-             * @brief Generates an M loop for matrix multiplication where M = 3.
+             * @brief Generates an M loop for matrix multiplication where M = 3 and N = 1.
              * @param kernel Kernel object to be filled with instructions.
              */
-            void generateM1N1LoopRest3( mini_jit::Kernel &kernel );
+            void generateM3N1Loop( mini_jit::Kernel &kernel );
 
             /**
-             * @brief Generates an M loop for matrix multiplication where M = 4.
+             * @brief Generates an M loop for matrix multiplication where M = 4 and N = 1.
              * @param kernel Kernel object to be filled with instructions.
              */
-            void generateM1N1LoopRest4( mini_jit::Kernel &kernel );
+            void generateM4N1Loop( mini_jit::Kernel &kernel );
 
             /**
-             * @brief Generates an M loop for matrix multiplication where M = 5.
+             * @brief Generates an M loop for matrix multiplication where M = 5 and N = 1.
              * @param kernel Kernel object to be filled with instructions.
              */
-            void generateM1N1LoopRest5( mini_jit::Kernel &kernel );
+            void generateM5N1Loop( mini_jit::Kernel &kernel );
 
             /**
-             * @brief Generates an M loop for matrix multiplication where M = 6.
+             * @brief Generates an M loop for matrix multiplication where M = 6 and N = 1.
              * @param kernel Kernel object to be filled with instructions.
              */
-            void generateM1N1LoopRest6( mini_jit::Kernel &kernel );
+            void generateM6N1Loop( mini_jit::Kernel &kernel );
 
             /**
-             * @brief Generates an M loop for matrix multiplication where M = 7.
+             * @brief Generates an M loop for matrix multiplication where M = 7 and N = 1.
              * @param kernel Kernel object to be filled with instructions.
              */
-            void generateM1N1LoopRest7( mini_jit::Kernel &kernel );
+            void generateM7N1Loop( mini_jit::Kernel &kernel );
         }
 
         /**

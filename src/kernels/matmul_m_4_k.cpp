@@ -52,7 +52,7 @@ void mini_jit::kernels::matmul_m_4_k(mini_jit::Kernel &kernel,
 
     if (mLoopIterations > 0)
     {
-        mini_jit::kernels::internal::generateM1N4Loop(kernel, mLoopIterations, k);
+        mini_jit::kernels::internal::generateM8N4Loop(kernel, mLoopIterations, k);
     }
 
     if (mLoopRemainder > 0)
@@ -66,31 +66,31 @@ void mini_jit::kernels::matmul_m_4_k(mini_jit::Kernel &kernel,
 
         if (mLoopRemainder == 1)
         {
-            mini_jit::kernels::internal::generateM1N4LoopRest1(kernel);
+            mini_jit::kernels::internal::generateM1N4Loop(kernel);
         }
         else if (mLoopRemainder == 2)
         {
-            mini_jit::kernels::internal::generateM1N4LoopRest2(kernel);
+            mini_jit::kernels::internal::generateM2N4Loop(kernel);
         }
         else if (mLoopRemainder == 3)
         {
-            mini_jit::kernels::internal::generateM1N4LoopRest3(kernel, k);
+            mini_jit::kernels::internal::generateM3N4Loop(kernel, k);
         }
         else if (mLoopRemainder == 4)
         {
-            mini_jit::kernels::internal::generateM1N4LoopRest4(kernel);
+            mini_jit::kernels::internal::generateM4N4Loop(kernel);
         }
         else if (mLoopRemainder == 5)
         {
-            mini_jit::kernels::internal::generateM1N4LoopRest5(kernel);
+            mini_jit::kernels::internal::generateM5N4Loop(kernel);
         }
         else if (mLoopRemainder == 6)
         {
-            mini_jit::kernels::internal::generateM1N4LoopRest6(kernel);
+            mini_jit::kernels::internal::generateM6N4Loop(kernel);
         }
         else if (mLoopRemainder == 7)
         {
-            mini_jit::kernels::internal::generateM1N4LoopRest7(kernel, k);
+            mini_jit::kernels::internal::generateM7N4Loop(kernel, k);
         }
     }
 
@@ -115,9 +115,9 @@ void mini_jit::kernels::matmul_m_4_k(mini_jit::Kernel &kernel,
     kernel.set_kernel();
 }
 
-void mini_jit::kernels::internal::generateM1N4Loop(mini_jit::Kernel &kernel,
-                                                int mLoopIterations,
-                                                int k)
+void mini_jit::kernels::internal::generateM8N4Loop(mini_jit::Kernel &kernel,
+                                                   int mLoopIterations,
+                                                   int k)
 {
     // prepare the kernel
     kernel.add_instr(base::mov(gpr_t::x11, mLoopIterations));
@@ -219,7 +219,7 @@ void mini_jit::kernels::internal::generateM1N4Loop(mini_jit::Kernel &kernel,
     // END M_LOOP
 }
 
-void mini_jit::kernels::internal::generateM1N4LoopRest1(mini_jit::Kernel &kernel)
+void mini_jit::kernels::internal::generateM1N4Loop(mini_jit::Kernel &kernel)
 {
     // Load Matrix C (1 value)
     kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x9));
@@ -284,7 +284,7 @@ void mini_jit::kernels::internal::generateM1N4LoopRest1(mini_jit::Kernel &kernel
     kernel.add_instr(simd_fp::str(simd_fp_t::v3, gpr_t::x12, 0, neon_size_spec_t::s));
 }
 
-void mini_jit::kernels::internal::generateM1N4LoopRest2(mini_jit::Kernel &kernel)
+void mini_jit::kernels::internal::generateM2N4Loop(mini_jit::Kernel &kernel)
 {
     // LOAD MATRIX C (2 values)
     kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x9));
@@ -349,10 +349,10 @@ void mini_jit::kernels::internal::generateM1N4LoopRest2(mini_jit::Kernel &kernel
     kernel.add_instr(simd_fp::str(simd_fp_t::v3, gpr_t::x12, 0, neon_size_spec_t::d));
 }
 
-void mini_jit::kernels::internal::generateM1N4LoopRest3(mini_jit::Kernel &kernel,
+void mini_jit::kernels::internal::generateM3N4Loop(mini_jit::Kernel &kernel,
                                                         int k)
 {
-    mini_jit::kernels::internal::generateM1N4LoopRest2(kernel);
+    mini_jit::kernels::internal::generateM2N4Loop(kernel);
 
     // increase A and C pointers for next block
     kernel.add_instr(base::add(gpr_t::x7, gpr_t::x7, 2 * 4, 0));
@@ -365,7 +365,7 @@ void mini_jit::kernels::internal::generateM1N4LoopRest3(mini_jit::Kernel &kernel
     kernel.add_instr(base::mov(gpr_t::x16, gpr_t::x8)); // B
     kernel.add_instr(base::mov(gpr_t::x17, 0));         // row count B
 
-    mini_jit::kernels::internal::generateM1N4LoopRest1(kernel);
+    mini_jit::kernels::internal::generateM1N4Loop(kernel);
 }
 
 /*
@@ -497,7 +497,7 @@ void mini_jit::kernels::internal::generateM1N4LoopRest3(mini_jit::Kernel &kernel
 }
     */
 
-void mini_jit::kernels::internal::generateM1N4LoopRest4(mini_jit::Kernel &kernel)
+void mini_jit::kernels::internal::generateM4N4Loop(mini_jit::Kernel &kernel)
 {
     // LOAD MATRIX C (4 values)
     kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x9));
@@ -579,7 +579,7 @@ void mini_jit::kernels::internal::generateM1N4LoopRest4(mini_jit::Kernel &kernel
 //     mini_jit::kernels::internal::generateM1N4LoopRest1(kernel);
 // }
 
-void mini_jit::kernels::internal::generateM1N4LoopRest5(mini_jit::Kernel &kernel)
+void mini_jit::kernels::internal::generateM5N4Loop(mini_jit::Kernel &kernel)
 {
     // LOAD MATRIX C (5 values)
     kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x9));
@@ -657,7 +657,7 @@ void mini_jit::kernels::internal::generateM1N4LoopRest5(mini_jit::Kernel &kernel
     kernel.add_instr(simd_fp::str(simd_fp_t::v7, gpr_t::x12, 16, neon_size_spec_t::s));
 }
 
-void mini_jit::kernels::internal::generateM1N4LoopRest6(mini_jit::Kernel &kernel)
+void mini_jit::kernels::internal::generateM6N4Loop(mini_jit::Kernel &kernel)
 {
     // LOAD MATRIX C (6 values)
     kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x9));
@@ -735,9 +735,9 @@ void mini_jit::kernels::internal::generateM1N4LoopRest6(mini_jit::Kernel &kernel
     kernel.add_instr(simd_fp::str(simd_fp_t::v7, gpr_t::x12, 16, neon_size_spec_t::d));
 }
 
-void mini_jit::kernels::internal::generateM1N4LoopRest7(mini_jit::Kernel &kernel, int k)
+void mini_jit::kernels::internal::generateM7N4Loop(mini_jit::Kernel &kernel, int k)
 {
-    mini_jit::kernels::internal::generateM1N4LoopRest6(kernel);
+    mini_jit::kernels::internal::generateM6N4Loop(kernel);
 
     // increase A and C pointers for next block
     kernel.add_instr(base::add(gpr_t::x7, gpr_t::x7, 6 * 4, 0));
@@ -750,7 +750,7 @@ void mini_jit::kernels::internal::generateM1N4LoopRest7(mini_jit::Kernel &kernel
     kernel.add_instr(base::mov(gpr_t::x16, gpr_t::x8)); // B
     kernel.add_instr(base::mov(gpr_t::x17, 0));         // row count B
 
-    mini_jit::kernels::internal::generateM1N4LoopRest1(kernel);
+    mini_jit::kernels::internal::generateM1N4Loop(kernel);
 }
 
 /*void mini_jit::kernels::internal::generateM1N4LoopRest7(mini_jit::Kernel &kernel)

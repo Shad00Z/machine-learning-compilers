@@ -52,7 +52,7 @@ void mini_jit::kernels::matmul_m_2_k(mini_jit::Kernel &kernel,
 
     if (mLoopIterations > 0)
     {
-        mini_jit::kernels::internal::generateMN2Loop(kernel, mLoopIterations, k);
+        mini_jit::kernels::internal::generateM8N2Loop(kernel, mLoopIterations, k);
     }
 
     if (mLoopRemainder > 0)
@@ -64,33 +64,31 @@ void mini_jit::kernels::matmul_m_2_k(mini_jit::Kernel &kernel,
         kernel.add_instr(base::mov(gpr_t::x16, gpr_t::x8)); // B
         kernel.add_instr(base::mov(gpr_t::x17, 0));         // row count B
 
-        if (mLoopRemainder == 1)
+        switch (mLoopRemainder)
         {
-            mini_jit::kernels::internal::generateM1N2LoopRest1(kernel);
-        }
-        else if (mLoopRemainder == 2)
-        {
-            mini_jit::kernels::internal::generateM1N2LoopRest2(kernel);
-        }
-        else if (mLoopRemainder == 3)
-        {
-            mini_jit::kernels::internal::generateM1N2LoopRest3(kernel);
-        }
-        else if (mLoopRemainder == 4)
-        {
-            mini_jit::kernels::internal::generateM1N2LoopRest4(kernel);
-        }
-        else if (mLoopRemainder == 5)
-        {
-            mini_jit::kernels::internal::generateM1N2LoopRest5(kernel);
-        }
-        else if (mLoopRemainder == 6)
-        {
-            mini_jit::kernels::internal::generateM1N2LoopRest6(kernel);
-        }
-        else if (mLoopRemainder == 7)
-        {
-            mini_jit::kernels::internal::generateM1N2LoopRest7(kernel);
+        case 1:
+            mini_jit::kernels::internal::generateM1N2Loop(kernel);
+            break;
+        case 2:
+            mini_jit::kernels::internal::generateM2N2Loop(kernel);
+            break;
+        case 3:
+            mini_jit::kernels::internal::generateM3N2Loop(kernel);
+            break;
+        case 4:
+            mini_jit::kernels::internal::generateM4N2Loop(kernel);
+            break;
+        case 5:
+            mini_jit::kernels::internal::generateM5N2Loop(kernel);
+            break;
+        case 6:
+            mini_jit::kernels::internal::generateM6N2Loop(kernel);
+            break;
+        case 7:
+            mini_jit::kernels::internal::generateM7N2Loop(kernel);
+            break;
+        default:
+            break;
         }
     }
 
@@ -111,19 +109,19 @@ void mini_jit::kernels::matmul_m_2_k(mini_jit::Kernel &kernel,
 
     kernel.add_instr(inst::ret());
 
-    kernel.write("matmul_m_3_k.bin");
+    kernel.write("matmul_m_2_k.bin");
     kernel.set_kernel();
 }
 
-void mini_jit::kernels::internal::generateMN2Loop(mini_jit::Kernel &kernel,
-                                                int mLoopIterations,
-                                                int k)
+void mini_jit::kernels::internal::generateM8N2Loop(mini_jit::Kernel &kernel,
+                                                   int mLoopIterations,
+                                                   int k)
 {
     // prepare the kernel
     kernel.add_instr(base::mov(gpr_t::x11, mLoopIterations));
 
     // START M_LOOP
-    kernel.add_label("m1n2_loop");
+    kernel.add_label("m8n2_loop");
     // Load Matrix C
     kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x9));
     // first column
@@ -139,7 +137,7 @@ void mini_jit::kernels::internal::generateMN2Loop(mini_jit::Kernel &kernel,
     kernel.add_instr(base::mov(gpr_t::x17, 0));         // Row index for Matrix B
 
     // START K_LOOP
-    kernel.add_label("km1n2_loop");
+    kernel.add_label("k_m8n2_loop");
     //  Load column of A (8 values)
     kernel.add_instr(simd_fp::ldp(simd_fp_t::v24, simd_fp_t::v25, gpr_t::x15, 0, neon_size_spec_t::q));
 
@@ -168,7 +166,7 @@ void mini_jit::kernels::internal::generateMN2Loop(mini_jit::Kernel &kernel,
 
     // END K_LOOP
     kernel.add_instr(base::sub(gpr_t::x14, gpr_t::x14, 1, 0));
-    int l_kLoopInstrCount = kernel.getInstrCountFromLabel("km1n2_loop");
+    int l_kLoopInstrCount = kernel.getInstrCountFromLabel("k_m8n2_loop");
     kernel.add_instr(base::cbnz(gpr_t::x14, -l_kLoopInstrCount * 4));
 
     // Store Matrix C
@@ -186,12 +184,12 @@ void mini_jit::kernels::internal::generateMN2Loop(mini_jit::Kernel &kernel,
     // decrement M loop counter
     kernel.add_instr(base::sub(gpr_t::x11, gpr_t::x11, 1, 0));
 
-    int l_mLoopInstrCount = kernel.getInstrCountFromLabel("m1n2_loop");
+    int l_mLoopInstrCount = kernel.getInstrCountFromLabel("m8n2_loop");
     kernel.add_instr(base::cbnz(gpr_t::x11, -l_mLoopInstrCount * 4));
     // END M_LOOP
 }
 
-void mini_jit::kernels::internal::generateM1N2LoopRest1(mini_jit::Kernel &kernel)
+void mini_jit::kernels::internal::generateM1N2Loop(mini_jit::Kernel &kernel)
 {
     // Load Matrix C (1 value)
     kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x9));
@@ -202,7 +200,7 @@ void mini_jit::kernels::internal::generateM1N2LoopRest1(mini_jit::Kernel &kernel
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v1, gpr_t::x12, 0, neon_size_spec_t::s));
 
     // case_1_k_loop:
-    kernel.add_label("case_1_km1n2_loop");
+    kernel.add_label("k_m1n2_loop");
     // load column of A (1 value)
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v24, gpr_t::x15, 0, neon_size_spec_t::s));
 
@@ -224,7 +222,7 @@ void mini_jit::kernels::internal::generateM1N2LoopRest1(mini_jit::Kernel &kernel
     // decrement loop counter
     kernel.add_instr(base::sub(gpr_t::x14, gpr_t::x14, 1, 0));
     // check if loop counter is zero
-    int l_kLoopInstrCount = kernel.getInstrCountFromLabel("case_1_km1n2_loop");
+    int l_kLoopInstrCount = kernel.getInstrCountFromLabel("k_m1n2_loop");
     kernel.add_instr(base::cbnz(gpr_t::x14, -l_kLoopInstrCount * 4));
 
     // STORE MATRIX C
@@ -236,7 +234,7 @@ void mini_jit::kernels::internal::generateM1N2LoopRest1(mini_jit::Kernel &kernel
     kernel.add_instr(simd_fp::str(simd_fp_t::v1, gpr_t::x12, 0, neon_size_spec_t::s));
 }
 
-void mini_jit::kernels::internal::generateM1N2LoopRest2(mini_jit::Kernel &kernel)
+void mini_jit::kernels::internal::generateM2N2Loop(mini_jit::Kernel &kernel)
 {
     // LOAD MATRIX C (2 values)
     kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x9));
@@ -247,7 +245,7 @@ void mini_jit::kernels::internal::generateM1N2LoopRest2(mini_jit::Kernel &kernel
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v1, gpr_t::x12, 0, neon_size_spec_t::d));
 
     // case_2_km1n2_loop:
-    kernel.add_label("case_2_km1n2_loop");
+    kernel.add_label("k_m2n2_loop");
     // load column of A (2 values)
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v24, gpr_t::x15, 0, neon_size_spec_t::d));
 
@@ -269,7 +267,7 @@ void mini_jit::kernels::internal::generateM1N2LoopRest2(mini_jit::Kernel &kernel
     // decrement loop counter
     kernel.add_instr(base::sub(gpr_t::x14, gpr_t::x14, 1, 0));
     // check if loop counter is zero
-    int l_kLoopInstrCount = kernel.getInstrCountFromLabel("case_2_km1n2_loop");
+    int l_kLoopInstrCount = kernel.getInstrCountFromLabel("k_m2n2_loop");
     kernel.add_instr(base::cbnz(gpr_t::x14, -l_kLoopInstrCount * 4));
 
     // STORE MATRIX C
@@ -281,7 +279,7 @@ void mini_jit::kernels::internal::generateM1N2LoopRest2(mini_jit::Kernel &kernel
     kernel.add_instr(simd_fp::str(simd_fp_t::v1, gpr_t::x12, 0, neon_size_spec_t::d));
 }
 
-void mini_jit::kernels::internal::generateM1N2LoopRest3(mini_jit::Kernel &kernel)
+void mini_jit::kernels::internal::generateM3N2Loop(mini_jit::Kernel &kernel)
 {
     // LOAD MATRIX C (3 values)
     kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x9));
@@ -300,7 +298,7 @@ void mini_jit::kernels::internal::generateM1N2LoopRest3(mini_jit::Kernel &kernel
     kernel.add_instr(simd_fp::mov(simd_fp_t::v1, gpr_t::wzr, 3, neon_size_spec_t::s));
 
     // case_3_km1n2_loop:
-    kernel.add_label("case_3_km1n2_loop");
+    kernel.add_label("k_m3n2_loop");
     // load column of A (3 values)
     kernel.add_instr(base::mov(gpr_t::x20, gpr_t::x15));
     kernel.add_instr(simd_fp::ld1(simd_fp_t::v24, gpr_t::x20, 0, neon_size_spec_t::s, 4));
@@ -326,7 +324,7 @@ void mini_jit::kernels::internal::generateM1N2LoopRest3(mini_jit::Kernel &kernel
     // decrement loop counter
     kernel.add_instr(base::sub(gpr_t::x14, gpr_t::x14, 1, 0));
     // check if loop counter is zero
-    int l_kLoopInstrCount = kernel.getInstrCountFromLabel("case_3_km1n2_loop");
+    int l_kLoopInstrCount = kernel.getInstrCountFromLabel("k_m3n2_loop");
     kernel.add_instr(base::cbnz(gpr_t::x14, -l_kLoopInstrCount * 4));
 
     // STORE MATRIX C (3 values)
@@ -346,7 +344,7 @@ void mini_jit::kernels::internal::generateM1N2LoopRest3(mini_jit::Kernel &kernel
     kernel.add_instr(simd_fp::mov(simd_fp_t::v1, gpr_t::wzr, 3, neon_size_spec_t::s));
 }
 
-void mini_jit::kernels::internal::generateM1N2LoopRest4(mini_jit::Kernel &kernel)
+void mini_jit::kernels::internal::generateM4N2Loop(mini_jit::Kernel &kernel)
 {
     // LOAD MATRIX C (4 values)
     kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x9));
@@ -357,7 +355,7 @@ void mini_jit::kernels::internal::generateM1N2LoopRest4(mini_jit::Kernel &kernel
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v1, gpr_t::x12, 0, neon_size_spec_t::q));
 
     // case_4_km1n2_loop:
-    kernel.add_label("case_4_km1n2_loop");
+    kernel.add_label("k_m4n2_loop");
     // load column of A (4 values)
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v24, gpr_t::x15, 0, neon_size_spec_t::q));
     // B: COLUMN 0
@@ -378,7 +376,7 @@ void mini_jit::kernels::internal::generateM1N2LoopRest4(mini_jit::Kernel &kernel
     // decrement loop counter
     kernel.add_instr(base::sub(gpr_t::x14, gpr_t::x14, 1, 0));
     // check if loop counter is zero
-    int l_kLoopInstrCount = kernel.getInstrCountFromLabel("case_4_km1n2_loop");
+    int l_kLoopInstrCount = kernel.getInstrCountFromLabel("k_m4n2_loop");
     kernel.add_instr(base::cbnz(gpr_t::x14, -l_kLoopInstrCount * 4));
 
     // STORE MATRIX C
@@ -390,7 +388,7 @@ void mini_jit::kernels::internal::generateM1N2LoopRest4(mini_jit::Kernel &kernel
     kernel.add_instr(simd_fp::str(simd_fp_t::v1, gpr_t::x12, 0, neon_size_spec_t::q));
 }
 
-void mini_jit::kernels::internal::generateM1N2LoopRest5(mini_jit::Kernel &kernel)
+void mini_jit::kernels::internal::generateM5N2Loop(mini_jit::Kernel &kernel)
 {
     // LOAD MATRIX C (5 values)
     kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x9));
@@ -403,7 +401,7 @@ void mini_jit::kernels::internal::generateM1N2LoopRest5(mini_jit::Kernel &kernel
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v3, gpr_t::x12, 16, neon_size_spec_t::s));
 
     // case_5_km1n2_loop:
-    kernel.add_label("case_5_km1n2_loop");
+    kernel.add_label("k_m5n2_loop");
     // load column of A (5 values)
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v24, gpr_t::x15, 0, neon_size_spec_t::q));
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v25, gpr_t::x15, 16, neon_size_spec_t::s));
@@ -428,7 +426,7 @@ void mini_jit::kernels::internal::generateM1N2LoopRest5(mini_jit::Kernel &kernel
     // decrement loop counter
     kernel.add_instr(base::sub(gpr_t::x14, gpr_t::x14, 1, 0));
     // check if loop counter is zero
-    int l_kLoopInstrCount = kernel.getInstrCountFromLabel("case_5_km1n2_loop");
+    int l_kLoopInstrCount = kernel.getInstrCountFromLabel("k_m5n2_loop");
     kernel.add_instr(base::cbnz(gpr_t::x14, -l_kLoopInstrCount * 4));
 
     // STORE MATRIX C (5 values)
@@ -442,7 +440,7 @@ void mini_jit::kernels::internal::generateM1N2LoopRest5(mini_jit::Kernel &kernel
     kernel.add_instr(simd_fp::str(simd_fp_t::v3, gpr_t::x12, 16, neon_size_spec_t::s));
 }
 
-void mini_jit::kernels::internal::generateM1N2LoopRest6(mini_jit::Kernel &kernel)
+void mini_jit::kernels::internal::generateM6N2Loop(mini_jit::Kernel &kernel)
 {
     // LOAD MATRIX C (6 values)
     kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x9));
@@ -455,7 +453,7 @@ void mini_jit::kernels::internal::generateM1N2LoopRest6(mini_jit::Kernel &kernel
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v3, gpr_t::x12, 16, neon_size_spec_t::d));
 
     // case_6_km1n2_loop:
-    kernel.add_label("case_6_km1n2_loop");
+    kernel.add_label("k_m6n2_loop");
     // load column of A (6 values)
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v24, gpr_t::x15, 0, neon_size_spec_t::q));
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v25, gpr_t::x15, 16, neon_size_spec_t::d));
@@ -480,7 +478,7 @@ void mini_jit::kernels::internal::generateM1N2LoopRest6(mini_jit::Kernel &kernel
     // decrement loop counter
     kernel.add_instr(base::sub(gpr_t::x14, gpr_t::x14, 1, 0));
     // check if loop counter is zero
-    int l_kLoopInstrCount = kernel.getInstrCountFromLabel("case_6_km1n2_loop");
+    int l_kLoopInstrCount = kernel.getInstrCountFromLabel("k_m6n2_loop");
     kernel.add_instr(base::cbnz(gpr_t::x14, -l_kLoopInstrCount * 4));
 
     // STORE MATRIX C (6 values)
@@ -494,7 +492,7 @@ void mini_jit::kernels::internal::generateM1N2LoopRest6(mini_jit::Kernel &kernel
     kernel.add_instr(simd_fp::str(simd_fp_t::v3, gpr_t::x12, 16, neon_size_spec_t::d));
 }
 
-void mini_jit::kernels::internal::generateM1N2LoopRest7(mini_jit::Kernel &kernel)
+void mini_jit::kernels::internal::generateM7N2Loop(mini_jit::Kernel &kernel)
 {
     // LOAD MATRIX C (7 values)
     kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x9));
@@ -511,7 +509,7 @@ void mini_jit::kernels::internal::generateM1N2LoopRest7(mini_jit::Kernel &kernel
     kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v5, gpr_t::x20, 0, neon_size_spec_t::s));
 
     // case_7_km1n2_loop:
-    kernel.add_label("case_7_km1n2_loop");
+    kernel.add_label("k_m7n2_loop");
     // load column of A (7 values)
     kernel.add_instr(base::mov(gpr_t::x20, gpr_t::x15));
     kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v24, gpr_t::x20, 16, neon_size_spec_t::q));
@@ -538,7 +536,7 @@ void mini_jit::kernels::internal::generateM1N2LoopRest7(mini_jit::Kernel &kernel
 
     // decrement loop counter
     kernel.add_instr(base::sub(gpr_t::x14, gpr_t::x14, 1, 0));
-    int l_kLoopInstrCount = kernel.getInstrCountFromLabel("case_7_km1n2_loop");
+    int l_kLoopInstrCount = kernel.getInstrCountFromLabel("k_m7n2_loop");
     kernel.add_instr(base::cbnz(gpr_t::x14, -l_kLoopInstrCount * 4));
 
     // STORE MATRIX C (7 values)
