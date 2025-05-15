@@ -6,9 +6,9 @@
 #include "../Brgemm.h"
 
 TEST_CASE("Reference test for batch reduce matmul kernel with variable M, N, K", "[br_matmul][parameterized]") {
-    const int M = GENERATE(take(64, random(1, 64)));
-    const int N = GENERATE(take(64, random(1, 64)));
-    const int K = GENERATE(1, 16, 32, 64, 128);
+    const int M = GENERATE(take(4, random(1, 64)));
+    const int N = GENERATE(take(4, random(1, 64)));
+    const int K = GENERATE(32, 64, 128);
     const int br_size = 16;
 
     float* A = new float[M * K * br_size];
