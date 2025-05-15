@@ -78,11 +78,11 @@ mini_jit::Brgemm::error_t mini_jit::Brgemm::generate( uint32_t m,
     {
         if (br_size == 1)
         {
-            mini_jit::kernels::matmul_m_n_k(m_kernel, m, n, k);
+            mini_jit::kernels::matmul::matmul_m_n_k(m_kernel, m, n, k);
         }
         else
         {
-            mini_jit::kernels::matmul_br_m_n_k(m_kernel, m, n, k, br_size);
+            mini_jit::kernels::matmul::matmul_br_m_n_k(m_kernel, m, n, k, br_size);
         }
 
         // Valid matrix kernel

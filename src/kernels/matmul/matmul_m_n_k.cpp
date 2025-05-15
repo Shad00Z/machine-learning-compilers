@@ -15,11 +15,12 @@ using neon_size_spec_t = mini_jit::registers::neon_size_spec_t;
 namespace inst = mini_jit::instructions;
 namespace base = inst::base;
 namespace simd_fp = inst::simd_fp;
+namespace internal_subkernels = mini_jit::kernels::matmul::subkernels::internal;
 
-void mini_jit::kernels::matmul_m_n_k(mini_jit::Kernel &kernel,
-                                     int m,
-                                     int n,
-                                     int k)
+void mini_jit::kernels::matmul::matmul_m_n_k(mini_jit::Kernel &kernel,
+                                            int m,
+                                            int n,
+                                            int k)
 {
     // Prepare the kernel
     int nLoopIterations = n / 4;
@@ -71,7 +72,7 @@ void mini_jit::kernels::matmul_m_n_k(mini_jit::Kernel &kernel,
 
         if (mLoopIterations > 0)
         {
-            mini_jit::kernels::internal::generateM8N4Loop(kernel, mLoopIterations, k);
+            internal_subkernels::generateM8N4Loop(kernel, mLoopIterations, k);
         }
     
         if (mLoopRemainder > 0)
@@ -86,25 +87,25 @@ void mini_jit::kernels::matmul_m_n_k(mini_jit::Kernel &kernel,
             switch (mLoopRemainder)
             {
             case 1:
-                mini_jit::kernels::internal::generateM1N4Loop(kernel);
+                internal_subkernels::generateM1N4Loop(kernel);
                 break;
             case 2:
-                mini_jit::kernels::internal::generateM2N4Loop(kernel);
+                internal_subkernels::generateM2N4Loop(kernel);
                 break;
             case 3:
-                mini_jit::kernels::internal::generateM3N4Loop(kernel);
+                internal_subkernels::generateM3N4Loop(kernel);
                 break;
             case 4:
-                mini_jit::kernels::internal::generateM4N4Loop(kernel);
+                internal_subkernels::generateM4N4Loop(kernel);
                 break;
             case 5:
-                mini_jit::kernels::internal::generateM5N4Loop(kernel);
+                internal_subkernels::generateM5N4Loop(kernel);
                 break;
             case 6:
-                mini_jit::kernels::internal::generateM6N4Loop(kernel);
+                internal_subkernels::generateM6N4Loop(kernel);
                 break;
             case 7:
-                mini_jit::kernels::internal::generateM7N4Loop(kernel);
+                internal_subkernels::generateM7N4Loop(kernel);
                 break;
             default:
                 break;
@@ -134,13 +135,13 @@ void mini_jit::kernels::matmul_m_n_k(mini_jit::Kernel &kernel,
         switch (nLoopRemainder)
         {
         case 1:
-            mini_jit::kernels::internal::generateN1Loop(kernel, mLoopIterations, mLoopRemainder, k);
+            mini_jit::kernels::matmul::internal::generateN1Loop(kernel, mLoopIterations, mLoopRemainder, k);
             break;
         case 2:
-            mini_jit::kernels::internal::generateN2Loop(kernel, mLoopIterations, mLoopRemainder, k);
+            mini_jit::kernels::matmul::internal::generateN2Loop(kernel, mLoopIterations, mLoopRemainder, k);
             break;
         case 3:
-            mini_jit::kernels::internal::generateN3Loop(kernel, mLoopIterations, mLoopRemainder, k);
+            mini_jit::kernels::matmul::internal::generateN3Loop(kernel, mLoopIterations, mLoopRemainder, k);
             break;
         default:
             break;
@@ -168,14 +169,14 @@ void mini_jit::kernels::matmul_m_n_k(mini_jit::Kernel &kernel,
     kernel.set_kernel();
 }
 
-void mini_jit::kernels::internal::generateN1Loop(mini_jit::Kernel &kernel,
+void mini_jit::kernels::matmul::internal::generateN1Loop(mini_jit::Kernel &kernel,
                                                      int mLoopIterations,
                                                      int mLoopRemainder,
                                                      int k)
 {
     if (mLoopIterations > 0)
     {
-        mini_jit::kernels::internal::generateM8N1Loop(kernel, mLoopIterations, k);
+        internal_subkernels::generateM8N1Loop(kernel, mLoopIterations, k);
     }
 
     if (mLoopRemainder > 0)
@@ -190,25 +191,25 @@ void mini_jit::kernels::internal::generateN1Loop(mini_jit::Kernel &kernel,
         switch (mLoopRemainder)
         {
         case 1:
-            mini_jit::kernels::internal::generateM1N1Loop(kernel);
+            internal_subkernels::generateM1N1Loop(kernel);
             break;
         case 2:
-            mini_jit::kernels::internal::generateM2N1Loop(kernel);
+            internal_subkernels::generateM2N1Loop(kernel);
             break;
         case 3:
-            mini_jit::kernels::internal::generateM3N1Loop(kernel);
+            internal_subkernels::generateM3N1Loop(kernel);
             break;
         case 4:
-            mini_jit::kernels::internal::generateM4N1Loop(kernel);
+            internal_subkernels::generateM4N1Loop(kernel);
             break;
         case 5:
-            mini_jit::kernels::internal::generateM5N1Loop(kernel);
+            internal_subkernels::generateM5N1Loop(kernel);
             break;
         case 6:
-            mini_jit::kernels::internal::generateM6N1Loop(kernel);
+            internal_subkernels::generateM6N1Loop(kernel);
             break;
         case 7:
-            mini_jit::kernels::internal::generateM7N1Loop(kernel);
+            internal_subkernels::generateM7N1Loop(kernel);
             break;
         default:
             break;
@@ -216,14 +217,14 @@ void mini_jit::kernels::internal::generateN1Loop(mini_jit::Kernel &kernel,
     }
 }
 
-void mini_jit::kernels::internal::generateN2Loop( mini_jit::Kernel &kernel,
+void mini_jit::kernels::matmul::internal::generateN2Loop( mini_jit::Kernel &kernel,
                                                   int mLoopIterations,
                                                   int mLoopRemainder,
                                                   int k)
 {
     if (mLoopIterations > 0)
     {
-        mini_jit::kernels::internal::generateM8N2Loop(kernel, mLoopIterations, k);
+        internal_subkernels::generateM8N2Loop(kernel, mLoopIterations, k);
     }
 
     if (mLoopRemainder > 0)
@@ -238,25 +239,25 @@ void mini_jit::kernels::internal::generateN2Loop( mini_jit::Kernel &kernel,
         switch (mLoopRemainder)
         {
         case 1:
-            mini_jit::kernels::internal::generateM1N2Loop(kernel);
+            internal_subkernels::generateM1N2Loop(kernel);
             break;
         case 2:
-            mini_jit::kernels::internal::generateM2N2Loop(kernel);
+            internal_subkernels::generateM2N2Loop(kernel);
             break;
         case 3:
-            mini_jit::kernels::internal::generateM3N2Loop(kernel);
+            internal_subkernels::generateM3N2Loop(kernel);
             break;
         case 4:
-            mini_jit::kernels::internal::generateM4N2Loop(kernel);
+            internal_subkernels::generateM4N2Loop(kernel);
             break;
         case 5:
-            mini_jit::kernels::internal::generateM5N2Loop(kernel);
+            internal_subkernels::generateM5N2Loop(kernel);
             break;
         case 6:
-            mini_jit::kernels::internal::generateM6N2Loop(kernel);
+            internal_subkernels::generateM6N2Loop(kernel);
             break;
         case 7:
-            mini_jit::kernels::internal::generateM7N2Loop(kernel);
+            internal_subkernels::generateM7N2Loop(kernel);
             break;
         default:
             break;
@@ -264,14 +265,14 @@ void mini_jit::kernels::internal::generateN2Loop( mini_jit::Kernel &kernel,
     }
 }
 
-void mini_jit::kernels::internal::generateN3Loop( mini_jit::Kernel &kernel,
+void mini_jit::kernels::matmul::internal::generateN3Loop( mini_jit::Kernel &kernel,
                                                   int mLoopIterations,
                                                   int mLoopRemainder,
                                                   int k)
 {
     if (mLoopIterations > 0)
     {
-        mini_jit::kernels::internal::generateM8N3Loop(kernel, mLoopIterations, k);
+        internal_subkernels::generateM8N3Loop(kernel, mLoopIterations, k);
     }
 
     if (mLoopRemainder > 0)
@@ -286,25 +287,25 @@ void mini_jit::kernels::internal::generateN3Loop( mini_jit::Kernel &kernel,
         switch (mLoopRemainder)
         {
         case 1:
-            mini_jit::kernels::internal::generateM1N3Loop(kernel);
+            internal_subkernels::generateM1N3Loop(kernel);
             break;
         case 2:
-            mini_jit::kernels::internal::generateM2N3Loop(kernel);
+            internal_subkernels::generateM2N3Loop(kernel);
             break;
         case 3:
-            mini_jit::kernels::internal::generateM3N3Loop(kernel);
+            internal_subkernels::generateM3N3Loop(kernel);
             break;
         case 4:
-            mini_jit::kernels::internal::generateM4N3Loop(kernel);
+            internal_subkernels::generateM4N3Loop(kernel);
             break;
         case 5:
-            mini_jit::kernels::internal::generateM5N3Loop(kernel);
+            internal_subkernels::generateM5N3Loop(kernel);
             break;
         case 6:
-            mini_jit::kernels::internal::generateM6N3Loop(kernel);
+            internal_subkernels::generateM6N3Loop(kernel);
             break;
         case 7:
-            mini_jit::kernels::internal::generateM7N3Loop(kernel);
+            internal_subkernels::generateM7N3Loop(kernel);
             break;
         default:
             break;

@@ -17,8 +17,8 @@ namespace inst = mini_jit::instructions;
 namespace base = inst::base;
 namespace simd_fp = inst::simd_fp;
 
-void mini_jit::kernels::matmul_16_6_k( mini_jit::Kernel &kernel, 
-                                       int k )
+void mini_jit::kernels::matmul::subkernels::matmul_16_6_k( mini_jit::Kernel &kernel, 
+                                                           int k )
 {
     // PCS
     kernel.add_instr( base::stpPre(gpr_t::x29, gpr_t::x30, gpr_t::sp, -16) );

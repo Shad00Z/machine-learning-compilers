@@ -53,7 +53,7 @@ TEST_CASE("Reference test for batch reduce matmul kernel with variable M, N, K",
     }
 
     mini_jit::Kernel l_kernel;
-    mini_jit::kernels::matmul_br_m_n_k(l_kernel, M, N, K, br_size);
+    mini_jit::kernels::matmul::matmul_br_m_n_k(l_kernel, M, N, K, br_size);
     mini_jit::Brgemm::kernel_t l_kernel_t = reinterpret_cast<mini_jit::Brgemm::kernel_t>(const_cast<void *>(l_kernel.get_kernel()));
     l_kernel_t( A, B, C, M, K, M, M*K, K*N );
 

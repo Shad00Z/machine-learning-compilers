@@ -8,11 +8,17 @@ namespace mini_jit
 {
     namespace kernels
     {
-        /**
-         * @brief Kernel for batch-reduce matrix multiplication.
-         * @param kernel Kernel object to be filled with instructions.
-         */
-        void matmul_16_6_1( mini_jit::Kernel &kernel );      
+        namespace matmul
+        {
+            namespace subkernels
+            {
+                /**
+                 * @brief Kernel for batch-reduce matrix multiplication.
+                 * @param kernel Kernel object to be filled with instructions.
+                 */
+                void matmul_16_6_1(mini_jit::Kernel &kernel);
+            }
+        }
     }
 };
 

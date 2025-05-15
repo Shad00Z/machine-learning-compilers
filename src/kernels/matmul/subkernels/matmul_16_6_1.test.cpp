@@ -24,7 +24,7 @@ TEST_CASE( "Tests the matmul_16_6_1 microkernel", "[matmul_16_6_1]" )
     };
 
     mini_jit::Kernel l_kernel;
-    mini_jit::kernels::matmul_16_6_1(l_kernel);
+    mini_jit::kernels::matmul::subkernels::matmul_16_6_1(l_kernel);
     mini_jit::Brgemm::kernel_t l_kernel_t = reinterpret_cast<mini_jit::Brgemm::kernel_t>(const_cast<void*>(l_kernel.get_kernel()));
     l_kernel_t( A, B, C, M, K, M, 0, 0 );
 

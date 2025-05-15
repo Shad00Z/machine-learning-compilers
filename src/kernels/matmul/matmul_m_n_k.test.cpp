@@ -49,7 +49,7 @@ TEST_CASE("Reference test for matmul kernel with variable M, N, K", "[matmul][pa
     }
 
     mini_jit::Kernel l_kernel;
-    mini_jit::kernels::matmul_m_n_k(l_kernel, M, N, K);
+    mini_jit::kernels::matmul::matmul_m_n_k(l_kernel, M, N, K);
     mini_jit::Brgemm::kernel_t l_kernel_t = reinterpret_cast<mini_jit::Brgemm::kernel_t>(const_cast<void *>(l_kernel.get_kernel()));
     l_kernel_t( A, B, C, M, K, M, 0, 0 );
 
@@ -131,7 +131,7 @@ TEST_CASE("Reference test for matmul kernel with variable M, N, K and lda>M, ldb
     }
 
     mini_jit::Kernel l_kernel;
-    mini_jit::kernels::matmul_m_n_k(l_kernel, M, N, K);
+    mini_jit::kernels::matmul::matmul_m_n_k(l_kernel, M, N, K);
     mini_jit::Brgemm::kernel_t l_kernel_t = reinterpret_cast<mini_jit::Brgemm::kernel_t>(const_cast<void *>(l_kernel.get_kernel()));
     l_kernel_t( A, B, C, lda, ldb, ldc, 0, 0 );
 
@@ -196,7 +196,7 @@ TEST_CASE("Tests the matmul_m_n_k microkernel function with random matrices and 
     }
 
     mini_jit::Kernel l_kernel;
-    mini_jit::kernels::matmul_m_n_k(l_kernel, M, N, K);
+    mini_jit::kernels::matmul::matmul_m_n_k(l_kernel, M, N, K);
     mini_jit::Brgemm::kernel_t l_kernel_t = reinterpret_cast<mini_jit::Brgemm::kernel_t>(const_cast<void *>(l_kernel.get_kernel()));
     l_kernel_t( A, B, C, M, K, M, 0, 0 );
 
@@ -253,7 +253,7 @@ TEST_CASE("Tests the matmul_m_n_k microkernel function with random matrices and 
     }
 
     mini_jit::Kernel l_kernel;
-    mini_jit::kernels::matmul_m_n_k(l_kernel, M, N, K);
+    mini_jit::kernels::matmul::matmul_m_n_k(l_kernel, M, N, K);
     mini_jit::Brgemm::kernel_t l_kernel_t = reinterpret_cast<mini_jit::Brgemm::kernel_t>(const_cast<void *>(l_kernel.get_kernel()));
     l_kernel_t( A, B, C, M, K, M, 0, 0 );
 
@@ -310,7 +310,7 @@ TEST_CASE("Tests the matmul_m_n_k microkernel function with random matrices and 
     }
 
     mini_jit::Kernel l_kernel;
-    mini_jit::kernels::matmul_m_n_k(l_kernel, M, N, K);
+    mini_jit::kernels::matmul::matmul_m_n_k(l_kernel, M, N, K);
     mini_jit::Brgemm::kernel_t l_kernel_t = reinterpret_cast<mini_jit::Brgemm::kernel_t>(const_cast<void *>(l_kernel.get_kernel()));
     l_kernel_t( A, B, C, M, K, M, 0, 0 );
 
@@ -367,7 +367,7 @@ TEST_CASE("Tests the matmul_m_n_k microkernel function with random matrices and 
     }
 
     mini_jit::Kernel l_kernel;
-    mini_jit::kernels::matmul_m_n_k(l_kernel, M, N, K);
+    mini_jit::kernels::matmul::matmul_m_n_k(l_kernel, M, N, K);
     mini_jit::Brgemm::kernel_t l_kernel_t = reinterpret_cast<mini_jit::Brgemm::kernel_t>(const_cast<void *>(l_kernel.get_kernel()));
     l_kernel_t( A, B, C, M, K, M, 0, 0 );
 
@@ -424,7 +424,7 @@ TEST_CASE("Tests the matmul_m_n_k microkernel function with random matrices and 
     }
 
     mini_jit::Kernel l_kernel;
-    mini_jit::kernels::matmul_m_n_k(l_kernel, M, N, K);
+    mini_jit::kernels::matmul::matmul_m_n_k(l_kernel, M, N, K);
     mini_jit::Brgemm::kernel_t l_kernel_t = reinterpret_cast<mini_jit::Brgemm::kernel_t>(const_cast<void *>(l_kernel.get_kernel()));
     l_kernel_t( A, B, C, M, K, M, 0, 0 );
 
@@ -481,7 +481,7 @@ TEST_CASE("Tests the matmul_m_n_k microkernel function with random matrices and 
     }
 
     mini_jit::Kernel l_kernel;
-    mini_jit::kernels::matmul_m_n_k(l_kernel, M, N, K);
+    mini_jit::kernels::matmul::matmul_m_n_k(l_kernel, M, N, K);
     mini_jit::Brgemm::kernel_t l_kernel_t = reinterpret_cast<mini_jit::Brgemm::kernel_t>(const_cast<void *>(l_kernel.get_kernel()));
     l_kernel_t( A, B, C, M, K, M, 0, 0 );
 
@@ -538,7 +538,7 @@ TEST_CASE("Tests the matmul_m_n_k microkernel function with random matrices and 
     }
 
     mini_jit::Kernel l_kernel;
-    mini_jit::kernels::matmul_m_n_k(l_kernel, M, N, K);
+    mini_jit::kernels::matmul::matmul_m_n_k(l_kernel, M, N, K);
     mini_jit::Brgemm::kernel_t l_kernel_t = reinterpret_cast<mini_jit::Brgemm::kernel_t>(const_cast<void *>(l_kernel.get_kernel()));
     l_kernel_t( A, B, C, M, K, M, 0, 0 );
 
