@@ -55,7 +55,7 @@ However, for the ``matmul_16_6_k`` we reach the same number of GFLOPs that we re
 4.2.1 Implementation of a GEMM kernel
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This section extends the previously implemented kernels to a more general GEMM kernel. It should be able to compute C+=AB for arbitrary A, B and C matrices.
+This section extends the previously implemented kernels to a more general GEMM kernel. It should be able to compute C+=AB for arbitrary A, B and C matrices in the range of 1≤M≤1024, 1≤N≤1024, and 1≤K≤2048.
 
 At first, we had to decide on how to block the matrices. In the M dimension, we decided to use a block size of 8 and in the N dimension we decided to use a block size of 4. The larger we keep the block size, the more efficiently we can use loads, stores and FMLA instructions. However, the issue with large block sizes is that we need to write a lot of specialized kernels for all M and N dimensions smaller or equal to the block size. If the input parameters are not multiples of the block size, we need to write additional code to handle the remaining elements. 
 
@@ -96,7 +96,7 @@ The FMLA instructions are also adjusted to the M dimension. For example, when M 
     :lines: 381-384
     :caption: FMLA instructions
 
-While one could use an ``fmla`` instruction and zero padding, we decided to use one ``fmla`` instruction for the first two elements and one ``fmadd`` instruction for the last element. We did not evaluate any performance differences between the two approaches, but chose the second one because to us it seems more readable and easier to understand. The other specialized kernels for M = 1, 2, 4, 5, 6 and 7 are implemented in a similar way.
+While one could use an ``fmla`` instruction and zero padding, we decided to use one ``fmla`` instruction for the first two elements and one ``fmadd`` instruction for the last element. We did not evaluate any performance differences between the two approaches, but chose the second one because to us it seemed more readable and easier to understand. The other specialized kernels for M = 1, 2, 4, 5, 6 and 7 are implemented in a similar way.
 
 Having implemented the ``matmul_m_4_k`` kernel, we can now turn our attention towards the ``matmul_m_n_k`` kernel. Since we decided to block N by 4, we can use the same approach as before. We first compute the number of blocks in the N dimension and the remaining elements.
 
@@ -138,3 +138,32 @@ This task is very similar to the previous one, but we need to verify the correct
     :language: cpp
     :lines: 66-149
     :caption: Unit test for the ``matmul_m_n_k`` kernel with lda>M, ldb>K or ldc>M
+
+4.2.4 Benchmarking the GEMM kernel performance
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+For the benchmarking we enhanced our ``benchmarking.cpp`` file that was used for the previous tasks.
+Our task was to benchmark the performance of our generated kernels and report the measured
+performance for 1≤M≤64, 1≤N≤64, K∈[1,16,32,64,128], lda=M, ldb=K and ldc=M. 
+
+We were also given a baseline CSV file, which gave us a structure, on how to safe our benchmarking performance.
+Our idea was run each of these benchmarks for a time of ``1.5s`` in order to guarantee comparable results.
+During this time we calculated the number of iterations our ``matmul_m_n_k`` kernel would perform.
+Using this metrics we could then calculate the performance in GFLOPs for the respective execution.
+
+.. literalinclude:: ../../src/benchmark.cpp
+    :language: cpp
+    :lines: 143-160
+    :caption: ``matmul_m_n_k`` benchmarking approach for different M, N, and K.
+
+The results that we obtained were safed under ``src/benchmark/gemm_perf.csv``. 
+
+.. literalinclude:: ../../src/benchmark/gemm_perf.csv
+    :language: text
+    :lines: 1-15
+    :caption: Snippet of executed benchmarks for ``matmul_m_n_k``
+
+Looking at the benchmarks we could see that the performance varies a lot for different configurations.
+Also as we reduced our "standard" execution from ``16_6`` to ``8_4`` we were not as performant as we could
+be, especially for larger matrices. When we compare our results, we get approximately the same performance
+as for our :ref:`generic-kernel`.
