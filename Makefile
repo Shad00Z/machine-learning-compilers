@@ -144,6 +144,7 @@ benchmark: createdirs $(COMMON_OBJ) $(BENCH_OBJ)
 
 run_tests: tests
 	$(BIN_DIR)/tests
+	rm -rf *.bin
 
 clean:
 	rm -rf $(BIN_DIR)/$(SRC_DIR)
