@@ -229,7 +229,7 @@ We executed several initializations of our kernel, using a similar approach to t
 4.3.3 Benchmarking the Batch-Reduce GEMM kernel performance
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 For the benchmarking we, again, enhanced our ``benchmarking.cpp`` file.
-We introduced a new function that should handle  1≤M≤64, 1≤N≤64, K∈[1,16,32,64,128], lda=M, ldb=K and ldc=M.
+We introduced a new function that should handle 1≤M≤64, 1≤N≤64, K∈[1,16,32,64,128], lda=M, ldb=K and ldc=M.
 
 We reduced the time for our benchmarks to ``1.0s``.
 
@@ -241,4 +241,4 @@ for the GFLOPs was than similar to the normal ``GEMM``.
     :lines: 206-223
     :caption: ``matmul_br_m_n_k`` benchmarking approach for a batch size of 16 and different M, N, and K values
 
-The results that we obtained were safed under ``src/benchmark/br_gemm_perf.csv``. 
+The results that we obtained were saved under ``src/benchmark/br_gemm_perf.csv``. 
