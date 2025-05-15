@@ -46,9 +46,9 @@ void mini_jit::kernels::matmul_m_1_k(mini_jit::Kernel &kernel,
     kernel.add_instr(base::mul(gpr_t::x5, gpr_t::x5, gpr_t::x6));
 
     // Save base matrix pointers
-    kernel.add_instr(base::mov(gpr_t::x7, gpr_t::x0)); // A
-    kernel.add_instr(base::mov(gpr_t::x8, gpr_t::x1)); // B
-    kernel.add_instr(base::mov(gpr_t::x9, gpr_t::x2)); // C
+    kernel.add_instr(base::mov(gpr_t::x8, gpr_t::x0)); // A
+    kernel.add_instr(base::mov(gpr_t::x9, gpr_t::x1)); // B
+    kernel.add_instr(base::mov(gpr_t::x10, gpr_t::x2)); // C
 
     if (mLoopIterations > 0)
     {
@@ -60,8 +60,8 @@ void mini_jit::kernels::matmul_m_1_k(mini_jit::Kernel &kernel,
         // set up k loop counter
         kernel.add_instr(base::mov(gpr_t::x14, k));
         // save base matrix pointers
-        kernel.add_instr(base::mov(gpr_t::x15, gpr_t::x7)); // A
-        kernel.add_instr(base::mov(gpr_t::x16, gpr_t::x8)); // B
+        kernel.add_instr(base::mov(gpr_t::x15, gpr_t::x8)); // A
+        kernel.add_instr(base::mov(gpr_t::x16, gpr_t::x9)); // B
         kernel.add_instr(base::mov(gpr_t::x17, 0));         // row count B
 
         switch (mLoopRemainder)
@@ -123,14 +123,14 @@ void mini_jit::kernels::internal::generateM8N1Loop(mini_jit::Kernel &kernel,
     // START M_LOOP
     kernel.add_label("m8n1_loop");
     // Load Matrix C
-    kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x9));
+    kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x10));
     // first column
     kernel.add_instr(simd_fp::ldp(simd_fp_t::v0, simd_fp_t::v1, gpr_t::x12, 0, neon_size_spec_t::q));
 
     // Setup for Loop
     kernel.add_instr(base::mov(gpr_t::x14, k));         // K loop counter
-    kernel.add_instr(base::mov(gpr_t::x15, gpr_t::x7)); // Matrix A pointer
-    kernel.add_instr(base::mov(gpr_t::x16, gpr_t::x8)); // Matrix B pointer
+    kernel.add_instr(base::mov(gpr_t::x15, gpr_t::x8)); // Matrix A pointer
+    kernel.add_instr(base::mov(gpr_t::x16, gpr_t::x9)); // Matrix B pointer
     kernel.add_instr(base::mov(gpr_t::x17, 0));         // Row index for Matrix B
 
     // START K_LOOP
@@ -149,7 +149,7 @@ void mini_jit::kernels::internal::generateM8N1Loop(mini_jit::Kernel &kernel,
     // move to next column of A
     kernel.add_instr(base::add(gpr_t::x15, gpr_t::x15, gpr_t::x3, 0, 0));
     // move to next row of B
-    kernel.add_instr(base::mov(gpr_t::x16, gpr_t::x8));
+    kernel.add_instr(base::mov(gpr_t::x16, gpr_t::x9));
     kernel.add_instr(base::add(gpr_t::x17, gpr_t::x17, 4, 0));
     kernel.add_instr(base::add(gpr_t::x16, gpr_t::x16, gpr_t::x17, 0, 0));
 
@@ -159,13 +159,13 @@ void mini_jit::kernels::internal::generateM8N1Loop(mini_jit::Kernel &kernel,
     kernel.add_instr(base::cbnz(gpr_t::x14, -l_kLoopInstrCount * 4));
 
     // Store Matrix C
-    kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x9));
+    kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x10));
     // first column
     kernel.add_instr(simd_fp::stp(simd_fp_t::v0, simd_fp_t::v1, gpr_t::x12, 0, neon_size_spec_t::q));
 
     // increase A and C pointers for next block
-    kernel.add_instr(base::add(gpr_t::x7, gpr_t::x7, 8 * 4, 0));
-    kernel.add_instr(base::add(gpr_t::x9, gpr_t::x9, 8 * 4, 0));
+    kernel.add_instr(base::add(gpr_t::x8, gpr_t::x8, 8 * 4, 0));
+    kernel.add_instr(base::add(gpr_t::x10, gpr_t::x10, 8 * 4, 0));
 
     // decrement M loop counter
     kernel.add_instr(base::sub(gpr_t::x11, gpr_t::x11, 1, 0));
@@ -178,7 +178,7 @@ void mini_jit::kernels::internal::generateM8N1Loop(mini_jit::Kernel &kernel,
 void mini_jit::kernels::internal::generateM1N1Loop(mini_jit::Kernel &kernel)
 {
     // Load Matrix C (1 value)
-    kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x9));
+    kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x10));
     // first column
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v0, gpr_t::x12, 0, neon_size_spec_t::s));
 
@@ -194,7 +194,7 @@ void mini_jit::kernels::internal::generateM1N1Loop(mini_jit::Kernel &kernel)
     // move to next column of A
     kernel.add_instr(base::add(gpr_t::x15, gpr_t::x15, gpr_t::x3, 0, 0));
     // move to next row of B
-    kernel.add_instr(base::mov(gpr_t::x16, gpr_t::x8));
+    kernel.add_instr(base::mov(gpr_t::x16, gpr_t::x9));
     kernel.add_instr(base::add(gpr_t::x17, gpr_t::x17, 4, 0));
     kernel.add_instr(base::add(gpr_t::x16, gpr_t::x16, gpr_t::x17, 0, 0));
 
@@ -205,7 +205,7 @@ void mini_jit::kernels::internal::generateM1N1Loop(mini_jit::Kernel &kernel)
     kernel.add_instr(base::cbnz(gpr_t::x14, -l_kLoopInstrCount * 4));
 
     // STORE MATRIX C
-    kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x9));
+    kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x10));
     // first column
     kernel.add_instr(simd_fp::str(simd_fp_t::v0, gpr_t::x12, 0, neon_size_spec_t::s));
 }
@@ -213,7 +213,7 @@ void mini_jit::kernels::internal::generateM1N1Loop(mini_jit::Kernel &kernel)
 void mini_jit::kernels::internal::generateM2N1Loop(mini_jit::Kernel &kernel)
 {
     // LOAD MATRIX C (2 values)
-    kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x9));
+    kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x10));
     // first column
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v0, gpr_t::x12, 0, neon_size_spec_t::d));
 
@@ -229,7 +229,7 @@ void mini_jit::kernels::internal::generateM2N1Loop(mini_jit::Kernel &kernel)
     // move to next column of A
     kernel.add_instr(base::add(gpr_t::x15, gpr_t::x15, gpr_t::x3, 0, 0));
     // move to next row of B
-    kernel.add_instr(base::mov(gpr_t::x16, gpr_t::x8));
+    kernel.add_instr(base::mov(gpr_t::x16, gpr_t::x9));
     kernel.add_instr(base::add(gpr_t::x17, gpr_t::x17, 4, 0));
     kernel.add_instr(base::add(gpr_t::x16, gpr_t::x16, gpr_t::x17, 0, 0));
 
@@ -240,7 +240,7 @@ void mini_jit::kernels::internal::generateM2N1Loop(mini_jit::Kernel &kernel)
     kernel.add_instr(base::cbnz(gpr_t::x14, -l_kLoopInstrCount * 4));
 
     // STORE MATRIX C
-    kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x9));
+    kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x10));
     // first column
     kernel.add_instr(simd_fp::str(simd_fp_t::v0, gpr_t::x12, 0, neon_size_spec_t::d));
 }
@@ -248,7 +248,7 @@ void mini_jit::kernels::internal::generateM2N1Loop(mini_jit::Kernel &kernel)
 void mini_jit::kernels::internal::generateM3N1Loop(mini_jit::Kernel &kernel)
 {
     // LOAD MATRIX C (3 values)
-    kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x9));
+    kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x10));
     // first column
     kernel.add_instr(base::mov(gpr_t::x24, gpr_t::x12));
     kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v0, gpr_t::x24, 8, neon_size_spec_t::d));
@@ -269,7 +269,7 @@ void mini_jit::kernels::internal::generateM3N1Loop(mini_jit::Kernel &kernel)
     // move to next column of A
     kernel.add_instr(base::add(gpr_t::x15, gpr_t::x15, gpr_t::x3, 0, 0));
     // move to next row of B
-    kernel.add_instr(base::mov(gpr_t::x16, gpr_t::x8));
+    kernel.add_instr(base::mov(gpr_t::x16, gpr_t::x9));
     kernel.add_instr(base::add(gpr_t::x17, gpr_t::x17, 4, 0));
     kernel.add_instr(base::add(gpr_t::x16, gpr_t::x16, gpr_t::x17, 0, 0));
 
@@ -280,7 +280,7 @@ void mini_jit::kernels::internal::generateM3N1Loop(mini_jit::Kernel &kernel)
     kernel.add_instr(base::cbnz(gpr_t::x14, -l_kLoopInstrCount * 4));
 
     // STORE MATRIX C (3 values)
-    kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x9));
+    kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x10));
     // first column
     kernel.add_instr(base::mov(gpr_t::x24, gpr_t::x12));
     kernel.add_instr(simd_fp::strPost(simd_fp_t::v0, gpr_t::x24, 8, neon_size_spec_t::d));
@@ -290,7 +290,7 @@ void mini_jit::kernels::internal::generateM3N1Loop(mini_jit::Kernel &kernel)
 void mini_jit::kernels::internal::generateM4N1Loop(mini_jit::Kernel &kernel)
 {
     // LOAD MATRIX C (4 values)
-    kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x9));
+    kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x10));
     // first column
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v0, gpr_t::x12, 0, neon_size_spec_t::q));
 
@@ -305,7 +305,7 @@ void mini_jit::kernels::internal::generateM4N1Loop(mini_jit::Kernel &kernel)
     // move to next column of A
     kernel.add_instr(base::add(gpr_t::x15, gpr_t::x15, gpr_t::x3, 0, 0));
     // move to next row of B
-    kernel.add_instr(base::mov(gpr_t::x16, gpr_t::x8));
+    kernel.add_instr(base::mov(gpr_t::x16, gpr_t::x9));
     kernel.add_instr(base::add(gpr_t::x17, gpr_t::x17, 4, 0));
     kernel.add_instr(base::add(gpr_t::x16, gpr_t::x16, gpr_t::x17, 0, 0));
 
@@ -316,7 +316,7 @@ void mini_jit::kernels::internal::generateM4N1Loop(mini_jit::Kernel &kernel)
     kernel.add_instr(base::cbnz(gpr_t::x14, -l_kLoopInstrCount * 4));
 
     // STORE MATRIX C
-    kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x9));
+    kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x10));
     // first column
     kernel.add_instr(simd_fp::str(simd_fp_t::v0, gpr_t::x12, 0, neon_size_spec_t::q));
 }
@@ -324,7 +324,7 @@ void mini_jit::kernels::internal::generateM4N1Loop(mini_jit::Kernel &kernel)
 void mini_jit::kernels::internal::generateM5N1Loop(mini_jit::Kernel &kernel)
 {
     // LOAD MATRIX C (5 values)
-    kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x9));
+    kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x10));
     // first column
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v0, gpr_t::x12, 0, neon_size_spec_t::q));
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v1, gpr_t::x12, 16, neon_size_spec_t::s));
@@ -343,7 +343,7 @@ void mini_jit::kernels::internal::generateM5N1Loop(mini_jit::Kernel &kernel)
     // move to next column of A
     kernel.add_instr(base::add(gpr_t::x15, gpr_t::x15, gpr_t::x3, 0, 0));
     // move to next row of B
-    kernel.add_instr(base::mov(gpr_t::x16, gpr_t::x8));
+    kernel.add_instr(base::mov(gpr_t::x16, gpr_t::x9));
     kernel.add_instr(base::add(gpr_t::x17, gpr_t::x17, 4, 0));
     kernel.add_instr(base::add(gpr_t::x16, gpr_t::x16, gpr_t::x17, 0, 0));
 
@@ -354,7 +354,7 @@ void mini_jit::kernels::internal::generateM5N1Loop(mini_jit::Kernel &kernel)
     kernel.add_instr(base::cbnz(gpr_t::x14, -l_kLoopInstrCount * 4));
 
     // STORE MATRIX C (5 values)
-    kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x9));
+    kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x10));
     // first column
     kernel.add_instr(simd_fp::str(simd_fp_t::v0, gpr_t::x12, 0, neon_size_spec_t::q));
     kernel.add_instr(simd_fp::str(simd_fp_t::v1, gpr_t::x12, 16, neon_size_spec_t::s));
@@ -363,7 +363,7 @@ void mini_jit::kernels::internal::generateM5N1Loop(mini_jit::Kernel &kernel)
 void mini_jit::kernels::internal::generateM6N1Loop(mini_jit::Kernel &kernel)
 {
     // LOAD MATRIX C (6 values)
-    kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x9));
+    kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x10));
     // first column
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v0, gpr_t::x12, 0, neon_size_spec_t::q));
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v1, gpr_t::x12, 16, neon_size_spec_t::d));
@@ -382,7 +382,7 @@ void mini_jit::kernels::internal::generateM6N1Loop(mini_jit::Kernel &kernel)
     // move to next column of A
     kernel.add_instr(base::add(gpr_t::x15, gpr_t::x15, gpr_t::x3, 0, 0));
     // move to next row of B
-    kernel.add_instr(base::mov(gpr_t::x16, gpr_t::x8));
+    kernel.add_instr(base::mov(gpr_t::x16, gpr_t::x9));
     kernel.add_instr(base::add(gpr_t::x17, gpr_t::x17, 4, 0));
     kernel.add_instr(base::add(gpr_t::x16, gpr_t::x16, gpr_t::x17, 0, 0));
 
@@ -393,7 +393,7 @@ void mini_jit::kernels::internal::generateM6N1Loop(mini_jit::Kernel &kernel)
     kernel.add_instr(base::cbnz(gpr_t::x14, -l_kLoopInstrCount * 4));
 
     // STORE MATRIX C (6 values)
-    kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x9));
+    kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x10));
     // first column
     kernel.add_instr(simd_fp::str(simd_fp_t::v0, gpr_t::x12, 0, neon_size_spec_t::q));
     kernel.add_instr(simd_fp::str(simd_fp_t::v1, gpr_t::x12, 16, neon_size_spec_t::d));
@@ -402,7 +402,7 @@ void mini_jit::kernels::internal::generateM6N1Loop(mini_jit::Kernel &kernel)
 void mini_jit::kernels::internal::generateM7N1Loop(mini_jit::Kernel &kernel)
 {
     // LOAD MATRIX C (7 values)
-    kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x9));
+    kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x10));
     // first column
     kernel.add_instr(base::mov(gpr_t::x20, gpr_t::x12));
     kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v0, gpr_t::x20, 16, neon_size_spec_t::q));
@@ -425,7 +425,7 @@ void mini_jit::kernels::internal::generateM7N1Loop(mini_jit::Kernel &kernel)
     // move to next column of A
     kernel.add_instr(base::add(gpr_t::x15, gpr_t::x15, gpr_t::x3, 0, 0));
     // move to next row of B
-    kernel.add_instr(base::mov(gpr_t::x16, gpr_t::x8));
+    kernel.add_instr(base::mov(gpr_t::x16, gpr_t::x9));
     kernel.add_instr(base::add(gpr_t::x17, gpr_t::x17, 4, 0));
     kernel.add_instr(base::add(gpr_t::x16, gpr_t::x16, gpr_t::x17, 0, 0));
 
@@ -435,7 +435,7 @@ void mini_jit::kernels::internal::generateM7N1Loop(mini_jit::Kernel &kernel)
     kernel.add_instr(base::cbnz(gpr_t::x14, -l_kLoopInstrCount * 4));
 
     // STORE MATRIX C (7 values)
-    kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x9));
+    kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x10));
     // first column
     kernel.add_instr(base::mov(gpr_t::x20, gpr_t::x12));
     kernel.add_instr(simd_fp::strPost(simd_fp_t::v0, gpr_t::x20, 16, neon_size_spec_t::q));
