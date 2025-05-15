@@ -116,7 +116,7 @@ For the whole N loop, we use switch statements to call the specialized kernels. 
 
 The full code is available in the file ``src/kernels/matmul_m_n_k.cpp``.
 
-4.2.2 Verification of the GEMM kernel using a reference implementation
+4.2.2 Verification of the GEMM kernel with lda=M, ldb=K, ldc=M
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This task requires us to verify the correctness of our ``matmul_m_n_k`` kernel by comparing to a reference implementation for 1≤M≤64, 1≤N≤64, K∈[1,16,32,64,128], and lda=M, ldb=K, ldc=M.
@@ -124,7 +124,17 @@ We realized this verification using a ``Catch2`` unit test:
 
 .. literalinclude:: ../../src/kernels/matmul_m_n_k.test.cpp
     :language: cpp
-    :lines: 8-55
-    :caption: Unit test for the ``matmul_m_n_k`` kernel
+    :lines: 8-64
+    :caption: Unit test for the ``matmul_m_n_k`` kernel with lda=M, ldb=K, ldc=M
 
 The M and N dimensions are generated randomly, while the K dimension is fixed to multiple given values. We compute the expected result using high level C++ code and compare it to the result of our kernel.
+
+4.2.3 Verification of the GEMM kernel with lda>M, ldb>K or ldc>M
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This task is very similar to the previous one, but we need to verify the correctness of our ``matmul_m_n_k`` kernel for 1≤M≤64, 1≤N≤64, K∈[1,16,32,64,128], and lda>M, ldb>K or ldc>M. This means that we need to store the matrices in a way that they are not contiguous in memory. We can do this by first choosign strides that are larger than the M, N and K dimensions. Then we can use the strides to compute the addresses of the elements in the matrices. Next, we can use this strides to first allocate memory that is larger than the matrices and then only set the elements that are used in the computation. The other elements, which will be skipped due to the strides, will be set to 0. Lastly, we call our kernel and compare the result to the expected result:
+
+.. literalinclude:: ../../src/kernels/matmul_m_n_k.test.cpp
+    :language: cpp
+    :lines: 66-149
+    :caption: Unit test for the ``matmul_m_n_k`` kernel with lda>M, ldb>K or ldc>M
