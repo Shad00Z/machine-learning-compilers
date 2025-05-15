@@ -1,11 +1,9 @@
 #include <catch2/catch.hpp>
 #include <random>
-#include <vector>
 #include <iostream>
 
 #include "matmul_m_n_k.h"
 #include "../Brgemm.h"
-
 
 TEST_CASE("Reference test for matmul kernel with variable M, N, K", "[matmul][parameterized]") {
     const int M = GENERATE(take(64, random(1, 64)));
@@ -41,13 +39,10 @@ TEST_CASE("Reference test for matmul kernel with variable M, N, K", "[matmul][pa
         }
     }
 
-    // Kernel execution
-    mini_jit::Brgemm l_brgemm;
-    auto l_ret = l_brgemm.generate(M, N, K, 4, 0, 0, 0, mini_jit::Brgemm::dtype_t::fp32);
-    REQUIRE(l_ret == mini_jit::Brgemm::error_t::success);
-
-    auto l_kernel = l_brgemm.get_kernel();
-    l_kernel(A, B, C, M, K, M, 0, 0);
+    mini_jit::Kernel l_kernel;
+    mini_jit::kernels::matmul_m_n_k(l_kernel, M, N, K);
+    mini_jit::Brgemm::kernel_t l_kernel_t = reinterpret_cast<mini_jit::Brgemm::kernel_t>(const_cast<void *>(l_kernel.get_kernel()));
+    l_kernel_t( A, B, C, M, K, M, 0, 0 );
 
     for (int i = 0; i < M * N; ++i) {
         REQUIRE(C[i] == Approx(C_expected[i]).epsilon(0.01));
@@ -58,7 +53,6 @@ TEST_CASE("Reference test for matmul kernel with variable M, N, K", "[matmul][pa
     delete[] C;
     delete[] C_expected;
 }
-
 
 TEST_CASE("Tests the matmul_m_n_k microkernel function with random matrices and M=17, N=12 and K=64", "[matmul_M17_N12_K64]")
 {

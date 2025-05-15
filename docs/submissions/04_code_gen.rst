@@ -118,3 +118,13 @@ The full code is available in the file ``src/kernels/matmul_m_n_k.cpp``.
 
 4.2.2 Verification of the GEMM kernel using a reference implementation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This task requires us to verify the correctness of our ``matmul_m_n_k`` kernel by comparing to a reference implementation for 1≤M≤64, 1≤N≤64, K∈[1,16,32,64,128], and lda=M, ldb=K, ldc=M.
+We realized this verification using a ``Catch2`` unit test:
+
+.. literalinclude:: ../../src/kernels/matmul_m_n_k.test.cpp
+    :language: cpp
+    :lines: 8-55
+    :caption: Unit test for the ``matmul_m_n_k`` kernel
+
+The M and N dimensions are generated randomly, while the K dimension is fixed to multiple given values. We compute the expected result using high level C++ code and compare it to the result of our kernel.
