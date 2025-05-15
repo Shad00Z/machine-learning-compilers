@@ -25,20 +25,13 @@ namespace mini_jit
                 uint32_t l_ins = 0x52800000;
 
                 // set sf
-                uint32_t l_sf = reg_dest & 0x20;
-                l_ins |= l_sf << 26;
-
+                l_ins |= (reg_dest & 0x20) << 26;
                 // set destination register id
-                uint32_t l_reg_id = reg_dest & 0x1f;
-                l_ins |= l_reg_id;
-
+                l_ins |= (reg_dest & 0x1f);
                 // set immediate value
-                uint32_t l_imm = imm16 & 0xFFFF;
-                l_ins |= l_imm << 5;
-
+                l_ins |= (imm16 & 0xFFFF) << 5;
                 // set shift value
-                uint32_t l_shift = shift & 0x3;
-                l_ins |= l_shift << 21;
+                l_ins |= (shift & 0x3) << 21;
 
                 return l_ins;
             }

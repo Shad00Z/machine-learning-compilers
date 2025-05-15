@@ -5,6 +5,7 @@
 #include "cbnz.h"
 #include "ldp.h"
 #include "ldr.h"
+#include "lsl.h"
 #include "mov.h"
 #include "movz.h"
 #include "mul.h"

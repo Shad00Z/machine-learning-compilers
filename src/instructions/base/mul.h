@@ -40,20 +40,13 @@ namespace mini_jit
                 }
 
                 // set size
-                uint32_t l_sf = reg_dest & 0x20;
-                l_ins |= l_sf << 26; // set bit 31
-
+                l_ins |= (reg_dest & 0x20) << 26; // set bit 31
                 // set destination register id
-                uint32_t l_reg_id = reg_dest & 0x1f;
-                l_ins |= l_reg_id;
-
+                l_ins |= (reg_dest & 0x1f);
                 // set first source register id
-                l_reg_id = reg_src1 & 0x1f;
-                l_ins |= l_reg_id << 5;
-
+                l_ins |= (reg_src1 & 0x1f) << 5;
                 // set second source register id
-                l_reg_id = reg_src2 & 0x1f;
-                l_ins |= l_reg_id << 16;
+                l_ins |= (reg_src2 & 0x1f) << 16;
 
                 return l_ins;
             }

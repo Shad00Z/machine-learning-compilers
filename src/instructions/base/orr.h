@@ -31,28 +31,17 @@ namespace mini_jit
                 uint32_t l_ins = 0x2a000000;
 
                 // set sf
-                uint32_t l_sf = reg_dest & 0x20;
-                l_ins |= l_sf << 26;
-
+                l_ins |= (reg_dest & 0x20) << 26;
                 // set destination register id
-                uint32_t l_reg_id = reg_dest & 0x1f;
-                l_ins |= l_reg_id;
-
+                l_ins |= (reg_dest & 0x1f);
                 // set first source register id
-                l_reg_id = reg_src1 & 0x1f;
-                l_ins |= l_reg_id << 5;
-
+                l_ins |= (reg_src1 & 0x1f) << 5;
                 // set amount to shift
-                uint32_t l_amount = amount & 0x3f;
-                l_ins |= l_amount << 10;
-
+                l_ins |= (amount & 0x3f) << 10;
                 // set second source register id
-                l_reg_id = reg_src2 & 0x1f;
-                l_ins |= l_reg_id << 16;
-
+                l_ins |= (reg_src2 & 0x1f) << 16;
                 // set shift value
-                uint32_t l_shift = shift & 0x3;
-                l_ins |= l_shift << 22;
+                l_ins |= (shift & 0x3) << 22;
 
                 return l_ins;
             }

@@ -124,3 +124,10 @@ TEST_CASE("Tests the ADD (immediate) instruction generation", "[ADD_IMM]")
     std::string l_hex = to_string_hex(l_ins);
     REQUIRE(l_hex == "0x91004002");
 }
+
+TEST_CASE("Tests the LSL (immediate) instruction generation", "[LSL_IMM]")
+{
+    uint32_t l_ins = base::lsl(gpr_t::x3, gpr_t::x3, 2);
+    std::string l_hex = to_string_hex(l_ins);
+    REQUIRE(l_hex == "0xd37ef463");
+}

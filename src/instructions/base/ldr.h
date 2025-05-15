@@ -30,12 +30,10 @@ namespace mini_jit
                 l_ins |= l_sf << 25; // set bit 30
 
                 // set destination register id
-                uint32_t l_reg_id = reg_dest & 0x1f;
-                l_ins |= l_reg_id;
+                l_ins |= (reg_dest & 0x1f);
 
                 // set first source register id
-                l_reg_id = reg_src & 0x1f;
-                l_ins |= l_reg_id << 5;
+                l_ins |= (reg_src & 0x1f) << 5;
 
                 // check if immediate can be encoded
                 uint32_t scale = (l_sf) ? 8 : 4;

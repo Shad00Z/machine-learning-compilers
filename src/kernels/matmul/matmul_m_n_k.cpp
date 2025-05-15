@@ -45,13 +45,13 @@ void mini_jit::kernels::matmul::matmul_m_n_k(mini_jit::Kernel &kernel,
     kernel.add_instr(simd_fp::stpPre(simd_fp_t::v14, simd_fp_t::v15, gpr_t::sp, -16, neon_size_spec_t::d));
 
     // Strides
-    kernel.add_instr(base::mov(gpr_t::x6, 4));
-    kernel.add_instr(base::mul(gpr_t::x3, gpr_t::x3, gpr_t::x6));
-    kernel.add_instr(base::mul(gpr_t::x4, gpr_t::x4, gpr_t::x6));
-    kernel.add_instr(base::mul(gpr_t::x5, gpr_t::x5, gpr_t::x6));
+    // lsl #2 -> *4
+    kernel.add_instr(base::lsl(gpr_t::x3, gpr_t::x3, 2));
+    kernel.add_instr(base::lsl(gpr_t::x4, gpr_t::x4, 2));
+    kernel.add_instr(base::lsl(gpr_t::x5, gpr_t::x5, 2));
 
-    kernel.add_instr(base::mul(gpr_t::x22, gpr_t::x4, gpr_t::x6)); // ldb * 4 columns
-    kernel.add_instr(base::mul(gpr_t::x23, gpr_t::x5, gpr_t::x6)); // ldc * 4 columns
+    kernel.add_instr(base::lsl(gpr_t::x22, gpr_t::x4, 2)); // ldb * 4 columns
+    kernel.add_instr(base::lsl(gpr_t::x23, gpr_t::x5, 2)); // ldc * 4 columns
 
     // set base matrix pointers
     kernel.add_instr(base::mov(gpr_t::x20, gpr_t::x1));

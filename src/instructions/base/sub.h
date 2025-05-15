@@ -29,24 +29,15 @@ namespace mini_jit
                 uint32_t l_ins = 0x51000000;
 
                 // set size
-                uint32_t l_sf = reg_dest & 0x20;
-                l_ins |= l_sf << 26; // set bit 31
-
+                l_ins |= (reg_dest & 0x20) << 26; // set bit 31
                 // set destination register id
-                uint32_t l_reg_id = reg_dest & 0x1f;
-                l_ins |= l_reg_id;
-
+                l_ins |= (reg_dest & 0x1f);
                 // set first source register id
-                l_reg_id = reg_src & 0x1f;
-                l_ins |= l_reg_id << 5;
-
+                l_ins |= (reg_src & 0x1f) << 5;
                 // set immediate value
-                uint32_t l_imm = imm12 & 0xfff;
-                l_ins |= l_imm << 10;
-
+                l_ins |= (imm12 & 0xfff) << 10;
                 // set shift value
-                uint32_t l_cond = shift & 0x1;
-                l_ins |= l_cond << 22;
+                l_ins |= (shift & 0x1) << 22;
 
                 return l_ins;
             }

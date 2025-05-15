@@ -34,25 +34,18 @@ namespace mini_jit
                 {
                     // LDP without VR
                     uint32_t l_ins = 0x28400000;
-
                     // set 2-bit opc
                     l_ins |= (opc & 0x3) << 30;
-
                     // set 4-bit VR encoding
                     l_ins |= (encoding & 0xF) << 23;
-
                     // set first destination register
-                    uint32_t l_reg_id = reg_dest1 & 0x1f;
-                    l_ins |= l_reg_id;
+                    l_ins |= (reg_dest1 & 0x1f);
                     // set source register
-                    l_reg_id = reg_src & 0x1f;
-                    l_ins |= l_reg_id << 5;
+                    l_ins |= (reg_src & 0x1f) << 5;
                     // set second destination register
-                    l_reg_id = reg_dest2 & 0x1f;
-                    l_ins |= l_reg_id << 10;
+                    l_ins |= (reg_dest2 & 0x1f) << 10;
                     // set immediate value
-                    uint32_t l_imm = imm7 & 0x7f;
-                    l_ins |= l_imm << 15;
+                    l_ins |= (imm7 & 0x7f) << 15;
 
                     return l_ins;
                 }
