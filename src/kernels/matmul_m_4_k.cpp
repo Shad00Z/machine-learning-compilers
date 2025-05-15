@@ -64,33 +64,31 @@ void mini_jit::kernels::matmul_m_4_k(mini_jit::Kernel &kernel,
         kernel.add_instr(base::mov(gpr_t::x16, gpr_t::x8)); // B
         kernel.add_instr(base::mov(gpr_t::x17, 0));         // row count B
 
-        if (mLoopRemainder == 1)
+        switch (mLoopRemainder)
         {
+        case 1:
             mini_jit::kernels::internal::generateM1N4Loop(kernel);
-        }
-        else if (mLoopRemainder == 2)
-        {
+            break;
+        case 2:
             mini_jit::kernels::internal::generateM2N4Loop(kernel);
-        }
-        else if (mLoopRemainder == 3)
-        {
-            mini_jit::kernels::internal::generateM3N4Loop(kernel, k);
-        }
-        else if (mLoopRemainder == 4)
-        {
+            break;
+        case 3:
+            mini_jit::kernels::internal::generateM3N4Loop(kernel);
+            break;
+        case 4:
             mini_jit::kernels::internal::generateM4N4Loop(kernel);
-        }
-        else if (mLoopRemainder == 5)
-        {
+            break;
+        case 5:
             mini_jit::kernels::internal::generateM5N4Loop(kernel);
-        }
-        else if (mLoopRemainder == 6)
-        {
+            break;
+        case 6:
             mini_jit::kernels::internal::generateM6N4Loop(kernel);
-        }
-        else if (mLoopRemainder == 7)
-        {
-            mini_jit::kernels::internal::generateM7N4Loop(kernel, k);
+            break;
+        case 7:
+            mini_jit::kernels::internal::generateM7N4Loop(kernel);
+            break;
+        default:
+            break;
         }
     }
 
@@ -236,7 +234,7 @@ void mini_jit::kernels::internal::generateM1N4Loop(mini_jit::Kernel &kernel)
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v3, gpr_t::x12, 0, neon_size_spec_t::s));
 
     // case_1_k_loop:
-    kernel.add_label("case_1_k_loop");
+    kernel.add_label("k_m1n4_loop");
     // load column of A (1 value)
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v24, gpr_t::x15, 0, neon_size_spec_t::s));
 
@@ -266,7 +264,7 @@ void mini_jit::kernels::internal::generateM1N4Loop(mini_jit::Kernel &kernel)
     // decrement loop counter
     kernel.add_instr(base::sub(gpr_t::x14, gpr_t::x14, 1, 0));
     // check if loop counter is zero
-    int l_kLoopInstrCount = kernel.getInstrCountFromLabel("case_1_k_loop");
+    int l_kLoopInstrCount = kernel.getInstrCountFromLabel("k_m1n4_loop");
     kernel.add_instr(base::cbnz(gpr_t::x14, -l_kLoopInstrCount * 4));
 
     // STORE MATRIX C
@@ -301,7 +299,7 @@ void mini_jit::kernels::internal::generateM2N4Loop(mini_jit::Kernel &kernel)
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v3, gpr_t::x12, 0, neon_size_spec_t::d));
 
     // case_2_k_loop:
-    kernel.add_label("case_2_k_loop");
+    kernel.add_label("k_m2n4_loop");
     // load column of A (2 values)
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v24, gpr_t::x15, 0, neon_size_spec_t::d));
 
@@ -331,7 +329,7 @@ void mini_jit::kernels::internal::generateM2N4Loop(mini_jit::Kernel &kernel)
     // decrement loop counter
     kernel.add_instr(base::sub(gpr_t::x14, gpr_t::x14, 1, 0));
     // check if loop counter is zero
-    int l_kLoopInstrCount = kernel.getInstrCountFromLabel("case_2_k_loop");
+    int l_kLoopInstrCount = kernel.getInstrCountFromLabel("k_m2n4_loop");
     kernel.add_instr(base::cbnz(gpr_t::x14, -l_kLoopInstrCount * 4));
 
     // STORE MATRIX C
@@ -349,153 +347,92 @@ void mini_jit::kernels::internal::generateM2N4Loop(mini_jit::Kernel &kernel)
     kernel.add_instr(simd_fp::str(simd_fp_t::v3, gpr_t::x12, 0, neon_size_spec_t::d));
 }
 
-void mini_jit::kernels::internal::generateM3N4Loop(mini_jit::Kernel &kernel,
-                                                        int k)
-{
-    mini_jit::kernels::internal::generateM2N4Loop(kernel);
-
-    // increase A and C pointers for next block
-    kernel.add_instr(base::add(gpr_t::x7, gpr_t::x7, 2 * 4, 0));
-    kernel.add_instr(base::add(gpr_t::x9, gpr_t::x9, 2 * 4, 0));
-
-    // set up k loop counter
-    kernel.add_instr(base::mov(gpr_t::x14, k));
-    // save base matrix pointers
-    kernel.add_instr(base::mov(gpr_t::x15, gpr_t::x7)); // A
-    kernel.add_instr(base::mov(gpr_t::x16, gpr_t::x8)); // B
-    kernel.add_instr(base::mov(gpr_t::x17, 0));         // row count B
-
-    mini_jit::kernels::internal::generateM1N4Loop(kernel);
-}
-
-/*
-void mini_jit::kernels::internal::generateM1N4LoopRest3(mini_jit::Kernel &kernel)
+void mini_jit::kernels::internal::generateM3N4Loop(mini_jit::Kernel &kernel)
 {
     // LOAD MATRIX C (3 values)
     kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x9));
     // first column
-    kernel.add_instr(base::mov(gpr_t::x20, gpr_t::x12));
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v0, gpr_t::x20, 0, neon_size_spec_t::d));
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v1, gpr_t::x20, 16, neon_size_spec_t::s));
-    // kernel.add_instr(simd_fp::ld1(simd_fp_t::v0, gpr_t::x20, 0, neon_size_spec_t::s, 4));
-    // kernel.add_instr(simd_fp::ld1(simd_fp_t::v0, gpr_t::x20, 1, neon_size_spec_t::s, 4));
-    // kernel.add_instr(simd_fp::ld1(simd_fp_t::v0, gpr_t::x20, 2, neon_size_spec_t::s));
-    // kernel.add_instr(simd_fp::mov(simd_fp_t::v0, gpr_t::wzr, 3, neon_size_spec_t::s));
+    kernel.add_instr(base::mov(gpr_t::x24, gpr_t::x12));
+    kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v0, gpr_t::x24, 8, neon_size_spec_t::d));
+    kernel.add_instr(simd_fp::ldr(simd_fp_t::v1, gpr_t::x24, 0, neon_size_spec_t::s));
     // second column
     kernel.add_instr(base::add(gpr_t::x12, gpr_t::x12, gpr_t::x5, 0, 0));
-    kernel.add_instr(base::mov(gpr_t::x20, gpr_t::x12));
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v2, gpr_t::x20, 0, neon_size_spec_t::d));
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v3, gpr_t::x20, 16, neon_size_spec_t::s));
-    // kernel.add_instr(simd_fp::ld1(simd_fp_t::v1, gpr_t::x20, 0, neon_size_spec_t::s, 4));
-    // kernel.add_instr(simd_fp::ld1(simd_fp_t::v1, gpr_t::x20, 1, neon_size_spec_t::s, 4));
-    // kernel.add_instr(simd_fp::ld1(simd_fp_t::v1, gpr_t::x20, 2, neon_size_spec_t::s));
-    // kernel.add_instr(simd_fp::mov(simd_fp_t::v1, gpr_t::wzr, 3, neon_size_spec_t::s));
+    kernel.add_instr(base::mov(gpr_t::x24, gpr_t::x12));
+    kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v2, gpr_t::x24, 8, neon_size_spec_t::d));
+    kernel.add_instr(simd_fp::ldr(simd_fp_t::v3, gpr_t::x24, 0, neon_size_spec_t::s));
     // third column
     kernel.add_instr(base::add(gpr_t::x12, gpr_t::x12, gpr_t::x5, 0, 0));
-    kernel.add_instr(base::mov(gpr_t::x20, gpr_t::x12));
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v4, gpr_t::x20, 0, neon_size_spec_t::d));
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v5, gpr_t::x20, 16, neon_size_spec_t::s));
-    // kernel.add_instr(simd_fp::ld1(simd_fp_t::v2, gpr_t::x20, 0, neon_size_spec_t::s, 4));
-    // kernel.add_instr(simd_fp::ld1(simd_fp_t::v2, gpr_t::x20, 1, neon_size_spec_t::s, 4));
-    // kernel.add_instr(simd_fp::ld1(simd_fp_t::v2, gpr_t::x20, 2, neon_size_spec_t::s));
-    // kernel.add_instr(simd_fp::mov(simd_fp_t::v2, gpr_t::wzr, 3, neon_size_spec_t::s));
+    kernel.add_instr(base::mov(gpr_t::x24, gpr_t::x12));
+    kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v4, gpr_t::x24, 8, neon_size_spec_t::d));
+    kernel.add_instr(simd_fp::ldr(simd_fp_t::v5, gpr_t::x24, 0, neon_size_spec_t::s));
     // fourth column
     kernel.add_instr(base::add(gpr_t::x12, gpr_t::x12, gpr_t::x5, 0, 0));
-    kernel.add_instr(base::mov(gpr_t::x20, gpr_t::x12));
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v6, gpr_t::x20, 0, neon_size_spec_t::d));
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v7, gpr_t::x20, 16, neon_size_spec_t::s));
-    // kernel.add_instr(simd_fp::ld1(simd_fp_t::v3, gpr_t::x20, 0, neon_size_spec_t::s, 4));
-    // kernel.add_instr(simd_fp::ld1(simd_fp_t::v3, gpr_t::x20, 1, neon_size_spec_t::s, 4));
-    // kernel.add_instr(simd_fp::ld1(simd_fp_t::v3, gpr_t::x20, 2, neon_size_spec_t::s));
-    // kernel.add_instr(simd_fp::mov(simd_fp_t::v3, gpr_t::wzr, 3, neon_size_spec_t::s));
+    kernel.add_instr(base::mov(gpr_t::x24, gpr_t::x12));
+    kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v6, gpr_t::x24, 8, neon_size_spec_t::d));
+    kernel.add_instr(simd_fp::ldr(simd_fp_t::v7, gpr_t::x24, 0, neon_size_spec_t::s));
 
     // case_3_k_loop:
-    kernel.add_label("case_3_k_loop");
+    kernel.add_label("k_m3n4_loop");
     // load column of A (3 values)
-    kernel.add_instr(base::mov(gpr_t::x20, gpr_t::x15));
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v24, gpr_t::x20, 0, neon_size_spec_t::d));
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v25, gpr_t::x20, 16, neon_size_spec_t::s));
-    // kernel.add_instr(simd_fp::ld1(simd_fp_t::v24, gpr_t::x20, 0, neon_size_spec_t::s, 4));
-    // kernel.add_instr(simd_fp::ld1(simd_fp_t::v24, gpr_t::x20, 1, neon_size_spec_t::s, 4));
-    // kernel.add_instr(simd_fp::ld1(simd_fp_t::v24, gpr_t::x20, 2, neon_size_spec_t::s));
-    // kernel.add_instr(simd_fp::mov(simd_fp_t::v24, gpr_t::wzr, 3, neon_size_spec_t::s));
+    kernel.add_instr(base::mov(gpr_t::x24, gpr_t::x15));
+    kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v24, gpr_t::x24, 8, neon_size_spec_t::d));
+    kernel.add_instr(simd_fp::ldr(simd_fp_t::v25, gpr_t::x24, 0, neon_size_spec_t::s));
 
     // B: COLUMN 0
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v29, gpr_t::x16, 0, neon_size_spec_t::s));
     kernel.add_instr(simd_fp::fmlaElem(simd_fp_t::v0, simd_fp_t::v24, simd_fp_t::v29, arr_spec_t::s2));
     kernel.add_instr(simd_fp::fmadd(simd_fp_t::v1, simd_fp_t::v25, simd_fp_t::v29, simd_fp_t::v1, neon_size_spec_t::s));
-    // kernel.add_instr(simd_fp::fmlaElem(simd_fp_t::v0, simd_fp_t::v24, simd_fp_t::v29, arr_spec_t::s4));
     // B: COLUMN 1
     kernel.add_instr(base::add(gpr_t::x16, gpr_t::x16, gpr_t::x4, 0, 0));
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v29, gpr_t::x16, 0, neon_size_spec_t::s));
     kernel.add_instr(simd_fp::fmlaElem(simd_fp_t::v2, simd_fp_t::v24, simd_fp_t::v29, arr_spec_t::s2));
     kernel.add_instr(simd_fp::fmadd(simd_fp_t::v3, simd_fp_t::v25, simd_fp_t::v29, simd_fp_t::v3, neon_size_spec_t::s));
-    // kernel.add_instr(simd_fp::fmlaElem(simd_fp_t::v1, simd_fp_t::v24, simd_fp_t::v29, arr_spec_t::s4));
     // B: COLUMN 2
     kernel.add_instr(base::add(gpr_t::x16, gpr_t::x16, gpr_t::x4, 0, 0));
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v29, gpr_t::x16, 0, neon_size_spec_t::s));
     kernel.add_instr(simd_fp::fmlaElem(simd_fp_t::v4, simd_fp_t::v24, simd_fp_t::v29, arr_spec_t::s2));
     kernel.add_instr(simd_fp::fmadd(simd_fp_t::v5, simd_fp_t::v25, simd_fp_t::v29, simd_fp_t::v5, neon_size_spec_t::s));
-    // kernel.add_instr(simd_fp::fmlaElem(simd_fp_t::v2, simd_fp_t::v24, simd_fp_t::v29, arr_spec_t::s4));
     // B: COLUMN 3
     kernel.add_instr(base::add(gpr_t::x16, gpr_t::x16, gpr_t::x4, 0, 0));
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v29, gpr_t::x16, 0, neon_size_spec_t::s));
     kernel.add_instr(simd_fp::fmlaElem(simd_fp_t::v6, simd_fp_t::v24, simd_fp_t::v29, arr_spec_t::s2));
     kernel.add_instr(simd_fp::fmadd(simd_fp_t::v7, simd_fp_t::v25, simd_fp_t::v29, simd_fp_t::v7, neon_size_spec_t::s));
-    // kernel.add_instr(simd_fp::fmlaElem(simd_fp_t::v3, simd_fp_t::v24, simd_fp_t::v29, arr_spec_t::s4));
 
-    // move to next column of A
+    //     // move to next column of A
     kernel.add_instr(base::add(gpr_t::x15, gpr_t::x15, gpr_t::x3, 0, 0));
-    // move to next row of B
+    //     // move to next row of B
     kernel.add_instr(base::mov(gpr_t::x16, gpr_t::x8));
     kernel.add_instr(base::add(gpr_t::x17, gpr_t::x17, 4, 0));
     kernel.add_instr(base::add(gpr_t::x16, gpr_t::x16, gpr_t::x17, 0, 0));
 
     // decrement loop counter
     kernel.add_instr(base::sub(gpr_t::x14, gpr_t::x14, 1, 0));
-    // check if loop counter is zero
-    int l_kLoopInstrCount = kernel.getInstrCountFromLabel("case_3_k_loop");
+    //     // check if loop counter is zero
+    int l_kLoopInstrCount = kernel.getInstrCountFromLabel("k_m3n4_loop");
     kernel.add_instr(base::cbnz(gpr_t::x14, -l_kLoopInstrCount * 4));
 
     // STORE MATRIX C (3 values)
     kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x9));
     // first column
-    kernel.add_instr(base::mov(gpr_t::x20, gpr_t::x12));
-    kernel.add_instr(simd_fp::str(simd_fp_t::v0, gpr_t::x20, 0, neon_size_spec_t::d));
-    kernel.add_instr(simd_fp::str(simd_fp_t::v1, gpr_t::x20, 16, neon_size_spec_t::s));
-    // kernel.add_instr(simd_fp::st1(simd_fp_t::v0, gpr_t::x20, 0, neon_size_spec_t::s, 4));
-    // kernel.add_instr(simd_fp::st1(simd_fp_t::v0, gpr_t::x20, 1, neon_size_spec_t::s, 4));
-    // kernel.add_instr(simd_fp::st1(simd_fp_t::v0, gpr_t::x20, 2, neon_size_spec_t::s));
-    // kernel.add_instr(simd_fp::mov(simd_fp_t::v0, gpr_t::wzr, 3, neon_size_spec_t::s));
+    kernel.add_instr(base::mov(gpr_t::x24, gpr_t::x12));
+    kernel.add_instr(simd_fp::strPost(simd_fp_t::v0, gpr_t::x24, 8, neon_size_spec_t::d));
+    kernel.add_instr(simd_fp::str(simd_fp_t::v1, gpr_t::x24, 0, neon_size_spec_t::s));
     // second column
     kernel.add_instr(base::add(gpr_t::x12, gpr_t::x12, gpr_t::x5, 0, 0));
-    kernel.add_instr(base::mov(gpr_t::x20, gpr_t::x12));
-    kernel.add_instr(simd_fp::str(simd_fp_t::v2, gpr_t::x20, 0, neon_size_spec_t::d));
-    kernel.add_instr(simd_fp::str(simd_fp_t::v3, gpr_t::x20, 16, neon_size_spec_t::s));
-    // kernel.add_instr(simd_fp::st1(simd_fp_t::v1, gpr_t::x20, 0, neon_size_spec_t::s, 4));
-    // kernel.add_instr(simd_fp::st1(simd_fp_t::v1, gpr_t::x20, 1, neon_size_spec_t::s, 4));
-    // kernel.add_instr(simd_fp::st1(simd_fp_t::v1, gpr_t::x20, 2, neon_size_spec_t::s));
-    // kernel.add_instr(simd_fp::mov(simd_fp_t::v1, gpr_t::wzr, 3, neon_size_spec_t::s));
+    kernel.add_instr(base::mov(gpr_t::x24, gpr_t::x12));
+    kernel.add_instr(simd_fp::strPost(simd_fp_t::v2, gpr_t::x24, 8, neon_size_spec_t::d));
+    kernel.add_instr(simd_fp::str(simd_fp_t::v3, gpr_t::x24, 0, neon_size_spec_t::s));
     // third column
     kernel.add_instr(base::add(gpr_t::x12, gpr_t::x12, gpr_t::x5, 0, 0));
-    kernel.add_instr(base::mov(gpr_t::x20, gpr_t::x12));
-    kernel.add_instr(simd_fp::str(simd_fp_t::v4, gpr_t::x20, 0, neon_size_spec_t::d));
-    kernel.add_instr(simd_fp::str(simd_fp_t::v5, gpr_t::x20, 16, neon_size_spec_t::s));
-    // kernel.add_instr(simd_fp::st1(simd_fp_t::v2, gpr_t::x20, 0, neon_size_spec_t::s, 4));
-    // kernel.add_instr(simd_fp::st1(simd_fp_t::v2, gpr_t::x20, 1, neon_size_spec_t::s, 4));
-    // kernel.add_instr(simd_fp::st1(simd_fp_t::v2, gpr_t::x20, 2, neon_size_spec_t::s));
-    // kernel.add_instr(simd_fp::mov(simd_fp_t::v2, gpr_t::wzr, 3, neon_size_spec_t::s));
+    kernel.add_instr(base::mov(gpr_t::x24, gpr_t::x12));
+    kernel.add_instr(simd_fp::strPost(simd_fp_t::v4, gpr_t::x24, 8, neon_size_spec_t::d));
+    kernel.add_instr(simd_fp::str(simd_fp_t::v5, gpr_t::x24, 0, neon_size_spec_t::s));
     // fourth column
     kernel.add_instr(base::add(gpr_t::x12, gpr_t::x12, gpr_t::x5, 0, 0));
-    kernel.add_instr(base::mov(gpr_t::x20, gpr_t::x12));
-    kernel.add_instr(simd_fp::str(simd_fp_t::v6, gpr_t::x20, 0, neon_size_spec_t::d));
-    kernel.add_instr(simd_fp::str(simd_fp_t::v7, gpr_t::x20, 16, neon_size_spec_t::s));
-    // kernel.add_instr(simd_fp::st1(simd_fp_t::v3, gpr_t::x20, 0, neon_size_spec_t::s, 4));
-    // kernel.add_instr(simd_fp::st1(simd_fp_t::v3, gpr_t::x20, 1, neon_size_spec_t::s, 4));
-    // kernel.add_instr(simd_fp::st1(simd_fp_t::v3, gpr_t::x20, 2, neon_size_spec_t::s));
-    // kernel.add_instr(simd_fp::mov(simd_fp_t::v3, gpr_t::wzr, 3, neon_size_spec_t::s));
+    kernel.add_instr(base::mov(gpr_t::x24, gpr_t::x12));
+    kernel.add_instr(simd_fp::strPost(simd_fp_t::v6, gpr_t::x24, 8, neon_size_spec_t::d));
+    kernel.add_instr(simd_fp::str(simd_fp_t::v7, gpr_t::x24, 0, neon_size_spec_t::s)); 
 }
-    */
 
 void mini_jit::kernels::internal::generateM4N4Loop(mini_jit::Kernel &kernel)
 {
@@ -514,7 +451,7 @@ void mini_jit::kernels::internal::generateM4N4Loop(mini_jit::Kernel &kernel)
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v3, gpr_t::x12, 0, neon_size_spec_t::q));
 
     // case_4_k_loop:
-    kernel.add_label("case_4_k_loop");
+    kernel.add_label("k_m4n4_loop");
     // load column of A (4 values)
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v24, gpr_t::x15, 0, neon_size_spec_t::q));
     // B: COLUMN 0
@@ -543,7 +480,7 @@ void mini_jit::kernels::internal::generateM4N4Loop(mini_jit::Kernel &kernel)
     // decrement loop counter
     kernel.add_instr(base::sub(gpr_t::x14, gpr_t::x14, 1, 0));
     // check if loop counter is zero
-    int l_kLoopInstrCount = kernel.getInstrCountFromLabel("case_4_k_loop");
+    int l_kLoopInstrCount = kernel.getInstrCountFromLabel("k_m4n4_loop");
     kernel.add_instr(base::cbnz(gpr_t::x14, -l_kLoopInstrCount * 4));
 
     // STORE MATRIX C
@@ -560,24 +497,6 @@ void mini_jit::kernels::internal::generateM4N4Loop(mini_jit::Kernel &kernel)
     kernel.add_instr(base::add(gpr_t::x12, gpr_t::x12, gpr_t::x5, 0, 0));
     kernel.add_instr(simd_fp::str(simd_fp_t::v3, gpr_t::x12, 0, neon_size_spec_t::q));
 }
-
-// void mini_jit::kernels::internal::generateM1N4LoopRest5(mini_jit::Kernel &kernel)
-// {
-//     mini_jit::kernels::internal::generateM1N4LoopRest4(kernel);
-
-//     // increase A and C pointers for next block
-//     kernel.add_instr(base::add(gpr_t::x7, gpr_t::x7, 4 * 4, 0));
-//     kernel.add_instr(base::add(gpr_t::x9, gpr_t::x9, 4 * 4, 0));
-
-//     // set up k loop counter
-//     kernel.add_instr(base::mov(gpr_t::x14, k));
-//     // save base matrix pointers
-//     kernel.add_instr(base::mov(gpr_t::x15, gpr_t::x7)); // A
-//     kernel.add_instr(base::mov(gpr_t::x16, gpr_t::x8)); // B
-//     kernel.add_instr(base::mov(gpr_t::x17, 0));         // row count B
-
-//     mini_jit::kernels::internal::generateM1N4LoopRest1(kernel);
-// }
 
 void mini_jit::kernels::internal::generateM5N4Loop(mini_jit::Kernel &kernel)
 {
@@ -600,7 +519,7 @@ void mini_jit::kernels::internal::generateM5N4Loop(mini_jit::Kernel &kernel)
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v7, gpr_t::x12, 16, neon_size_spec_t::s));
 
     // case_5_k_loop:
-    kernel.add_label("case_5_k_loop");
+    kernel.add_label("k_m5n4_loop");
     // load column of A (5 values)
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v24, gpr_t::x15, 0, neon_size_spec_t::q));
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v25, gpr_t::x15, 16, neon_size_spec_t::s));
@@ -635,7 +554,7 @@ void mini_jit::kernels::internal::generateM5N4Loop(mini_jit::Kernel &kernel)
     // decrement loop counter
     kernel.add_instr(base::sub(gpr_t::x14, gpr_t::x14, 1, 0));
     // check if loop counter is zero
-    int l_kLoopInstrCount = kernel.getInstrCountFromLabel("case_5_k_loop");
+    int l_kLoopInstrCount = kernel.getInstrCountFromLabel("k_m5n4_loop");
     kernel.add_instr(base::cbnz(gpr_t::x14, -l_kLoopInstrCount * 4));
 
     // STORE MATRIX C (5 values)
@@ -678,7 +597,7 @@ void mini_jit::kernels::internal::generateM6N4Loop(mini_jit::Kernel &kernel)
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v7, gpr_t::x12, 16, neon_size_spec_t::d));
 
     // case_6_k_loop:
-    kernel.add_label("case_6_k_loop");
+    kernel.add_label("k_m6n4_loop");
     // load column of A (6 values)
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v24, gpr_t::x15, 0, neon_size_spec_t::q));
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v25, gpr_t::x15, 16, neon_size_spec_t::d));
@@ -713,7 +632,7 @@ void mini_jit::kernels::internal::generateM6N4Loop(mini_jit::Kernel &kernel)
     // decrement loop counter
     kernel.add_instr(base::sub(gpr_t::x14, gpr_t::x14, 1, 0));
     // check if loop counter is zero
-    int l_kLoopInstrCount = kernel.getInstrCountFromLabel("case_6_k_loop");
+    int l_kLoopInstrCount = kernel.getInstrCountFromLabel("k_m6n4_loop");
     kernel.add_instr(base::cbnz(gpr_t::x14, -l_kLoopInstrCount * 4));
 
     // STORE MATRIX C (6 values)
@@ -735,59 +654,42 @@ void mini_jit::kernels::internal::generateM6N4Loop(mini_jit::Kernel &kernel)
     kernel.add_instr(simd_fp::str(simd_fp_t::v7, gpr_t::x12, 16, neon_size_spec_t::d));
 }
 
-void mini_jit::kernels::internal::generateM7N4Loop(mini_jit::Kernel &kernel, int k)
-{
-    mini_jit::kernels::internal::generateM6N4Loop(kernel);
 
-    // increase A and C pointers for next block
-    kernel.add_instr(base::add(gpr_t::x7, gpr_t::x7, 6 * 4, 0));
-    kernel.add_instr(base::add(gpr_t::x9, gpr_t::x9, 6 * 4, 0));
-
-    // set up k loop counter
-    kernel.add_instr(base::mov(gpr_t::x14, k));
-    // save base matrix pointers
-    kernel.add_instr(base::mov(gpr_t::x15, gpr_t::x7)); // A
-    kernel.add_instr(base::mov(gpr_t::x16, gpr_t::x8)); // B
-    kernel.add_instr(base::mov(gpr_t::x17, 0));         // row count B
-
-    mini_jit::kernels::internal::generateM1N4Loop(kernel);
-}
-
-/*void mini_jit::kernels::internal::generateM1N4LoopRest7(mini_jit::Kernel &kernel)
+void mini_jit::kernels::internal::generateM7N4Loop(mini_jit::Kernel &kernel)
 {
     // LOAD MATRIX C (7 values)
     kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x9));
     // first column
-    kernel.add_instr(base::mov(gpr_t::x20, gpr_t::x12));
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v0, gpr_t::x20, 0, neon_size_spec_t::q));
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v1, gpr_t::x20, 16, neon_size_spec_t::d));
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v2, gpr_t::x20, 24, neon_size_spec_t::s));
+    kernel.add_instr(base::mov(gpr_t::x24, gpr_t::x12));
+    kernel.add_instr(simd_fp::ldr(simd_fp_t::v0, gpr_t::x24, 0, neon_size_spec_t::q));
+    kernel.add_instr(simd_fp::ldr(simd_fp_t::v1, gpr_t::x24, 16, neon_size_spec_t::d));
+    kernel.add_instr(simd_fp::ldr(simd_fp_t::v2, gpr_t::x24, 24, neon_size_spec_t::s));
     // second column
     kernel.add_instr(base::add(gpr_t::x12, gpr_t::x12, gpr_t::x5, 0, 0));
-    kernel.add_instr(base::mov(gpr_t::x20, gpr_t::x12));
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v3, gpr_t::x20, 0, neon_size_spec_t::q));
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v4, gpr_t::x20, 16, neon_size_spec_t::d));
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v5, gpr_t::x20, 24, neon_size_spec_t::s));
+    kernel.add_instr(base::mov(gpr_t::x24, gpr_t::x12));
+    kernel.add_instr(simd_fp::ldr(simd_fp_t::v3, gpr_t::x24, 0, neon_size_spec_t::q));
+    kernel.add_instr(simd_fp::ldr(simd_fp_t::v4, gpr_t::x24, 16, neon_size_spec_t::d));
+    kernel.add_instr(simd_fp::ldr(simd_fp_t::v5, gpr_t::x24, 24, neon_size_spec_t::s));
     // third column
     kernel.add_instr(base::add(gpr_t::x12, gpr_t::x12, gpr_t::x5, 0, 0));
-    kernel.add_instr(base::mov(gpr_t::x20, gpr_t::x12));
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v6, gpr_t::x20, 0, neon_size_spec_t::q));
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v7, gpr_t::x20, 16, neon_size_spec_t::d));
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v8, gpr_t::x20, 24, neon_size_spec_t::s));
+    kernel.add_instr(base::mov(gpr_t::x24, gpr_t::x12));
+    kernel.add_instr(simd_fp::ldr(simd_fp_t::v6, gpr_t::x24, 0, neon_size_spec_t::q));
+    kernel.add_instr(simd_fp::ldr(simd_fp_t::v7, gpr_t::x24, 16, neon_size_spec_t::d));
+    kernel.add_instr(simd_fp::ldr(simd_fp_t::v8, gpr_t::x24, 24, neon_size_spec_t::s));
     // fourth column
     kernel.add_instr(base::add(gpr_t::x12, gpr_t::x12, gpr_t::x5, 0, 0));
-    kernel.add_instr(base::mov(gpr_t::x20, gpr_t::x12));
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v9, gpr_t::x20, 0, neon_size_spec_t::q));
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v10, gpr_t::x20, 16, neon_size_spec_t::d));
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v11, gpr_t::x20, 24, neon_size_spec_t::s));
+    kernel.add_instr(base::mov(gpr_t::x24, gpr_t::x12));
+    kernel.add_instr(simd_fp::ldr(simd_fp_t::v9, gpr_t::x24, 0, neon_size_spec_t::q));
+    kernel.add_instr(simd_fp::ldr(simd_fp_t::v10, gpr_t::x24, 16, neon_size_spec_t::d));
+    kernel.add_instr(simd_fp::ldr(simd_fp_t::v11, gpr_t::x24, 24, neon_size_spec_t::s));
 
     // case_7_k_loop:
-    kernel.add_label("case_7_k_loop");
+    kernel.add_label("k_m7n4_loop");
     // load column of A (7 values)
-    kernel.add_instr(base::mov(gpr_t::x20, gpr_t::x15));
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v24, gpr_t::x20, 0, neon_size_spec_t::q));
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v25, gpr_t::x20, 16, neon_size_spec_t::d));
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v26, gpr_t::x20, 24, neon_size_spec_t::s));
+    kernel.add_instr(base::mov(gpr_t::x24, gpr_t::x15));
+    kernel.add_instr(simd_fp::ldr(simd_fp_t::v24, gpr_t::x24, 0, neon_size_spec_t::q));
+    kernel.add_instr(simd_fp::ldr(simd_fp_t::v25, gpr_t::x24, 16, neon_size_spec_t::d));
+    kernel.add_instr(simd_fp::ldr(simd_fp_t::v26, gpr_t::x24, 24, neon_size_spec_t::s));
     // B: COLUMN 0
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v29, gpr_t::x16, 0, neon_size_spec_t::s));
     kernel.add_instr(simd_fp::fmlaElem(simd_fp_t::v0, simd_fp_t::v24, simd_fp_t::v29, arr_spec_t::s4));
@@ -821,32 +723,32 @@ void mini_jit::kernels::internal::generateM7N4Loop(mini_jit::Kernel &kernel, int
 
     // decrement loop counter
     kernel.add_instr(base::sub(gpr_t::x14, gpr_t::x14, 1, 0));
-    int l_kLoopInstrCount = kernel.getInstrCountFromLabel("case_7_k_loop");
+    int l_kLoopInstrCount = kernel.getInstrCountFromLabel("k_m7n4_loop");
     kernel.add_instr(base::cbnz(gpr_t::x14, -l_kLoopInstrCount * 4));
 
     // STORE MATRIX C (7 values)
     kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x9));
     // first column
-    kernel.add_instr(base::mov(gpr_t::x20, gpr_t::x12));
-    kernel.add_instr(simd_fp::str(simd_fp_t::v0, gpr_t::x20, 0, neon_size_spec_t::q));
-    kernel.add_instr(simd_fp::str(simd_fp_t::v1, gpr_t::x20, 16, neon_size_spec_t::d));
-    kernel.add_instr(simd_fp::str(simd_fp_t::v2, gpr_t::x20, 24, neon_size_spec_t::s));
+    kernel.add_instr(base::mov(gpr_t::x24, gpr_t::x12));
+    kernel.add_instr(simd_fp::str(simd_fp_t::v0, gpr_t::x24, 0, neon_size_spec_t::q));
+    kernel.add_instr(simd_fp::str(simd_fp_t::v1, gpr_t::x24, 16, neon_size_spec_t::d));
+    kernel.add_instr(simd_fp::str(simd_fp_t::v2, gpr_t::x24, 24, neon_size_spec_t::s));
     // second column
     kernel.add_instr(base::add(gpr_t::x12, gpr_t::x12, gpr_t::x5, 0, 0));
-    kernel.add_instr(base::mov(gpr_t::x20, gpr_t::x12));
-    kernel.add_instr(simd_fp::str(simd_fp_t::v3, gpr_t::x20, 0, neon_size_spec_t::q));
-    kernel.add_instr(simd_fp::str(simd_fp_t::v4, gpr_t::x20, 16, neon_size_spec_t::d));
-    kernel.add_instr(simd_fp::str(simd_fp_t::v5, gpr_t::x20, 24, neon_size_spec_t::s));
+    kernel.add_instr(base::mov(gpr_t::x24, gpr_t::x12));
+    kernel.add_instr(simd_fp::str(simd_fp_t::v3, gpr_t::x24, 0, neon_size_spec_t::q));
+    kernel.add_instr(simd_fp::str(simd_fp_t::v4, gpr_t::x24, 16, neon_size_spec_t::d));
+    kernel.add_instr(simd_fp::str(simd_fp_t::v5, gpr_t::x24, 24, neon_size_spec_t::s));
     // third column
     kernel.add_instr(base::add(gpr_t::x12, gpr_t::x12, gpr_t::x5, 0, 0));
-    kernel.add_instr(base::mov(gpr_t::x20, gpr_t::x12));
-    kernel.add_instr(simd_fp::str(simd_fp_t::v6, gpr_t::x20, 0, neon_size_spec_t::q));
-    kernel.add_instr(simd_fp::str(simd_fp_t::v7, gpr_t::x20, 16, neon_size_spec_t::d));
-    kernel.add_instr(simd_fp::str(simd_fp_t::v8, gpr_t::x20, 24, neon_size_spec_t::s));
+    kernel.add_instr(base::mov(gpr_t::x24, gpr_t::x12));
+    kernel.add_instr(simd_fp::str(simd_fp_t::v6, gpr_t::x24, 0, neon_size_spec_t::q));
+    kernel.add_instr(simd_fp::str(simd_fp_t::v7, gpr_t::x24, 16, neon_size_spec_t::d));
+    kernel.add_instr(simd_fp::str(simd_fp_t::v8, gpr_t::x24, 24, neon_size_spec_t::s));
     // fourth column
     kernel.add_instr(base::add(gpr_t::x12, gpr_t::x12, gpr_t::x5, 0, 0));
-    kernel.add_instr(base::mov(gpr_t::x20, gpr_t::x12));
-    kernel.add_instr(simd_fp::str(simd_fp_t::v9, gpr_t::x20, 0, neon_size_spec_t::q));
-    kernel.add_instr(simd_fp::str(simd_fp_t::v10, gpr_t::x20, 16, neon_size_spec_t::d));
-    kernel.add_instr(simd_fp::str(simd_fp_t::v11, gpr_t::x20, 24, neon_size_spec_t::s));
-}*/
+    kernel.add_instr(base::mov(gpr_t::x24, gpr_t::x12));
+    kernel.add_instr(simd_fp::str(simd_fp_t::v9, gpr_t::x24, 0, neon_size_spec_t::q));
+    kernel.add_instr(simd_fp::str(simd_fp_t::v10, gpr_t::x24, 16, neon_size_spec_t::d));
+    kernel.add_instr(simd_fp::str(simd_fp_t::v11, gpr_t::x24, 24, neon_size_spec_t::s));
+}

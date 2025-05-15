@@ -64,7 +64,6 @@ void mini_jit::kernels::matmul_m_n_k(mini_jit::Kernel &kernel,
 
     if (nLoopIterations > 0)
     {
-
         //n_loop:
         kernel.add_label("n_loop");
 
@@ -96,7 +95,7 @@ void mini_jit::kernels::matmul_m_n_k(mini_jit::Kernel &kernel,
                 mini_jit::kernels::internal::generateM2N4Loop(kernel);
                 break;
             case 3:
-                mini_jit::kernels::internal::generateM3N4Loop(kernel, k);
+                mini_jit::kernels::internal::generateM3N4Loop(kernel);
                 break;
             case 4:
                 mini_jit::kernels::internal::generateM4N4Loop(kernel);
@@ -108,7 +107,7 @@ void mini_jit::kernels::matmul_m_n_k(mini_jit::Kernel &kernel,
                 mini_jit::kernels::internal::generateM6N4Loop(kernel);
                 break;
             case 7:
-                mini_jit::kernels::internal::generateM7N4Loop(kernel, k);
+                mini_jit::kernels::internal::generateM7N4Loop(kernel);
                 break;
             default:
                 break;
@@ -130,15 +129,10 @@ void mini_jit::kernels::matmul_m_n_k(mini_jit::Kernel &kernel,
 
     if (nLoopRemainder > 0)
     {
-        // // increase B and C pointers for next block
-        // // (jump 6 columns) 6*x4, 6*x5
         // Save base matrix pointers
         kernel.add_instr(base::mov(gpr_t::x7, gpr_t::x0)); // A
         kernel.add_instr(base::mov(gpr_t::x8, gpr_t::x20)); // B
         kernel.add_instr(base::mov(gpr_t::x9, gpr_t::x21)); // C
-
-        // prepare the kernel
-        kernel.add_instr(base::mov(gpr_t::x11, mLoopIterations));
 
         switch (nLoopRemainder)
         {

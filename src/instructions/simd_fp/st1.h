@@ -58,7 +58,7 @@ namespace mini_jit
              * @brief Generates an st1 instruction (single structure) with a lane index, e.g. st1 {V0.S}[0], [X0]
              * @param reg_dst Destination SIMD register.
              * @param reg_src Source general-purpose register containing the address.
-             * @param index Index of the lane to load to.
+             * @param index Index of the lane to store from.
              * @param size Size of the SIMD register (s or d).
              */
             constexpr uint32_t st1(simd_fp_t reg_dst,
@@ -102,7 +102,7 @@ namespace mini_jit
              * @brief Generates an st1 instruction (single structure) with a lane index and a register post-index, e.g. st1 {V0.S}[0], [X0], X1
              * @param reg_dst Destination SIMD register.
              * @param reg_src Source general-purpose register containing the address.
-             * @param index Index of the lane to load to.
+             * @param index Index of the lane to store from.
              * @param size Size of the SIMD register (s or d).
              * @param post_index Post-index register to add to the address in reg_src.
              */
@@ -151,7 +151,7 @@ namespace mini_jit
              * @brief Generates an st1 instruction (single structure) with a lane index and a post-index immediate, e.g. st1 {V0.S}[0], [X0], #4
              * @param reg_dst Destination SIMD register.
              * @param reg_src Source general-purpose register containing the address.
-             * @param index Index of the lane to load to.
+             * @param index Index of the lane to store from.
              * @param size Size of the SIMD register (s or d).
              * @param post_index Post-index immediate to add to the address in reg_src.
              */

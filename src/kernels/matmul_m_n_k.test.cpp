@@ -51,7 +51,6 @@ TEST_CASE("Reference test for matmul kernel with variable M, N, K", "[matmul][pa
 
     for (int i = 0; i < M * N; ++i) {
         REQUIRE(C[i] == Approx(C_expected[i]).epsilon(0.01));
-        // REQUIRE_THAT(C[i], Catch::Matchers::WithinRel(C_expected[i]));
     }
 
     delete[] A;
@@ -346,7 +345,7 @@ TEST_CASE("Tests the matmul_m_n_k microkernel function with random matrices and 
     }
 }
 
-TEST_CASE("Tests the matmul_m_n_k microkernel function with random matrices and M=19, N=63 and K=4", "[matmul_M17_N7_K64]")
+TEST_CASE("Tests the matmul_m_n_k microkernel function with random matrices and M=27, N=63 and K=4", "[matmul_M27_N63_K4]")
 {
     const int M = 27;
     const int N = 63;
@@ -403,7 +402,7 @@ TEST_CASE("Tests the matmul_m_n_k microkernel function with random matrices and 
     }
 }
 
-TEST_CASE("Tests the matmul_m_n_k microkernel function with random matrices and M=23, N=63 and K=22", "[matmul_M17_N7_K64]")
+TEST_CASE("Tests the matmul_m_n_k microkernel function with random matrices and M=23, N=63 and K=22", "[matmul_M23_N63_K22]")
 {
     const int M = 23;
     const int N = 63;

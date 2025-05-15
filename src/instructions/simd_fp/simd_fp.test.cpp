@@ -29,6 +29,10 @@ TEST_CASE("Tests the Neon LDR instruction generation", "[Neon LDR]")
     l_hex = to_string_hex(l_ins);
     REQUIRE(l_hex == "0xfc41852c");
 
+    l_ins = simd_fp::ldrPost(simd_fp_t::v0, gpr_t::x20, 8, neon_size_spec_t::d);
+    l_hex = to_string_hex(l_ins);
+    REQUIRE(l_hex == "0xfc408680");
+
     l_ins = simd_fp::ldrPost(simd_fp_t::v7, gpr_t::x11, 32, neon_size_spec_t::q);
     l_hex = to_string_hex(l_ins);
     REQUIRE(l_hex == "0x3cc20567");
@@ -62,6 +66,10 @@ TEST_CASE("Tests the Neon STR instruction generation", "[Neon STR]")
     l_ins = simd_fp::strPost(simd_fp_t::v12, gpr_t::x9, 24, neon_size_spec_t::d);
     l_hex = to_string_hex(l_ins);
     REQUIRE(l_hex == "0xfc01852c");
+
+    l_ins = simd_fp::strPost(simd_fp_t::v0, gpr_t::x20, 8, neon_size_spec_t::d);
+    l_hex = to_string_hex(l_ins);
+    REQUIRE(l_hex == "0xfc008680");
 
     l_ins = simd_fp::strPost(simd_fp_t::v7, gpr_t::x11, 32, neon_size_spec_t::q);
     l_hex = to_string_hex(l_ins);

@@ -35,7 +35,7 @@ namespace mini_jit
              * @brief Generates an M loop for matrix multiplication where M = 3.
              * @param kernel Kernel object to be filled with instructions.
              */
-            void generateM3N4Loop( mini_jit::Kernel &kernel, int k );
+            void generateM3N4Loop( mini_jit::Kernel &kernel );
 
             /**
              * @brief Generates an M loop for matrix multiplication where M = 4.
@@ -59,7 +59,7 @@ namespace mini_jit
              * @brief Generates an M loop for matrix multiplication where M = 7.
              * @param kernel Kernel object to be filled with instructions.
              */
-            void generateM7N4Loop( mini_jit::Kernel &kernel, int k );
+            void generateM7N4Loop( mini_jit::Kernel &kernel );
         }
 
         /**
