@@ -1,0 +1,6 @@
+#ifndef MINI_JIT_CONSTANTS_H
+#define MINI_JIT_CONSTANTS_H
+
+const float FLOAT_ERROR_MARGIN = 0.001f;
+
+#endif // MINI_JIT_CONSTANTS_H

@@ -3,10 +3,10 @@
 #include "converters/instToBinString.h"
 #include "converters/instToHexString.h"
 
-#include "../../registers/gp_registers.h"
-#include "../../registers/simd_fp_registers.h"
-#include "../../instructions/ret.h"
-#include "../../instructions/simd_fp/all_simd_fp_instructions.h"
+#include "registers/gp_registers.h"
+#include "registers/simd_fp_registers.h"
+#include "instructions/ret.h"
+#include "instructions/simd_fp/all_simd_fp_instructions.h"
 
 using gpr_t = mini_jit::registers::gpr_t;
 using simd_fp_t = mini_jit::registers::simd_fp_t;

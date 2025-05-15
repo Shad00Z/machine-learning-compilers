@@ -1,11 +1,8 @@
-#include "../registers/gp_registers.h"
-#include "../registers/simd_fp_registers.h"
-#include "../instructions/all_instructions.h"
+#include "registers/gp_registers.h"
+#include "registers/simd_fp_registers.h"
+#include "instructions/all_instructions.h"
+#include "kernels/matmul/subkernels/all_subkernels.h"
 #include "matmul_m_n_k.h"
-#include "matmul_m_1_k.h"
-#include "matmul_m_2_k.h"
-#include "matmul_m_3_k.h"
-#include "matmul_m_4_k.h"
 
 #include <iostream>
 #include <cstring>

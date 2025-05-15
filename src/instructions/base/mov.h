@@ -3,7 +3,7 @@
 
 #include <cstdint>
 #include <stdexcept>
-#include "../../registers/gp_registers.h"
+#include "registers/gp_registers.h"
 #include "orr.h"
 #include "movz.h"
 #include "add.h"

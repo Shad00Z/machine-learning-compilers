@@ -3,7 +3,7 @@
 
 #include <cstdint>
 #include <stdexcept>
-#include "../../registers/gp_registers.h"
+#include "registers/gp_registers.h"
 
 using gpr_t = mini_jit::registers::gpr_t;
 

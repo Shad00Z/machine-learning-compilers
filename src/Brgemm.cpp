@@ -1,11 +1,7 @@
 #include "Brgemm.h"
 #include "Kernel.h"
-#include "kernels/matmul_16_6_1.h"
-#include "kernels/matmul_16_6_k.h"
-#include "kernels/matmul_m_3_k.h"
-#include "kernels/matmul_m_4_k.h"
-#include "kernels/matmul_m_n_k.h"
-#include "kernels/matmul_br_m_n_k.h"
+#include "kernels/matmul/matmul_m_n_k.h"
+#include "kernels/matmul/matmul_br_m_n_k.h"
 #include <iostream>
 
 /**

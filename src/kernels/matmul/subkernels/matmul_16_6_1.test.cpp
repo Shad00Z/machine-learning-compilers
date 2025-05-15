@@ -2,7 +2,8 @@
 #include <iostream>
 
 #include "matmul_16_6_1.h"
-#include "../Brgemm.h"
+#include "Brgemm.h"
+#include "constants.h"
 
 TEST_CASE( "Tests the matmul_16_6_1 microkernel", "[matmul_16_6_1]" )
 {
@@ -30,6 +31,6 @@ TEST_CASE( "Tests the matmul_16_6_1 microkernel", "[matmul_16_6_1]" )
     // Check the result
     for ( int i = 0; i < M * N; i++ )
     {
-        REQUIRE( C[i] == Approx( C_expected[i] ).epsilon( 0.01 ) );
+        REQUIRE( C[i] == Approx( C_expected[i] ).margin(FLOAT_ERROR_MARGIN) );
     }
 }

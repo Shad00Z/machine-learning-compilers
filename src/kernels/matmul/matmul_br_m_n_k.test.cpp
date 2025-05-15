@@ -3,7 +3,8 @@
 #include <iostream>
 
 #include "matmul_br_m_n_k.h"
-#include "../Brgemm.h"
+#include "Brgemm.h"
+#include "constants.h"
 
 TEST_CASE("Reference test for batch reduce matmul kernel with variable M, N, K", "[br_matmul][parameterized]") {
     const int M = GENERATE(take(4, random(1, 64)));
@@ -58,7 +59,7 @@ TEST_CASE("Reference test for batch reduce matmul kernel with variable M, N, K",
 
     for (int i = 0; i < M * N; ++i) 
     {
-        REQUIRE(C[i] == Approx(C_expected[i]).epsilon(0.01));
+        REQUIRE(C[i] == Approx(C_expected[i]).margin(FLOAT_ERROR_MARGIN));
     }
 
     delete[] A;

@@ -4,7 +4,8 @@
 #include <iostream>
 
 #include "matmul_16_6_k.h"
-#include "../Brgemm.h"
+#include "Brgemm.h"
+#include "constants.h"
 
 TEST_CASE("Tests the matmul_16_6_k microkernel function with random matrices", "[matmul_16_6_k]")
 {
@@ -62,7 +63,7 @@ TEST_CASE("Tests the matmul_16_6_k microkernel function with random matrices", "
 
         for (int i = 0; i < M * N; i++)
         {
-            REQUIRE(C[i] == Approx(C_expected[i]).epsilon(0.01));
+            REQUIRE(C[i] == Approx(C_expected[i]).margin(FLOAT_ERROR_MARGIN));
         }
     }
 }

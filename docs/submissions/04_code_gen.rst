@@ -27,7 +27,7 @@ Therefore we started wrapping the assembly code in C++ functions.
 After implementing all necessary instructions, we started implementing our first kernel.
 The first kernel that we implemented was a simple matrix multiplication kernel, in the form of a ``matmul_16_6_1``.
 
-.. literalinclude:: ../../src/kernels/matmul_16_6_1.cpp
+.. literalinclude:: ../../src/kernels/matmul/subkernels/matmul_16_6_1.cpp
     :language: cpp
     :lines: 71-131
     :caption: FMLA instructions for the ``matmul_16_6_1`` kernel
@@ -35,7 +35,7 @@ The first kernel that we implemented was a simple matrix multiplication kernel, 
 After implementing this first kernel, we started implementing a more general version with a ``matmul_16_6_k`` kernel.
 For this kernel we needed a loop to iterate over the ``k`` dimension.
 
-.. literalinclude:: ../../src/kernels/matmul_16_6_k.cpp
+.. literalinclude:: ../../src/kernels/matmul/subkernels/matmul_16_6_k.cpp
     :language: cpp
     :lines: 133-146
     :caption: Loop instruction using code generation
@@ -63,35 +63,35 @@ For a block size of M = 8, we already wrote such a kernel in pure assembly, see 
 
 The kernel first computes the number of blocks in the M dimension and the remaining elements. 
 
-.. literalinclude:: ../../src/kernels/matmul_m_4_k.cpp
+.. literalinclude:: ../../src/kernels/matmul/subkernels/matmul_m_4_k.cpp
     :language: cpp
     :lines: 22-24
     :caption: Computing the number of blocks in the M dimension
 
 Using these numbers, we can call the specialized kernels:
 
-.. literalinclude:: ../../src/kernels/matmul_m_4_k.cpp
+.. literalinclude:: ../../src/kernels/matmul/subkernels/matmul_m_4_k.cpp
     :language: cpp
     :lines: 53-93
     :caption: Calling specialized kernels for different M dimensions
 
 But what does such a specialized kernel look like? For the most part, they are similar to the microkernels we implemented before. The only difference is that we need to adjust the loads, stores and FMLA instructions for fixed M dimensions. For example in the case of M = 3:
 
-.. literalinclude:: ../../src/kernels/matmul_m_4_k.cpp
+.. literalinclude:: ../../src/kernels/matmul/subkernels/matmul_m_4_k.cpp
     :language: cpp
     :lines: 354-357
     :caption: Loading a column of C with M = 3
 
 While we can simply load a double word when M = 2 or even a quad word when M = 4, we need to divide our loads into two parts when M = 3. First, we load a double word and then the remaining single word. The same applies to the stores:
 
-.. literalinclude:: ../../src/kernels/matmul_m_4_k.cpp
+.. literalinclude:: ../../src/kernels/matmul/subkernels/matmul_m_4_k.cpp
     :language: cpp
     :lines: 416-419
     :caption: Storing a column of C with M = 3
 
 The FMLA instructions are also adjusted to the M dimension. For example, when M = 3, we need to use two FMLA instructions to compute the result:
 
-.. literalinclude:: ../../src/kernels/matmul_m_4_k.cpp
+.. literalinclude:: ../../src/kernels/matmul/subkernels/matmul_m_4_k.cpp
     :language: cpp
     :lines: 381-384
     :caption: FMLA instructions
@@ -100,7 +100,7 @@ While one could use an ``fmla`` instruction and zero padding, we decided to use 
 
 Having implemented the ``matmul_m_4_k`` kernel, we can now turn our attention towards the ``matmul_m_n_k`` kernel. Since we decided to block N by 4, we can use the same approach as before. We first compute the number of blocks in the N dimension and the remaining elements.
 
-.. literalinclude:: ../../src/kernels/matmul_m_n_k.cpp
+.. literalinclude:: ../../src/kernels/matmul/matmul_m_n_k.cpp
     :language: cpp
     :lines: 27-29
     :caption: Computing the number of blocks in the N dimension
@@ -109,7 +109,7 @@ Having implemented the ``matmul_m_4_k`` kernel, we can now turn our attention to
 
 For the whole N loop, we use switch statements to call the specialized kernels. The final implementation looks like this:
 
-.. literalinclude:: ../../src/kernels/matmul_m_n_k.cpp
+.. literalinclude:: ../../src/kernels/matmul/matmul_m_n_k.cpp
     :language: cpp
     :lines: 62-151
     :caption: N loop
@@ -122,7 +122,7 @@ The full code is available in the file ``src/kernels/matmul_m_n_k.cpp``.
 This task requires us to verify the correctness of our ``matmul_m_n_k`` kernel by comparing to a reference implementation for 1≤M≤64, 1≤N≤64, K∈[1,16,32,64,128], and lda=M, ldb=K, ldc=M.
 We realized this verification using a ``Catch2`` unit test:
 
-.. literalinclude:: ../../src/kernels/matmul_m_n_k.test.cpp
+.. literalinclude:: ../../src/kernels/matmul/matmul_m_n_k.test.cpp
     :language: cpp
     :lines: 8-64
     :caption: Unit test for the ``matmul_m_n_k`` kernel with lda=M, ldb=K, ldc=M
@@ -134,7 +134,7 @@ The M and N dimensions are generated randomly, while the K dimension is fixed to
 
 This task is very similar to the previous one, but we need to verify the correctness of our ``matmul_m_n_k`` kernel for 1≤M≤64, 1≤N≤64, K∈[1,16,32,64,128], and lda>M, ldb>K or ldc>M. This means that we need to store the matrices in a way that they are not contiguous in memory. We can do this by first choosign strides that are larger than the M, N and K dimensions. Then we can use the strides to compute the addresses of the elements in the matrices. Next, we can use this strides to first allocate memory that is larger than the matrices and then only set the elements that are used in the computation. The other elements, which will be skipped due to the strides, will be set to 0. Lastly, we call our kernel and compare the result to the expected result:
 
-.. literalinclude:: ../../src/kernels/matmul_m_n_k.test.cpp
+.. literalinclude:: ../../src/kernels/matmul/matmul_m_n_k.test.cpp
     :language: cpp
     :lines: 66-149
     :caption: Unit test for the ``matmul_m_n_k`` kernel with lda>M, ldb>K or ldc>M

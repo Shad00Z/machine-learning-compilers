@@ -3,7 +3,7 @@
 
 #include <cstdint>
 #include <stdexcept>
-#include "../../registers/simd_fp_registers.h"
+#include "registers/simd_fp_registers.h"
 using simd_fp_t = mini_jit::registers::simd_fp_t;
 using neon_size_spec_t = mini_jit::registers::neon_size_spec_t;
 

@@ -1,11 +1,11 @@
 #include <catch2/catch.hpp>
 
-#include "../../converters/instToBinString.h"
-#include "../../converters/instToHexString.h"
+#include "converters/instToBinString.h"
+#include "converters/instToHexString.h"
 
-#include "../../registers/gp_registers.h"
-#include "../../instructions/ret.h"
-#include "../../instructions/base/all_base_instructions.h"
+#include "registers/gp_registers.h"
+#include "instructions/ret.h"
+#include "instructions/base/all_base_instructions.h"
 
 using gpr_t = mini_jit::registers::gpr_t;
 using namespace mini_jit::converters;

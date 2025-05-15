@@ -1,7 +1,7 @@
 #ifndef MINI_JIT_MATMUL_M_N_K_H
 #define MINI_JIT_MATMUL_M_N_K_H
 
-#include "../Kernel.h"
+#include "Kernel.h"
 
 namespace mini_jit
 {
