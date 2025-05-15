@@ -115,14 +115,16 @@ using dtype_t = mini_jit::Brgemm::dtype_t;
 void benchmark_gemm_kernel( uint32_t M, 
                             uint32_t N, 
                             uint32_t K,
-                            uint32_t lda, 
-                            uint32_t ldb, 
-                            uint32_t ldc )
+                            uint32_t br_size)
 {
-    uint32_t br_size   = 1;
     uint32_t trans_a   = 0;
     uint32_t trans_b   = 0;
     uint32_t trans_c   = 0;
+    uint32_t lda = M;
+    uint32_t ldb = K;
+    uint32_t ldc = M;
+    uint32_t br_stride_a = 0;
+    uint32_t br_stride_b = 0;
     dtype_t dtype      = dtype_t::fp32;
 
     // Allocate and initialize matrices
@@ -141,7 +143,7 @@ void benchmark_gemm_kernel( uint32_t M,
     }
 
     mini_jit::Brgemm brgemm;
-    brgemm.generate(M, N, K, 4, trans_a, trans_b, trans_c, dtype_t::fp32);
+    brgemm.generate(M, N, K, br_size, trans_a, trans_b, trans_c, dtype_t::fp32);
     mini_jit::Brgemm::kernel_t kernel = brgemm.get_kernel();
 
     // Run between 1-2 seconds
@@ -166,6 +168,67 @@ void benchmark_gemm_kernel( uint32_t M,
         << trans_a << "," << trans_b << "," << trans_c << ","
         << lda << "," << ldb << "," << ldc << ","
         << 0 << "," << 0 << ","
+        << num_reps << ","
+        << elapsed << ","
+        << gflops << "\n";
+}
+
+void benchmark_brgemm_kernel( uint32_t M, 
+                              uint32_t N, 
+                              uint32_t K,
+                              uint32_t br_size )
+{
+    uint32_t trans_a   = 0;
+    uint32_t trans_b   = 0;
+    uint32_t trans_c   = 0;
+    uint32_t lda = M;
+    uint32_t ldb = K;
+    uint32_t ldc = M;
+    uint32_t br_stride_a = M * K;
+    uint32_t br_stride_b = K * N;
+    dtype_t dtype      = dtype_t::fp32;
+
+    // Allocate and initialize matrices
+    float A[M * K * br_size];
+    float B[K * N * br_size];
+    float C[M * N];
+
+    for (int i = 0; i < M * K * br_size; ++i)
+    {
+        A[i] = static_cast<float>(i % 13);
+    }    
+
+    for (int i = 0; i < K * N * br_size; ++i)
+    {
+        B[i] = static_cast<float>(i % 7);
+    }
+
+    mini_jit::Brgemm brgemm;
+    brgemm.generate(M, N, K, br_size, trans_a, trans_b, trans_c, dtype_t::fp32);
+    mini_jit::Brgemm::kernel_t kernel = brgemm.get_kernel();
+
+    // Run between 1-2 seconds
+    int64_t num_reps = 0;
+    auto start_time = std::chrono::high_resolution_clock::now();
+    double elapsed = 0.0;
+
+    do {
+        kernel( A, B, C, M, K, M, M*K, K*N );
+        ++num_reps;
+        auto now = std::chrono::high_resolution_clock::now();
+        elapsed = std::chrono::duration_cast<std::chrono::microseconds>(now - start_time).count() / 1e6;
+    } while (elapsed < 1.0);
+
+    // Calculate GFLOPs
+    double gflops = (2.0 * M * N * K * br_size * num_reps) / (elapsed * 1e9);
+
+    // Write CSV row
+    std::ofstream csv("benchmark/brgemm_perf.csv", std::ios::app);
+    csv << M << "," << N << "," << K << ","
+        << br_size << ","
+        << trans_a << "," << trans_b << "," << trans_c << ","
+        << lda << "," << ldb << "," << ldc << ","
+        << br_stride_a << "," << br_stride_b << ","
         << num_reps << ","
         << elapsed << ","
         << gflops << "\n";
@@ -231,7 +294,7 @@ void microkernel_benchmark()
 void gemm_benchmark()
 {
     std::ofstream csv("benchmark/gemm_perf.csv");
-    csv << "m,n,k,br_size,trans_a,trans_b,trans_c,ld_a,ld_b,ld_c,br_stride_a,br_stride_b,num_reps,time\n";
+    csv << "m,n,k,br_size,trans_a,trans_b,trans_c,ld_a,ld_b,ld_c,br_stride_a,br_stride_b,num_reps,time,gflops\n";
 
 
     for (int M = 1; M <= 64; ++M) 
@@ -240,21 +303,25 @@ void gemm_benchmark()
         {
             for (int K : {1, 16, 32, 64, 128}) 
             {
-                std::vector<float> A(M * K);
-                std::vector<float> B(K * N);
-                std::vector<float> C(M * N, 0.0f);
+                benchmark_gemm_kernel(M, N, K, 1);
+            }
+        }
+    }
+}
 
-                // Initialize A and B
-                for (int i = 0; i < M * K; ++i) 
-                {
-                    A[i] = static_cast<float>(i % 11);
-                }
-                for (int i = 0; i < K * N; ++i)
-                { 
-                    B[i] = static_cast<float>(i % 7);
-                }
+void brgemm_benchmark()
+{
+    std::ofstream csv("benchmark/brgemm_perf.csv");
+    csv << "m,n,k,br_size,trans_a,trans_b,trans_c,ld_a,ld_b,ld_c,br_stride_a,br_stride_b,num_reps,time,gflops\n";
 
-                benchmark_gemm_kernel(M, N, K, 0, 0, 0);
+
+    for (int M = 1; M <= 64; ++M) 
+    {
+        for (int N = 1; N <= 64; ++N) 
+        {
+            for (int K : {1, 16, 32, 64, 128}) 
+            {
+                benchmark_brgemm_kernel(M, N, K, 16);
             }
         }
     }
@@ -265,6 +332,8 @@ int main()
     microkernel_benchmark();
     
     gemm_benchmark();
+
+    brgemm_benchmark();
 
     return 0;
 }
