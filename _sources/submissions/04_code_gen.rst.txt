@@ -113,7 +113,7 @@ For the whole N loop, we use switch statements to call the specialized kernels. 
 
 .. literalinclude:: ../../src/kernels/matmul/matmul_m_n_k.cpp
     :language: cpp
-    :lines: 62-151
+    :lines: 62-149
     :caption: N loop
 
 The full code is available in the file ``src/kernels/matmul_m_n_k.cpp``.
@@ -126,7 +126,7 @@ We realized this verification using a ``Catch2`` unit test:
 
 .. literalinclude:: ../../src/kernels/matmul/matmul_m_n_k.test.cpp
     :language: cpp
-    :lines: 8-64
+    :lines: 8-65
     :caption: Unit test for the ``matmul_m_n_k`` kernel with lda=M, ldb=K, ldc=M
 
 The M and N dimensions are generated randomly, while the K dimension is fixed to multiple given values. We compute the expected result using high level C++ code and compare it to the result of our kernel.
@@ -138,7 +138,7 @@ This task is very similar to the previous one, but we need to verify the correct
 
 .. literalinclude:: ../../src/kernels/matmul/matmul_m_n_k.test.cpp
     :language: cpp
-    :lines: 66-149
+    :lines: 66-150
     :caption: Unit test for the ``matmul_m_n_k`` kernel with lda>M, ldb>K or ldc>M
 
 4.2.4 Benchmarking the GEMM kernel performance
@@ -223,7 +223,7 @@ We executed several initializations of our kernel, using a similar approach to t
 
 .. literalinclude:: ../../src/kernels/matmul/matmul_br_m_n_k.test.cpp
     :language: cpp
-    :lines: 8-68
+    :lines: 8-69
     :caption: Unit test for the ``matmul_br_m_n_k`` kernel
 
 4.3.3 Benchmarking the Batch-Reduce GEMM kernel performance
@@ -242,3 +242,10 @@ for the GFLOPs was than similar to the normal ``GEMM``.
     :caption: ``matmul_br_m_n_k`` benchmarking approach for a batch size of 16 and different M, N, and K values
 
 The results that we obtained were saved under ``src/benchmark/br_gemm_perf.csv``. 
+
+.. literalinclude:: ../../src/benchmark/brgemm_perf.csv
+    :language: text
+    :lines: 1-15
+    :caption: Snippet of executed benchmarks for ``matmul_br_m_n_k``
+
+Evaluating our GFLOP performance, we can see that we achieve a similar performance as in our ``matmul_m_n_k`` benchmark.

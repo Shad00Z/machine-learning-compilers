@@ -553,8 +553,6 @@ However, for the <code class="docutils literal notranslate"><span class="pre">ma
 <span class="w">            </span><span class="k">break</span><span class="p">;</span>
 <span class="w">        </span><span class="p">}</span>
 <span class="w">    </span><span class="p">}</span>
-
-<span class="w">    </span><span class="c1">// Restore callee-saved registers</span>
 </pre></div>
 </div>
 </div>
@@ -622,6 +620,7 @@ We realized this verification using a <code class="docutils literal notranslate"
 <span class="w">    </span><span class="k">delete</span><span class="p">[]</span><span class="w"> </span><span class="n">B</span><span class="p">;</span>
 <span class="w">    </span><span class="k">delete</span><span class="p">[]</span><span class="w"> </span><span class="n">C</span><span class="p">;</span>
 <span class="w">    </span><span class="k">delete</span><span class="p">[]</span><span class="w"> </span><span class="n">C_expected</span><span class="p">;</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </div>
@@ -715,6 +714,7 @@ We realized this verification using a <code class="docutils literal notranslate"
 <span class="w">    </span><span class="k">delete</span><span class="p">[]</span><span class="w"> </span><span class="n">B</span><span class="p">;</span>
 <span class="w">    </span><span class="k">delete</span><span class="p">[]</span><span class="w"> </span><span class="n">C</span><span class="p">;</span>
 <span class="w">    </span><span class="k">delete</span><span class="p">[]</span><span class="w"> </span><span class="n">C_expected</span><span class="p">;</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </div>
@@ -926,6 +926,7 @@ We executed several initializations of our kernel, using a similar approach to t
 <span class="w">    </span><span class="k">delete</span><span class="p">[]</span><span class="w"> </span><span class="n">B</span><span class="p">;</span>
 <span class="w">    </span><span class="k">delete</span><span class="p">[]</span><span class="w"> </span><span class="n">C</span><span class="p">;</span>
 <span class="w">    </span><span class="k">delete</span><span class="p">[]</span><span class="w"> </span><span class="n">C_expected</span><span class="p">;</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </div>
@@ -961,6 +962,27 @@ for the GFLOPs was than similar to the normal <code class="docutils literal notr
 </div>
 </div>
 <p>The results that we obtained were saved under <code class="docutils literal notranslate"><span class="pre">src/benchmark/br_gemm_perf.csv</span></code>.</p>
+<div class="literal-block-wrapper docutils container" id="id24">
+<div class="code-block-caption"><span class="caption-text">Snippet of executed benchmarks for <code class="docutils literal notranslate"><span class="pre">matmul_br_m_n_k</span></code></span><a class="headerlink" href="#id24" title="Link to this code"></a></div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>m,n,k,br_size,trans_a,trans_b,trans_c,ld_a,ld_b,ld_c,br_stride_a,br_stride_b,num_reps,time,gflops
+1,1,1,16,0,0,0,1,1,1,1,1,14713094,1,0.470819
+1,1,16,16,0,0,0,1,16,1,16,16,3412968,1,1.74744
+1,1,32,16,0,0,0,1,32,1,32,32,1845891,1,1.89019
+1,1,64,16,0,0,0,1,64,1,64,64,1007179,1,2.0627
+1,1,128,16,0,0,0,1,128,1,128,128,516692,1,2.11637
+1,2,1,16,0,0,0,1,1,1,1,2,15004415,1,0.960283
+1,2,16,16,0,0,0,1,16,1,16,32,3483409,1,3.56701
+1,2,32,16,0,0,0,1,32,1,32,64,1914029,1,3.91993
+1,2,64,16,0,0,0,1,64,1,64,128,1005414,1,4.11817
+1,2,128,16,0,0,0,1,128,1,128,256,515745,1,4.22498
+1,3,1,16,0,0,0,1,1,1,1,3,14941217,1,1.43436
+1,3,16,16,0,0,0,1,16,1,16,48,3458013,1,5.31151
+1,3,32,16,0,0,0,1,32,1,32,96,1911851,1,5.87321
+1,3,64,16,0,0,0,1,64,1,64,192,1004800,1,6.17349
+</pre></div>
+</div>
+</div>
+<p>Evaluating our GFLOP performance, we can see that we achieve a similar performance as in our <code class="docutils literal notranslate"><span class="pre">matmul_m_n_k</span></code> benchmark.</p>
 </section>
 </section>
 </section>
