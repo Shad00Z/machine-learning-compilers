@@ -1,4 +1,4 @@
-m,n,k,br_size,trans_a,trans_b,trans_c,ld_a,ld_b,ld_c,br_stride_a,br_stride_b,num_reps,time
+m,n,k,br_size,trans_a,trans_b,trans_c,ld_a,ld_b,ld_c,br_stride_a,br_stride_b,num_reps,time,gflops
 1,1,1,1,0,0,0,0,0,0,0,0,54127879,1.5,0.0721705
 1,1,16,1,0,0,0,0,0,0,0,0,44228413,1.5,0.943539
 1,1,32,1,0,0,0,0,0,0,0,0,30326543,1.5,1.29393

@@ -46,7 +46,6 @@ void mini_jit::kernels::matmul_br_m_n_k(mini_jit::Kernel &kernel,
     kernel.add_instr(simd_fp::stpPre(simd_fp_t::v14, simd_fp_t::v15, gpr_t::sp, -16, neon_size_spec_t::d));
 
     // Strides
-    // TODO left shift and free x8?
     kernel.add_instr(base::mov(gpr_t::x8, 4));
     kernel.add_instr(base::mul(gpr_t::x3, gpr_t::x3, gpr_t::x8)); // lda in bytes
     kernel.add_instr(base::mul(gpr_t::x4, gpr_t::x4, gpr_t::x8)); // ldb in bytes
