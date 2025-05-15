@@ -391,6 +391,8 @@ V1 is the first version which we obtained by converting our best performing ``ma
     :lines: 37-44
     :caption: Optimized stride calculations
 
+.. _3.6 Batch-Reduce GEMM:
+
 3.6 Batch-Reduce GEMM
 -----------------------------
 

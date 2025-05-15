@@ -8,14 +8,14 @@ mini_jit::instructions
    :content-only:
    :members:
 
-mini_jit::instructions::base
+::base
 ------------------------------
 .. doxygennamespace:: mini_jit::instructions::base
    :project: Machine Learning Compilers
    :content-only:
    :members:
 
-mini_jit::instructions::simd_fp
+::simd_fp
 -------------------------------
 .. doxygennamespace:: mini_jit::instructions::simd_fp
    :project: Machine Learning Compilers
