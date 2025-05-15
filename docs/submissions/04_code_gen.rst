@@ -1,6 +1,9 @@
 4. Code Generation
 ====================
 
+4.1 Microkernel
+---------------------
+
 This section sets the foundation for our machine learning compiler.
 We are starting off by implementing / generating batch-reduce matrix-matrix multiplications (BRGEMMS).
 
@@ -45,3 +48,13 @@ As a last step we measured the performance of our generated code, resulting in t
 
 Comparing our ``matmul_16_6_1`` kernel to our previous implementations, we are slightly worse, loosing about ``8 GFLOPs``.
 However, for the ``matmul_16_6_k`` we reach the same number of GFLOPs that we reached with our best implementations.
+
+4.2 GEMM
+-----------------
+
+4.2.1 Implementation of a GEMM kernel
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This section extends the previously implemented kernels to a more general GEMM kernel. It should be able to compute C+=AB for arbitrary A, B and C matrices.
+
+At first, we had to decide on how to block the matrices. In the M dimension, we decided to use a block size of 8 and in the N dimension we decided to use a block size of 4. The larger we keep the block size, the more efficiently we can use loads, stores and FMLA instructions. The issue with large block sizes is however that we need to write a lot of specialized kernels for all M and N dimensions smaller or equal to the block size. If the input parameters are not multiples of the block size, we need to write additional code to handle the remaining elements. For a block size of M = 8, we already wrote such a kernel in pure assembly, see :ref:`generic-kernel`.

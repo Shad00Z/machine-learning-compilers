@@ -42,19 +42,19 @@ The calculations that we were ending up with were:
 In order to measure the throughput of these instructions we developed a C++ microbenchmark.
 For each instruction we firstly performed a warm up, measured the time, counted the operations and then calculated the GFLOPs.
 
-.. literalinclude:: ../../src/submissions/03_neon/01_execution_throughput_and_latency/microbench.cpp
+.. literalinclude:: ../../src/submissions/03_neon/01_execution_throughput_and_latency/benchmark/microbench.cpp
     :language: cpp
     :lines: 61-73
     :caption: Example benchmark for FMLA (vector) with arrangement specifier ``4S``
 
 For the ``2S`` and the FMADD (scalar) instructions, we simply adjusted the calculations for the operations slightly:
 
-.. literalinclude:: ../../src/submissions/03_neon/01_execution_throughput_and_latency/microbench.cpp
+.. literalinclude:: ../../src/submissions/03_neon/01_execution_throughput_and_latency/benchmark/microbench.cpp
     :language: cpp
     :lines: 85-89
     :caption: Calculations for FMLA (vector) with arrangement specifier ``2S``
 
-.. literalinclude:: ../../src/submissions/03_neon/01_execution_throughput_and_latency/microbench.cpp
+.. literalinclude:: ../../src/submissions/03_neon/01_execution_throughput_and_latency/benchmark/microbench.cpp
     :language: cpp
     :lines: 101-105
     :caption: Calculations for FMLA (vector) with arrangement specifier ``2S``
@@ -146,7 +146,7 @@ To test and compare our versions with one another we:
 
 The GFLOPs were calculated using the following formula:
 
-.. literalinclude:: ../../src/submissions/03_neon/02_microkernel/microbench.cpp
+.. literalinclude:: ../../src/submissions/03_neon/02_microkernel/benchmark/microbench.cpp
     :language: cpp
     :lines: 138-143
     :caption: GFLOPs calculations
@@ -170,7 +170,7 @@ In this task, we had to add loops to the matrix multiplication kernel which we w
 
 The first step was to implement a loop in the K dimension, resulting in a 16x6x64 kernel. The loading and storing of matrix C was left unchanged. The relevant code is shown below:
 
-.. literalinclude:: ../../src/submissions/03_neon/03_loops/matmul_16_6_64.s
+.. literalinclude:: ../../src/submissions/03_neon/03_loops/loops/matmul_16_6_64.s
     :language: asm
     :linenos:
     :lines: 67-133
@@ -180,13 +180,13 @@ The ``matmul_16_6_1`` kernel mostly stayed the same, except that for each K loop
 
 The second step was to implement a loop in the M dimension, resulting in a 64x6x64 kernel. To keep the code examples shorter, we exclude the K loop from the code snippets. The relevant code is shown below:
 
-.. literalinclude:: ../../src/submissions/03_neon/03_loops/matmul_64_6_64.s
+.. literalinclude:: ../../src/submissions/03_neon/03_loops/loops/matmul_64_6_64.s
     :language: asm
     :linenos:
     :lines: 45-92
     :caption: First part of looping over M dimension
 
-.. literalinclude:: ../../src/submissions/03_neon/03_loops/matmul_64_6_64.s
+.. literalinclude:: ../../src/submissions/03_neon/03_loops/loops/matmul_64_6_64.s
     :language: asm
     :linenos:
     :lines: 153-193
@@ -196,13 +196,13 @@ The M loop needs only 4 iterations, since we are extending the kernel from 16 to
 
 The last step was to implement a loop in the N dimension, resulting in a 64x48x64 kernel. The relevant code is shown below:
 
-.. literalinclude:: ../../src/submissions/03_neon/03_loops/matmul_64_48_64.s
+.. literalinclude:: ../../src/submissions/03_neon/03_loops/loops/matmul_64_48_64.s
     :language: asm
     :linenos:
     :lines: 49-66
     :caption: First part of looping over N dimension
 
-.. literalinclude:: ../../src/submissions/03_neon/03_loops/matmul_64_48_64.s
+.. literalinclude:: ../../src/submissions/03_neon/03_loops/loops/matmul_64_48_64.s
     :language: asm
     :linenos:
     :lines: 205-220
@@ -339,6 +339,8 @@ Again, we performed some benchmarks:
 Similar to the benchmarks for the ``matmul_14_6_64`` the approach with the single loop
 performs much better than the other approach. This time, we even gain about 
 ``23 GFLOPs`` with this approach.
+
+.. _generic-kernel:
 
 3.4.3 Generic Approach
 ^^^^^^^^^^^^^^^^^^^^^^^^
