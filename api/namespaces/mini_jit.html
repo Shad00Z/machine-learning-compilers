@@ -92,6 +92,8 @@
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit6Kernel6KernelERR6Kernel"><code class="docutils literal notranslate"><span class="pre">Kernel()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit6KernelaSERR6Kernel"><code class="docutils literal notranslate"><span class="pre">operator=()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit6Kernel9add_instrE8uint32_t"><code class="docutils literal notranslate"><span class="pre">add_instr()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit6Kernel9add_labelERKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">add_label()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4NK8mini_jit8mini_jit6Kernel22getInstrCountFromLabelERKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">getInstrCountFromLabel()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv4NK8mini_jit8mini_jit6Kernel8get_sizeEv"><code class="docutils literal notranslate"><span class="pre">get_size()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit6Kernel10set_kernelEv"><code class="docutils literal notranslate"><span class="pre">set_kernel()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv4NK8mini_jit8mini_jit6Kernel10get_kernelEv"><code class="docutils literal notranslate"><span class="pre">get_kernel()</span></code></a></li>
@@ -286,6 +288,31 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>ins</strong> – instruction which is added. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit6Kernel9add_labelERKNSt6stringE">
+<span id="_CPPv3N8mini_jit8mini_jit6Kernel9add_labelERKNSt6stringE"></span><span id="_CPPv2N8mini_jit8mini_jit6Kernel9add_labelERKNSt6stringE"></span><span id="mini_jit::mini_jit::Kernel::add_label__ssCR"></span><span class="target" id="classmini__jit_1_1Kernel_1a2dffbba595fb04e4749b7ed7890ebc63"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add_label</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">label</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit6Kernel9add_labelERKNSt6stringE" title="Link to this definition"></a><br /></dt>
+<dd><p>Adds a label to the code buffer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>label</strong> – label which is added. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK8mini_jit8mini_jit6Kernel22getInstrCountFromLabelERKNSt6stringE">
+<span id="_CPPv3NK8mini_jit8mini_jit6Kernel22getInstrCountFromLabelERKNSt6stringE"></span><span id="_CPPv2NK8mini_jit8mini_jit6Kernel22getInstrCountFromLabelERKNSt6stringE"></span><span id="mini_jit::mini_jit::Kernel::getInstrCountFromLabel__ssCRC"></span><span class="target" id="classmini__jit_1_1Kernel_1a2845923d13df854cd3a4e19795257a34"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getInstrCountFromLabel</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">label</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK8mini_jit8mini_jit6Kernel22getInstrCountFromLabelERKNSt6stringE" title="Link to this definition"></a><br /></dt>
+<dd><p>Returns how many instructions come after the given label.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>label</strong> – label to search for. </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>number of instructions after the label. </p>
 </dd>
 </dl>
 </dd></dl>

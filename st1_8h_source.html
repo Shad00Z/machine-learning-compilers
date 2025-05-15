@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Machine Learning Compilers: /home/runner/work/machine-learning-compilers/machine-learning-compilers/src/instructions/simd_fp/ld1.h Source File</title>
+<title>Machine Learning Compilers: /home/runner/work/machine-learning-compilers/machine-learning-compilers/src/instructions/simd_fp/st1.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -78,11 +78,11 @@ $(document).ready(function() { init_codefold(0); });
 </div>
 </div><!-- top -->
 <div class="header">
-  <div class="headertitle"><div class="title">ld1.h</div></div>
+  <div class="headertitle"><div class="title">st1.h</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef MINI_JIT_INSTRUCTIONS_SIMD_FP_LD1_H</span></div>
-<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define MINI_JIT_INSTRUCTIONS_SIMD_FP_LD1_H</span></div>
+<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef MINI_JIT_INSTRUCTIONS_SIMD_FP_ST1_H</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define MINI_JIT_INSTRUCTIONS_SIMD_FP_ST1_H</span></div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;stdexcept&gt;</span></div>
@@ -100,15 +100,15 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>        {</div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>            <span class="keyword">namespace </span>internal</div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>            {</div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>                <span class="keyword">constexpr</span> <span class="keywordtype">void</span> checkSizeLD1(neon_size_spec_t size)</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>                <span class="keyword">constexpr</span> <span class="keywordtype">void</span> checkSizeST1(neon_size_spec_t size)</div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>                {</div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>                    <span class="keywordflow">if</span> (size != neon_size_spec_t::s &amp;&amp; size != neon_size_spec_t::d)</div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>                    {</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>                        <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;Only s and d sizes are currently supported for LD1 instructions.&quot;</span>);</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>                        <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;Only s and d sizes are currently supported for ST1 instructions.&quot;</span>);</div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>                    }</div>
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>                }</div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>                <span class="keyword">constexpr</span> <span class="keywordtype">void</span> checkIndexLD1(neon_size_spec_t size, uint32_t index)</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>                <span class="keyword">constexpr</span> <span class="keywordtype">void</span> checkIndexST1(neon_size_spec_t size, uint32_t index)</div>
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>                {</div>
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>                    <span class="keywordflow">if</span> (size == neon_size_spec_t::s &amp;&amp; index &gt; 3)</div>
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>                    {</div>
@@ -120,7 +120,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>                    }</div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>                }</div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>                <span class="keyword">constexpr</span> <span class="keywordtype">void</span> checkPostIndexLD1(neon_size_spec_t size, uint32_t post_index)</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>                <span class="keyword">constexpr</span> <span class="keywordtype">void</span> checkPostIndexST1(neon_size_spec_t size, uint32_t post_index)</div>
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>                {</div>
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>                    <span class="keywordflow">if</span> (size == neon_size_spec_t::s &amp;&amp; post_index != 4)</div>
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>                    {</div>
@@ -134,15 +134,15 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
 <div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>            }</div>
 <div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>            <span class="keyword">constexpr</span> uint32_t ld1(simd_fp_t reg_dst,</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>            <span class="keyword">constexpr</span> uint32_t st1(simd_fp_t reg_dst,</div>
 <div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>                                   gpr_t reg_src,</div>
 <div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>                                   uint32_t index,</div>
 <div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>                                   neon_size_spec_t size)</div>
 <div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>            {</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>                internal::checkSizeLD1(size);</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>                internal::checkIndexLD1(size, index);</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>                internal::checkSizeST1(size);</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>                internal::checkIndexST1(size, index);</div>
 <div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>                uint32_t l_ins = 0xD400000;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>                uint32_t l_ins = 0xD000000;</div>
 <div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>                uint32_t l_opc = 0x4; <span class="comment">// 100</span></div>
 <div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>                uint32_t Q = 0x0;</div>
 <div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>                uint32_t S = 0x0;</div>
@@ -171,16 +171,16 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>                <span class="keywordflow">return</span> l_ins;</div>
 <div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>            }</div>
 <div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>            <span class="keyword">constexpr</span> uint32_t ld1(simd_fp_t reg_dst,</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>            <span class="keyword">constexpr</span> uint32_t st1(simd_fp_t reg_dst,</div>
 <div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>                                   gpr_t reg_src,</div>
 <div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>                                   uint32_t index,</div>
 <div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>                                   neon_size_spec_t size,</div>
 <div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>                                   gpr_t reg_post_index)</div>
 <div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>            {</div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>                internal::checkSizeLD1(size);</div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>                internal::checkIndexLD1(size, index);</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>                internal::checkSizeST1(size);</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>                internal::checkIndexST1(size, index);</div>
 <div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>                uint32_t l_ins = 0xDC00000;</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>                uint32_t l_ins = 0xD800000;</div>
 <div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>                uint32_t l_opc = 0x4; <span class="comment">// 100</span></div>
 <div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>                uint32_t Q = 0x0;</div>
 <div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>                uint32_t S = 0x0;</div>
@@ -212,19 +212,19 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>                <span class="keywordflow">return</span> l_ins;</div>
 <div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>            }</div>
 <div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span> </div>
-<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>            <span class="keyword">constexpr</span> uint32_t ld1(simd_fp_t reg_dst,</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>            <span class="keyword">constexpr</span> uint32_t st1(simd_fp_t reg_dst,</div>
 <div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>                                   gpr_t reg_src,</div>
 <div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>                                   uint32_t index,</div>
 <div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>                                   neon_size_spec_t size,</div>
 <div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>                                   uint32_t post_index)</div>
 <div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>            {</div>
-<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>                internal::checkPostIndexLD1(size, post_index);</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>                internal::checkPostIndexST1(size, post_index);</div>
 <div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>                <span class="comment">/*</span></div>
 <div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span><span class="comment">                 * the post_index is not used in the instruction encoding!</span></div>
 <div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span><span class="comment">                 * seems like #4 and #8 are used implicitly when the register</span></div>
 <div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span><span class="comment">                 * is set to all 1s</span></div>
 <div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span><span class="comment">                 */</span> </div>
-<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>                <span class="keywordflow">return</span> ld1(reg_dst,</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>                <span class="keywordflow">return</span> st1(reg_dst,</div>
 <div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>                           reg_src,</div>
 <div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>                           index,</div>
 <div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>                           size,</div>
@@ -235,7 +235,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>    }</div>
 <div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>}</div>
 <div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span> </div>
-<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span><span class="preprocessor">#endif </span><span class="comment">// MINI_JIT_INSTRUCTIONS_SIMD_FP_LD1_H</span></div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span><span class="preprocessor">#endif </span><span class="comment">// MINI_JIT_INSTRUCTIONS_SIMD_FP_ST1_H</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Machine Learning Compilers: /home/runner/work/machine-learning-compilers/machine-learning-compilers/src/instructions/simd_fp/ldr.h Source File</title>
+<title>Machine Learning Compilers: /home/runner/work/machine-learning-compilers/machine-learning-compilers/src/instructions/simd_fp/str.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -78,11 +78,11 @@ $(document).ready(function() { init_codefold(0); });
 </div>
 </div><!-- top -->
 <div class="header">
-  <div class="headertitle"><div class="title">ldr.h</div></div>
+  <div class="headertitle"><div class="title">str.h</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef MINI_JIT_INSTRUCTIONS_SIMD_FP_LDR_H</span></div>
-<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define MINI_JIT_INSTRUCTIONS_SIMD_FP_LDR_H</span></div>
+<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef MINI_JIT_INSTRUCTIONS_SIMD_FP_STR_H</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define MINI_JIT_INSTRUCTIONS_SIMD_FP_STR_H</span></div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;stdexcept&gt;</span></div>
@@ -98,12 +98,12 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    {</div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>        <span class="keyword">namespace </span>simd_fp</div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>        {</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>            <span class="keyword">constexpr</span> uint32_t ldr(simd_fp_t reg_dest,</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>            <span class="keyword">constexpr</span> uint32_t str(simd_fp_t reg_dest,</div>
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>                                   gpr_t reg_src,</div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>                                   uint32_t imm12,</div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>                                   neon_size_spec_t size_spec)</div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>            {</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>                uint32_t l_ins = 0x3D400000;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>                uint32_t l_ins = 0x3D000000;</div>
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>                <span class="comment">// set size</span></div>
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>                uint32_t l_size = (size_spec == neon_size_spec_t::s) ? 2 : (size_spec == neon_size_spec_t::d) ? 3</div>
@@ -135,18 +135,18 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>                l_ins |= l_imm &lt;&lt; 10;</div>
 <div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
 <div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>                <span class="comment">// set op code</span></div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>                uint32_t l_opc = (size_spec == neon_size_spec_t::q) ? 3 : 1;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>                uint32_t l_opc = (size_spec == neon_size_spec_t::q) ? 2 : 0;</div>
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>                l_ins |= l_opc &lt;&lt; 22;</div>
 <div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
 <div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>                <span class="keywordflow">return</span> l_ins;</div>
 <div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>            }</div>
 <div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>            <span class="keyword">constexpr</span> uint32_t ldrPost(simd_fp_t reg_dest,</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>            <span class="keyword">constexpr</span> uint32_t strPost(simd_fp_t reg_dest,</div>
 <div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>                                       gpr_t reg_src,</div>
 <div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>                                       uint32_t imm9,</div>
 <div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>                                       neon_size_spec_t size_spec)</div>
 <div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>            {</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>                uint32_t l_ins = 0x3C400400;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>                uint32_t l_ins = 0x3C000400;</div>
 <div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
 <div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>                <span class="comment">// set size</span></div>
 <div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>                uint32_t l_size = (size_spec == neon_size_spec_t::s) ? 2 : (size_spec == neon_size_spec_t::d) ? 3</div>
@@ -184,7 +184,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    }</div>
 <div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>}</div>
 <div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span> </div>
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span><span class="preprocessor">#endif </span><span class="comment">// MINI_JIT_INSTRUCTIONS_SIMD_FP_LDR_H</span></div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span><span class="preprocessor">#endif </span><span class="comment">// MINI_JIT_INSTRUCTIONS_SIMD_FP_STR_H</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

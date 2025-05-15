@@ -100,6 +100,10 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a96ae8f48164b70072d2b2ae090b5cf22"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a78b51eefe34de0d0c14fee3dbe0de2d7" id="r_a78b51eefe34de0d0c14fee3dbe0de2d7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmini__jit_1_1Kernel.html#a78b51eefe34de0d0c14fee3dbe0de2d7">add_instr</a> (uint32_t ins)</td></tr>
 <tr class="separator:a78b51eefe34de0d0c14fee3dbe0de2d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2dffbba595fb04e4749b7ed7890ebc63" id="r_a2dffbba595fb04e4749b7ed7890ebc63"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmini__jit_1_1Kernel.html#a2dffbba595fb04e4749b7ed7890ebc63">add_label</a> (std::string const &amp;label)</td></tr>
+<tr class="separator:a2dffbba595fb04e4749b7ed7890ebc63"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2845923d13df854cd3a4e19795257a34" id="r_a2845923d13df854cd3a4e19795257a34"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmini__jit_1_1Kernel.html#a2845923d13df854cd3a4e19795257a34">getInstrCountFromLabel</a> (std::string const &amp;label) const</td></tr>
+<tr class="separator:a2845923d13df854cd3a4e19795257a34"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae231a8fa325231b6d7f0c3b1c345250f" id="r_ae231a8fa325231b6d7f0c3b1c345250f"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmini__jit_1_1Kernel.html#ae231a8fa325231b6d7f0c3b1c345250f">get_size</a> () const</td></tr>
 <tr class="separator:ae231a8fa325231b6d7f0c3b1c345250f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2e918407d18f577869072b0f5637f300" id="r_a2e918407d18f577869072b0f5637f300"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmini__jit_1_1Kernel.html#a2e918407d18f577869072b0f5637f300">set_kernel</a> ()</td></tr>
@@ -188,6 +192,31 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="a2dffbba595fb04e4749b7ed7890ebc63" name="a2dffbba595fb04e4749b7ed7890ebc63"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2dffbba595fb04e4749b7ed7890ebc63">&#9670;&#160;</a></span>add_label()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void mini_jit::Kernel::add_label </td>
+          <td>(</td>
+          <td class="paramtype">std::string const &amp;&#160;</td>
+          <td class="paramname"><em>label</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Adds a label to the code buffer.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">label</td><td>label which is added. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a003e9eb9eabb03749e8700fdc45f6797" name="a003e9eb9eabb03749e8700fdc45f6797"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a003e9eb9eabb03749e8700fdc45f6797">&#9670;&#160;</a></span>get_kernel()</h2>
 
@@ -222,6 +251,32 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 <p>Gets the size of the code buffer.</p>
 <dl class="section return"><dt>Returns</dt><dd>size of the code buffer in bytes. </dd></dl>
+
+</div>
+</div>
+<a id="a2845923d13df854cd3a4e19795257a34" name="a2845923d13df854cd3a4e19795257a34"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2845923d13df854cd3a4e19795257a34">&#9670;&#160;</a></span>getInstrCountFromLabel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int mini_jit::Kernel::getInstrCountFromLabel </td>
+          <td>(</td>
+          <td class="paramtype">std::string const &amp;&#160;</td>
+          <td class="paramname"><em>label</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Returns how many instructions come after the given label.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">label</td><td>label to search for. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>number of instructions after the label. </dd></dl>
 
 </div>
 </div>
