@@ -141,9 +141,9 @@ void mini_jit::kernels::matmul_br_m_n_k(mini_jit::Kernel &kernel,
     if (nLoopRemainder > 0)
     {
         // Save base matrix pointers
-        kernel.add_instr(base::mov(gpr_t::x7, gpr_t::x0)); // A
-        kernel.add_instr(base::mov(gpr_t::x8, gpr_t::x20)); // B
-        kernel.add_instr(base::mov(gpr_t::x9, gpr_t::x21)); // C
+        kernel.add_instr(base::mov(gpr_t::x8, gpr_t::x0)); // A
+        kernel.add_instr(base::mov(gpr_t::x9, gpr_t::x20)); // B
+        kernel.add_instr(base::mov(gpr_t::x10, gpr_t::x21)); // C
 
         switch (nLoopRemainder)
         {
