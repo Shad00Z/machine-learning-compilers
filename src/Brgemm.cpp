@@ -4,10 +4,6 @@
 #include "kernels/matmul/matmul_br_m_n_k.h"
 #include <iostream>
 
-/**
- * @brief Generate a kernel for batch-reduce matrix multiplication if
- *        all conditions are met.
- */
 mini_jit::Brgemm::error_t mini_jit::Brgemm::generate( uint32_t m,
                                                       uint32_t n,
                                                       uint32_t k,
@@ -36,7 +32,7 @@ mini_jit::Brgemm::error_t mini_jit::Brgemm::generate( uint32_t m,
     }
     else if ( n <= 0 )
     {
-        std::cout << ( "N must be greater than" ) << std::endl;
+        std::cout << ( "N must be greater than 0" ) << std::endl;
         return mini_jit::Brgemm::error_t::wrong_n_dimension;
     }
     else if ( n >= 1025 )
