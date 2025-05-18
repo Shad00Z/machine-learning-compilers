@@ -480,13 +480,7 @@ Each of the 4 ``4x4 submatrices`` would be transposed using our ``trans_4_4`` ke
     :lines: 89-184
     :caption: loading, transposition and storing of upper right and bottom left matrix
 
-1. The bottom right matrix (in the image D) would be transposed and stored at the loading position.
-
-.. literalinclude:: ../../src/submissions/03_neon/07_transposition/optimization/trans_neon_8_8.S
-    :language: asm
-    :linenos: 
-    :lines: 56-74
-    :caption: ``trans_8_8`` implementation
+4. The bottom right matrix (in the image D) would be transposed and stored at the loading position.
 
 3.7.2 Performance Measuring
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
