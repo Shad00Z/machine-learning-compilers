@@ -1,0 +1,7 @@
+Benchmarking trans_neon_8_8 performance ...
+-----------------------------------------------
+Measuring throughput for transposition in GiB/s
+Total time (s):   1.25447
+Data movements per Second:   81.6281
+Estimated GiB/s:   7.60221e-08 GiB/s
+-----------------------------------------------
