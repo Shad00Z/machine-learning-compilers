@@ -439,3 +439,64 @@ These optimizations resulted in a performance increase of about ``3-4 GFLOPs``.
     :language: text
     :linenos:
     :caption: Benchmarking results for the batch-reduce GEMM kernels
+
+3.7 Transposition
+-----------------------------
+
+In this task we were looking at how to transpose a given ``8x8 matrix`` using assembly.
+Our approach was to firstly look at the ``4x4`` case. 
+
+3.7.1 Transposition Implementation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+We would first load the all 4 columns of matrix A using ``ldr qX, [x0]`` to have the whole matrix in our registers.
+The second step would be to transpose the matrix: 
+
+.. literalinclude:: ../../src/submissions/03_neon/07_transposition/optimization/trans_neon_4_4.S
+    :language: asm
+    :linenos: 
+    :lines: 56-74
+    :caption: ``trans_4_4`` implementation
+
+The idea of ``trn1`` and ``trn2`` were to prepare the elements for each column in such a way, that 
+we could then leverage the new structure using ``zip1`` and ``zip2``.
+
+Now, looking at the ``8x8 matrix`` our initial approach would be very simple:
+
+.. image:: ../_static/submatrices.png
+  :width: 400
+  :alt: Matrix divided in 4 quadrants
+
+We would separate our transposition task in 4 subtasks. 
+Each of the 4 ``4x4 submatrices`` would be transposed using our ``trans_4_4`` kernel.
+
+1. The upper left matrix (in the image A) would be transposed and stored at the loading position.
+2. The upper right matrix (in the image B) would be transposed and stored at the "loading" position of the bottom left matrix.
+3. The bottom left matrix (in the image C) would be transposed and stored at the "loading" position of the upper right matrix.
+
+.. literalinclude:: ../../src/submissions/03_neon/07_transposition/optimization/trans_neon_8_8.S
+    :language: asm
+    :linenos: 
+    :lines: 89-184
+    :caption: loading, transposition and storing of upper right and bottom left matrix
+
+1. The bottom right matrix (in the image D) would be transposed and stored at the loading position.
+
+.. literalinclude:: ../../src/submissions/03_neon/07_transposition/optimization/trans_neon_8_8.S
+    :language: asm
+    :linenos: 
+    :lines: 56-74
+    :caption: ``trans_8_8`` implementation
+
+3.7.2 Performance Measuring
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+We also wanted to know the performance of our transposition kernel, which in 
+our case would be the loading and storing of elements.
+
+.. literalinclude:: ../../src/submissions/03_neon/07_transposition/benchmark/benchmarking_results.txt
+    :language: text
+    :linenos: 
+    :caption: ``trans_8_8`` performance in ``GiB/s``
+
+Our restults showed that we were transferring about ``8 MB/s``.
