@@ -118,11 +118,7 @@ We are starting off by implementing / generating batch-reduce matrix-matrix mult
 <p>The first step was to implement a <code class="docutils literal notranslate"><span class="pre">generate</span></code> function, which is supposed to be the entry for all BRGEMM code generation:</p>
 <div class="literal-block-wrapper docutils container" id="id2">
 <div class="code-block-caption"><span class="caption-text">implementation of the <code class="docutils literal notranslate"><span class="pre">generate</span></code> function</span><a class="headerlink" href="#id2" title="Link to this code"></a></div>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/**</span>
-<span class="cm"> * @brief Generate a kernel for batch-reduce matrix multiplication if</span>
-<span class="cm"> *        all conditions are met.</span>
-<span class="cm"> */</span>
-<span class="n">mini_jit</span><span class="o">::</span><span class="n">Brgemm</span><span class="o">::</span><span class="n">error_t</span><span class="w"> </span><span class="nf">mini_jit::Brgemm::generate</span><span class="p">(</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">m</span><span class="p">,</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">mini_jit</span><span class="o">::</span><span class="n">Brgemm</span><span class="o">::</span><span class="n">error_t</span><span class="w"> </span><span class="nf">mini_jit::Brgemm::generate</span><span class="p">(</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">m</span><span class="p">,</span>
 <span class="w">                                                      </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">n</span><span class="p">,</span>
 <span class="w">                                                      </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">k</span><span class="p">,</span>
 <span class="w">                                                      </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">br_size</span><span class="p">,</span><span class="w"> </span>
@@ -150,7 +146,7 @@ We are starting off by implementing / generating batch-reduce matrix-matrix mult
 <span class="w">    </span><span class="p">}</span>
 <span class="w">    </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span>
 <span class="w">    </span><span class="p">{</span>
-<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="s">&quot;N must be greater than&quot;</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="s">&quot;N must be greater than 0&quot;</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
 <span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">mini_jit</span><span class="o">::</span><span class="n">Brgemm</span><span class="o">::</span><span class="n">error_t</span><span class="o">::</span><span class="n">wrong_n_dimension</span><span class="p">;</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">    </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">1025</span><span class="w"> </span><span class="p">)</span>
@@ -203,6 +199,10 @@ We are starting off by implementing / generating batch-reduce matrix-matrix mult
 <span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">mini_jit</span><span class="o">::</span><span class="n">Brgemm</span><span class="o">::</span><span class="n">error_t</span><span class="o">::</span><span class="n">success</span><span class="p">;</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
+
+<span class="n">mini_jit</span><span class="o">::</span><span class="n">Brgemm</span><span class="o">::</span><span class="n">kernel_t</span><span class="w"> </span><span class="nf">mini_jit::Brgemm::get_kernel</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="n">kernel_t</span><span class="o">&gt;</span><span class="p">(</span><span class="k">const_cast</span><span class="o">&lt;</span><span class="kt">void</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">m_kernel</span><span class="p">.</span><span class="n">get_kernel</span><span class="p">()));</span>
 </pre></div>
 </div>
 </div>
@@ -788,26 +788,22 @@ of the form: C+=∑AᵢBᵢ.</p>
 <p>We started by altering our <code class="docutils literal notranslate"><span class="pre">generate</span></code> function, so that we would now accept a <code class="docutils literal notranslate"><span class="pre">batch_size</span></code>.</p>
 <div class="literal-block-wrapper docutils container" id="id18">
 <div class="code-block-caption"><span class="caption-text">handling of invalid values for <code class="docutils literal notranslate"><span class="pre">br_size</span></code> in the <code class="docutils literal notranslate"><span class="pre">generate</span></code> function</span><a class="headerlink" href="#id18" title="Link to this code"></a></div>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">br_size</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span>
-<span class="w">    </span><span class="p">{</span>
-<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="s">&quot;BR_SIZE must greater than 0&quot;</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">mini_jit</span><span class="o">::</span><span class="n">Brgemm</span><span class="o">::</span><span class="n">error_t</span><span class="o">::</span><span class="n">wrong_batch_reduce_size</span><span class="p">;</span>
-<span class="w">    </span><span class="p">}</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="p">}</span>
 <span class="w">    </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">br_size</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">1025</span><span class="p">)</span>
 <span class="w">    </span><span class="p">{</span>
 <span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="s">&quot;BR_SIZE must not be greater than 1024&quot;</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
 <span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">mini_jit</span><span class="o">::</span><span class="n">Brgemm</span><span class="o">::</span><span class="n">error_t</span><span class="o">::</span><span class="n">wrong_batch_reduce_size</span><span class="p">;</span>
 <span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">trans_a</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">trans_b</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">trans_c</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="s">&quot;Matrix ordering must be column-major&quot;</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">mini_jit</span><span class="o">::</span><span class="n">Brgemm</span><span class="o">::</span><span class="n">error_t</span><span class="o">::</span><span class="n">wrong_matrix_ordering_format</span><span class="p">;</span>
 </pre></div>
 </div>
 </div>
 <div class="literal-block-wrapper docutils container" id="id19">
 <div class="code-block-caption"><span class="caption-text">implementation of <code class="docutils literal notranslate"><span class="pre">br_size</span></code> in the <code class="docutils literal notranslate"><span class="pre">generate</span></code> function</span><a class="headerlink" href="#id19" title="Link to this code"></a></div>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="k">else</span>
-<span class="w">    </span><span class="p">{</span>
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">br_size</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
-<span class="w">        </span><span class="p">{</span>
-<span class="w">            </span><span class="n">mini_jit</span><span class="o">::</span><span class="n">kernels</span><span class="o">::</span><span class="n">matmul</span><span class="o">::</span><span class="n">matmul_m_n_k</span><span class="p">(</span><span class="n">m_kernel</span><span class="p">,</span><span class="w"> </span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="p">);</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="w">            </span><span class="n">mini_jit</span><span class="o">::</span><span class="n">kernels</span><span class="o">::</span><span class="n">matmul</span><span class="o">::</span><span class="n">matmul_m_n_k</span><span class="p">(</span><span class="n">m_kernel</span><span class="p">,</span><span class="w"> </span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="p">);</span>
 <span class="w">        </span><span class="p">}</span>
 <span class="w">        </span><span class="k">else</span>
 <span class="w">        </span><span class="p">{</span>
@@ -817,6 +813,10 @@ of the form: C+=∑AᵢBᵢ.</p>
 <span class="w">        </span><span class="c1">// Valid matrix kernel</span>
 <span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">mini_jit</span><span class="o">::</span><span class="n">Brgemm</span><span class="o">::</span><span class="n">error_t</span><span class="o">::</span><span class="n">success</span><span class="p">;</span>
 <span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">mini_jit</span><span class="o">::</span><span class="n">Brgemm</span><span class="o">::</span><span class="n">kernel_t</span><span class="w"> </span><span class="n">mini_jit</span><span class="o">::</span><span class="n">Brgemm</span><span class="o">::</span><span class="n">get_kernel</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span>
+<span class="p">{</span>
 </pre></div>
 </div>
 </div>

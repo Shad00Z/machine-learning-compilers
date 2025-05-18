@@ -100,6 +100,30 @@
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv4NK8mini_jit8mini_jit6Kernel5writeEPKc"><code class="docutils literal notranslate"><span class="pre">write()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit5UnaryE"><code class="docutils literal notranslate"><span class="pre">mini_jit::Unary</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit5Unary7dtype_tE"><code class="docutils literal notranslate"><span class="pre">dtype_t</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit5Unary7dtype_t4fp32E"><code class="docutils literal notranslate"><span class="pre">fp32</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit5Unary7dtype_t4fp64E"><code class="docutils literal notranslate"><span class="pre">fp64</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit5Unary7ptype_tE"><code class="docutils literal notranslate"><span class="pre">ptype_t</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit5Unary7ptype_t4zeroE"><code class="docutils literal notranslate"><span class="pre">zero</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit5Unary7ptype_t8identityE"><code class="docutils literal notranslate"><span class="pre">identity</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit5Unary7ptype_t4reluE"><code class="docutils literal notranslate"><span class="pre">relu</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit5Unary7error_tE"><code class="docutils literal notranslate"><span class="pre">error_t</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit5Unary7error_t7successE"><code class="docutils literal notranslate"><span class="pre">success</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit5Unary7error_t17wrong_m_dimensionE"><code class="docutils literal notranslate"><span class="pre">wrong_m_dimension</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit5Unary7error_t17wrong_n_dimensionE"><code class="docutils literal notranslate"><span class="pre">wrong_n_dimension</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit5Unary7error_t11wrong_ptypeE"><code class="docutils literal notranslate"><span class="pre">wrong_ptype</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit5Unary8kernel_tE"><code class="docutils literal notranslate"><span class="pre">kernel_t</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit5Unary8generateE8uint32_t8uint32_t8uint32_t7dtype_t7ptype_t"><code class="docutils literal notranslate"><span class="pre">generate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4NK8mini_jit8mini_jit5Unary10get_kernelEv"><code class="docutils literal notranslate"><span class="pre">get_kernel()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="mini_jit_converters.html">mini_jit::converters</a></li>
@@ -210,7 +234,6 @@
 <dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit6Brgemm8generateE8uint32_t8uint32_t8uint32_t8uint32_t8uint32_t8uint32_t8uint32_t7dtype_t">
 <span id="_CPPv3N8mini_jit8mini_jit6Brgemm8generateE8uint32_t8uint32_t8uint32_t8uint32_t8uint32_t8uint32_t8uint32_t7dtype_t"></span><span id="_CPPv2N8mini_jit8mini_jit6Brgemm8generateE8uint32_t8uint32_t8uint32_t8uint32_t8uint32_t8uint32_t8uint32_t7dtype_t"></span><span id="mini_jit::mini_jit::Brgemm::generate__uint32_t.uint32_t.uint32_t.uint32_t.uint32_t.uint32_t.uint32_t.dtype_t"></span><span class="target" id="classmini__jit_1_1Brgemm_1a491982ce1ba45de53d7847cc1b6dc100"></span><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit6Brgemm7error_tE" title="mini_jit::mini_jit::Brgemm::error_t"><span class="n"><span class="pre">error_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">generate</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">k</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">br_size</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">trans_a</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">trans_b</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">trans_c</span></span>, <a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit6Brgemm7dtype_tE" title="mini_jit::mini_jit::Brgemm::dtype_t"><span class="n"><span class="pre">dtype_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">dtype</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit6Brgemm8generateE8uint32_t8uint32_t8uint32_t8uint32_t8uint32_t8uint32_t8uint32_t7dtype_t" title="Link to this definition"></a><br /></dt>
 <dd><p>Generate a kernel for batch-reduce matrix multiplication. </p>
-<p>Generate a kernel for batch-reduce matrix multiplication if all conditions are met.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -347,6 +370,119 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>path</strong> – path to the file. </p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit5UnaryE">
+<span id="_CPPv3N8mini_jit8mini_jit5UnaryE"></span><span id="_CPPv2N8mini_jit8mini_jit5UnaryE"></span><span id="mini_jit::mini_jit::Unary"></span><span class="target" id="classmini__jit_1_1Unary"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Unary</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit5UnaryE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
+<dl class="cpp enum-class">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit5Unary7dtype_tE">
+<span id="_CPPv3N8mini_jit8mini_jit5Unary7dtype_tE"></span><span id="_CPPv2N8mini_jit8mini_jit5Unary7dtype_tE"></span><span class="target" id="classmini__jit_1_1Unary_1a0fcd9bd204abefa4ed4f0e9ec5189f9f"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dtype_t</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">uint32_t</span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit5Unary7dtype_tE" title="Link to this definition"></a><br /></dt>
+<dd><p>data type </p>
+<p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit5Unary7dtype_t4fp32E">
+<span id="_CPPv3N8mini_jit8mini_jit5Unary7dtype_t4fp32E"></span><span id="_CPPv2N8mini_jit8mini_jit5Unary7dtype_t4fp32E"></span><span class="target" id="classmini__jit_1_1Unary_1a0fcd9bd204abefa4ed4f0e9ec5189f9fa4e1bd87474ad81110395b71013094b35"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">fp32</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit5Unary7dtype_t4fp32E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit5Unary7dtype_t4fp64E">
+<span id="_CPPv3N8mini_jit8mini_jit5Unary7dtype_t4fp64E"></span><span id="_CPPv2N8mini_jit8mini_jit5Unary7dtype_t4fp64E"></span><span class="target" id="classmini__jit_1_1Unary_1a0fcd9bd204abefa4ed4f0e9ec5189f9fa36dd759373a12bd5960718d0c482a2d4"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">fp64</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit5Unary7dtype_t4fp64E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="cpp enum-class">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit5Unary7ptype_tE">
+<span id="_CPPv3N8mini_jit8mini_jit5Unary7ptype_tE"></span><span id="_CPPv2N8mini_jit8mini_jit5Unary7ptype_tE"></span><span class="target" id="classmini__jit_1_1Unary_1a5f3885faa74f47cc3e851c29acd62a41"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ptype_t</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">uint32_t</span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit5Unary7ptype_tE" title="Link to this definition"></a><br /></dt>
+<dd><p>primitive type </p>
+<p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit5Unary7ptype_t4zeroE">
+<span id="_CPPv3N8mini_jit8mini_jit5Unary7ptype_t4zeroE"></span><span id="_CPPv2N8mini_jit8mini_jit5Unary7ptype_t4zeroE"></span><span class="target" id="classmini__jit_1_1Unary_1a5f3885faa74f47cc3e851c29acd62a41ad02c4c4cde7ae76252540d116a40f23a"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">zero</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit5Unary7ptype_t4zeroE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit5Unary7ptype_t8identityE">
+<span id="_CPPv3N8mini_jit8mini_jit5Unary7ptype_t8identityE"></span><span id="_CPPv2N8mini_jit8mini_jit5Unary7ptype_t8identityE"></span><span class="target" id="classmini__jit_1_1Unary_1a5f3885faa74f47cc3e851c29acd62a41aff483d1ff591898a9942916050d2ca3f"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">identity</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit5Unary7ptype_t8identityE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit5Unary7ptype_t4reluE">
+<span id="_CPPv3N8mini_jit8mini_jit5Unary7ptype_t4reluE"></span><span id="_CPPv2N8mini_jit8mini_jit5Unary7ptype_t4reluE"></span><span class="target" id="classmini__jit_1_1Unary_1a5f3885faa74f47cc3e851c29acd62a41abc5ce62b39aff2f661146911808eadc1"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">relu</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit5Unary7ptype_t4reluE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="cpp enum-class">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit5Unary7error_tE">
+<span id="_CPPv3N8mini_jit8mini_jit5Unary7error_tE"></span><span id="_CPPv2N8mini_jit8mini_jit5Unary7error_tE"></span><span class="target" id="classmini__jit_1_1Unary_1ab97a1707a127a6aa5bd820b2ecddf01a"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">error_t</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int32_t</span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit5Unary7error_tE" title="Link to this definition"></a><br /></dt>
+<dd><p>error codes </p>
+<p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit5Unary7error_t7successE">
+<span id="_CPPv3N8mini_jit8mini_jit5Unary7error_t7successE"></span><span id="_CPPv2N8mini_jit8mini_jit5Unary7error_t7successE"></span><span class="target" id="classmini__jit_1_1Unary_1ab97a1707a127a6aa5bd820b2ecddf01aa260ca9dd8a4577fc00b7bd5810298076"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">success</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit5Unary7error_t7successE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit5Unary7error_t17wrong_m_dimensionE">
+<span id="_CPPv3N8mini_jit8mini_jit5Unary7error_t17wrong_m_dimensionE"></span><span id="_CPPv2N8mini_jit8mini_jit5Unary7error_t17wrong_m_dimensionE"></span><span class="target" id="classmini__jit_1_1Unary_1ab97a1707a127a6aa5bd820b2ecddf01aab98c8512904f3c777d26fad937b425b0"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">wrong_m_dimension</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit5Unary7error_t17wrong_m_dimensionE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit5Unary7error_t17wrong_n_dimensionE">
+<span id="_CPPv3N8mini_jit8mini_jit5Unary7error_t17wrong_n_dimensionE"></span><span id="_CPPv2N8mini_jit8mini_jit5Unary7error_t17wrong_n_dimensionE"></span><span class="target" id="classmini__jit_1_1Unary_1ab97a1707a127a6aa5bd820b2ecddf01aa3e12dd0a956ab61242daee44e65cf1a0"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">wrong_n_dimension</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit5Unary7error_t17wrong_n_dimensionE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit5Unary7error_t11wrong_ptypeE">
+<span id="_CPPv3N8mini_jit8mini_jit5Unary7error_t11wrong_ptypeE"></span><span id="_CPPv2N8mini_jit8mini_jit5Unary7error_t11wrong_ptypeE"></span><span class="target" id="classmini__jit_1_1Unary_1ab97a1707a127a6aa5bd820b2ecddf01aa6c18581cb880099446e0f540371a78bd"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">wrong_ptype</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit5Unary7error_t11wrong_ptypeE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit5Unary8kernel_tE">
+<span id="_CPPv3N8mini_jit8mini_jit5Unary8kernel_tE"></span><span id="_CPPv2N8mini_jit8mini_jit5Unary8kernel_tE"></span><span class="target" id="classmini__jit_1_1Unary_1a356443316c5e323fd6af0f6efb8859a3"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">kernel_t</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">(</span></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">a</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="n"><span class="pre">ld_a</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="n"><span class="pre">ld_b</span></span><span class="p"><span class="pre">)</span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit5Unary8kernel_tE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit5Unary8generateE8uint32_t8uint32_t8uint32_t7dtype_t7ptype_t">
+<span id="_CPPv3N8mini_jit8mini_jit5Unary8generateE8uint32_t8uint32_t8uint32_t7dtype_t7ptype_t"></span><span id="_CPPv2N8mini_jit8mini_jit5Unary8generateE8uint32_t8uint32_t8uint32_t7dtype_t7ptype_t"></span><span id="mini_jit::mini_jit::Unary::generate__uint32_t.uint32_t.uint32_t.dtype_t.ptype_t"></span><span class="target" id="classmini__jit_1_1Unary_1ab8974cee23349b58a20bc8329e9919fe"></span><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit5Unary7error_tE" title="mini_jit::mini_jit::Unary::error_t"><span class="n"><span class="pre">error_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">generate</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">trans_b</span></span>, <a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit5Unary7dtype_tE" title="mini_jit::mini_jit::Unary::dtype_t"><span class="n"><span class="pre">dtype_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">dtype</span></span>, <a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit5Unary7ptype_tE" title="mini_jit::mini_jit::Unary::ptype_t"><span class="n"><span class="pre">ptype_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">ptype</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit5Unary8generateE8uint32_t8uint32_t8uint32_t7dtype_t7ptype_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Generate a kernel for a unary primitive. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>m</strong> – Number of rows in A and B. </p></li>
+<li><p><strong>n</strong> – Number of columns in A and B. </p></li>
+<li><p><strong>trans_b</strong> – 0 if B is stored in column-major order, 1 if B is stored in row-major order. </p></li>
+<li><p><strong>dtype</strong> – Data type of the matrices. </p></li>
+<li><p><strong>ptype</strong> – Primitive type. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>error_t::success on success, another error_t value otherwise. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK8mini_jit8mini_jit5Unary10get_kernelEv">
+<span id="_CPPv3NK8mini_jit8mini_jit5Unary10get_kernelEv"></span><span id="_CPPv2NK8mini_jit8mini_jit5Unary10get_kernelEv"></span><span id="mini_jit::mini_jit::Unary::get_kernelC"></span><span class="target" id="classmini__jit_1_1Unary_1a7ef08b4895135a02f5057733927455d4"></span><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit5Unary8kernel_tE" title="mini_jit::mini_jit::Unary::kernel_t"><span class="n"><span class="pre">kernel_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get_kernel</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK8mini_jit8mini_jit5Unary10get_kernelEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Get the generated kernel: B := op(A). </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pointer to the generated kernel. </p>
 </dd>
 </dl>
 </dd></dl>
