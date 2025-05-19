@@ -42,6 +42,8 @@ TEST_CASE("Tests the trans_neon_8_8 microkernel function with random matrices", 
         }
     }
 
+    trans_neon_8_8( A, B, M, N );
+
     for (int i = 0; i < M * N; i++)
     {
         REQUIRE(B[i] == Approx(B_expected[i]).epsilon(0.01));
