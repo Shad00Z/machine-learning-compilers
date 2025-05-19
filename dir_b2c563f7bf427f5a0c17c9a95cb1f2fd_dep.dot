@@ -16,6 +16,7 @@ digraph "/home/runner/work/machine-learning-compilers/machine-learning-compilers
   dir_1bbf329644173ab09491115de8dab028 [label="04_simd", fillcolor="#a2b4d6", color="grey25", style="filled", URL="dir_1bbf329644173ab09491115de8dab028.html",tooltip=""];
   dir_3574dc578a2032e7bffd7af1f5b71dbd [label="05_accumulator_block\l_shapes", fillcolor="#a2b4d6", color="grey25", style="filled", URL="dir_3574dc578a2032e7bffd7af1f5b71dbd.html",tooltip=""];
   dir_f78ac28d176dc5803113e6f9814f5964 [label="06_batch_reduce_gemm", fillcolor="#a2b4d6", color="grey25", style="filled", URL="dir_f78ac28d176dc5803113e6f9814f5964.html",tooltip=""];
+  dir_f92c61175547b9411dbb5558edf13cfd [label="07_transposition", fillcolor="#a2b4d6", color="grey25", style="filled", URL="dir_f92c61175547b9411dbb5558edf13cfd.html",tooltip=""];
   }
   }
 }

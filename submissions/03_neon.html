@@ -81,6 +81,11 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#accumulator-block-shapes">3.5 Accumulator Block Shapes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#batch-reduce-gemm">3.6 Batch-Reduce GEMM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#transposition">3.7 Transposition</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#transposition-implementation">3.7.1 Transposition Implementation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#performance-measuring">3.7.2 Performance Measuring</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="04_code_gen.html">4. Code Generation</a></li>
@@ -1465,6 +1470,174 @@ The changes we made were:</p>
 </pre></div>
 </div>
 </div>
+</section>
+<section id="transposition">
+<h2>3.7 Transposition<a class="headerlink" href="#transposition" title="Link to this heading"></a></h2>
+<p>In this task we were looking at how to transpose a given <code class="docutils literal notranslate"><span class="pre">8x8</span> <span class="pre">matrix</span></code> using assembly.
+Our approach was to firstly look at the <code class="docutils literal notranslate"><span class="pre">4x4</span></code> case.</p>
+<section id="transposition-implementation">
+<h3>3.7.1 Transposition Implementation<a class="headerlink" href="#transposition-implementation" title="Link to this heading"></a></h3>
+<p>We would first load the all 4 columns of matrix A using <code class="docutils literal notranslate"><span class="pre">ldr</span> <span class="pre">qX,</span> <span class="pre">[x0]</span></code> to have the whole matrix in our registers.
+The second step would be to transpose the matrix:</p>
+<div class="literal-block-wrapper docutils container" id="id41">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">trans_4_4</span></code> implementation</span><a class="headerlink" href="#id41" title="Link to this code"></a></div>
+<div class="highlight-asm notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="w">    </span><span class="cm">/*</span>
+<span class="linenos"> 2</span><span class="cm">    * Part 2.1:</span>
+<span class="linenos"> 3</span><span class="cm">    * Transpose 4x4 block.</span>
+<span class="linenos"> 4</span><span class="cm">    */</span>
+<span class="linenos"> 5</span><span class="w">    </span><span class="nf">trn1</span><span class="w"> </span><span class="no">v4.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v0.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v2.4s</span>
+<span class="linenos"> 6</span><span class="w">    </span><span class="nf">trn1</span><span class="w"> </span><span class="no">v5.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v1.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v3.4s</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span><span class="w">    </span><span class="nf">trn2</span><span class="w"> </span><span class="no">v6.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v0.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v2.4s</span>
+<span class="linenos"> 9</span><span class="w">    </span><span class="nf">trn2</span><span class="w"> </span><span class="no">v7.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v1.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v3.4s</span>
+<span class="linenos">10</span>
+<span class="linenos">11</span><span class="w">    </span><span class="cm">/*</span>
+<span class="linenos">12</span><span class="cm">    * Part 2.2:</span>
+<span class="linenos">13</span><span class="cm">    * Transpose 4x4 block.</span>
+<span class="linenos">14</span><span class="cm">    */</span>
+<span class="linenos">15</span><span class="w">    </span><span class="nf">zip1</span><span class="w"> </span><span class="no">v8.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v4.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v5.4s</span><span class="w">    </span><span class="c1">// B &quot;column&quot; 0</span>
+<span class="linenos">16</span><span class="w">    </span><span class="nf">zip1</span><span class="w"> </span><span class="no">v9.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v6.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v7.4s</span><span class="w">    </span><span class="c1">// B &quot;column&quot; 1</span>
+<span class="linenos">17</span>
+<span class="linenos">18</span><span class="w">    </span><span class="nf">zip2</span><span class="w"> </span><span class="no">v10.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v4.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v5.4s</span><span class="w">   </span><span class="c1">// B &quot;column&quot; 2</span>
+<span class="linenos">19</span><span class="w">    </span><span class="nf">zip2</span><span class="w"> </span><span class="no">v11.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v6.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v7.4s</span><span class="w">   </span><span class="c1">// B &quot;column&quot; 3</span>
+</pre></div>
+</div>
+</div>
+<p>The idea of <code class="docutils literal notranslate"><span class="pre">trn1</span></code> and <code class="docutils literal notranslate"><span class="pre">trn2</span></code> were to prepare the elements for each column in such a way, that
+we could then leverage the new structure using <code class="docutils literal notranslate"><span class="pre">zip1</span></code> and <code class="docutils literal notranslate"><span class="pre">zip2</span></code>.</p>
+<p>Now, looking at the <code class="docutils literal notranslate"><span class="pre">8x8</span> <span class="pre">matrix</span></code> our initial approach would be very simple:</p>
+<a class="reference internal image-reference" href="../_images/submatrices.png"><img alt="Matrix divided in 4 quadrants" src="../_images/submatrices.png" style="width: 400px;" />
+</a>
+<p>We would separate our transposition task in 4 subtasks.
+Each of the 4 <code class="docutils literal notranslate"><span class="pre">4x4</span> <span class="pre">submatrices</span></code> would be transposed using our <code class="docutils literal notranslate"><span class="pre">trans_4_4</span></code> kernel.</p>
+<ol class="arabic simple">
+<li><p>The upper left matrix (in the image A) would be transposed and stored at the loading position.</p></li>
+<li><p>The upper right matrix (in the image B) would be transposed and stored at the “loading” position of the bottom left matrix.</p></li>
+<li><p>The bottom left matrix (in the image C) would be transposed and stored at the “loading” position of the upper right matrix.</p></li>
+</ol>
+<div class="literal-block-wrapper docutils container" id="id42">
+<div class="code-block-caption"><span class="caption-text">loading, transposition and storing of upper right and bottom left matrix</span><a class="headerlink" href="#id42" title="Link to this code"></a></div>
+<div class="highlight-asm notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="w">    </span><span class="cm">/*</span>
+<span class="linenos"> 2</span><span class="cm">    * Part 1.2:</span>
+<span class="linenos"> 3</span><span class="cm">    * Load 4x4 block of A (Left bottom, top right).</span>
+<span class="linenos"> 4</span><span class="cm">    */</span>
+<span class="linenos"> 5</span><span class="w">    </span><span class="nf">mov</span><span class="w"> </span><span class="no">x4</span><span class="p">,</span><span class="w"> </span><span class="no">x0</span><span class="w"> </span><span class="c1">// A</span>
+<span class="linenos"> 6</span><span class="w">    </span><span class="nf">mov</span><span class="w"> </span><span class="no">x5</span><span class="p">,</span><span class="w"> </span><span class="no">x1</span><span class="w"> </span><span class="c1">// B</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x4</span><span class="p">,</span><span class="w"> </span><span class="no">x4</span><span class="p">,</span><span class="w"> </span><span class="mi">#16</span>
+<span class="linenos"> 9</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x5</span><span class="p">,</span><span class="w"> </span><span class="no">x5</span><span class="p">,</span><span class="w"> </span><span class="mi">#16</span>
+<span class="linenos">10</span>
+<span class="linenos">11</span><span class="w">    </span><span class="nf">ldr</span><span class="w"> </span><span class="no">q0</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x4</span><span class="p">]</span>
+<span class="linenos">12</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x4</span><span class="p">,</span><span class="w"> </span><span class="no">x4</span><span class="p">,</span><span class="w"> </span><span class="no">x2</span>
+<span class="linenos">13</span><span class="w">    </span><span class="nf">ldr</span><span class="w"> </span><span class="no">q1</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x4</span><span class="p">]</span>
+<span class="linenos">14</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x4</span><span class="p">,</span><span class="w"> </span><span class="no">x4</span><span class="p">,</span><span class="w"> </span><span class="no">x2</span>
+<span class="linenos">15</span><span class="w">    </span><span class="nf">ldr</span><span class="w"> </span><span class="no">q2</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x4</span><span class="p">]</span>
+<span class="linenos">16</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x4</span><span class="p">,</span><span class="w"> </span><span class="no">x4</span><span class="p">,</span><span class="w"> </span><span class="no">x2</span>
+<span class="linenos">17</span><span class="w">    </span><span class="nf">ldr</span><span class="w"> </span><span class="no">q3</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x4</span><span class="p">]</span>
+<span class="linenos">18</span>
+<span class="linenos">19</span><span class="w">    </span><span class="c1">// Right top</span>
+<span class="linenos">20</span><span class="w">    </span><span class="nf">mov</span><span class="w"> </span><span class="no">x4</span><span class="p">,</span><span class="w"> </span><span class="no">x0</span><span class="w"> </span><span class="c1">// A</span>
+<span class="linenos">21</span><span class="w">    </span><span class="nf">mov</span><span class="w"> </span><span class="no">x5</span><span class="p">,</span><span class="w"> </span><span class="no">x1</span><span class="w"> </span><span class="c1">// B</span>
+<span class="linenos">22</span>
+<span class="linenos">23</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x4</span><span class="p">,</span><span class="w"> </span><span class="no">x4</span><span class="p">,</span><span class="w"> </span><span class="mi">#128</span>
+<span class="linenos">24</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x5</span><span class="p">,</span><span class="w"> </span><span class="no">x5</span><span class="p">,</span><span class="w"> </span><span class="mi">#128</span>
+<span class="linenos">25</span><span class="w">    </span>
+<span class="linenos">26</span><span class="w">    </span><span class="nf">ldr</span><span class="w"> </span><span class="no">q12</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x4</span><span class="p">]</span>
+<span class="linenos">27</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x4</span><span class="p">,</span><span class="w"> </span><span class="no">x4</span><span class="p">,</span><span class="w"> </span><span class="no">x2</span>
+<span class="linenos">28</span><span class="w">    </span><span class="nf">ldr</span><span class="w"> </span><span class="no">q13</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x4</span><span class="p">]</span>
+<span class="linenos">29</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x4</span><span class="p">,</span><span class="w"> </span><span class="no">x4</span><span class="p">,</span><span class="w"> </span><span class="no">x2</span>
+<span class="linenos">30</span><span class="w">    </span><span class="nf">ldr</span><span class="w"> </span><span class="no">q14</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x4</span><span class="p">]</span>
+<span class="linenos">31</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x4</span><span class="p">,</span><span class="w"> </span><span class="no">x4</span><span class="p">,</span><span class="w"> </span><span class="no">x2</span>
+<span class="linenos">32</span><span class="w">    </span><span class="nf">ldr</span><span class="w"> </span><span class="no">q15</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x4</span><span class="p">]</span>
+<span class="linenos">33</span>
+<span class="linenos">34</span><span class="w">    </span><span class="cm">/*</span>
+<span class="linenos">35</span><span class="cm">    * Part 2.1:</span>
+<span class="linenos">36</span><span class="cm">    * Transpose 4x4 block.</span>
+<span class="linenos">37</span><span class="cm">    */</span>
+<span class="linenos">38</span><span class="w">    </span><span class="c1">// Left Bottom</span>
+<span class="linenos">39</span><span class="w">    </span><span class="nf">trn1</span><span class="w"> </span><span class="no">v4.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v0.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v2.4s</span>
+<span class="linenos">40</span><span class="w">    </span><span class="nf">trn1</span><span class="w"> </span><span class="no">v5.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v1.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v3.4s</span>
+<span class="linenos">41</span>
+<span class="linenos">42</span><span class="w">    </span><span class="nf">trn2</span><span class="w"> </span><span class="no">v6.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v0.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v2.4s</span>
+<span class="linenos">43</span><span class="w">    </span><span class="nf">trn2</span><span class="w"> </span><span class="no">v7.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v1.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v3.4s</span>
+<span class="linenos">44</span>
+<span class="linenos">45</span><span class="w">    </span><span class="c1">// Right Top</span>
+<span class="linenos">46</span><span class="w">    </span><span class="nf">trn1</span><span class="w"> </span><span class="no">v16.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v12.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v14.4s</span>
+<span class="linenos">47</span><span class="w">    </span><span class="nf">trn1</span><span class="w"> </span><span class="no">v17.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v13.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v15.4s</span>
+<span class="linenos">48</span>
+<span class="linenos">49</span><span class="w">    </span><span class="nf">trn2</span><span class="w"> </span><span class="no">v18.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v12.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v14.4s</span>
+<span class="linenos">50</span><span class="w">    </span><span class="nf">trn2</span><span class="w"> </span><span class="no">v19.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v13.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v15.4s</span>
+<span class="linenos">51</span>
+<span class="linenos">52</span><span class="w">    </span><span class="cm">/*</span>
+<span class="linenos">53</span><span class="cm">    * Part 2.2:</span>
+<span class="linenos">54</span><span class="cm">    * Transpose 4x4 block.</span>
+<span class="linenos">55</span><span class="cm">    */</span>
+<span class="linenos">56</span><span class="w">    </span><span class="c1">// Left Bottom</span>
+<span class="linenos">57</span><span class="w">    </span><span class="nf">zip1</span><span class="w"> </span><span class="no">v8.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v4.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v5.4s</span><span class="w">    </span>
+<span class="linenos">58</span><span class="w">    </span><span class="no">zip1</span><span class="w"> </span><span class="no">v9.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v6.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v7.4s</span><span class="w">    </span>
+<span class="linenos">59</span>
+<span class="linenos">60</span><span class="w">    </span><span class="no">zip2</span><span class="w"> </span><span class="no">v10.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v4.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v5.4s</span><span class="w">   </span>
+<span class="linenos">61</span><span class="w">    </span><span class="no">zip2</span><span class="w"> </span><span class="no">v11.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v6.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v7.4s</span><span class="w">   </span>
+<span class="linenos">62</span>
+<span class="linenos">63</span><span class="w">    </span><span class="c1">// Right Top</span>
+<span class="linenos">64</span><span class="w">    </span><span class="nf">zip1</span><span class="w"> </span><span class="no">v20.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v16.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v17.4s</span><span class="w"> </span>
+<span class="linenos">65</span><span class="w">    </span><span class="no">zip1</span><span class="w"> </span><span class="no">v21.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v18.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v19.4s</span><span class="w"> </span>
+<span class="linenos">66</span>
+<span class="linenos">67</span><span class="w">    </span><span class="no">zip2</span><span class="w"> </span><span class="no">v22.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v16.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v17.4s</span><span class="w"> </span>
+<span class="linenos">68</span><span class="w">    </span><span class="no">zip2</span><span class="w"> </span><span class="no">v23.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v18.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v19.4s</span>
+<span class="linenos">69</span>
+<span class="linenos">70</span><span class="w">    </span><span class="cm">/*</span>
+<span class="linenos">71</span><span class="cm">    * Part 3:</span>
+<span class="linenos">72</span><span class="cm">    * Store 4x4 block of Submatrix A&#39;&#39;&#39; into A&#39;&#39;.</span>
+<span class="linenos">73</span><span class="cm">    */</span>
+<span class="linenos">74</span><span class="w">    </span><span class="c1">// Left Bottom (values from right top)</span>
+<span class="linenos">75</span><span class="w">    </span><span class="nf">mov</span><span class="w"> </span><span class="no">x5</span><span class="p">,</span><span class="w"> </span><span class="no">x1</span>
+<span class="linenos">76</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x5</span><span class="p">,</span><span class="w"> </span><span class="no">x5</span><span class="p">,</span><span class="w"> </span><span class="mi">#16</span>
+<span class="linenos">77</span>
+<span class="linenos">78</span><span class="w">    </span><span class="nf">str</span><span class="w"> </span><span class="no">q20</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x5</span><span class="p">]</span>
+<span class="linenos">79</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x5</span><span class="p">,</span><span class="w"> </span><span class="no">x5</span><span class="p">,</span><span class="w"> </span><span class="no">x3</span>
+<span class="linenos">80</span><span class="w">    </span><span class="nf">str</span><span class="w"> </span><span class="no">q21</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x5</span><span class="p">]</span>
+<span class="linenos">81</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x5</span><span class="p">,</span><span class="w"> </span><span class="no">x5</span><span class="p">,</span><span class="w"> </span><span class="no">x3</span>
+<span class="linenos">82</span><span class="w">    </span><span class="nf">str</span><span class="w"> </span><span class="no">q22</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x5</span><span class="p">]</span>
+<span class="linenos">83</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x5</span><span class="p">,</span><span class="w"> </span><span class="no">x5</span><span class="p">,</span><span class="w"> </span><span class="no">x3</span>
+<span class="linenos">84</span><span class="w">    </span><span class="nf">str</span><span class="w"> </span><span class="no">q23</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x5</span><span class="p">]</span>
+<span class="linenos">85</span>
+<span class="linenos">86</span><span class="w">    </span><span class="c1">// Right top (values from left bottom)</span>
+<span class="linenos">87</span><span class="w">    </span><span class="nf">mov</span><span class="w"> </span><span class="no">x5</span><span class="p">,</span><span class="w"> </span><span class="no">x1</span>
+<span class="linenos">88</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x5</span><span class="p">,</span><span class="w"> </span><span class="no">x5</span><span class="p">,</span><span class="w"> </span><span class="mi">#128</span>
+<span class="linenos">89</span>
+<span class="linenos">90</span><span class="w">    </span><span class="nf">str</span><span class="w"> </span><span class="no">q8</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x5</span><span class="p">]</span>
+<span class="linenos">91</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x5</span><span class="p">,</span><span class="w"> </span><span class="no">x5</span><span class="p">,</span><span class="w"> </span><span class="no">x3</span>
+<span class="linenos">92</span><span class="w">    </span><span class="nf">str</span><span class="w"> </span><span class="no">q9</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x5</span><span class="p">]</span>
+<span class="linenos">93</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x5</span><span class="p">,</span><span class="w"> </span><span class="no">x5</span><span class="p">,</span><span class="w"> </span><span class="no">x3</span>
+<span class="linenos">94</span><span class="w">    </span><span class="nf">str</span><span class="w"> </span><span class="no">q10</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x5</span><span class="p">]</span>
+<span class="linenos">95</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x5</span><span class="p">,</span><span class="w"> </span><span class="no">x5</span><span class="p">,</span><span class="w"> </span><span class="no">x3</span>
+<span class="linenos">96</span><span class="w">    </span><span class="nf">str</span><span class="w"> </span><span class="no">q11</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x5</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<ol class="arabic simple" start="4">
+<li><p>The bottom right matrix (in the image D) would be transposed and stored at the loading position.</p></li>
+</ol>
+</section>
+<section id="performance-measuring">
+<h3>3.7.2 Performance Measuring<a class="headerlink" href="#performance-measuring" title="Link to this heading"></a></h3>
+<p>We also wanted to know the performance of our transposition kernel, which in
+our case would be the loading and storing of elements.</p>
+<div class="literal-block-wrapper docutils container" id="id43">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">trans_8_8</span></code> performance in <code class="docutils literal notranslate"><span class="pre">GiB/s</span></code></span><a class="headerlink" href="#id43" title="Link to this code"></a></div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span>Benchmarking trans_neon_8_8 performance ...
+<span class="linenos">2</span>-----------------------------------------------
+<span class="linenos">3</span>Measuring throughput for transposition in GiB/s
+<span class="linenos">4</span>Total time (s):   1.25447
+<span class="linenos">5</span>Data movements per Second:   81.6281
+<span class="linenos">6</span>Estimated GiB/s:   7.60221e-08 GiB/s
+<span class="linenos">7</span>-----------------------------------------------
+</pre></div>
+</div>
+</div>
+<p>Our restults showed that we were transferring about <code class="docutils literal notranslate"><span class="pre">8</span> <span class="pre">MB/s</span></code>.</p>
+</section>
 </section>
 </section>
 
