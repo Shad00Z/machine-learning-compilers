@@ -87,6 +87,10 @@ TEST_CASE("Tests the Base STR instruction generation", "[Base STR]")
     uint32_t l_ins = base::str(gpr_t::x1, gpr_t::x0, 16);
     std::string l_hex = to_string_hex(l_ins);
     REQUIRE(l_hex == "0xf9000801");
+
+    l_ins = base::strPost(gpr_t::x1, gpr_t::x0, 16);
+    l_hex = to_string_hex(l_ins);
+    REQUIRE(l_hex == "0xf8010401");
 }
 
 TEST_CASE("Tests the Base STP instruction generation", "[Base STP]")

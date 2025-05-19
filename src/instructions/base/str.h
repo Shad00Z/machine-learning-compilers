@@ -15,23 +15,23 @@ namespace mini_jit
             /**
              * @brief Generates an STR (12-bit immediate) instruction using unsigned offset encoding.
              *
-             * @param reg_dest destination register.
-             * @param reg_src source register (base address).
+             * @param reg_data register holding the data to be transferred.
+             * @param reg_address register holding the memory address.
              * @param imm12 12-bit immediate value.
              */
-            constexpr uint32_t str(gpr_t reg_dest,
-                                   gpr_t reg_src,
+            constexpr uint32_t str(gpr_t reg_data,
+                                   gpr_t reg_address,
                                    uint32_t imm12)
             {
                 uint32_t l_ins = 0xB9000000;
 
                 // set size
-                uint32_t l_sf = reg_dest & 0x20;
+                uint32_t l_sf = reg_data & 0x20;
                 l_ins |= l_sf << 25; // set bit 30
                 // set destination register id
-                l_ins |= (reg_dest & 0x1f);
+                l_ins |= (reg_data & 0x1f);
                 // set first source register id
-                l_ins |= (reg_src & 0x1f) << 5;
+                l_ins |= (reg_address & 0x1f) << 5;
                 // check if immediate can be encoded
                 uint32_t l_scale = (l_sf) ? 8 : 4;
                 if (imm12 % l_scale != 0)
@@ -45,6 +45,32 @@ namespace mini_jit
 
                 // set 12 bit immediate value
                 l_ins |= l_imm << 10;
+                return l_ins;
+            }
+
+            /**
+             * @brief Generates an STR (9-bit immediate) instruction using post-index encoding.
+             *
+             * @param reg_data register holding the data to be transferred.
+             * @param reg_address register holding the memory address.
+             * @param imm9 signed 9-bit immediate value.
+             */
+            constexpr uint32_t strPost(gpr_t reg_data,
+                                       gpr_t reg_address,
+                                       uint32_t imm9)
+            {
+                uint32_t l_ins = 0xB8000400;
+
+                // set size
+                uint32_t l_sf = reg_data & 0x20;
+                l_ins |= l_sf << 25; // set bit 30
+                // set destination register id
+                l_ins |= (reg_data & 0x1f);
+                // set first source register id
+                l_ins |= (reg_address & 0x1f) << 5;
+            
+                // set 9 bit immediate value
+                l_ins |= (imm9 & 0x1FF) << 12;
                 return l_ins;
             }
         }
