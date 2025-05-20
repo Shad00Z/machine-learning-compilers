@@ -49,7 +49,7 @@ void mini_jit::benchmarks::Matmul_br_m_n_k_bench::run()
     mini_jit::Brgemm::kernel_t l_kernel_t = reinterpret_cast<mini_jit::Brgemm::kernel_t>(const_cast<void *>(l_kernel.get_kernel()));
 
     // RUN
-    int l_num_reps = 0;
+    long l_num_reps = 0;
     auto l_start_time = std::chrono::high_resolution_clock::now();
     double l_elapsed = 0.0;
     do
@@ -62,7 +62,7 @@ void mini_jit::benchmarks::Matmul_br_m_n_k_bench::run()
     // END RUN
 
     // Calculate metrics
-    int l_totalOperations = 2.0 * m_M * m_N * m_K * l_num_reps * m_brSize;
+    long l_totalOperations = 2.0 * m_M * m_N * m_K * l_num_reps * m_brSize;
     double l_gflops = ((double)l_totalOperations) / (l_elapsed * 1e9);
 
     // Store the results

@@ -13,14 +13,14 @@ public:
     * This structure holds the result of a benchmark run.
     * @param numReps Number of repetitions of the benchmark.
     * @param elapsedSeconds Elapsed time in seconds.
-    * @param flopsPerSec Floating point operations per second.
-    * @param gflops Giga floating point operations per second.    
+    * @param totalOperations Total number of operations performed.
+    * @param gops Giga operations per second.
     */
     struct benchmark_result
     {
-        int numReps = 0;
+        long numReps = 0;
         double elapsedSeconds = 0.0f;
-        int totalOperations = 0;
+        long totalOperations = 0;
         double gops = 0.0f;
     };
 
