@@ -49,7 +49,10 @@ namespace mini_jit
         {
             s2 = 0x0,
             s4 = 0x40000000,
-            d2 = 0x40400000
+            d2 = 0x40400000,
+
+            b8 = 0x1,
+            b16 = 0x2
         } arr_spec_t;
 
         //! neon size specifiers

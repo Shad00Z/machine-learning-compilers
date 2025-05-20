@@ -11,6 +11,7 @@
 using gpr_t = mini_jit::registers::gpr_t;
 using simd_fp_t = mini_jit::registers::simd_fp_t;
 using neon_size_spec_t = mini_jit::registers::neon_size_spec_t;
+using arr_spec_t = mini_jit::registers::arr_spec_t;
 using namespace mini_jit::converters;
 namespace inst = mini_jit::instructions;
 namespace simd_fp = inst::simd_fp;
@@ -198,4 +199,45 @@ TEST_CASE("Tests the Neon FMADD instruction generation", "[Neon FMADD]")
     l_ins = simd_fp::fmadd(simd_fp_t::v1, simd_fp_t::v25, simd_fp_t::v29, simd_fp_t::v1, neon_size_spec_t::d);
     l_hex = to_string_hex(l_ins);
     REQUIRE(l_hex == "0x1f5d0721");
+}
+
+TEST_CASE("Tests the Neon FMAX instruction generation", "[Neon FMAX]")
+{
+    // vector
+    uint32_t l_ins = simd_fp::fmax(simd_fp_t::v3, simd_fp_t::v0, simd_fp_t::v1, arr_spec_t::s4);
+    std::string l_hex = to_string_hex(l_ins);
+    REQUIRE(l_hex == "0x4e21f403");
+
+    l_ins = simd_fp::fmax(simd_fp_t::v24, simd_fp_t::v31, simd_fp_t::v13, arr_spec_t::s2);
+    l_hex = to_string_hex(l_ins);
+    REQUIRE(l_hex == "0x0e2df7f8");
+
+    CHECK_THROWS_AS(simd_fp::fmax(simd_fp_t::v24, simd_fp_t::v31, simd_fp_t::v13, arr_spec_t::b8), std::invalid_argument);
+    CHECK_THROWS_AS(simd_fp::fmax(simd_fp_t::v24, simd_fp_t::v31, simd_fp_t::v13, arr_spec_t::b16), std::invalid_argument);
+
+    // scalar
+    l_ins = simd_fp::fmax(simd_fp_t::v3, simd_fp_t::v0, simd_fp_t::v1, neon_size_spec_t::s);
+    l_hex = to_string_hex(l_ins);
+    REQUIRE(l_hex == "0x1e214803");
+
+    l_ins = simd_fp::fmax(simd_fp_t::v24, simd_fp_t::v31, simd_fp_t::v13, neon_size_spec_t::d);
+    l_hex = to_string_hex(l_ins);
+    REQUIRE(l_hex == "0x1e6d4bf8");
+
+    CHECK_THROWS_AS(simd_fp::fmax(simd_fp_t::v24, simd_fp_t::v31, simd_fp_t::v13, neon_size_spec_t::q), std::invalid_argument);
+}
+
+TEST_CASE("Tests the Neon EOR instruction generation", "[Neon EOR]")
+{
+    uint32_t l_ins = simd_fp::eor(simd_fp_t::v2, simd_fp_t::v0, simd_fp_t::v1, arr_spec_t::b8);
+    std::string l_hex = to_string_hex(l_ins);
+    REQUIRE(l_hex == "0x2e211c02");
+
+    l_ins = simd_fp::eor(simd_fp_t::v2, simd_fp_t::v0, simd_fp_t::v1, arr_spec_t::b16);
+    l_hex = to_string_hex(l_ins);
+    REQUIRE(l_hex == "0x6e211c02");
+
+    CHECK_THROWS_AS(simd_fp::eor(simd_fp_t::v2, simd_fp_t::v0, simd_fp_t::v1, arr_spec_t::s2), std::invalid_argument);
+    CHECK_THROWS_AS(simd_fp::eor(simd_fp_t::v2, simd_fp_t::v0, simd_fp_t::v1, arr_spec_t::s4), std::invalid_argument);
+    CHECK_THROWS_AS(simd_fp::eor(simd_fp_t::v2, simd_fp_t::v0, simd_fp_t::v1, arr_spec_t::d2), std::invalid_argument);
 }
