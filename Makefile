@@ -88,42 +88,50 @@ endif
 ifeq ($(OS),macOS)
 	SRC = $(shell find src -name "*.cpp")
 	TEST_SRC = $(shell find src -name "*.test.cpp")
+	BENCH_SRC = $(shell find src -name "*.bench.cpp")
 	SUBMISSIONS = $(shell find $(SUB_DIR) -type f)
 else ifeq ($(OS),linux)
 	SRC = $(shell find src -name "*.cpp")
 	TEST_SRC = $(shell find src -name "*.test.cpp")
+	BENCH_SRC = $(shell find src -name "*.bench.cpp")
 	SUBMISSIONS = $(shell find $(SUB_DIR) -type f)
 else ifeq ($(OS),windows)
 	find_files = $(foreach n,$1,$(shell C:\\\msys64\\\usr\\\bin\\\find.exe -L $2 -name "$n"))
 	SRC = $(call find_files,*.cpp,src)
 	TEST_SRC = $(call find_files,*.test.cpp,src)
+	BENCH_SRC = $(call find_files,*.bench.cpp,src)
 	SUBMISSIONS = $(call find_files,*,src/submissions)
 endif
 
 # MAIN FILES FOR ENTRY POINTS
 TESTS_MAIN_SRC = $(SRC_DIR)/tests.cpp
-BENCH_MAIN_SRC = $(SRC_DIR)/benchmark.cpp
+BENCH_MAIN_SRC = $(SRC_DIR)/benchmarks.cpp
 
 # COMMON SOURCES (EXCEPT MAIN FILES)
-COMMON_SRC = $(filter-out $(TESTS_MAIN_SRC) $(SUBMISSIONS) $(TEST_SRC) $(BENCH_MAIN_SRC), $(SRC))
+COMMON_SRC = $(filter-out $(TESTS_MAIN_SRC) $(SUBMISSIONS) $(TEST_SRC) $(BENCH_MAIN_SRC) $(BENCH_SRC), $(SRC))
 NOSUB_TEST_SRC = $(filter-out $(SUBMISSIONS), $(TEST_SRC))
 
 # DEP
 COMMON_DEP = $(COMMON_SRC:%.cpp=$(BIN_DIR)/%.d)
 TESTS_MAIN_DEP = $(TESTS_MAIN_SRC:%.cpp=$(BIN_DIR)/%.d)
 BENCH_MAIN_DEP = $(BENCH_MAIN_SRC:%.cpp=$(BIN_DIR)/%.d)
+NOSUB_TEST_DEP = $(NOSUB_TEST_SRC:%.cpp=$(BIN_DIR)/%.d)
+BENCH_DEP = $(BENCH_SRC:%.cpp=$(BIN_DIR)/%.d)
 -include $(COMMON_DEP)
 -include $(TESTS_MAIN_DEP)
 -include $(BENCH_MAIN_DEP)
+-include $(NOSUB_TEST_DEP)
+-include $(BENCH_DEP)
 
 # Convert sources to object files
 COMMON_OBJ = $(COMMON_SRC:%.cpp=$(BIN_DIR)/%.o)
 TESTS_OBJ = $(TESTS_MAIN_SRC:%.cpp=$(BIN_DIR)/%.o)
 NOSUB_TEST_OBJ = $(NOSUB_TEST_SRC:%.cpp=$(BIN_DIR)/%.o)
-BENCH_OBJ = $(BENCH_MAIN_SRC:%.cpp=$(BIN_DIR)/%.o)
+BENCH_MAIN_OBJ = $(BENCH_MAIN_SRC:%.cpp=$(BIN_DIR)/%.o)
+BENCH_OBJ = $(BENCH_SRC:%.cpp=$(BIN_DIR)/%.o)
 
 # TARGETS
-default: tests benchmark
+default: tests benchmarks
 
 $(BIN_DIR):
 	mkdir -p $@
@@ -137,8 +145,8 @@ $(BIN_DIR)/%.o: %.cpp
 tests: createdirs $(COMMON_OBJ) $(TESTS_OBJ) $(NOSUB_TEST_OBJ)
 	$(LD) -o $(BIN_DIR)/tests $(COMMON_OBJ) $(TESTS_OBJ) $(NOSUB_TEST_OBJ) $(LDFLAGS) $(LIBS)
 
-benchmark: createdirs $(COMMON_OBJ) $(BENCH_OBJ)
-	$(LD) -o $(BIN_DIR)/benchmark $(COMMON_OBJ) $(BENCH_OBJ) $(LDFLAGS) $(LIBS)
+benchmarks: createdirs $(COMMON_OBJ) $(BENCH_MAIN_OBJ) $(BENCH_OBJ)
+	$(LD) -o $(BIN_DIR)/benchmarks $(COMMON_OBJ) $(BENCH_MAIN_OBJ) $(BENCH_OBJ) $(LDFLAGS) $(LIBS)
 
 .PHONY: clean
 
