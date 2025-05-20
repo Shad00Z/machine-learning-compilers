@@ -130,19 +130,22 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        {</div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>            s2 = 0x0,</div>
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>            s4 = 0x40000000,</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>            d2 = 0x40400000</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        } arr_spec_t;</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        <span class="keyword">typedef</span> enum : uint32_t</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        {</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>            s = 0x0,</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>            d = 0x1,</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>            q = 0x2</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        } neon_size_spec_t;</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    }</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>}</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span><span class="preprocessor">#endif </span><span class="comment">// MINI_JIT_REGISTERS_SIMD_H</span></div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>            d2 = 0x40400000,</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>            b8 = 0x1,</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>            b16 = 0x2</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        } arr_spec_t;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        <span class="keyword">typedef</span> enum : uint32_t</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        {</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>            s = 0x0,</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>            d = 0x1,</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>            q = 0x2</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        } neon_size_spec_t;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    }</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>}</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span><span class="preprocessor">#endif </span><span class="comment">// MINI_JIT_REGISTERS_SIMD_H</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
