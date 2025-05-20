@@ -9,11 +9,20 @@ namespace mini_jit
         class Matmul_m_n_k_bench : public Benchmark
         {
         public:
-            Matmul_m_n_k_bench(double runTime, 
-                               int m, 
-                               int n, 
+            /**
+             * @brief Constructor for the benchmark for matrix multiplication using GEMM.
+             * @param runTime The time to run the benchmark in seconds.
+             * @param m number of rows in A and C.
+             * @param n number of columns in B and C.
+             * @param k number of columns in A and rows in B.
+             */
+            Matmul_m_n_k_bench(double runTime,
+                               int m,
+                               int n,
                                int k);
+            //! Destructor
             ~Matmul_m_n_k_bench() override = default;
+            //! Runs the benchmark.
             void run() override;
 
         private:

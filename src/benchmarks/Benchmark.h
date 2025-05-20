@@ -25,7 +25,9 @@ public:
     };
 
     virtual ~Benchmark() {}
+    //! Runs the benchmark.
     virtual void run() = 0;
+    //! Returns the result of the benchmark.
     benchmark_result getResult()
     {
         return m_benchmarkResult;

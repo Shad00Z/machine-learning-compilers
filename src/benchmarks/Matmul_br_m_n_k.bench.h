@@ -6,15 +6,28 @@ namespace mini_jit
 {
     namespace benchmarks
     {
+        /**
+         * @brief Benchmark for matrix multiplication using BRGEMM.
+         */
         class Matmul_br_m_n_k_bench : public Benchmark
         {
         public:
-            Matmul_br_m_n_k_bench(double runTime, 
-                                  int m, 
-                                  int n, 
-                                  int k, 
+            /**
+             * @brief Constructor for the benchmark for matrix multiplication using BRGEMM.
+             * @param runTime The time to run the benchmark in seconds.
+             * @param m number of rows in A and C.
+             * @param n number of columns in B and C.
+             * @param k number of columns in A and rows in B.
+             * @param brSize The size of the batch-reduce.
+             */
+            Matmul_br_m_n_k_bench(double runTime,
+                                  int m,
+                                  int n,
+                                  int k,
                                   int brSize);
+            //! Destructor
             ~Matmul_br_m_n_k_bench() override = default;
+            //! Runs the benchmark.
             void run() override;
 
         private:
