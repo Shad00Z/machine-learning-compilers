@@ -1,14 +1,8 @@
 #include "benchmarks/all_benchmarks.h"
 
 #include "Brgemm.h"
-#include "Kernel.h"
 #include <iostream>
 #include <cstring>
-
-#include <arm_neon.h>
-#include <iostream>
-#include <cstdint>
-#include <chrono>
 #include <fstream>
 
 void gemm_benchmark()
