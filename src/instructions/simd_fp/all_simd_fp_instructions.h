@@ -1,7 +1,9 @@
 #ifndef MINI_JIT_INSTRUCTIONS_ALL_SIMD_INSTRUCTIONS_H
 #define MINI_JIT_INSTRUCTIONS_ALL_SIMD_INSTRUCTIONS_H
 
+#include "eor.h"
 #include "fmadd.h"
+#include "fmax.h"
 #include "fmla.h"
 #include "ld1.h"
 #include "ldp.h"
