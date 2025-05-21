@@ -117,40 +117,41 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>      success = 0,</div>
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>      wrong_m_dimension = 1,</div>
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>      wrong_n_dimension = 2,</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>      wrong_ptype = 3</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    };</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>      wrong_ptype = 3,</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>      operation_not_supported = 4,</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    };</div>
 </div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <a class="code hl_enumeration" href="classmini__jit_1_1Unary.html#ab97a1707a127a6aa5bd820b2ecddf01a">error_t</a> <a class="code hl_function" href="classmini__jit_1_1Unary.html#ab8974cee23349b58a20bc8329e9919fe">generate</a>( uint32_t m,</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>                      uint32_t n,</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>                      uint32_t trans_b,</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>                      <a class="code hl_enumeration" href="classmini__jit_1_1Unary.html#a0fcd9bd204abefa4ed4f0e9ec5189f9f">dtype_t</a>  dtype,</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>                      <a class="code hl_enumeration" href="classmini__jit_1_1Unary.html#a5f3885faa74f47cc3e851c29acd62a41">ptype_t</a>  ptype );</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="comment">/*</span></div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span><span class="comment">     * Kernel type.</span></div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span><span class="comment">     * The kernel is a function that takes the following parameters:</span></div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span><span class="comment">     * - a:    Pointer to column-major matrix A, nullptr if zero kernel.</span></div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span><span class="comment">     * - b:    Pointer to matrix B.</span></div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span><span class="comment">     * - ld_a: Leading dimension of A.</span></div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span><span class="comment">     * - ld_b: Leading dimension of B.</span></div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span><span class="comment">     */</span></div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keyword">using </span>kernel_t = void (*)( <span class="keywordtype">void</span>    <span class="keyword">const</span> * a,</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>                               <span class="keywordtype">void</span>          * b,</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>                               int64_t         ld_a,</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>                               int64_t         ld_b );</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    kernel_t <a class="code hl_function" href="classmini__jit_1_1Unary.html#a7ef08b4895135a02f5057733927455d4">get_kernel</a>() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>};</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <a class="code hl_enumeration" href="classmini__jit_1_1Unary.html#ab97a1707a127a6aa5bd820b2ecddf01a">error_t</a> <a class="code hl_function" href="classmini__jit_1_1Unary.html#ab8974cee23349b58a20bc8329e9919fe">generate</a>( uint32_t m,</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>                      uint32_t n,</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>                      uint32_t trans_b,</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>                      <a class="code hl_enumeration" href="classmini__jit_1_1Unary.html#a0fcd9bd204abefa4ed4f0e9ec5189f9f">dtype_t</a>  dtype,</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>                      <a class="code hl_enumeration" href="classmini__jit_1_1Unary.html#a5f3885faa74f47cc3e851c29acd62a41">ptype_t</a>  ptype );</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="comment">/*</span></div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span><span class="comment">     * Kernel type.</span></div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span><span class="comment">     * The kernel is a function that takes the following parameters:</span></div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span><span class="comment">     * - a:    Pointer to column-major matrix A, nullptr if zero kernel.</span></div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span><span class="comment">     * - b:    Pointer to matrix B.</span></div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span><span class="comment">     * - ld_a: Leading dimension of A.</span></div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span><span class="comment">     * - ld_b: Leading dimension of B.</span></div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span><span class="comment">     */</span></div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keyword">using </span>kernel_t = void (*)( <span class="keywordtype">void</span>    <span class="keyword">const</span> * a,</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>                               <span class="keywordtype">void</span>          * b,</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>                               int64_t         ld_a,</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>                               int64_t         ld_b );</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    kernel_t <a class="code hl_function" href="classmini__jit_1_1Unary.html#a7ef08b4895135a02f5057733927455d4">get_kernel</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>};</div>
 </div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="aclassmini__jit_1_1Kernel_html"><div class="ttname"><a href="classmini__jit_1_1Kernel.html">mini_jit::Kernel</a></div><div class="ttdef"><b>Definition</b> Kernel.h:14</div></div>
 <div class="ttc" id="aclassmini__jit_1_1Unary_html"><div class="ttname"><a href="classmini__jit_1_1Unary.html">mini_jit::Unary</a></div><div class="ttdef"><b>Definition</b> Unary.h:11</div></div>
 <div class="ttc" id="aclassmini__jit_1_1Unary_html_a0fcd9bd204abefa4ed4f0e9ec5189f9f"><div class="ttname"><a href="classmini__jit_1_1Unary.html#a0fcd9bd204abefa4ed4f0e9ec5189f9f">mini_jit::Unary::dtype_t</a></div><div class="ttdeci">dtype_t</div><div class="ttdoc">data type</div><div class="ttdef"><b>Definition</b> Unary.h:18</div></div>
 <div class="ttc" id="aclassmini__jit_1_1Unary_html_a5f3885faa74f47cc3e851c29acd62a41"><div class="ttname"><a href="classmini__jit_1_1Unary.html#a5f3885faa74f47cc3e851c29acd62a41">mini_jit::Unary::ptype_t</a></div><div class="ttdeci">ptype_t</div><div class="ttdoc">primitive type</div><div class="ttdef"><b>Definition</b> Unary.h:24</div></div>
-<div class="ttc" id="aclassmini__jit_1_1Unary_html_a7ef08b4895135a02f5057733927455d4"><div class="ttname"><a href="classmini__jit_1_1Unary.html#a7ef08b4895135a02f5057733927455d4">mini_jit::Unary::get_kernel</a></div><div class="ttdeci">kernel_t get_kernel() const</div><div class="ttdoc">Get the generated kernel: B := op(A).</div><div class="ttdef"><b>Definition</b> Unary.cpp:51</div></div>
-<div class="ttc" id="aclassmini__jit_1_1Unary_html_ab8974cee23349b58a20bc8329e9919fe"><div class="ttname"><a href="classmini__jit_1_1Unary.html#ab8974cee23349b58a20bc8329e9919fe">mini_jit::Unary::generate</a></div><div class="ttdeci">error_t generate(uint32_t m, uint32_t n, uint32_t trans_b, dtype_t dtype, ptype_t ptype)</div><div class="ttdoc">Generate a kernel for a unary primitive.</div><div class="ttdef"><b>Definition</b> Unary.cpp:5</div></div>
+<div class="ttc" id="aclassmini__jit_1_1Unary_html_a7ef08b4895135a02f5057733927455d4"><div class="ttname"><a href="classmini__jit_1_1Unary.html#a7ef08b4895135a02f5057733927455d4">mini_jit::Unary::get_kernel</a></div><div class="ttdeci">kernel_t get_kernel() const</div><div class="ttdoc">Get the generated kernel: B := op(A).</div><div class="ttdef"><b>Definition</b> Unary.cpp:61</div></div>
+<div class="ttc" id="aclassmini__jit_1_1Unary_html_ab8974cee23349b58a20bc8329e9919fe"><div class="ttname"><a href="classmini__jit_1_1Unary.html#ab8974cee23349b58a20bc8329e9919fe">mini_jit::Unary::generate</a></div><div class="ttdeci">error_t generate(uint32_t m, uint32_t n, uint32_t trans_b, dtype_t dtype, ptype_t ptype)</div><div class="ttdoc">Generate a kernel for a unary primitive.</div><div class="ttdef"><b>Definition</b> Unary.cpp:7</div></div>
 <div class="ttc" id="aclassmini__jit_1_1Unary_html_ab97a1707a127a6aa5bd820b2ecddf01a"><div class="ttname"><a href="classmini__jit_1_1Unary.html#ab97a1707a127a6aa5bd820b2ecddf01a">mini_jit::Unary::error_t</a></div><div class="ttdeci">error_t</div><div class="ttdoc">error codes</div><div class="ttdef"><b>Definition</b> Unary.h:31</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
