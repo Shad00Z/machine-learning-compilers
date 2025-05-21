@@ -77,25 +77,29 @@ int main()
     // brgemm_benchmark();
     mini_jit::Benchmark::benchmark_result result;
 
+    std::ofstream matmul_bm("benchmarks/matmul_benchmarks.txt");
     std::cout << "Running matmul_m_n_k benchmark for M=N=K=2048" << std::endl;
-    mini_jit::benchmarks::Matmul_m_n_k_bench bench_mnk(3.0, 2048, 2048, 2048);
+    matmul_bm << "Running matmul_m_n_k benchmark for M=N=K=2048" << std::endl;
+    mini_jit::benchmarks::Matmul_m_n_k_bench bench_mnk(4.0, 2048, 2048, 2048);
     bench_mnk.run();
     result = bench_mnk.getResult();
-    std::cout << "Total time (s):                  " << result.elapsedSeconds << std::endl;
-    std::cout << "Total reps:                      " << result.numReps << std::endl;
-    std::cout << "Total floating point operations: " << result.totalOperations << std::endl;
-    std::cout << "Estimated GFLOPS/sec:            " << result.gops << std::endl;
-    std::cout << "--------------------------------------------------" << std::endl;
+    matmul_bm << "Total time (s):                  " << result.elapsedSeconds << std::endl;
+    matmul_bm << "Total reps:                      " << result.numReps << std::endl;
+    matmul_bm << "Total floating point operations: " << result.totalOperations << std::endl;
+    matmul_bm << "Estimated GFLOPS/sec:            " << result.gops << std::endl;
+    matmul_bm << "--------------------------------------------------" << std::endl;
 
     std::cout << "Running matmul_br_m_n_k benchmark for M=N=K=1024 and br_size=16" << std::endl;
-    mini_jit::benchmarks::Matmul_br_m_n_k_bench bench_brmnk(3.0, 1024, 1024, 1024, 16);
+    matmul_bm << "Running matmul_br_m_n_k benchmark for M=N=K=1024 and br_size=16" << std::endl;
+    mini_jit::benchmarks::Matmul_br_m_n_k_bench bench_brmnk(4.0, 1024, 1024, 1024, 16);
     bench_brmnk.run();
     result = bench_brmnk.getResult();
-    std::cout << "Total time (s):                  " << result.elapsedSeconds << std::endl;
-    std::cout << "Total reps:                      " << result.numReps << std::endl;
-    std::cout << "Total floating point operations: " << result.totalOperations << std::endl;
-    std::cout << "Estimated GFLOPS/sec:            " << result.gops << std::endl;
-    std::cout << "--------------------------------------------------" << std::endl;
+    matmul_bm << "Total time (s):                  " << result.elapsedSeconds << std::endl;
+    matmul_bm << "Total reps:                      " << result.numReps << std::endl;
+    matmul_bm << "Total floating point operations: " << result.totalOperations << std::endl;
+    matmul_bm << "Estimated GFLOPS/sec:            " << result.gops << std::endl;
+    matmul_bm << "--------------------------------------------------" << std::endl;
+    matmul_bm.close();
 
     return 0;
 }

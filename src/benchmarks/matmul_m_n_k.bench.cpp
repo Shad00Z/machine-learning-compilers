@@ -50,23 +50,25 @@ void mini_jit::benchmarks::Matmul_m_n_k_bench::run()
     long l_num_reps = 0;
     auto l_start_time = std::chrono::high_resolution_clock::now();
     double l_elapsed = 0.0;
+    double l_runTimeMs = m_runTime * 1e6;
     do
     {
         l_kernel_t(m_A, m_B, m_C, m_M, m_K, m_M, 0, 0);
         ++l_num_reps;
         auto l_now = std::chrono::high_resolution_clock::now();
-        l_elapsed = std::chrono::duration_cast<std::chrono::microseconds>(l_now - l_start_time).count() / 1e6;
-    } while (l_elapsed < m_runTime);
+        l_elapsed = std::chrono::duration_cast<std::chrono::microseconds>(l_now - l_start_time).count();
+    } while (l_elapsed < l_runTimeMs);
+    l_elapsed /= 1e6; // Convert to seconds
     // END RUN
 
     // Calculate metrics
     long l_totalOperations = 2.0 * m_M * m_N * m_K * l_num_reps;
-    double l_gflops = ((double)l_totalOperations) / (l_elapsed * 1e9);
+    double l_gflops = ((double)l_totalOperations) / (l_elapsed  / 1e6 * 1e9);
 
     // Store the results
     m_benchmarkResult = {
         l_num_reps,
-        l_elapsed,
+        l_elapsed  / 1e6,
         l_totalOperations,
         l_gflops};
 
