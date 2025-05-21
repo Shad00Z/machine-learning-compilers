@@ -1,4 +1,4 @@
-#include "zero_primitive.h"
+#include "zero_primitive_str.h"
 #include "Kernel.h"
 
 #include "registers/gp_registers.h"
@@ -13,9 +13,9 @@ namespace inst = mini_jit::instructions;
 namespace base = inst::base;
 namespace simd_fp = inst::simd_fp;
 
-void mini_jit::kernels::unary::zero(mini_jit::Kernel &kernel,
-                                    int m,
-                                    int n)
+void mini_jit::kernels::unary::zero_str(mini_jit::Kernel &kernel,
+                                        int m,
+                                        int n)
 {
     // Inputs:
     // x0: pointer to A
@@ -47,14 +47,16 @@ void mini_jit::kernels::unary::zero(mini_jit::Kernel &kernel,
     // working pointer for B (rows)
     kernel.add_instr(base::mov(gpr_t::x7, gpr_t::x4));
 
-    // create zero register
-    kernel.add_instr(simd_fp::zero(simd_fp_t::v31, arr_spec_t::b16));
-
     if (mLoopIterations > 0)
     {
         kernel.add_label("m_8_loop");
         // store 8 zeros
-        kernel.add_instr(simd_fp::stp(simd_fp_t::v31, simd_fp_t::v31, gpr_t::x7, 0, neon_size_spec_t::q));
+        kernel.add_instr(base::mov(gpr_t::x8, gpr_t::x7));
+        kernel.add_instr(base::strPost(gpr_t::xzr, gpr_t::x8, 8));
+        kernel.add_instr(base::strPost(gpr_t::xzr, gpr_t::x8, 8));
+        kernel.add_instr(base::strPost(gpr_t::xzr, gpr_t::x8, 8));
+        kernel.add_instr(base::str(gpr_t::xzr, gpr_t::x8, 0));
+
         // jump by 8 rows
         kernel.add_instr(base::add(gpr_t::x7, gpr_t::x7, 8*4, 0));
         // decrement m loop counter
@@ -75,24 +77,28 @@ void mini_jit::kernels::unary::zero(mini_jit::Kernel &kernel,
             kernel.add_instr(base::str(gpr_t::xzr, gpr_t::x7, 0));
             break;
         case 3:
-            kernel.add_instr(base::strPost(gpr_t::xzr, gpr_t::x7, 8));  // 2
-            kernel.add_instr(base::str(gpr_t::wzr, gpr_t::x7, 0));      // 1
+            kernel.add_instr(base::strPost(gpr_t::xzr, gpr_t::x7, 8));
+            kernel.add_instr(base::str(gpr_t::wzr, gpr_t::x7, 0));
             break;
         case 4:
-            kernel.add_instr(simd_fp::str(simd_fp_t::v31, gpr_t::x7, 0, neon_size_spec_t::q)); // 4
+            kernel.add_instr(base::strPost(gpr_t::xzr, gpr_t::x7, 8));
+            kernel.add_instr(base::str(gpr_t::xzr, gpr_t::x7, 0));
             break;
         case 5:
-            kernel.add_instr(simd_fp::strPost(simd_fp_t::v31, gpr_t::x7, 4*4, neon_size_spec_t::q)); // 4
-            kernel.add_instr(base::str(gpr_t::wzr, gpr_t::x7, 0));                                   // 1
+            kernel.add_instr(base::strPost(gpr_t::xzr, gpr_t::x7, 8));
+            kernel.add_instr(base::strPost(gpr_t::xzr, gpr_t::x7, 8));
+            kernel.add_instr(base::str(gpr_t::wzr, gpr_t::x7, 0));
             break;
         case 6:
-            kernel.add_instr(simd_fp::strPost(simd_fp_t::v31, gpr_t::x7, 4*4, neon_size_spec_t::q)); // 4
-            kernel.add_instr(base::str(gpr_t::xzr, gpr_t::x7, 0));                                   // 2
+            kernel.add_instr(base::strPost(gpr_t::xzr, gpr_t::x7, 8));
+            kernel.add_instr(base::strPost(gpr_t::xzr, gpr_t::x7, 8));
+            kernel.add_instr(base::str(gpr_t::xzr, gpr_t::x7, 0));
             break;
         case 7:
-            kernel.add_instr(simd_fp::strPost(simd_fp_t::v31, gpr_t::x7, 4*4, neon_size_spec_t::q)); // 4
-            kernel.add_instr(base::strPost(gpr_t::xzr, gpr_t::x7, 8));                               // 2
-            kernel.add_instr(base::str(gpr_t::wzr, gpr_t::x7, 0));                                   // 1
+            kernel.add_instr(base::strPost(gpr_t::xzr, gpr_t::x7, 8));
+            kernel.add_instr(base::strPost(gpr_t::xzr, gpr_t::x7, 8));
+            kernel.add_instr(base::strPost(gpr_t::xzr, gpr_t::x7, 8));
+            kernel.add_instr(base::str(gpr_t::wzr, gpr_t::x7, 0));
             break;
         default:
             break;

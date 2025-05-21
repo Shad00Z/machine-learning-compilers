@@ -1,5 +1,5 @@
-#ifndef MINI_JIT_INSTRUCTIONS_SIMD_FP_FMADD_H
-#define MINI_JIT_INSTRUCTIONS_SIMD_FP_FMADD_H
+#ifndef MINI_JIT_INSTRUCTIONS_SIMD_FP_ZERO_H
+#define MINI_JIT_INSTRUCTIONS_SIMD_FP_ZERO_H
 
 #include <cstdint>
 #include <stdexcept>
@@ -30,4 +30,4 @@ namespace mini_jit
     }
 }
 
-#endif // MINI_JIT_INSTRUCTIONS_SIMD_FP_FMADD_H
+#endif // MINI_JIT_INSTRUCTIONS_SIMD_FP_ZERO_H

@@ -18,13 +18,13 @@ namespace mini_jit
             /**
              * @brief Generates an STR (12-bit immediate) instruction using unsigned offset encoding.
              *
-             * @param reg_dest destination register.
-             * @param reg_src source register (base address).
+             * @param reg_data register holding the data to be transferred.
+             * @param reg_address register holding the memory address.
              * @param imm12 12-bit immediate value.
              * @param size_spec size specifier (s, d, q).
              */
-            constexpr uint32_t str(simd_fp_t reg_dest,
-                                   gpr_t reg_src,
+            constexpr uint32_t str(simd_fp_t reg_data,
+                                   gpr_t reg_address,
                                    uint32_t imm12,
                                    neon_size_spec_t size_spec)
             {
@@ -33,17 +33,13 @@ namespace mini_jit
                 // set size
                 uint32_t l_size = (size_spec == neon_size_spec_t::s) ? 2 : (size_spec == neon_size_spec_t::d) ? 3
                                                                                                               : 0;
-
-                uint32_t l_sf = l_size & 0x3;
-                l_ins |= l_sf << 30; // set bit 31, 30
+                l_ins |= (l_size & 0x3) << 30; // set bit 31, 30
 
                 // set destination register id
-                uint32_t l_reg_id = reg_dest & 0x1f;
-                l_ins |= l_reg_id;
+                l_ins |= (reg_data & 0x1f);
 
                 // set first source register id
-                l_reg_id = reg_src & 0x1f;
-                l_ins |= l_reg_id << 5;
+                l_ins |= (reg_address & 0x1f) << 5;
 
                 // check if immediate can be encoded
                 uint32_t l_scale = (size_spec == neon_size_spec_t::s) ? 4 : (size_spec == neon_size_spec_t::d) ? 8
@@ -69,13 +65,13 @@ namespace mini_jit
             /**
              * @brief Generates an STR (9-bit immediate) instruction using post-index encoding.
              *
-             * @param reg_dest destination register.
-             * @param reg_src source register (base address).
+             * @param reg_data register holding the data to be transferred.
+             * @param reg_address register holding the memory address.
              * @param imm9 9-bit immediate value.
              * @param size_spec size specifier (s, d, q).
              */
-            constexpr uint32_t strPost(simd_fp_t reg_dest,
-                                       gpr_t reg_src,
+            constexpr uint32_t strPost(simd_fp_t reg_data,
+                                       gpr_t reg_address,
                                        uint32_t imm9,
                                        neon_size_spec_t size_spec)
             {
@@ -89,11 +85,11 @@ namespace mini_jit
                 l_ins |= l_sf << 30; // set bit 31, 30
 
                 // set destination register id
-                uint32_t l_reg_id = reg_dest & 0x1f;
+                uint32_t l_reg_id = reg_data & 0x1f;
                 l_ins |= l_reg_id;
 
                 // set first source register id
-                l_reg_id = reg_src & 0x1f;
+                l_reg_id = reg_address & 0x1f;
                 l_ins |= l_reg_id << 5;
 
                 // check if immediate can be encoded

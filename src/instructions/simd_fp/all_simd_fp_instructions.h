@@ -12,5 +12,6 @@
 #include "st1.h"
 #include "stp.h"
 #include "str.h"
+#include "zero.h"
 
 #endif // MINI_JIT_INSTRUCTIONS_ALL_SIMD_INSTRUCTIONS_H

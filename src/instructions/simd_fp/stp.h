@@ -20,16 +20,16 @@ namespace mini_jit
                 /**
                  * @brief Helper function to generate STP instructions.
                  *
-                 * @param reg_dest1 first destination register.
-                 * @param reg_dest2 second destination register.
-                 * @param reg_src source register (base address).
+                 * @param reg_data1 first register holding the data to be transferred.
+                 * @param reg_data2 second register holding the data to be transferred.
+                 * @param reg_address register holding the memory address.
                  * @param imm7 7-bit immediate value.
                  * @param opc operation code.
                  * @param encoding encoding type (signed offset, post-index, pre-index).
                  */
-                constexpr uint32_t stpHelper(uint32_t reg_dest1,
-                                             uint32_t reg_dest2,
-                                             uint32_t reg_src,
+                constexpr uint32_t stpHelper(uint32_t reg_data1,
+                                             uint32_t reg_data2,
+                                             uint32_t reg_address,
                                              int32_t imm7,
                                              uint32_t opc,
                                              uint32_t encoding)
@@ -44,13 +44,13 @@ namespace mini_jit
                     l_ins |= (encoding & 0xF) << 23;
 
                     // set first destination register
-                    uint32_t l_reg_id = reg_dest1 & 0x1f;
+                    uint32_t l_reg_id = reg_data1 & 0x1f;
                     l_ins |= l_reg_id;
                     // set source register
-                    l_reg_id = reg_src & 0x1f;
+                    l_reg_id = reg_address & 0x1f;
                     l_ins |= l_reg_id << 5;
                     // set second destination register
-                    l_reg_id = reg_dest2 & 0x1f;
+                    l_reg_id = reg_data2 & 0x1f;
                     l_ins |= l_reg_id << 10;
                     // set immediate value
                     uint32_t l_imm = imm7 & 0x7f;
@@ -63,15 +63,15 @@ namespace mini_jit
             /**
              * @brief Generates an STP instruction using signed offset encoding.
              *
-             * @param reg_dest1 first destination register.
-             * @param reg_dest2 second destination register.
-             * @param reg_src source register (base address).
+             * @param reg_data1 first register holding the data to be transferred.
+             * @param reg_data2 second register holding the data to be transferred.
+             * @param reg_address register holding the memory address.
              * @param imm7 7-bit immediate value.
              * @param size_spec size specifier (s, d, q).
              */
-            constexpr uint32_t stp(simd_fp_t reg_dest1,
-                                   simd_fp_t reg_dest2,
-                                   gpr_t reg_src,
+            constexpr uint32_t stp(simd_fp_t reg_data1,
+                                   simd_fp_t reg_data2,
+                                   gpr_t reg_address,
                                    int32_t imm7,
                                    neon_size_spec_t size_spec)
             {
@@ -94,9 +94,9 @@ namespace mini_jit
                 // encoding: 1010
                 uint32_t l_encoding = 0xA;
 
-                return internal::stpHelper(reg_dest1,
-                                           reg_dest2,
-                                           reg_src,
+                return internal::stpHelper(reg_data1,
+                                           reg_data2,
+                                           reg_address,
                                            l_imm,
                                            l_opc,
                                            l_encoding);
@@ -105,15 +105,15 @@ namespace mini_jit
             /**
              * @brief Generates an STP instruction using post-index encoding.
              *
-             * @param reg_dest1 first destination register.
-             * @param reg_dest2 second destination register.
-             * @param reg_src source register (base address).
+             * @param reg_data1 first register holding the data to be transferred.
+             * @param reg_data2 second register holding the data to be transferred.
+             * @param reg_address register holding the memory address.
              * @param imm7 7-bit immediate value.
              * @param size_spec size specifier (s, d, q).
              */
-            constexpr uint32_t stpPost(simd_fp_t reg_dest1,
-                                       simd_fp_t reg_dest2,
-                                       gpr_t reg_src,
+            constexpr uint32_t stpPost(simd_fp_t reg_data1,
+                                       simd_fp_t reg_data2,
+                                       gpr_t reg_address,
                                        int32_t imm7,
                                        neon_size_spec_t size_spec)
             {
@@ -136,9 +136,9 @@ namespace mini_jit
                 // encoding: 1001
                 uint32_t l_encoding = 0x9;
 
-                return internal::stpHelper(reg_dest1,
-                                           reg_dest2,
-                                           reg_src,
+                return internal::stpHelper(reg_data1,
+                                           reg_data2,
+                                           reg_address,
                                            l_imm,
                                            l_opc,
                                            l_encoding);
@@ -147,15 +147,15 @@ namespace mini_jit
             /**
              * @brief Generates an STP instruction using pre-index encoding.
              *
-             * @param reg_dest1 first destination register.
-             * @param reg_dest2 second destination register.
-             * @param reg_src source register (base address).
+             * @param reg_data1 first register holding the data to be transferred.
+             * @param reg_data2 second register holding the data to be transferred.
+             * @param reg_address register holding the memory address.
              * @param imm7 7-bit immediate value.
              * @param size_spec size specifier (s, d, q).
              */
-            constexpr uint32_t stpPre(simd_fp_t reg_dest1,
-                                      simd_fp_t reg_dest2,
-                                      gpr_t reg_src,
+            constexpr uint32_t stpPre(simd_fp_t reg_data1,
+                                      simd_fp_t reg_data2,
+                                      gpr_t reg_address,
                                       int32_t imm7,
                                       neon_size_spec_t size_spec)
             {
@@ -178,9 +178,9 @@ namespace mini_jit
                 // encoding: 1011
                 uint32_t l_encoding = 0xB;
 
-                return internal::stpHelper(reg_dest1,
-                                           reg_dest2,
-                                           reg_src,
+                return internal::stpHelper(reg_data1,
+                                           reg_data2,
+                                           reg_address,
                                            l_imm,
                                            l_opc,
                                            l_encoding);

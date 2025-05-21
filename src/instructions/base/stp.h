@@ -17,16 +17,16 @@ namespace mini_jit
                 /**
                  * @brief Helper function to generate STP instructions.
                  *
-                 * @param reg_dest1 first destination register.
-                 * @param reg_dest2 second destination register.
-                 * @param reg_src source register (base address).
+                 * @param reg_data1 first register holding the data to be transferred.
+                 * @param reg_data2 second register holding the data to be transferred.
+                 * @param reg_address register holding the memory address.
                  * @param imm7 7-bit immediate value.
                  * @param opc operation code.
                  * @param encoding encoding type (signed offset, post-index, pre-index).
                  */
-                constexpr uint32_t stpHelper(uint32_t reg_dest1,
-                                             uint32_t reg_dest2,
-                                             uint32_t reg_src,
+                constexpr uint32_t stpHelper(uint32_t reg_data1,
+                                             uint32_t reg_data2,
+                                             uint32_t reg_address,
                                              int32_t imm7,
                                              uint32_t opc,
                                              uint32_t encoding)
@@ -38,11 +38,11 @@ namespace mini_jit
                     // set 4-bit VR encoding
                     l_ins |= (encoding & 0xF) << 23;
                     // set first destination register
-                    l_ins |= (reg_dest1 & 0x1f);
+                    l_ins |= (reg_data1 & 0x1f);
                     // set source register
-                    l_ins |= (reg_src & 0x1f) << 5;
+                    l_ins |= (reg_address & 0x1f) << 5;
                     // set second destination register
-                    l_ins |= (reg_dest2 & 0x1f) << 10;
+                    l_ins |= (reg_data2 & 0x1f) << 10;
                     // set immediate value
                     l_ins |= (imm7 & 0x7f) << 15;
 
@@ -53,18 +53,18 @@ namespace mini_jit
             /**
              * @brief Generates an STP instruction using signed offset encoding.
              *
-             * @param reg_dest1 first destination register.
-             * @param reg_dest2 second destination register.
-             * @param reg_src source register (base address).
+             * @param reg_data1 first register holding the data to be transferred.
+             * @param reg_data2 second register holding the data to be transferred.
+             * @param reg_address register holding the memory address.
              * @param imm7 7-bit immediate value.
              */
-            constexpr uint32_t stp(gpr_t reg_dest1,
-                                   gpr_t reg_dest2,
-                                   gpr_t reg_src,
+            constexpr uint32_t stp(gpr_t reg_data1,
+                                   gpr_t reg_data2,
+                                   gpr_t reg_address,
                                    int32_t imm7)
             {
-                uint32_t l_sf1 = reg_dest1 & 0x20;
-                uint32_t l_sf2 = reg_dest2 & 0x20;
+                uint32_t l_sf1 = reg_data1 & 0x20;
+                uint32_t l_sf2 = reg_data2 & 0x20;
                 if (l_sf1 != l_sf2)
                 {
                     throw std::invalid_argument("STP: both destination registers must be of the same size");
@@ -87,9 +87,9 @@ namespace mini_jit
                 // encoding: 0010
                 uint32_t l_encoding = 0x2;
 
-                return internal::stpHelper(reg_dest1,
-                                           reg_dest2,
-                                           reg_src,
+                return internal::stpHelper(reg_data1,
+                                           reg_data2,
+                                           reg_address,
                                            l_imm,
                                            l_opc,
                                            l_encoding);
@@ -98,19 +98,19 @@ namespace mini_jit
             /**
              * @brief Generates an STP instruction using post-index encoding.
              *
-             * @param reg_dest1 first destination register.
-             * @param reg_dest2 second destination register.
-             * @param reg_src source register (base address).
+             * @param reg_data1 first register holding the data to be transferred.
+             * @param reg_data2 second register holding the data to be transferred.
+             * @param reg_address register holding the memory address.
              * @param imm7 7-bit immediate value.
              */
-            constexpr uint32_t stpPost(gpr_t reg_dest1,
-                                       gpr_t reg_dest2,
-                                       gpr_t reg_src,
+            constexpr uint32_t stpPost(gpr_t reg_data1,
+                                       gpr_t reg_data2,
+                                       gpr_t reg_address,
                                        int32_t imm7)
             {
                 // Check size of destination registers
-                uint32_t l_sf1 = reg_dest1 & 0x20;
-                uint32_t l_sf2 = reg_dest2 & 0x20;
+                uint32_t l_sf1 = reg_data1 & 0x20;
+                uint32_t l_sf2 = reg_data2 & 0x20;
                 if (l_sf1 != l_sf2)
                 {
                     throw std::invalid_argument("STP: both destination registers must be of the same size");
@@ -133,9 +133,9 @@ namespace mini_jit
                 // encoding: 0001
                 uint32_t l_encoding = 0x1;
 
-                return internal::stpHelper(reg_dest1,
-                                           reg_dest2,
-                                           reg_src,
+                return internal::stpHelper(reg_data1,
+                                           reg_data2,
+                                           reg_address,
                                            l_imm,
                                            l_opc,
                                            l_encoding);
@@ -144,18 +144,18 @@ namespace mini_jit
             /**
              * @brief Generates an STP instruction using pre-index encoding.
              *
-             * @param reg_dest1 first destination register.
-             * @param reg_dest2 second destination register.
-             * @param reg_src source register (base address).
+             * @param reg_data1 first register holding the data to be transferred.
+             * @param reg_data2 second register holding the data to be transferred.
+             * @param reg_address register holding the memory address.
              * @param imm7 7-bit immediate value.
              */
-            constexpr uint32_t stpPre(gpr_t reg_dest1,
-                                      gpr_t reg_dest2,
-                                      gpr_t reg_src,
+            constexpr uint32_t stpPre(gpr_t reg_data1,
+                                      gpr_t reg_data2,
+                                      gpr_t reg_address,
                                       int32_t imm7)
             {
-                uint32_t l_sf1 = reg_dest1 & 0x20;
-                uint32_t l_sf2 = reg_dest2 & 0x20;
+                uint32_t l_sf1 = reg_data1 & 0x20;
+                uint32_t l_sf2 = reg_data2 & 0x20;
                 if (l_sf1 != l_sf2)
                 {
                     throw std::invalid_argument("STP: both destination registers must be of the same size");
@@ -178,9 +178,9 @@ namespace mini_jit
                 // encoding: 0011
                 uint32_t l_encoding = 0x3;
 
-                return internal::stpHelper(reg_dest1,
-                                           reg_dest2,
-                                           reg_src,
+                return internal::stpHelper(reg_data1,
+                                           reg_data2,
+                                           reg_address,
                                            l_imm,
                                            l_opc,
                                            l_encoding);
