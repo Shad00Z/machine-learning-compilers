@@ -13,5 +13,7 @@
 #include "stp.h"
 #include "str.h"
 #include "zero.h"
+#include "trn.h"
+#include "zip.h"
 
 #endif // MINI_JIT_INSTRUCTIONS_ALL_SIMD_INSTRUCTIONS_H

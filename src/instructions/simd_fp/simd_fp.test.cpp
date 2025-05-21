@@ -241,3 +241,29 @@ TEST_CASE("Tests the Neon EOR instruction generation", "[Neon EOR]")
     CHECK_THROWS_AS(simd_fp::eor(simd_fp_t::v2, simd_fp_t::v0, simd_fp_t::v1, arr_spec_t::s4), std::invalid_argument);
     CHECK_THROWS_AS(simd_fp::eor(simd_fp_t::v2, simd_fp_t::v0, simd_fp_t::v1, arr_spec_t::d2), std::invalid_argument);
 }
+
+TEST_CASE("Tests the TRN1 and TRN2 instruction generation", "[Neon TRN]")
+{
+    uint32_t l_ins = simd_fp::trn1(simd_fp_t::v17, simd_fp_t::v11, simd_fp_t::v29, arr_spec_t::s2);
+    std::string l_hex = to_string_hex(l_ins);
+    REQUIRE(l_hex == "0x0e9d2971");
+
+    l_ins = simd_fp::trn2(simd_fp_t::v12, simd_fp_t::v7, simd_fp_t::v0, arr_spec_t::d2);
+    l_hex = to_string_hex(l_ins);
+    REQUIRE(l_hex == "0x4ec068ec");
+}
+
+TEST_CASE("Tests the ZIP1 and ZIP2 instruction generation", "[Neon ZIP]")
+{
+    uint32_t l_ins = simd_fp::zip1(simd_fp_t::v4, simd_fp_t::v9, simd_fp_t::v23, arr_spec_t::s4);
+    std::string l_hex = to_string_hex(l_ins);
+    REQUIRE(l_hex == "0x4e973924");
+
+    l_ins = simd_fp::zip2(simd_fp_t::v6, simd_fp_t::v4, simd_fp_t::v11, arr_spec_t::d2);
+    l_hex = to_string_hex(l_ins);
+    REQUIRE(l_hex == "0x4ecb7886");
+
+    l_ins = simd_fp::zip2(simd_fp_t::v11, simd_fp_t::v6, simd_fp_t::v7, arr_spec_t::s4);
+    l_hex = to_string_hex(l_ins);
+    REQUIRE(l_hex == "0x4e8778cb");
+}
