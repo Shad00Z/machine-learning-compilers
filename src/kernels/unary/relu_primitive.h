@@ -16,8 +16,8 @@ namespace mini_jit
              * @param n number of columns in the matrix.
              */
             void relu( mini_jit::Kernel &kernel, 
-                       int m, 
-                       int n );
+                       u_int32_t m, 
+                       u_int32_t n );
         }
     }
 };

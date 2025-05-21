@@ -14,10 +14,12 @@ namespace mini_jit
              * @param kernel Kernel object to be filled with instructions.
              * @param m number of rows in the matrix.
              * @param n number of columns in the matrix.
+             * @param trans_b 0 if B is stored in column-major order, 1 if B is stored in row-major order.
              */
             void zero( mini_jit::Kernel &kernel, 
-                       int m, 
-                       int n );
+                       uint32_t m, 
+                       uint32_t n,
+                       uint32_t trans_b );
         }
     }
 };

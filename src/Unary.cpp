@@ -1,5 +1,7 @@
 #include "Kernel.h"
 #include "Unary.h"
+#include "kernels/unary/zero_primitive.h"
+#include "kernels/unary/relu_primitive.h"
 #include <iostream>
 
 mini_jit::Unary::error_t mini_jit::Unary::generate( uint32_t m,
@@ -32,13 +34,21 @@ mini_jit::Unary::error_t mini_jit::Unary::generate( uint32_t m,
     switch (ptype)
     {
     case ptype_t::zero:
-        // call zero primitive kernel
+        mini_jit::kernels::unary::zero(m_kernel, m, n, trans_b);
         break;
     case ptype_t::identity:
         // call identity primitive kernel
         break;
     case ptype_t::relu:
-        // call relu primitive kernel
+        if(trans_b != 0)
+        {
+            std::cout << ( "ReLU kernel does not support transposition" ) << std::endl;
+            return mini_jit::Unary::error_t::operation_not_supported;
+        }
+        else
+        {
+            mini_jit::kernels::unary::relu(m_kernel, m, n);
+        }
         break;
     default:
         std::cout << ( "Invalid primitive type" ) << std::endl;

@@ -10,8 +10,8 @@ namespace base = inst::base;
 namespace simd_fp = inst::simd_fp;
 
 void mini_jit::kernels::unary::relu(mini_jit::Kernel &kernel,
-                                    int m,
-                                    int n)
+                                    u_int32_t m,
+                                    u_int32_t n)
 {
     // Inputs:
     // x0: pointer to A

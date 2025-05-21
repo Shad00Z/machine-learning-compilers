@@ -32,7 +32,8 @@ class mini_jit::Unary {
       success = 0,
       wrong_m_dimension = 1,
       wrong_n_dimension = 2,
-      wrong_ptype = 3
+      wrong_ptype = 3,
+      operation_not_supported = 4,
     };
 
     /**

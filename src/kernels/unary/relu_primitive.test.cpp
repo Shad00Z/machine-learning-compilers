@@ -8,8 +8,8 @@
 
 TEST_CASE("Tests the ReLu primitive with random matrices", "[relu_primitive][parameterized]")
 {
-    int M = GENERATE(take(16, random(1, 64)));
-    int N = GENERATE(1, 2, 3, 7, 16, 32);
+    u_int32_t M = GENERATE(50, 64, 512, 2048);
+    u_int32_t N = GENERATE(50, 64, 512, 2048);
 
     float* A = new float[M * N];
     float* B = new float[M * N];
@@ -23,7 +23,7 @@ TEST_CASE("Tests the ReLu primitive with random matrices", "[relu_primitive][par
 
     auto fRelu = [](float x) { return x > 0.0f ? x : 0.0f; };
 
-    for (int i = 0; i < M * N; i++)
+    for (u_int32_t i = 0; i < M * N; i++)
     {
         A[i] = dist(gen);
         A_expected[i] = A[i];
@@ -36,7 +36,7 @@ TEST_CASE("Tests the ReLu primitive with random matrices", "[relu_primitive][par
     mini_jit::Unary::kernel_t l_kernel_t = reinterpret_cast<mini_jit::Unary::kernel_t>(const_cast<void *>(l_kernel.get_kernel()));
     l_kernel_t(A, B, M, M);
 
-    for (int i = 0; i < M * N; i++)
+    for (u_int32_t i = 0; i < M * N; i++)
     {
         REQUIRE(A[i] == Approx(A_expected[i]).margin(FLOAT_ERROR_MARGIN));
         REQUIRE(B[i] == Approx(B_expected[i]).margin(FLOAT_ERROR_MARGIN));

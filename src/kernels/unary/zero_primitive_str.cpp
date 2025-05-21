@@ -10,8 +10,9 @@ namespace base = inst::base;
 namespace simd_fp = inst::simd_fp;
 
 void mini_jit::kernels::unary::zero_str(mini_jit::Kernel &kernel,
-                                        int m,
-                                        int n)
+                                        u_int32_t m,
+                                        u_int32_t n,
+                                        u_int32_t trans_b)
 {
     // Inputs:
     // x0: pointer to A
@@ -19,9 +20,16 @@ void mini_jit::kernels::unary::zero_str(mini_jit::Kernel &kernel,
     // x2: leading dimension of A
     // x3: leading dimension of B
 
+    if(1 == trans_b)
+    {
+        u_int32_t mTemp = m;
+        m = n;
+        n = mTemp;
+    }
+
     // Prepare the kernel
-    int mLoopIterations = m / 8;
-    int mLoopRemainder = m % 8;
+    u_int32_t mLoopIterations = m / 8;
+    u_int32_t mLoopRemainder = m % 8;
 
     // PCS
     kernel.add_instr(base::stpPre(gpr_t::x29, gpr_t::x30, gpr_t::sp, -16));
