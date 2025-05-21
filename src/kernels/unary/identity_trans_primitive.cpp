@@ -1,4 +1,4 @@
-#include "identity_primitive.h"
+#include "identity_trans_primitive.h"
 #include "Kernel.h"
 
 #include "registers/gp_registers.h"
