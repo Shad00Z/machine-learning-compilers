@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['_7ekernel_0',['~Kernel',['../classmini__jit_1_1Kernel.html#a2ee4ebdd70015ba167bd691c67256d50',1,'mini_jit::Kernel']]]
+  ['set_5fkernel_0',['set_kernel',['../classmini__jit_1_1Kernel.html#a2e918407d18f577869072b0f5637f300',1,'mini_jit::Kernel']]]
 ];

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['write_0',['write',['../classmini__jit_1_1Kernel.html#a12b03a3b171ad1c07c80e6385ace79c2',1,'mini_jit::Kernel']]]
+  ['set_5fkernel_0',['set_kernel',['../classmini__jit_1_1Kernel.html#a2e918407d18f577869072b0f5637f300',1,'mini_jit::Kernel']]]
 ];

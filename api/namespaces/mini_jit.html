@@ -25,7 +25,7 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="mini_jit::converters" href="mini_jit_converters.html" />
+    <link rel="next" title="mini_jit::benchmarks" href="mini_jit_benchmarks.html" />
     <link rel="prev" title="4. Code Generation" href="../../submissions/04_code_gen.html" /> 
 </head>
 
@@ -63,6 +63,19 @@
 <p class="caption" role="heading"><span class="caption-text">API</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">mini_jit</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit9BenchmarkE"><code class="docutils literal notranslate"><span class="pre">mini_jit::Benchmark</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit9BenchmarkD0Ev"><code class="docutils literal notranslate"><span class="pre">~Benchmark()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit9Benchmark3runEv"><code class="docutils literal notranslate"><span class="pre">run()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit9Benchmark9getResultEv"><code class="docutils literal notranslate"><span class="pre">getResult()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit9Benchmark16benchmark_resultE"><code class="docutils literal notranslate"><span class="pre">mini_jit::Benchmark::benchmark_result</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit9Benchmark16benchmark_result7numRepsE"><code class="docutils literal notranslate"><span class="pre">numReps</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit9Benchmark16benchmark_result14elapsedSecondsE"><code class="docutils literal notranslate"><span class="pre">elapsedSeconds</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit9Benchmark16benchmark_result15totalOperationsE"><code class="docutils literal notranslate"><span class="pre">totalOperations</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit9Benchmark16benchmark_result4gopsE"><code class="docutils literal notranslate"><span class="pre">gops</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit6BrgemmE"><code class="docutils literal notranslate"><span class="pre">mini_jit::Brgemm</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit6Brgemm7dtype_tE"><code class="docutils literal notranslate"><span class="pre">dtype_t</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit6Brgemm7dtype_t4fp32E"><code class="docutils literal notranslate"><span class="pre">fp32</span></code></a></li>
@@ -126,6 +139,7 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="mini_jit_benchmarks.html">mini_jit::benchmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mini_jit_converters.html">mini_jit::converters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mini_jit_instructions.html">mini_jit::instructions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mini_jit_kernels.html">mini_jit::kernels</a></li>
@@ -158,6 +172,60 @@
              
   <section id="mini-jit">
 <span id="api-mini-jit"></span><h1>mini_jit<a class="headerlink" href="#mini-jit" title="Link to this heading"></a></h1>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit9BenchmarkE">
+<span id="_CPPv3N8mini_jit8mini_jit9BenchmarkE"></span><span id="_CPPv2N8mini_jit8mini_jit9BenchmarkE"></span><span id="mini_jit::mini_jit::Benchmark"></span><span class="target" id="classmini__jit_1_1Benchmark"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Benchmark</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit9BenchmarkE" title="Link to this definition"></a><br /></dt>
+<dd><p>Subclassed by <a class="reference internal" href="mini_jit_benchmarks.html#classmini__jit_1_1benchmarks_1_1Matmul__br__m__n__k__bench"><span class="std std-ref">mini_jit::benchmarks::Matmul_br_m_n_k_bench</span></a>, <a class="reference internal" href="mini_jit_benchmarks.html#classmini__jit_1_1benchmarks_1_1Matmul__m__n__k__bench"><span class="std std-ref">mini_jit::benchmarks::Matmul_m_n_k_bench</span></a></p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit9BenchmarkD0Ev">
+<span id="_CPPv3N8mini_jit8mini_jit9BenchmarkD0Ev"></span><span id="_CPPv2N8mini_jit8mini_jit9BenchmarkD0Ev"></span><span id="mini_jit::mini_jit::Benchmark::~Benchmark"></span><span class="target" id="classmini__jit_1_1Benchmark_1af987b0628a305677bbb2132ed701bdc6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~Benchmark</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit9BenchmarkD0Ev" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit9Benchmark3runEv">
+<span id="_CPPv3N8mini_jit8mini_jit9Benchmark3runEv"></span><span id="_CPPv2N8mini_jit8mini_jit9Benchmark3runEv"></span><span id="mini_jit::mini_jit::Benchmark::run"></span><span class="target" id="classmini__jit_1_1Benchmark_1a1551f36efb383d6ad59b2c260e11d55b"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">run</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit9Benchmark3runEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Runs the benchmark. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit9Benchmark9getResultEv">
+<span id="_CPPv3N8mini_jit8mini_jit9Benchmark9getResultEv"></span><span id="_CPPv2N8mini_jit8mini_jit9Benchmark9getResultEv"></span><span id="mini_jit::mini_jit::Benchmark::getResult"></span><span class="target" id="classmini__jit_1_1Benchmark_1a92913eb15377accd1734ab2086a563fc"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit9Benchmark16benchmark_resultE" title="mini_jit::mini_jit::Benchmark::benchmark_result"><span class="n"><span class="pre">benchmark_result</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getResult</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit9Benchmark9getResultEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Returns the result of the benchmark. </p>
+</dd></dl>
+
+</div>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit9Benchmark16benchmark_resultE">
+<span id="_CPPv3N8mini_jit8mini_jit9Benchmark16benchmark_resultE"></span><span id="_CPPv2N8mini_jit8mini_jit9Benchmark16benchmark_resultE"></span><span id="mini_jit::mini_jit::Benchmark::benchmark_result"></span><span class="target" id="structmini__jit_1_1Benchmark_1_1benchmark__result"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">benchmark_result</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit9Benchmark16benchmark_resultE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit9Benchmark16benchmark_result7numRepsE">
+<span id="_CPPv3N8mini_jit8mini_jit9Benchmark16benchmark_result7numRepsE"></span><span id="_CPPv2N8mini_jit8mini_jit9Benchmark16benchmark_result7numRepsE"></span><span id="mini_jit::mini_jit::Benchmark::benchmark_result::numReps__l"></span><span class="target" id="structmini__jit_1_1Benchmark_1_1benchmark__result_1a8c7588f6ef29910551d791a9b019c582"></span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">numReps</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit9Benchmark16benchmark_result7numRepsE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit9Benchmark16benchmark_result14elapsedSecondsE">
+<span id="_CPPv3N8mini_jit8mini_jit9Benchmark16benchmark_result14elapsedSecondsE"></span><span id="_CPPv2N8mini_jit8mini_jit9Benchmark16benchmark_result14elapsedSecondsE"></span><span id="mini_jit::mini_jit::Benchmark::benchmark_result::elapsedSeconds__double"></span><span class="target" id="structmini__jit_1_1Benchmark_1_1benchmark__result_1a6b6bb5a97886f748b91c94d54b602713"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">elapsedSeconds</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.0f</span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit9Benchmark16benchmark_result14elapsedSecondsE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit9Benchmark16benchmark_result15totalOperationsE">
+<span id="_CPPv3N8mini_jit8mini_jit9Benchmark16benchmark_result15totalOperationsE"></span><span id="_CPPv2N8mini_jit8mini_jit9Benchmark16benchmark_result15totalOperationsE"></span><span id="mini_jit::mini_jit::Benchmark::benchmark_result::totalOperations__l"></span><span class="target" id="structmini__jit_1_1Benchmark_1_1benchmark__result_1a9c87c42f0a3197673657ea310945102b"></span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">totalOperations</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit9Benchmark16benchmark_result15totalOperationsE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit9Benchmark16benchmark_result4gopsE">
+<span id="_CPPv3N8mini_jit8mini_jit9Benchmark16benchmark_result4gopsE"></span><span id="_CPPv2N8mini_jit8mini_jit9Benchmark16benchmark_result4gopsE"></span><span id="mini_jit::mini_jit::Benchmark::benchmark_result::gops__double"></span><span class="target" id="structmini__jit_1_1Benchmark_1_1benchmark__result_1a9fcf3b08a792a4b41766bb4f4f90b49f"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">gops</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.0f</span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit9Benchmark16benchmark_result4gopsE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</dd></dl>
+
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit6BrgemmE">
 <span id="_CPPv3N8mini_jit8mini_jit6BrgemmE"></span><span id="_CPPv2N8mini_jit8mini_jit6BrgemmE"></span><span id="mini_jit::mini_jit::Brgemm"></span><span class="target" id="classmini__jit_1_1Brgemm"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Brgemm</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit6BrgemmE" title="Link to this definition"></a><br /></dt>
@@ -497,7 +565,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="../../submissions/04_code_gen.html" class="btn btn-neutral float-left" title="4. Code Generation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="mini_jit_converters.html" class="btn btn-neutral float-right" title="mini_jit::converters" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="mini_jit_benchmarks.html" class="btn btn-neutral float-right" title="mini_jit::benchmarks" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
