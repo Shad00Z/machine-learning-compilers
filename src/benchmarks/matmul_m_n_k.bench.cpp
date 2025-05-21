@@ -6,9 +6,9 @@
 #include "kernels/matmul/matmul_m_n_k.h"
 
 mini_jit::benchmarks::Matmul_m_n_k_bench::Matmul_m_n_k_bench(double runTime,
-                                                                  int m,
-                                                                  int n,
-                                                                  int k) : Benchmark()
+                                                             int m,
+                                                             int n,
+                                                             int k) : Benchmark()
 {
     m_M = m;
     m_N = n;
