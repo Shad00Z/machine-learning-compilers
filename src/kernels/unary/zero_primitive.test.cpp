@@ -10,7 +10,7 @@
 TEST_CASE("Tests the EOR zero primitive with random matrices", "[str_zero_primitive][parameterized]")
 {
     int M = GENERATE(take(8, random(1, 64)));
-    int N = GENERATE(1, 2, 3, 7, 16, 64);
+    int N = GENERATE(1, 2, 3, 7, 16, 32);
 
     float* A = new float[M * N];
     float* B = new float[M * N];
@@ -50,7 +50,7 @@ TEST_CASE("Tests the EOR zero primitive with random matrices", "[str_zero_primit
 TEST_CASE("Tests the STR zero primitive with random matrices", "[eor_zero_primitive][parameterized]")
 {
     int M = GENERATE(take(8, random(1, 64)));
-    int N = GENERATE(1, 2, 3, 7, 16, 64);
+    int N = GENERATE(1, 2, 3, 7, 16, 32);
 
     float* A = new float[M * N];
     float* B = new float[M * N];

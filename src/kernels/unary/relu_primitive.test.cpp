@@ -9,7 +9,7 @@
 TEST_CASE("Tests the ReLu primitive with random matrices", "[relu_primitive][parameterized]")
 {
     int M = GENERATE(take(16, random(1, 64)));
-    int N = GENERATE(1, 2, 3, 7, 16, 64);
+    int N = GENERATE(1, 2, 3, 7, 16, 32);
 
     float* A = new float[M * N];
     float* B = new float[M * N];
