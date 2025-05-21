@@ -81,6 +81,12 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#unary">::unary</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit7kernels5unary4reluERN8mini_jit6KernelEii"><code class="docutils literal notranslate"><span class="pre">relu()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit7kernels5unary4zeroERN8mini_jit6KernelEii"><code class="docutils literal notranslate"><span class="pre">zero()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit7kernels5unary8zero_strERN8mini_jit6KernelEii"><code class="docutils literal notranslate"><span class="pre">zero_str()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="mini_jit_registers.html">mini_jit::registers</a></li>
@@ -235,6 +241,54 @@
 </dd></dl>
 
 </section>
+</section>
+<section id="unary">
+<h2>::unary<a class="headerlink" href="#unary" title="Link to this heading"></a></h2>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit7kernels5unary4reluERN8mini_jit6KernelEii">
+<span id="_CPPv3N8mini_jit7kernels5unary4reluERN8mini_jit6KernelEii"></span><span id="_CPPv2N8mini_jit7kernels5unary4reluERN8mini_jit6KernelEii"></span><span id="mini_jit::kernels::unary::relu__mini_jit::KernelR.i.i"></span><span class="target" id="relu__primitive_8h_1a1e71297adc88036dc49b989fad5dbf3e"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">kernels</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">unary</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">relu</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Kernel</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">kernel</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit7kernels5unary4reluERN8mini_jit6KernelEii" title="Link to this definition"></a><br /></dt>
+<dd><p><a class="reference internal" href="mini_jit.html#classmini__jit_1_1Kernel"><span class="std std-ref">Kernel</span></a> that applies ReLU activation function to a matrix. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>kernel</strong> – <a class="reference internal" href="mini_jit.html#classmini__jit_1_1Kernel"><span class="std std-ref">Kernel</span></a> object to be filled with instructions. </p></li>
+<li><p><strong>m</strong> – number of rows in the matrix. </p></li>
+<li><p><strong>n</strong> – number of columns in the matrix. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit7kernels5unary4zeroERN8mini_jit6KernelEii">
+<span id="_CPPv3N8mini_jit7kernels5unary4zeroERN8mini_jit6KernelEii"></span><span id="_CPPv2N8mini_jit7kernels5unary4zeroERN8mini_jit6KernelEii"></span><span id="mini_jit::kernels::unary::zero__mini_jit::KernelR.i.i"></span><span class="target" id="zero__primitive_8h_1a28de6b2bb66c45f9e56f66e124dc3203"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">kernels</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">unary</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">zero</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Kernel</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">kernel</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit7kernels5unary4zeroERN8mini_jit6KernelEii" title="Link to this definition"></a><br /></dt>
+<dd><p><a class="reference internal" href="mini_jit.html#classmini__jit_1_1Kernel"><span class="std std-ref">Kernel</span></a> for zeroing out a matrix using EOR. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>kernel</strong> – <a class="reference internal" href="mini_jit.html#classmini__jit_1_1Kernel"><span class="std std-ref">Kernel</span></a> object to be filled with instructions. </p></li>
+<li><p><strong>m</strong> – number of rows in the matrix. </p></li>
+<li><p><strong>n</strong> – number of columns in the matrix. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit7kernels5unary8zero_strERN8mini_jit6KernelEii">
+<span id="_CPPv3N8mini_jit7kernels5unary8zero_strERN8mini_jit6KernelEii"></span><span id="_CPPv2N8mini_jit7kernels5unary8zero_strERN8mini_jit6KernelEii"></span><span id="mini_jit::kernels::unary::zero_str__mini_jit::KernelR.i.i"></span><span class="target" id="zero__primitive__str_8h_1a1f8ce18b309ee383b3889ddfe7721825"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">kernels</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">unary</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">zero_str</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Kernel</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">kernel</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit7kernels5unary8zero_strERN8mini_jit6KernelEii" title="Link to this definition"></a><br /></dt>
+<dd><p><a class="reference internal" href="mini_jit.html#classmini__jit_1_1Kernel"><span class="std std-ref">Kernel</span></a> for zeroing out a matrix using STR. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>kernel</strong> – <a class="reference internal" href="mini_jit.html#classmini__jit_1_1Kernel"><span class="std std-ref">Kernel</span></a> object to be filled with instructions. </p></li>
+<li><p><strong>m</strong> – number of rows in the matrix. </p></li>
+<li><p><strong>n</strong> – number of columns in the matrix. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 </section>
 
