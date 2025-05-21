@@ -5,10 +5,6 @@
 #include "registers/simd_fp_registers.h"
 #include "instructions/all_instructions.h"
 
-using simd_fp_t = mini_jit::registers::simd_fp_t;
-using arr_spec_t = mini_jit::registers::arr_spec_t;
-using neon_size_spec_t = mini_jit::registers::neon_size_spec_t;
-
 namespace inst = mini_jit::instructions;
 namespace base = inst::base;
 namespace simd_fp = inst::simd_fp;
@@ -117,6 +113,6 @@ void mini_jit::kernels::unary::zero_str(mini_jit::Kernel &kernel,
     kernel.add_instr(base::ldpPost(gpr_t::x29, gpr_t::x30, gpr_t::sp, 16));
 
     kernel.add_instr(inst::ret());
-    kernel.write("zero_primitive.bin");
+    kernel.write("zero_primitive_str.bin");
     kernel.set_kernel();
 }

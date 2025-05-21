@@ -5,10 +5,6 @@
 #include "registers/simd_fp_registers.h"
 #include "instructions/all_instructions.h"
 
-using simd_fp_t = mini_jit::registers::simd_fp_t;
-using arr_spec_t = mini_jit::registers::arr_spec_t;
-using neon_size_spec_t = mini_jit::registers::neon_size_spec_t;
-
 namespace inst = mini_jit::instructions;
 namespace base = inst::base;
 namespace simd_fp = inst::simd_fp;
@@ -40,15 +36,17 @@ void mini_jit::kernels::unary::zero(mini_jit::Kernel &kernel,
     // Set n loop counter
     kernel.add_instr(base::mov(gpr_t::x5, n));
 
+    // create zero register
+    kernel.add_instr(simd_fp::zero(simd_fp_t::v31, arr_spec_t::b16));
+
     // Start n loop (1 column)
     kernel.add_label("n_loop");
 
+    // Set m loop counter
     kernel.add_instr(base::mov(gpr_t::x6, mLoopIterations));
+
     // working pointer for B (rows)
     kernel.add_instr(base::mov(gpr_t::x7, gpr_t::x4));
-
-    // create zero register
-    kernel.add_instr(simd_fp::zero(simd_fp_t::v31, arr_spec_t::b16));
 
     if (mLoopIterations > 0)
     {
