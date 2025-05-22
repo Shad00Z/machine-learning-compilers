@@ -114,7 +114,11 @@
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit12instructions7simd_fp6stpPreE9simd_fp_t9simd_fp_t5gpr_t7int32_t16neon_size_spec_t"><code class="docutils literal notranslate"><span class="pre">stpPre()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit12instructions7simd_fp3strE9simd_fp_t5gpr_t8uint32_t16neon_size_spec_t"><code class="docutils literal notranslate"><span class="pre">str()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit12instructions7simd_fp7strPostE9simd_fp_t5gpr_t8uint32_t16neon_size_spec_t"><code class="docutils literal notranslate"><span class="pre">strPost()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit12instructions7simd_fp4trn1E9simd_fp_t9simd_fp_t9simd_fp_t10arr_spec_t"><code class="docutils literal notranslate"><span class="pre">trn1()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit12instructions7simd_fp4trn2E9simd_fp_t9simd_fp_t9simd_fp_t10arr_spec_t"><code class="docutils literal notranslate"><span class="pre">trn2()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit12instructions7simd_fp4zeroE9simd_fp_t10arr_spec_t"><code class="docutils literal notranslate"><span class="pre">zero()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit12instructions7simd_fp4zip1E9simd_fp_t9simd_fp_t9simd_fp_t10arr_spec_t"><code class="docutils literal notranslate"><span class="pre">zip1()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit12instructions7simd_fp4zip2E9simd_fp_t9simd_fp_t9simd_fp_t10arr_spec_t"><code class="docutils literal notranslate"><span class="pre">zip2()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -892,6 +896,38 @@
 </dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit12instructions7simd_fp4trn1E9simd_fp_t9simd_fp_t9simd_fp_t10arr_spec_t">
+<span id="_CPPv3N8mini_jit12instructions7simd_fp4trn1E9simd_fp_t9simd_fp_t9simd_fp_t10arr_spec_t"></span><span id="_CPPv2N8mini_jit12instructions7simd_fp4trn1E9simd_fp_t9simd_fp_t9simd_fp_t10arr_spec_t"></span><span id="mini_jit::instructions::simd_fp::trn1__simd_fp_t.simd_fp_t.simd_fp_t.arr_spec_tCE"></span><span class="target" id="trn_8h_1a31dfbeb3b505c398f6e23a56ba20085b"></span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">instructions</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">simd_fp</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">trn1</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">simd_fp_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">reg_dest</span></span>, <span class="n"><span class="pre">simd_fp_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">reg_src1</span></span>, <span class="n"><span class="pre">simd_fp_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">reg_src2</span></span>, <span class="n"><span class="pre">arr_spec_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">arr_spec</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit12instructions7simd_fp4trn1E9simd_fp_t9simd_fp_t9simd_fp_t10arr_spec_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Generates an TRN1 instruction. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reg_dest</strong> – destination register. </p></li>
+<li><p><strong>reg_src1</strong> – first source register. </p></li>
+<li><p><strong>reg_src2</strong> – second source register (base address). </p></li>
+<li><p><strong>arr_spec</strong> – arrangement specifier. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit12instructions7simd_fp4trn2E9simd_fp_t9simd_fp_t9simd_fp_t10arr_spec_t">
+<span id="_CPPv3N8mini_jit12instructions7simd_fp4trn2E9simd_fp_t9simd_fp_t9simd_fp_t10arr_spec_t"></span><span id="_CPPv2N8mini_jit12instructions7simd_fp4trn2E9simd_fp_t9simd_fp_t9simd_fp_t10arr_spec_t"></span><span id="mini_jit::instructions::simd_fp::trn2__simd_fp_t.simd_fp_t.simd_fp_t.arr_spec_tCE"></span><span class="target" id="trn_8h_1ae6ed9225a1ee7705dc6eeeef6138d929"></span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">instructions</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">simd_fp</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">trn2</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">simd_fp_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">reg_dest</span></span>, <span class="n"><span class="pre">simd_fp_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">reg_src1</span></span>, <span class="n"><span class="pre">simd_fp_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">reg_src2</span></span>, <span class="n"><span class="pre">arr_spec_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">arr_spec</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit12instructions7simd_fp4trn2E9simd_fp_t9simd_fp_t9simd_fp_t10arr_spec_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Generates an TRN2 instruction. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reg_dest</strong> – destination register. </p></li>
+<li><p><strong>reg_src1</strong> – first source register. </p></li>
+<li><p><strong>reg_src2</strong> – second source register (base address). </p></li>
+<li><p><strong>arr_spec</strong> – arrangement specifier. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N8mini_jit12instructions7simd_fp4zeroE9simd_fp_t10arr_spec_t">
 <span id="_CPPv3N8mini_jit12instructions7simd_fp4zeroE9simd_fp_t10arr_spec_t"></span><span id="_CPPv2N8mini_jit12instructions7simd_fp4zeroE9simd_fp_t10arr_spec_t"></span><span id="mini_jit::instructions::simd_fp::zero__simd_fp_t.arr_spec_tCE"></span><span class="target" id="zero_8h_1af8475f1699b474a6495fa0988caac884"></span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">instructions</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">simd_fp</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">zero</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">simd_fp_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">reg</span></span>, <span class="n"><span class="pre">arr_spec_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">arr_spec</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit12instructions7simd_fp4zeroE9simd_fp_t10arr_spec_t" title="Link to this definition"></a><br /></dt>
 <dd><p>Generates an EOR instruction that zeros out the given register. 8B zeroes out the lower half (64 bit) of the register, while 16B zeroes out the whole register (128 bit). </p>
@@ -900,6 +936,38 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>reg</strong> – register to zero out. </p></li>
 <li><p><strong>arr_spec</strong> – arrangement specifier (8B or 16B). </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit12instructions7simd_fp4zip1E9simd_fp_t9simd_fp_t9simd_fp_t10arr_spec_t">
+<span id="_CPPv3N8mini_jit12instructions7simd_fp4zip1E9simd_fp_t9simd_fp_t9simd_fp_t10arr_spec_t"></span><span id="_CPPv2N8mini_jit12instructions7simd_fp4zip1E9simd_fp_t9simd_fp_t9simd_fp_t10arr_spec_t"></span><span id="mini_jit::instructions::simd_fp::zip1__simd_fp_t.simd_fp_t.simd_fp_t.arr_spec_tCE"></span><span class="target" id="zip_8h_1a80c82e4d9eb9284e6fd242f3b5dcbb9c"></span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">instructions</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">simd_fp</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">zip1</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">simd_fp_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">reg_dest</span></span>, <span class="n"><span class="pre">simd_fp_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">reg_src1</span></span>, <span class="n"><span class="pre">simd_fp_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">reg_src2</span></span>, <span class="n"><span class="pre">arr_spec_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">arr_spec</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit12instructions7simd_fp4zip1E9simd_fp_t9simd_fp_t9simd_fp_t10arr_spec_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Generates an ZIP1 instruction. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reg_dest</strong> – destination register. </p></li>
+<li><p><strong>reg_src1</strong> – first source register. </p></li>
+<li><p><strong>reg_src2</strong> – second source register (base address). </p></li>
+<li><p><strong>arr_spec</strong> – arrangement specifier. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit12instructions7simd_fp4zip2E9simd_fp_t9simd_fp_t9simd_fp_t10arr_spec_t">
+<span id="_CPPv3N8mini_jit12instructions7simd_fp4zip2E9simd_fp_t9simd_fp_t9simd_fp_t10arr_spec_t"></span><span id="_CPPv2N8mini_jit12instructions7simd_fp4zip2E9simd_fp_t9simd_fp_t9simd_fp_t10arr_spec_t"></span><span id="mini_jit::instructions::simd_fp::zip2__simd_fp_t.simd_fp_t.simd_fp_t.arr_spec_tCE"></span><span class="target" id="zip_8h_1a161f86f53793897c525de0693a11c0ec"></span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">instructions</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">simd_fp</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">zip2</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">simd_fp_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">reg_dest</span></span>, <span class="n"><span class="pre">simd_fp_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">reg_src1</span></span>, <span class="n"><span class="pre">simd_fp_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">reg_src2</span></span>, <span class="n"><span class="pre">arr_spec_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">arr_spec</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit12instructions7simd_fp4zip2E9simd_fp_t9simd_fp_t9simd_fp_t10arr_spec_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Generates an ZIP2 instruction. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reg_dest</strong> – destination register. </p></li>
+<li><p><strong>reg_src1</strong> – first source register. </p></li>
+<li><p><strong>reg_src2</strong> – second source register (base address). </p></li>
+<li><p><strong>arr_spec</strong> – arrangement specifier. </p></li>
 </ul>
 </dd>
 </dl>

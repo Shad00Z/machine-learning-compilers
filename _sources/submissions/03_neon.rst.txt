@@ -27,16 +27,19 @@ The calculations that we were ending up with were:
 .. literalinclude:: ../../src/submissions/03_neon/01_execution_throughput_and_latency/fmla_4s_instr.s
     :language: asm
     :lines: 31-71
+    :lineno-match:
     :caption: FMLA (vector) with arrangement specifier ``4S``
 
 .. literalinclude:: ../../src/submissions/03_neon/01_execution_throughput_and_latency/fmla_2s_instr.s
     :language: asm
     :lines: 31-71
+    :lineno-match:
     :caption: FMLA (vector) with arrangement specifier ``2S``
 
 .. literalinclude:: ../../src/submissions/03_neon/01_execution_throughput_and_latency/fmadd_instr.s
     :language: asm
     :lines: 39-82
+    :lineno-match:
     :caption: FMADD (scalar), single-precision variant
 
 In order to measure the throughput of these instructions we developed a C++ microbenchmark.
@@ -45,6 +48,7 @@ For each instruction we firstly performed a warm up, measured the time, counted 
 .. literalinclude:: ../../src/submissions/03_neon/01_execution_throughput_and_latency/benchmark/microbench.cpp
     :language: cpp
     :lines: 61-73
+    :lineno-match:
     :caption: Example benchmark for FMLA (vector) with arrangement specifier ``4S``
 
 For the ``2S`` and the FMADD (scalar) instructions, we simply adjusted the calculations for the operations slightly:
@@ -52,11 +56,13 @@ For the ``2S`` and the FMADD (scalar) instructions, we simply adjusted the calcu
 .. literalinclude:: ../../src/submissions/03_neon/01_execution_throughput_and_latency/benchmark/microbench.cpp
     :language: cpp
     :lines: 85-89
+    :lineno-match:
     :caption: Calculations for FMLA (vector) with arrangement specifier ``2S``
 
 .. literalinclude:: ../../src/submissions/03_neon/01_execution_throughput_and_latency/benchmark/microbench.cpp
     :language: cpp
     :lines: 101-105
+    :lineno-match:
     :caption: Calculations for FMLA (vector) with arrangement specifier ``2S``
 
 For this benchmarking task we obtained the following results:
@@ -64,6 +70,7 @@ For this benchmarking task we obtained the following results:
 .. literalinclude:: ../../src/submissions/03_neon/01_execution_throughput_and_latency/benchmark/benchmarking_results.txt
     :language: text
     :lines: 1-23
+    :lineno-match:
     :caption: Throughput results for the three instructions
 
 It can be seen that the FMLA (vector) with arrangement specifier ``4S`` instruction performs approximately 
@@ -83,6 +90,7 @@ To measure the execution latency for FMLA (vector) instructions with arrangement
 .. literalinclude:: ../../src/submissions/03_neon/01_execution_throughput_and_latency/fmla_4s_source_lat_instr.s
     :language: asm
     :lines: 33-36
+    :lineno-match:
     :caption: fmla instructions with dependencies on the destination register and one of the source registers
 
 2. Each instruction depends only on the destination register of the previous instruction
@@ -90,6 +98,7 @@ To measure the execution latency for FMLA (vector) instructions with arrangement
 .. literalinclude:: ../../src/submissions/03_neon/01_execution_throughput_and_latency/fmla_4s_dest_lat_instr.s
     :language: asm
     :lines: 33-36
+    :lineno-match:
     :caption: fmla instructions with dependencies on the destination register
 
 Both files contain 32 fmla instructions each, which are executed 100 times. The results of our benchmark is shown below:
@@ -97,6 +106,7 @@ Both files contain 32 fmla instructions each, which are executed 100 times. The 
 .. literalinclude:: ../../src/submissions/03_neon/01_execution_throughput_and_latency/benchmark/benchmarking_results.txt
     :language: text
     :lines: 25-39
+    :lineno-match:
     :caption: Latency results for the two scenarios
 
 We can see that both scenarios have similar results, which is why we computed the latency only for the first scenario.
@@ -149,6 +159,7 @@ The GFLOPs were calculated using the following formula:
 .. literalinclude:: ../../src/submissions/03_neon/02_microkernel/benchmark/microbench.cpp
     :language: cpp
     :lines: 138-143
+    :lineno-match:
     :caption: GFLOPs calculations
 
 For each version we would perform ``50,000`` iterations as a warmup to guarantee similar results for each execution of the benchmark.
@@ -172,8 +183,8 @@ The first step was to implement a loop in the K dimension, resulting in a 16x6x6
 
 .. literalinclude:: ../../src/submissions/03_neon/03_loops/loops/matmul_16_6_64.s
     :language: asm
-    :linenos:
     :lines: 67-133
+    :lineno-match:
     :caption: Looping matmul_16_6_1 over K dimension
 
 The ``matmul_16_6_1`` kernel mostly stayed the same, except that for each K loop, we now need to adjust the pointers to the input matrices A and B. At the end of each loop, we move the pointers to A to the next column by adding the given stride. In B, we need to move the pointer to the next row. Therefore, we jump by 4 Bytes (since we are using 32-bit floats) from the starting address of B. To keep jumping to the next row in each loop, we accumulate the offset of 4 Bytes in the register ``x9``.
@@ -182,14 +193,14 @@ The second step was to implement a loop in the M dimension, resulting in a 64x6x
 
 .. literalinclude:: ../../src/submissions/03_neon/03_loops/loops/matmul_64_6_64.s
     :language: asm
-    :linenos:
     :lines: 45-92
+    :lineno-match:
     :caption: First part of looping over M dimension
 
 .. literalinclude:: ../../src/submissions/03_neon/03_loops/loops/matmul_64_6_64.s
     :language: asm
-    :linenos:
     :lines: 153-193
+    :lineno-match:
     :caption: Second part of looping over M dimension
 
 The M loop needs only 4 iterations, since we are extending the kernel from 16 to 64 in the M dimension by dividing the M dimension into 4 blocks of 16 elements. At the end of the M loop, we move the pointers of A and C to the next block. We jump by 16 elements in the M dimension, which means adding 16*4 Bytes to the pointer of A and C.
@@ -198,14 +209,14 @@ The last step was to implement a loop in the N dimension, resulting in a 64x48x6
 
 .. literalinclude:: ../../src/submissions/03_neon/03_loops/loops/matmul_64_48_64.s
     :language: asm
-    :linenos:
     :lines: 49-66
+    :lineno-match:
     :caption: First part of looping over N dimension
 
 .. literalinclude:: ../../src/submissions/03_neon/03_loops/loops/matmul_64_48_64.s
     :language: asm
-    :linenos:
     :lines: 205-220
+    :lineno-match:
     :caption: Second part of looping over N dimension
 
 Since we are extending the kernel from 6 to 48 in the N dimension, we need to divide the N dimension into 8 blocks of 6 elements. This means that the loop will have 8 iterations. For each N loop, it is important to first reset the pointer of A to the original address. After each iteration, we need to move the pointers of B and C to the next block. To do this, we jump by elements in the N dimension, that is specifically 6 columns of B and C. We do this by adding 6 times the stride of B and C to the pointers.
@@ -224,6 +235,7 @@ The results that we obtained were:
 
 .. literalinclude:: ../../src/submissions/03_neon/03_loops/benchmark/benchmarking_results.txt
     :language: text
+    :lineno-match:
     :caption: GFLOPs calculations for MatMuls
 
 Our results indicate that the number of GFLOPs is very consistent, even when scaling the size of our matrix.
@@ -250,8 +262,8 @@ The second loop was then used to calculate the remaining (2 x 64) block of matri
 
 .. literalinclude:: ../../src/submissions/03_neon/04_simd/matmul_14_6_64/v1_matmul_14_6_64.s
     :language: asm
-    :linenos:
     :lines: 157-200
+    :lineno-match:
     :caption: Second loop for the (2 x 64) matrix calculation
 
 The **second approach** was to use a single loop. We would load the whole matrix C, and matrix A 
@@ -259,8 +271,8 @@ column-wise using one ``ldp qXX, qXX, [x7]``, one ``ldr qXX, [x7, #32]`` and one
 
 .. literalinclude:: ../../src/submissions/03_neon/04_simd/matmul_14_6_64/v2_matmul_14_6_64.s
     :language: asm
-    :linenos:
     :lines: 86-144
+    :lineno-match:
     :caption: Calculate matrix C with a single loop using four loads
 
 Our **third approach** was again to use a single loop. But this time we would load matrix A
@@ -269,8 +281,8 @@ to zero using ``mov v27.s[2], wzr`` and ``mov v27.s[3], wzr``.
 
 .. literalinclude:: ../../src/submissions/03_neon/04_simd/matmul_14_6_64/v3_matmul_14_6_64.s
     :language: asm
-    :linenos:
     :lines: 88-148
+    :lineno-match:
     :caption: Calculate matrix C with a single loop using ``ldp`` loads
 
 In our **fourth approach** we simply copied the second version and changed
@@ -278,16 +290,16 @@ our loads for matrix A and C. We used ``ld1`` instead of ``ldp``.
 
 .. literalinclude:: ../../src/submissions/03_neon/04_simd/matmul_14_6_64/v4_matmul_14_6_64.s
     :language: asm
-    :linenos:
     :lines: 73-130
+    :lineno-match:
     :caption: Calculate matrix C with a single loop and ``ld1`` loads
 
 When benchmarking our approaches we obtained the following results:
 
 .. literalinclude:: ../../src/submissions/03_neon/04_simd/benchmark/benchmarking_results.txt
     :language: text
-    :linenos:
     :lines: 1-31
+    :lineno-match:
     :caption: Benchmarking results for matmul_14_6_64 approaches
 
 The results indicate that the version with three different loads performed
@@ -305,8 +317,8 @@ The second loop was then used to calculate the remaining (3 x 64) block of matri
 
 .. literalinclude:: ../../src/submissions/03_neon/04_simd/matmul_15_6_64/v1_matmul_15_6_64.s
     :language: asm
-    :linenos:
     :lines: 211-256
+    :lineno-match:
     :caption: Second loop for the (3 x 64) matrix calculation
 
 In the **second approach** we use one loop. We load matrix A column-wise using two 
@@ -315,8 +327,8 @@ to zero using ``mov v27.s[3], wzr``.
 
 .. literalinclude:: ../../src/submissions/03_neon/04_simd/matmul_15_6_64/v2_matmul_15_6_64.s
     :language: asm
-    :linenos:
     :lines: 99-158
+    :lineno-match:
     :caption: Calculate matrix C with a single loop using ``ldp`` loads
 
 In the **third approach** we again changed the load instructions from ``ldp`` to
@@ -324,16 +336,16 @@ In the **third approach** we again changed the load instructions from ``ldp`` to
 
 .. literalinclude:: ../../src/submissions/03_neon/04_simd/matmul_15_6_64/v3_matmul_15_6_64.s
     :language: asm
-    :linenos:
     :lines: 81-139
+    :lineno-match:
     :caption: Calculate matrix C with a single loop using ``ld1`` loads
 
 Again, we performed some benchmarks:
 
 .. literalinclude:: ../../src/submissions/03_neon/04_simd/benchmark/benchmarking_results.txt
     :language: text
-    :linenos:
     :lines: 41-63
+    :lineno-match:
     :caption: Benchmarking results for matmul_15_6_64 approaches
 
 Similar to the benchmarks for the ``matmul_14_6_64`` the approach with the single loop
@@ -351,14 +363,14 @@ We also benchmarked the performance of this **generic kernel**:
 
 .. literalinclude:: ../../src/submissions/03_neon/04_simd/benchmark/benchmarking_results.txt
     :language: text
-    :linenos:
     :lines: 33-39
+    :lineno-match:
     :caption: Benchmarking results for ``matmul_M_6_64`` (M = 14) approach
 
 .. literalinclude:: ../../src/submissions/03_neon/04_simd/benchmark/benchmarking_results.txt
     :language: text
-    :linenos:
     :lines: 65-71
+    :lineno-match:
     :caption: Benchmarking results for ``matmul_M_6_64`` (M = 15) approach
 
 Compared to our other approaches our obtained GFLOPs are slightly worse, losing
@@ -374,21 +386,21 @@ Benchmarking this kernel we obtained the following results:
 
 .. literalinclude:: ../../src/submissions/03_neon/05_accumulator_block_shapes/benchmark/benchmarking_results.txt
     :language: text
-    :linenos:
+    :lineno-match:
     :caption: Benchmarking results for matmul_64_64_64 approaches
 
 V1 is the first version which we obtained by converting our best performing ``matmul_64_48_64`` kernel. Trying to squeeze out more performance, we made some minor changes to the computations of the strides (as shown below). We also removed loads and stores of callee-saved registers that were not used. This resulted in a performance increase of about 2-3 GFLOPs in V2 across multiple runs.
 
 .. literalinclude:: ../../src/submissions/03_neon/05_accumulator_block_shapes/optimization/v1_matmul_64_64_64.s
     :language: asm
-    :linenos:
     :lines: 39-47
+    :lineno-match:
     :caption: Naive stride calculations
 
 .. literalinclude:: ../../src/submissions/03_neon/05_accumulator_block_shapes/optimization/v2_matmul_64_64_64.s
     :language: asm
-    :linenos:
     :lines: 37-44
+    :lineno-match:
     :caption: Optimized stride calculations
 
 .. _3.6 Batch-Reduce GEMM:
@@ -408,14 +420,14 @@ Key points that we needed to consider were the following:
 
 .. literalinclude:: ../../src/submissions/03_neon/06_batch_reduce_gemm/optimization/v1_matmul_64_48_64_16.S
     :language: asm
-    :linenos:
     :lines: 56-59
+    :lineno-match:
     :caption: Setting the batch counter
 
 .. literalinclude:: ../../src/submissions/03_neon/06_batch_reduce_gemm/optimization/v1_matmul_64_48_64_16.S
     :language: asm
-    :linenos:
     :lines: 230-244
+    :lineno-match:
     :caption: Jumping to the next matrix A and B in the batch
 
 In our **second version** we made some optimizations to the kernel.
@@ -423,22 +435,24 @@ The changes we made were:
 
 .. literalinclude:: ../../src/submissions/03_neon/06_batch_reduce_gemm/optimization/v2_matmul_64_48_64_16.S
     :language: asm
-    :linenos:
     :lines: 39-44
+    :lineno-match:
     :caption: Replacing ``MUL``'s with ``LSL``'s
 
 .. literalinclude:: ../../src/submissions/03_neon/06_batch_reduce_gemm/optimization/v2_matmul_64_48_64_16.S
     :language: asm
-    :linenos:
     :lines: 78-96
+    :lineno-match:
     :caption: Replacing all ``LDP``'s with ``LD1``'s and ``STP``'s with ``ST1``'s
 
 These optimizations resulted in a performance increase of about ``3-4 GFLOPs``.
 
 .. literalinclude:: ../../src/submissions/03_neon/06_batch_reduce_gemm/benchmark/benchmarking_results_64_48_64_16.txt
     :language: text
-    :linenos:
+    :lineno-match:
     :caption: Benchmarking results for the batch-reduce GEMM kernels
+
+.. _3.7 Transposition:
 
 3.7 Transposition
 -----------------------------
@@ -454,8 +468,8 @@ The second step would be to transpose the matrix:
 
 .. literalinclude:: ../../src/submissions/03_neon/07_transposition/optimization/trans_neon_4_4.S
     :language: asm
-    :linenos: 
     :lines: 56-74
+    :lineno-match:
     :caption: ``trans_4_4`` implementation
 
 The idea of ``trn1`` and ``trn2`` were to prepare the elements for each column in such a way, that 
@@ -476,8 +490,8 @@ Each of the 4 ``4x4 submatrices`` would be transposed using our ``trans_4_4`` ke
 
 .. literalinclude:: ../../src/submissions/03_neon/07_transposition/optimization/trans_neon_8_8.S
     :language: asm
-    :linenos: 
     :lines: 89-184
+    :lineno-match:
     :caption: loading, transposition and storing of upper right and bottom left matrix
 
 4. The bottom right matrix (in the image D) would be transposed and stored at the loading position.
@@ -490,7 +504,7 @@ our case would be the loading and storing of elements.
 
 .. literalinclude:: ../../src/submissions/03_neon/07_transposition/benchmark/benchmarking_results.txt
     :language: text
-    :linenos: 
+    :lineno-match:
     :caption: ``trans_8_8`` performance in ``GiB/s``
 
-Our restults showed that we were transferring about ``8 MB/s``.
+Our results showed that we were transferring about ``8 MB/s``.
