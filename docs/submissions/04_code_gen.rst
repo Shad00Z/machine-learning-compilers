@@ -287,7 +287,7 @@ every 'zero store' with:
 
 .. literalinclude:: ../../src/kernels/unary/identity_primitive.cpp
     :language: cpp
-    :lines: 59-74
+    :lines: 57-69
     :lineno-match:
     :caption: ``8x8`` general case for the ``identity_primitive``
 
@@ -295,7 +295,7 @@ For the base cases, where there was a remainder for the ``m`` dimension, we did 
 
 .. literalinclude:: ../../src/kernels/unary/identity_primitive.cpp
     :language: cpp
-    :lines: 99-105
+    :lines: 95-101
     :lineno-match:
     :caption: ``m%5`` base case for the ``identity_primitive``
 
@@ -317,12 +317,12 @@ We would then first proceed, always in ``4x4`` blocks, in the ``m`` dimension.
 To handle the different stores for ``4x4`` blocks that would not be on the matrix diagonal, we 
 would do the following:
 
-After processing a ``4x4`` block on the diagonal:   
+After processing a ``4x4`` block on the diagonal:
 1. Jump by 4 rows in Matrix A
 2. Jump by 4 columns in Matrix B
 
 By using this approach, we would guarantee, that after processing a block in the matrix A, 
-we could safe it at the correct position in matrix B.
+we could save it at the correct position in matrix B.
 
 For all cases, where the ``m`` dimension would not be divisible by 4, we would need to handle the remaining cases.
 

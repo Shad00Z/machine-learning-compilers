@@ -14,9 +14,9 @@ namespace base = inst::base;
 namespace simd_fp = inst::simd_fp;
 namespace internal_subkernels = mini_jit::kernels::unary::internal;
 
-void mini_jit::kernels::unary::identity(mini_jit::Kernel &kernel,
-                                        int m,
-                                        int n)
+void mini_jit::kernels::unary::identity_trans(mini_jit::Kernel &kernel,
+                                              int m,
+                                              int n)
 {
     // Prepare the kernel
     int mLoopIterations = m / 4;
@@ -210,7 +210,7 @@ void mini_jit::kernels::unary::identity(mini_jit::Kernel &kernel,
     kernel.add_instr(base::ldpPost(gpr_t::x29, gpr_t::x30, gpr_t::sp, 16));
 
     kernel.add_instr(inst::ret());
-    kernel.write("identity_primitive.bin");
+    kernel.write("identity_trans_primitive.bin");
     kernel.set_kernel();
 }
 

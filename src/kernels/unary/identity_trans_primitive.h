@@ -136,14 +136,14 @@ namespace mini_jit
                 void identityM3N1( mini_jit::Kernel &kernel );
             }
             /**
-             * @brief Kernel for transposing a matrix.
+             * @brief Kernel for performing the identity operation on a matrix while transposing the output.
              * @param kernel Kernel object to be filled with instructions.
              * @param m number of rows in the matrix.
              * @param n number of columns in the matrix.
              */
-            void identity( mini_jit::Kernel &kernel, 
-                           int m, 
-                           int n );
+            void identity_trans( mini_jit::Kernel &kernel, 
+                                 int m, 
+                                 int n );
         }
     }
 };

@@ -11,8 +11,7 @@ namespace simd_fp = inst::simd_fp;
 
 void mini_jit::kernels::unary::identity(mini_jit::Kernel &kernel,
                                         u_int32_t m,
-                                        u_int32_t n,
-                                        u_int32_t trans_b)
+                                        u_int32_t n)
 {
     // Inputs:
     // x0: pointer to A
@@ -41,9 +40,6 @@ void mini_jit::kernels::unary::identity(mini_jit::Kernel &kernel,
     // Set n loop counter
     kernel.add_instr(base::mov(gpr_t::x5, n));
 
-    // create zero register
-    kernel.add_instr(simd_fp::zero(simd_fp_t::v31, arr_spec_t::b16));
-
     // Start n loop (1 column)
     kernel.add_label("n_loop");
 
@@ -60,9 +56,9 @@ void mini_jit::kernels::unary::identity(mini_jit::Kernel &kernel,
     {
         kernel.add_label("m_8_loop");
 
-        kernel.add_instr(simd_fp::ldp(simd_fp_t::v30, simd_fp_t::v31, gpr_t::x8, 0, neon_size_spec_t::q));
-        // store 8 zeros
-        kernel.add_instr(simd_fp::stp(simd_fp_t::v30, simd_fp_t::v31, gpr_t::x7, 0, neon_size_spec_t::q));
+        // load and store 8 rows of A and B
+        kernel.add_instr(simd_fp::ldp(simd_fp_t::v0, simd_fp_t::v1, gpr_t::x8, 0, neon_size_spec_t::q));
+        kernel.add_instr(simd_fp::stp(simd_fp_t::v0, simd_fp_t::v1, gpr_t::x7, 0, neon_size_spec_t::q));
         // jump by 8 rows
         kernel.add_instr(base::add(gpr_t::x8, gpr_t::x8, 8*4, 0));
         kernel.add_instr(base::add(gpr_t::x7, gpr_t::x7, 8*4, 0));
@@ -78,46 +74,46 @@ void mini_jit::kernels::unary::identity(mini_jit::Kernel &kernel,
         switch (mLoopRemainder)
         {
         case 1:
-            kernel.add_instr(simd_fp::ldr(simd_fp_t::v30, gpr_t::x8, 0, neon_size_spec_t::s));
-            kernel.add_instr(simd_fp::str(simd_fp_t::v30, gpr_t::x7, 0, neon_size_spec_t::s));
+            kernel.add_instr(simd_fp::ldr(simd_fp_t::v0, gpr_t::x8, 0, neon_size_spec_t::s));
+            kernel.add_instr(simd_fp::str(simd_fp_t::v0, gpr_t::x7, 0, neon_size_spec_t::s));
             break;
         case 2:
-            kernel.add_instr(simd_fp::ldr(simd_fp_t::v30, gpr_t::x8, 0, neon_size_spec_t::d));
-            kernel.add_instr(simd_fp::str(simd_fp_t::v30, gpr_t::x7, 0, neon_size_spec_t::d));
+            kernel.add_instr(simd_fp::ldr(simd_fp_t::v0, gpr_t::x8, 0, neon_size_spec_t::d));
+            kernel.add_instr(simd_fp::str(simd_fp_t::v0, gpr_t::x7, 0, neon_size_spec_t::d));
             break;
         case 3:
-            kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v29, gpr_t::x8, 8, neon_size_spec_t::d));
-            kernel.add_instr(simd_fp::ldr(simd_fp_t::v30, gpr_t::x8, 0, neon_size_spec_t::s));
+            kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v0, gpr_t::x8, 8, neon_size_spec_t::d));
+            kernel.add_instr(simd_fp::ldr(simd_fp_t::v1, gpr_t::x8, 0, neon_size_spec_t::s));
 
-            kernel.add_instr(simd_fp::strPost(simd_fp_t::v29, gpr_t::x7, 8, neon_size_spec_t::d));
-            kernel.add_instr(simd_fp::str(simd_fp_t::v30, gpr_t::x7, 0, neon_size_spec_t::s));
+            kernel.add_instr(simd_fp::strPost(simd_fp_t::v0, gpr_t::x7, 8, neon_size_spec_t::d));
+            kernel.add_instr(simd_fp::str(simd_fp_t::v1, gpr_t::x7, 0, neon_size_spec_t::s));
             break;
         case 4:
-            kernel.add_instr(simd_fp::ldr(simd_fp_t::v30, gpr_t::x8, 0, neon_size_spec_t::q));
-            kernel.add_instr(simd_fp::str(simd_fp_t::v30, gpr_t::x7, 0, neon_size_spec_t::q));
+            kernel.add_instr(simd_fp::ldr(simd_fp_t::v0, gpr_t::x8, 0, neon_size_spec_t::q));
+            kernel.add_instr(simd_fp::str(simd_fp_t::v0, gpr_t::x7, 0, neon_size_spec_t::q));
             break;
         case 5:
-            kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v29, gpr_t::x8, 16, neon_size_spec_t::q));
-            kernel.add_instr(simd_fp::ldr(simd_fp_t::v30, gpr_t::x8, 0, neon_size_spec_t::s));
+            kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v0, gpr_t::x8, 16, neon_size_spec_t::q));
+            kernel.add_instr(simd_fp::ldr(simd_fp_t::v1, gpr_t::x8, 0, neon_size_spec_t::s));
 
-            kernel.add_instr(simd_fp::strPost(simd_fp_t::v29, gpr_t::x7, 16, neon_size_spec_t::q));
-            kernel.add_instr(simd_fp::str(simd_fp_t::v30, gpr_t::x7, 0, neon_size_spec_t::s));
+            kernel.add_instr(simd_fp::strPost(simd_fp_t::v0, gpr_t::x7, 16, neon_size_spec_t::q));
+            kernel.add_instr(simd_fp::str(simd_fp_t::v1, gpr_t::x7, 0, neon_size_spec_t::s));
             break;
         case 6:
-            kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v29, gpr_t::x8, 16, neon_size_spec_t::q));
-            kernel.add_instr(simd_fp::ldr(simd_fp_t::v30, gpr_t::x8, 0, neon_size_spec_t::d));
+            kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v0, gpr_t::x8, 16, neon_size_spec_t::q));
+            kernel.add_instr(simd_fp::ldr(simd_fp_t::v1, gpr_t::x8, 0, neon_size_spec_t::d));
 
-            kernel.add_instr(simd_fp::strPost(simd_fp_t::v29, gpr_t::x7, 16, neon_size_spec_t::q));
-            kernel.add_instr(simd_fp::str(simd_fp_t::v30, gpr_t::x7, 0, neon_size_spec_t::d));
+            kernel.add_instr(simd_fp::strPost(simd_fp_t::v0, gpr_t::x7, 16, neon_size_spec_t::q));
+            kernel.add_instr(simd_fp::str(simd_fp_t::v1, gpr_t::x7, 0, neon_size_spec_t::d));
             break;
         case 7:
-            kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v28, gpr_t::x8, 16, neon_size_spec_t::q));
-            kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v29, gpr_t::x8, 8, neon_size_spec_t::d));
-            kernel.add_instr(simd_fp::ldr(simd_fp_t::v30, gpr_t::x8, 0, neon_size_spec_t::s));
+            kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v0, gpr_t::x8, 16, neon_size_spec_t::q));
+            kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v1, gpr_t::x8, 8, neon_size_spec_t::d));
+            kernel.add_instr(simd_fp::ldr(simd_fp_t::v2, gpr_t::x8, 0, neon_size_spec_t::s));
 
-            kernel.add_instr(simd_fp::strPost(simd_fp_t::v28, gpr_t::x7, 16, neon_size_spec_t::q));
-            kernel.add_instr(simd_fp::strPost(simd_fp_t::v29, gpr_t::x7, 8, neon_size_spec_t::d));
-            kernel.add_instr(simd_fp::str(simd_fp_t::v30, gpr_t::x7, 0, neon_size_spec_t::s));       // 1
+            kernel.add_instr(simd_fp::strPost(simd_fp_t::v0, gpr_t::x7, 16, neon_size_spec_t::q));
+            kernel.add_instr(simd_fp::strPost(simd_fp_t::v1, gpr_t::x7, 8, neon_size_spec_t::d));
+            kernel.add_instr(simd_fp::str(simd_fp_t::v2, gpr_t::x7, 0, neon_size_spec_t::s));
             break;
         default:
             break;
@@ -137,6 +133,6 @@ void mini_jit::kernels::unary::identity(mini_jit::Kernel &kernel,
     kernel.add_instr(base::ldpPost(gpr_t::x29, gpr_t::x30, gpr_t::sp, 16));
 
     kernel.add_instr(inst::ret());
-    kernel.write("zero_primitive.bin");
+    kernel.write("identity_primitive.bin");
     kernel.set_kernel();
 }
