@@ -249,3 +249,60 @@ The results that we obtained were saved under ``src/benchmark/br_gemm_perf.csv``
     :caption: Snippet of executed benchmarks for ``matmul_br_m_n_k``
 
 Evaluating our GFLOP performance, we can see that we achieve a similar performance as in our ``matmul_m_n_k`` benchmark.
+
+4.4 Unary Primitives
+-----------------------
+
+4.4.2 Identity Primitive
+-------------------------
+
+4.4.2.1 Identity Implementation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Our intuition to transpose the identity was to again look at the :ref:`4x4 tranposition kernel <3.7 Transposition>`.
+
+4.4.2.2 Identity Transposition Implementation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+We decided to take the 4x4 matrix as our general case. 
+We would then first proceed, always in ``4x4`` blocks, in the ``m`` dimension.
+
+.. literalinclude:: ../../src/kernels/unary/identity_trans_primitive.cpp
+    :language: cpp
+    :lines: 228-258
+    :caption: ``4x4`` general case for the ``identity_trans_primitive``
+
+To handle the different stores for ``4x4`` blocks that would not be on the matrix diagonal, we 
+would do the following:
+
+After processing a ``4x4`` block on the diagonal:   
+1. Jump by 4 rows in Matrix A
+2. Jump by 4 columns in Matrix B
+
+By using this approach, we would guarantee, that after processing a block in the matrix A, 
+we could safe it at the correct position in matrix B.
+
+For all cases, where the ``m`` dimension would not be divisible by 4, we would need to handle the remaining cases.
+
+.. literalinclude:: ../../src/kernels/unary/identity_trans_primitive.cpp
+    :language: cpp
+    :lines: 335-361
+    :caption: ``2x4`` base case for the ``identity_trans_primitive``
+
+After implementing the base cases for remainders of ``m``, we would be able to process ``mx4`` blocks of our matrix.
+
+That meant, we needed to consider cases, where there was a remainder of ``n``.
+There were two things to consider:
+
+1. The rightmost column (remainder of ``n``), which could be: ``4x3``, ``4x2`` or ``4x1``
+2. The last piece in the rightmost corner (remainder of ``m`` and ``n``)
+
+For both of these cases we would consider a similar implementing approach as for the ``m`` remainder implementation.
+
+.. literalinclude:: ../../src/kernels/unary/identity_trans_primitive.cpp
+    :language: cpp
+    :lines: 534-551
+    :caption: ``4x2`` base case for the ``identity_trans_primitive``
+
+4.4.2.3 Benchmarks the Identity Kernel Performance
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

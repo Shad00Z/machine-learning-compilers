@@ -440,6 +440,8 @@ These optimizations resulted in a performance increase of about ``3-4 GFLOPs``.
     :linenos:
     :caption: Benchmarking results for the batch-reduce GEMM kernels
 
+.. _3.7 Transposition:
+
 3.7 Transposition
 -----------------------------
 
