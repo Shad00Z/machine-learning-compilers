@@ -52,8 +52,8 @@ void mini_jit::benchmarks::Zero_eor_primitive_bench::run()
     // END RUN
 
     // Calculate metrics
-    long l_totalNumberElements = m_M * m_N * l_num_reps;
-    double l_totalDataProcessed = (sizeof(float) * 2 * l_totalNumberElements) / (1024.0 * 1024.0 * 1024.0); // * 2 ?
+    long l_totalNumberElements = m_M * m_N * l_num_reps * 2;
+    double l_totalDataProcessed = (sizeof(float) * l_totalNumberElements) / (1024.0 * 1024.0 * 1024.0);
     double l_gibps = l_totalDataProcessed / l_elapsed;
 
     // Store the results

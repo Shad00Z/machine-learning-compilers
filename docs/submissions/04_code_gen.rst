@@ -287,7 +287,37 @@ Evaluating our GFLOP performance, we can see that we achieve a similar performan
 4.2.1 Zero Primitive
 ===========================
 
-The first unary primitive we implemented was the zero primitive. This kernel is supposed to set all elements of the output matrix to zero, while ignoring the input matrix.
+4.2.1.1 Zero Primitive Implementation
+---------------------------------------
+
+The first unary primitive we implemented was the zero primitive. This kernel is supposed to set all elements of the output matrix to zero, while ignoring the input matrix. This functionality can be implemented in many different ways, but we started with the arm instruction which we had already implemented: ``STR``. We called this version the ``XZR``approach, because we are using the ``XZR`` (and sometimes ``WZR``) register to store the zero value in the output matrix. The limitation here is that the ``XZR`` is only 64 bits wide, which means that we can only set zero for 2 FP32 values at once. To improve this, we implemented a second version that uses ``Neon`` instructions. We first create a zero register using the ``EOR`` instruction (eg. ``eor v31.16b, v31.16b, v31.16b`` sets ``v31`` to zero) and then use ``STP`` to zero 8 FP32 values at once. This version is called the ``EOR`` approach.
+
+.. literalinclude:: ../../src/kernels/unary/zero_primitive_xzr.cpp
+    :language: cpp
+    :lines: 56-70
+    :lineno-match:
+    :caption: general case for the ``XZR zero primitive``
+
+.. literalinclude:: ../../src/kernels/unary/zero_primitive.cpp
+    :language: cpp
+    :lines: 61-70
+    :lineno-match:
+    :caption: general case for the ``EOR zero primitive``
+
+It can be seen that we only handle one column at a time. For all matrices where the number of rows is not divisible by 8, we implemented edge cases that handle the remaining elements. This approach is the same as we used in the matrix multiplication kernels. The only difference is that we do not need to handle the K dimension.
+
+4.2.1.1 Zero Primitive Benchmarks
+---------------------------------------
+
+We benchmarked the performance of our zero primitive for the given parameters (M=N=50, M=N=64, M=N=512 and M=N=2048) and obtained the following results:
+
+.. literalinclude:: ../../benchmarks/unary_benchmarks.txt
+    :language: text
+    :lines: 113-168
+    :lineno-match:
+    :caption: Benchmarking results for the zero Primitive
+
+In all cases, we can see that the ``EOR`` approach is significantly faster than the ``XZR`` approach.
 
 4.2.2 Identity Primitive
 ===========================
@@ -376,7 +406,7 @@ We benchmarked the performance of our identity kernel for the given parameters (
     :lineno-match:
     :caption: Benchmarking results for the identity kernels
 
-Most notably, we can see that the performance of the transposition kernel is significantly lower for larger matrices, such as 512x512 and 2048x2048. Here we only achieved a bandwidth of 3.5 to 4 GiB/s, while most other configurations achieved a bandwidths greater than 100 GiB/s.
+Most notably, we can see that the performance of the transposition kernel is significantly lower for larger matrices, such as 512x512 and 2048x2048. Here we only achieved a bandwidth of 3.6 to 4 GiB/s, while all other configurations achieved bandwidths greater than 100 GiB/s.
 
 4.2.3 ReLU Primitive
 ===========================
