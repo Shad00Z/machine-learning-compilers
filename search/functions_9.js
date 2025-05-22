@@ -7,5 +7,6 @@ var searchData=
   ['_7ematmul_5fm_5fn_5fk_5fbench_4',['~Matmul_m_n_k_bench',['../classmini__jit_1_1benchmarks_1_1Matmul__m__n__k__bench.html#a382f9cbb15eec3257319f2bb13af497a',1,'mini_jit::benchmarks::Matmul_m_n_k_bench']]],
   ['_7erelu_5fprimitive_5fbench_5',['~Relu_primitive_bench',['../classmini__jit_1_1benchmarks_1_1Relu__primitive__bench.html#ae387eb1ead307faa68d95859c73c4436',1,'mini_jit::benchmarks::Relu_primitive_bench']]],
   ['_7erelu_5ftrans_5fprimitive_5fbench_6',['~Relu_trans_primitive_bench',['../classmini__jit_1_1benchmarks_1_1Relu__trans__primitive__bench.html#a6b5ee35d40fb4b07d286caab4157a487',1,'mini_jit::benchmarks::Relu_trans_primitive_bench']]],
-  ['_7ezero_5fprimitive_5fbench_7',['~Zero_primitive_bench',['../classmini__jit_1_1benchmarks_1_1Zero__primitive__bench.html#a7aa5bd1432fddf4373c5909021aa7544',1,'mini_jit::benchmarks::Zero_primitive_bench']]]
+  ['_7ezero_5feor_5fprimitive_5fbench_7',['~Zero_eor_primitive_bench',['../classmini__jit_1_1benchmarks_1_1Zero__eor__primitive__bench.html#ab9bd211d7c028a9652317449179386d7',1,'mini_jit::benchmarks::Zero_eor_primitive_bench']]],
+  ['_7ezero_5fxzr_5fprimitive_5fbench_8',['~Zero_xzr_primitive_bench',['../classmini__jit_1_1benchmarks_1_1Zero__xzr__primitive__bench.html#ae704ae9510cb7c86bbe38da9d7259aa6',1,'mini_jit::benchmarks::Zero_xzr_primitive_bench']]]
 ];
