@@ -297,7 +297,7 @@ Evaluating our GFLOP performance, we can see that we achieve a similar performan
 4.2.1.1 Zero Primitive Implementation
 ---------------------------------------
 
-The first unary primitive we implemented was the zero primitive. This kernel is supposed to set all elements of the output matrix to zero, while ignoring the input matrix. This functionality can be implemented in many different ways, but we started with the arm instruction which we had already implemented: ``STR``. We called this version the ``XZR``approach, because we are using the ``XZR`` (and sometimes ``WZR``) register to store the zero value in the output matrix. The limitation here is that the ``XZR`` is only 64 bits wide, which means that we can only set zero for 2 FP32 values at once. To improve this, we implemented a second version that uses ``Neon`` instructions. We first create a zero register using the ``EOR`` instruction (eg. ``eor v31.16b, v31.16b, v31.16b`` sets ``v31`` to zero) and then use ``STP`` to zero 8 FP32 values at once. This version is called the ``EOR`` approach.
+The first unary primitive we implemented was the zero primitive. This kernel is supposed to set all elements of the output matrix to zero, while ignoring the input matrix. This functionality can be implemented in many different ways, but we started with the arm instruction which we had already implemented: ``STR``. We called this version the ``XZR`` approach, because we are using the ``XZR`` (and sometimes ``WZR``) register to store zeroes in the output matrix. The limitation here is that the ``XZR`` is only 64 bits wide, which means that we can only set 2 FP32 values to zero at once. To improve this, we implemented a second version that uses ``Neon`` instructions. We first create a zero register using the ``EOR`` instruction (eg. ``eor v31.16b, v31.16b, v31.16b`` sets ``v31`` to zero) and then use ``STP`` to zero 8 FP32 values at once. This version is called the ``EOR`` approach.
 
 .. literalinclude:: ../../src/kernels/unary/zero_primitive_xzr.cpp
     :language: cpp
@@ -313,7 +313,7 @@ The first unary primitive we implemented was the zero primitive. This kernel is 
     :caption: general case for the ``EOR zero primitive``
     :dedent:
 
-It can be seen that we only handle one column at a time. For all matrices where the number of rows is not divisible by 8, we implemented edge cases that handle the remaining elements. This approach is the same as we used in the matrix multiplication kernels. The only difference is that we do not need to handle the K dimension.
+In this primitive, we handle one column at a time. For all matrices where the number of rows is not divisible by 8, we implemented edge cases that handle the remaining elements. This approach is the same as we used in the matrix multiplication kernels, with the only difference being that we do not need to handle the K dimension.
 
 Both versions also support transposition, by simply swapping the M and N dimensions.
 
@@ -328,7 +328,7 @@ We benchmarked the performance of our zero primitive for the given parameters (M
     :lineno-match:
     :caption: Benchmarking results for the zero Primitive
 
-In all cases, we can see that the ``EOR`` approach is significantly faster than the ``XZR`` approach.
+In all cases, we can see that the ``EOR`` approach is significantly faster than the ``XZR`` approach. Transposition was not benchmarked, since the swapping of the dimensions happens in the high level code and not in the assembly code.
 
 4.2.2 Identity Primitive
 ===========================
@@ -340,8 +340,8 @@ Firstly we implemented the general identity for a matrix A.
 This approach was pretty straight forward as we simply copied our ``zero_primitive`` kernel and replaced 
 every 'zero store' with:
 
-1. A load from matrix A at the specific address
-2. A store, that would store the element from A in matrix B
+#. A load from matrix A at the specific address
+#. A store, that would store the element from A in matrix B
 
 .. literalinclude:: ../../src/kernels/unary/identity_primitive.cpp
     :language: cpp
@@ -356,7 +356,7 @@ For the base cases, where there was a remainder for the ``m`` dimension, we did 
     :language: cpp
     :lines: 95-101
     :lineno-match:
-    :caption: ``m%5`` base case for the ``identity_primitive``
+    :caption: ``m%8=5`` case for the ``identity_primitive``
     :dedent:
 
 4.2.2.2 Identity Transposition Implementation
@@ -379,13 +379,11 @@ To handle the different stores for ``4x4`` blocks that would not be on the matri
 would do the following:
 
 After processing a ``4x4`` block on the diagonal:
-1. Jump by 4 rows in Matrix A
-2. Jump by 4 columns in Matrix B
 
-By using this approach, we would guarantee, that after processing a block in the matrix A, 
-we could save it at the correct position in matrix B.
+#. Jump by 4 rows in Matrix A
+#. Jump by 4 columns in Matrix B
 
-For all cases, where the ``m`` dimension would not be divisible by 4, we would need to handle the remaining cases.
+By using this approach, we would guarantee, that after processing a block in the matrix A, we could save it at the correct position in matrix B. For all cases, where the ``m`` dimension would not be divisible by 4, we would need to handle the remaining cases.
 
 .. literalinclude:: ../../src/kernels/unary/identity_trans_primitive.cpp
     :language: cpp
@@ -399,8 +397,8 @@ After implementing the base cases for remainders of ``m``, we would be able to p
 That meant, we needed to consider cases, where there was a remainder of ``n``.
 There were two things to consider:
 
-1. The rightmost column (remainder of ``n``), which could be: ``4x3``, ``4x2`` or ``4x1``
-2. The last piece in the rightmost corner (remainder of ``m`` and ``n``)
+#. The rightmost column (remainder of ``n``), which could be: ``4x3``, ``4x2`` or ``4x1``
+#. The last piece in the rightmost corner (remainder of ``m`` and ``n``)
 
 For both of these cases we would consider a similar implementing approach as for the ``m`` remainder implementation.
 
