@@ -310,7 +310,7 @@ We would then first proceed, always in ``4x4`` blocks, in the ``m`` dimension.
 
 .. literalinclude:: ../../src/kernels/unary/identity_trans_primitive.cpp
     :language: cpp
-    :lines: 228-258
+    :lines: 223-253
     :lineno-match:
     :caption: ``4x4`` general case for the ``identity_trans_primitive``
 
@@ -328,7 +328,7 @@ For all cases, where the ``m`` dimension would not be divisible by 4, we would n
 
 .. literalinclude:: ../../src/kernels/unary/identity_trans_primitive.cpp
     :language: cpp
-    :lines: 335-361
+    :lines: 339-356
     :lineno-match:
     :caption: ``2x4`` base case for the ``identity_trans_primitive``
 
@@ -344,7 +344,7 @@ For both of these cases we would consider a similar implementing approach as for
 
 .. literalinclude:: ../../src/kernels/unary/identity_trans_primitive.cpp
     :language: cpp
-    :lines: 534-551
+    :lines: 529-546
     :lineno-match:
     :caption: ``4x2`` base case for the ``identity_trans_primitive``
 
