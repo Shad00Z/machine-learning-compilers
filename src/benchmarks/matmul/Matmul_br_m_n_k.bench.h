@@ -1,6 +1,6 @@
 #ifndef MATMUL_BR_M_N_K_BENCH_H
 #define MATMUL_BR_M_N_K_BENCH_H
-#include "Benchmark.h"
+#include "benchmarks/Benchmark.h"
 
 namespace mini_jit
 {

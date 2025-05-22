@@ -1,6 +1,6 @@
 #include <random>
 #include <chrono>
-#include "Benchmark.h"
+#include "benchmarks/Benchmark.h"
 #include "Matmul_br_m_n_k.bench.h"
 #include "Kernel.h"
 #include "Brgemm.h"
@@ -69,11 +69,11 @@ void mini_jit::benchmarks::Matmul_br_m_n_k_bench::run()
     double l_gflops = ((double)l_totalOperations) / (l_elapsed * 1e9);
 
     // Store the results
-    m_benchmarkResult = {
-        l_num_reps,
-        l_elapsed,
-        l_totalOperations,
-        l_gflops};
+    m_benchmarkResult.numReps = l_num_reps;
+    m_benchmarkResult.elapsedSeconds = l_elapsed;
+    m_benchmarkResult.totalNumberElements = m_M * m_N * m_K * l_num_reps;
+    m_benchmarkResult.totalOperations = l_totalOperations;
+    m_benchmarkResult.gflops = l_gflops;
 
     delete[] m_A;
     delete[] m_B;

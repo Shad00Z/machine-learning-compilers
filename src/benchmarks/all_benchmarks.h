@@ -1,7 +1,13 @@
 #ifndef ALL_BENCHMARKS_H
 #define ALL_BENCHMARKS_H
 
-#include "Matmul_br_m_n_k.bench.h"
-#include "Matmul_m_n_k.bench.h"
+#include "matmul/Matmul_br_m_n_k.bench.h"
+#include "matmul/Matmul_m_n_k.bench.h"
+
+#include "unary/identity_primitive.bench.h"
+#include "unary/identity_trans_primitive.bench.h"
+#include "unary/relu_primitive.bench.h"
+#include "unary/relu_trans_primitive.bench.h"
+#include "unary/zero_primitive.bench.h"
 
 #endif // ALL_BENCHMARKS_H
