@@ -7,21 +7,21 @@ mini_jit::kernels
    :content-only:
    :members:
 
-::matmul
+mini_jit::kernels::matmul
 ----------------------------
 .. doxygennamespace:: mini_jit::kernels::matmul
    :project: Machine Learning Compilers
    :content-only:
    :members:
 
-::subkernels
-^^^^^^^^^^^^^^^
+mini_jit::kernels::matmul::subkernels
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. doxygennamespace:: mini_jit::kernels::matmul::subkernels
    :project: Machine Learning Compilers
    :content-only:
    :members:
 
-::unary
+mini_jit::kernels::unary
 ----------------------------
 .. doxygennamespace:: mini_jit::kernels::unary
    :project: Machine Learning Compilers

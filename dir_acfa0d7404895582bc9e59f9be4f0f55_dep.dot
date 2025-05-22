@@ -1,0 +1,12 @@
+digraph "/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/benchmarks/matmul"
+{
+ // LATEX_PDF_SIZE
+  bgcolor="transparent";
+  edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
+  node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
+  compound=true
+  subgraph clusterdir_41b668e9275061b2af1811d766f5b837 {
+    graph [ bgcolor="#edf0f7", pencolor="grey50", label="benchmarks", fontname=Helvetica,fontsize=10 style="filled,dashed", URL="dir_41b668e9275061b2af1811d766f5b837.html",tooltip=""]
+  dir_acfa0d7404895582bc9e59f9be4f0f55 [label="matmul", fillcolor="#edf0f7", color="grey25", style="filled,bold", URL="dir_acfa0d7404895582bc9e59f9be4f0f55.html",tooltip=""];
+  }
+}

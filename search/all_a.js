@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['unary_0',['Unary',['../classmini__jit_1_1Unary.html',1,'mini_jit']]]
+  ['set_5fkernel_0',['set_kernel',['../classmini__jit_1_1Kernel.html#a2e918407d18f577869072b0f5637f300',1,'mini_jit::Kernel']]]
 ];

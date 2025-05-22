@@ -67,10 +67,10 @@
 <li class="toctree-l1"><a class="reference internal" href="mini_jit_converters.html">mini_jit::converters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mini_jit_instructions.html">mini_jit::instructions</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">mini_jit::kernels</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#matmul">::matmul</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#mini-jit-kernels-matmul">mini_jit::kernels::matmul</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit7kernels6matmul15matmul_br_m_n_kERN8mini_jit6KernelEiiii"><code class="docutils literal notranslate"><span class="pre">matmul_br_m_n_k()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit7kernels6matmul12matmul_m_n_kERN8mini_jit6KernelEiii"><code class="docutils literal notranslate"><span class="pre">matmul_m_n_k()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#subkernels">::subkernels</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#mini-jit-kernels-matmul-subkernels">mini_jit::kernels::matmul::subkernels</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv4N8mini_jit7kernels6matmul10subkernels13matmul_16_6_1ERN8mini_jit6KernelE"><code class="docutils literal notranslate"><span class="pre">matmul_16_6_1()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv4N8mini_jit7kernels6matmul10subkernels13matmul_16_6_kERN8mini_jit6KernelEi"><code class="docutils literal notranslate"><span class="pre">matmul_16_6_k()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv4N8mini_jit7kernels6matmul10subkernels12matmul_m_1_kERN8mini_jit6KernelEii"><code class="docutils literal notranslate"><span class="pre">matmul_m_1_k()</span></code></a></li>
@@ -81,7 +81,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#unary">::unary</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#mini-jit-kernels-unary">mini_jit::kernels::unary</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit7kernels5unary8identityERN8mini_jit6KernelE8uint32_t8uint32_t"><code class="docutils literal notranslate"><span class="pre">identity()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit7kernels5unary14identity_transERN8mini_jit6KernelEii"><code class="docutils literal notranslate"><span class="pre">identity_trans()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit7kernels5unary4reluERN8mini_jit6KernelE9u_int32_t9u_int32_t"><code class="docutils literal notranslate"><span class="pre">relu()</span></code></a></li>
@@ -121,8 +121,8 @@
              
   <section id="mini-jit-kernels">
 <span id="api-mini-jit-kernels"></span><h1>mini_jit::kernels<a class="headerlink" href="#mini-jit-kernels" title="Link to this heading"></a></h1>
-<section id="matmul">
-<h2>::matmul<a class="headerlink" href="#matmul" title="Link to this heading"></a></h2>
+<section id="mini-jit-kernels-matmul">
+<h2>mini_jit::kernels::matmul<a class="headerlink" href="#mini-jit-kernels-matmul" title="Link to this heading"></a></h2>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N8mini_jit7kernels6matmul15matmul_br_m_n_kERN8mini_jit6KernelEiiii">
 <span id="_CPPv3N8mini_jit7kernels6matmul15matmul_br_m_n_kERN8mini_jit6KernelEiiii"></span><span id="_CPPv2N8mini_jit7kernels6matmul15matmul_br_m_n_kERN8mini_jit6KernelEiiii"></span><span id="mini_jit::kernels::matmul::matmul_br_m_n_k__mini_jit::KernelR.i.i.i.i"></span><span class="target" id="matmul__br__m__n__k_8h_1a169ac71fff8622955df2e8b3690da1ea"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">kernels</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">matmul</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">matmul_br_m_n_k</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Kernel</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">kernel</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">k</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">br_size</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit7kernels6matmul15matmul_br_m_n_kERN8mini_jit6KernelEiiii" title="Link to this definition"></a><br /></dt>
@@ -156,8 +156,8 @@
 </dl>
 </dd></dl>
 
-<section id="subkernels">
-<h3>::subkernels<a class="headerlink" href="#subkernels" title="Link to this heading"></a></h3>
+<section id="mini-jit-kernels-matmul-subkernels">
+<h3>mini_jit::kernels::matmul::subkernels<a class="headerlink" href="#mini-jit-kernels-matmul-subkernels" title="Link to this heading"></a></h3>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N8mini_jit7kernels6matmul10subkernels13matmul_16_6_1ERN8mini_jit6KernelE">
 <span id="_CPPv3N8mini_jit7kernels6matmul10subkernels13matmul_16_6_1ERN8mini_jit6KernelE"></span><span id="_CPPv2N8mini_jit7kernels6matmul10subkernels13matmul_16_6_1ERN8mini_jit6KernelE"></span><span id="mini_jit::kernels::matmul::subkernels::matmul_16_6_1__mini_jit::KernelR"></span><span class="target" id="matmul__16__6__1_8h_1ac275f436d883cf1d21711ce1d0cb84e2"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">kernels</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">matmul</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">subkernels</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">matmul_16_6_1</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Kernel</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">kernel</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit7kernels6matmul10subkernels13matmul_16_6_1ERN8mini_jit6KernelE" title="Link to this definition"></a><br /></dt>
@@ -245,8 +245,8 @@
 
 </section>
 </section>
-<section id="unary">
-<h2>::unary<a class="headerlink" href="#unary" title="Link to this heading"></a></h2>
+<section id="mini-jit-kernels-unary">
+<h2>mini_jit::kernels::unary<a class="headerlink" href="#mini-jit-kernels-unary" title="Link to this heading"></a></h2>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N8mini_jit7kernels5unary8identityERN8mini_jit6KernelE8uint32_t8uint32_t">
 <span id="_CPPv3N8mini_jit7kernels5unary8identityERN8mini_jit6KernelE8uint32_t8uint32_t"></span><span id="_CPPv2N8mini_jit7kernels5unary8identityERN8mini_jit6KernelE8uint32_t8uint32_t"></span><span id="mini_jit::kernels::unary::identity__mini_jit::KernelR.uint32_t.uint32_t"></span><span class="target" id="identity__primitive_8h_1af9cd6262ede9a95ff6d14c24026f3b0c"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">kernels</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">unary</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">identity</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Kernel</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">kernel</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit7kernels5unary8identityERN8mini_jit6KernelE8uint32_t8uint32_t" title="Link to this definition"></a><br /></dt>
