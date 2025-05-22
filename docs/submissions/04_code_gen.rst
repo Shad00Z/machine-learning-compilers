@@ -279,7 +279,25 @@ Evaluating our GFLOP performance, we can see that we achieve a similar performan
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Firstly we implemented the general identity for a matrix A.
 
-...
+This approach was pretty straight forward as we simply copied our ``zero_primitive`` kernel and replaced 
+every 'zero store' with:
+
+1. A load from matrix A at the specific address
+2. A store, that would store the element from A in matrix B
+
+.. literalinclude:: ../../src/kernels/unary/identity_primitive.cpp
+    :language: cpp
+    :lines: 59-74
+    :lineno-match:
+    :caption: ``8x8`` general case for the ``identity_primitive``
+
+For the base cases, where there was a remainder for the ``m`` dimension, we did the same thing.
+
+.. literalinclude:: ../../src/kernels/unary/identity_primitive.cpp
+    :language: cpp
+    :lines: 99-105
+    :lineno-match:
+    :caption: ``m%5`` base case for the ``identity_primitive``
 
 4.5.2 Identity Transposition Implementation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
