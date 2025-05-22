@@ -11,7 +11,7 @@ namespace mini_jit
         {
         public:
             /**
-             * @brief Constructor for the benchmark for the transposition ReLu primitive.
+             * @brief Constructor for the benchmark for the transposition ReLU primitive.
              * @param runTime The time to run the benchmark in seconds.
              * @param m number of rows in A and B.
              * @param n number of columns in A and B.

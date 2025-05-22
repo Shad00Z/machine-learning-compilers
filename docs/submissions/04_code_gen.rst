@@ -1,8 +1,13 @@
+#####################
 4. Code Generation
-====================
+#####################
 
-4.1 Microkernel
----------------------
+**********************
+4.1 BRGEMM Primitive
+**********************
+
+4.1.1 Microkernel
+===================
 
 This section sets the foundation for our machine learning compiler.
 We are starting off by implementing / generating batch-reduce matrix-matrix multiplications (BRGEMMS).
@@ -53,13 +58,13 @@ As a last step we measured the performance of our generated code, resulting in t
 Comparing our ``matmul_16_6_1`` kernel to our previous implementations, we are slightly worse, loosing about ``8 GFLOPs``.
 However, for the ``matmul_16_6_k`` we reach the same number of GFLOPs that we reached with our best implementations.
 
-.. _4.2 GEMM:
+.. _4.1.2 GEMM:
 
-4.2 GEMM
------------------
+4.1.2 GEMM
+==================
 
-4.2.1 Implementation of a GEMM kernel
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+4.1.2.1 Implementation of a GEMM kernel
+----------------------------------------
 
 This section extends the previously implemented kernels to a more general GEMM kernel. It should be able to compute C+=AB for arbitrary A, B and C matrices in the range of 1≤M≤1024, 1≤N≤1024, and 1≤K≤2048.
 
@@ -129,8 +134,8 @@ For the whole N loop, we use switch statements to call the specialized kernels. 
 
 The full code is available in the file ``src/kernels/matmul_m_n_k.cpp``.
 
-4.2.2 Verification of the GEMM kernel with lda=M, ldb=K, ldc=M
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+4.1.2.2 Verification of the GEMM kernel with lda=M, ldb=K, ldc=M
+-------------------------------------------------------------------
 
 This task requires us to verify the correctness of our ``matmul_m_n_k`` kernel by comparing to a reference implementation for 1≤M≤64, 1≤N≤64, K∈[1,16,32,64,128], and lda=M, ldb=K, ldc=M.
 We realized this verification using a ``Catch2`` unit test:
@@ -143,8 +148,8 @@ We realized this verification using a ``Catch2`` unit test:
 
 The M and N dimensions are generated randomly, while the K dimension is fixed to multiple given values. We compute the expected result using high level C++ code and compare it to the result of our kernel.
 
-4.2.3 Verification of the GEMM kernel with lda>M, ldb>K or ldc>M
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+4.1.2.3 Verification of the GEMM kernel with lda>M, ldb>K or ldc>M
+-------------------------------------------------------------------
 
 This task is very similar to the previous one, but we need to verify the correctness of our ``matmul_m_n_k`` kernel for 1≤M≤64, 1≤N≤64, K∈[1,16,32,64,128], and lda>M, ldb>K or ldc>M. This means that we need to store the matrices in a way that they are not contiguous in memory. We can do this by first choosing strides that are larger than the M, N and K dimensions. Then we can use the strides to compute the addresses of the elements in the matrices. Next, we can use this strides to first allocate memory that is larger than the matrices and then only set the elements that are used in the computation. The other elements, which will be skipped due to the strides, will be set to 0. Lastly, we call our kernel and compare the result to the expected result:
 
@@ -154,8 +159,8 @@ This task is very similar to the previous one, but we need to verify the correct
     :lineno-match:
     :caption: Unit test for the ``matmul_m_n_k`` kernel with lda>M, ldb>K or ldc>M
 
-4.2.4 Benchmarking the GEMM kernel performance
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+4.1.2.4 Benchmarking the GEMM kernel performance
+-------------------------------------------------------------------
 
 For the benchmarking we enhanced our ``benchmarking.cpp`` file that was used for the previous tasks.
 Our task was to benchmark the performance of our generated kernels and report the measured
@@ -166,7 +171,7 @@ Our idea was run each of these benchmarks for a time of ``1.5s`` in order to gua
 During this time we calculated the number of iterations our ``matmul_m_n_k`` kernel would perform.
 Using this metrics we could then calculate the performance in GFLOPs for the respective execution.
 
-.. literalinclude:: ../../src/benchmarks/matmul_m_n_k.bench.cpp
+.. literalinclude:: ../../src/benchmarks/matmul/matmul_m_n_k.bench.cpp
     :language: cpp
     :lines: 45-67
     :lineno-match:
@@ -186,15 +191,15 @@ be, especially for larger matrices. When we compare our results, we get approxim
 as for our :ref:`generic-kernel`.
 
 
-4.3 Batch-Reduce GEMM
------------------------
+4.1.3 Batch-Reduce GEMM
+=========================
 
 After generating our GEMM kernel for different values for the M, N, and K dimensions, we are now implementing
 a batched version of this kernel. That means we are now implementing kernels to comply with matrix multiplications 
 of the form: C+=∑AᵢBᵢ.
 
-4.3.1 Support Batch-Reduce GEMMs
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+4.1.3.1 Support Batch-Reduce GEMMs
+------------------------------------
 
 We started by altering our ``generate`` function, so that we would now accept a ``batch_size``.
 
@@ -232,10 +237,10 @@ would increment the pointers, to move to the next respective matrices.
     :caption: move to the next A and B matrix and restore the position for matrix C
 
 These were the only changes we had to make. Between the initialization of the loop 
-and jumping to the next matrices, we would loop over our :ref:`matmul_m_n_k kernel <4.2 GEMM>`.
+and jumping to the next matrices, we would loop over our :ref:`matmul_m_n_k kernel <4.1.2 GEMM>`.
 
-4.3.2 Verification of the Batch-Reduce GEMM kernel
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+4.1.3.2 Verification of the Batch-Reduce GEMM kernel
+----------------------------------------------------
 
 Similar to the GEMM kernel, we also tested our implementation of the batch-reduce GEMM.
 We executed several initializations of our kernel, using a similar approach to the testing of the GEMM kernel.
@@ -246,8 +251,8 @@ We executed several initializations of our kernel, using a similar approach to t
     :lineno-match:
     :caption: Unit test for the ``matmul_br_m_n_k`` kernel
 
-4.3.3 Benchmarking the Batch-Reduce GEMM kernel performance
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+4.1.3.3 Benchmarking the Batch-Reduce GEMM kernel performance
+--------------------------------------------------------------------------
 For the benchmarking we, again, enhanced our ``benchmarking.cpp`` file.
 We introduced a new function that should handle 1≤M≤64, 1≤N≤64, K∈[1,16,32,64,128], lda=M, ldb=K and ldc=M.
 
@@ -256,7 +261,7 @@ We reduced the time for our benchmarks to ``1.0s``.
 Beside the fact, that we would now consider 16 Matrices for A and B, the calculation 
 for the GFLOPs was than similar to the normal ``GEMM``.
 
-.. literalinclude:: ../../src/benchmarks/Matmul_br_m_n_k.bench.cpp
+.. literalinclude:: ../../src/benchmarks/matmul/Matmul_br_m_n_k.bench.cpp
     :language: cpp
     :lines: 47-69
     :lineno-match:
@@ -272,11 +277,18 @@ The results that we obtained were saved under ``src/benchmark/br_gemm_perf.csv``
 
 Evaluating our GFLOP performance, we can see that we achieve a similar performance as in our ``matmul_m_n_k`` benchmark.
 
-4.5 Identity Primitives
------------------------
+**********************
+4.2 Unary Primitives
+**********************
 
-4.5.1 Identity Implementation
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+4.2.1 Zero Primitive
+===========================
+
+4.2.2 Identity Primitive
+===========================
+
+4.2.2.1 Identity Implementation
+---------------------------------
 Firstly we implemented the general identity for a matrix A.
 
 This approach was pretty straight forward as we simply copied our ``zero_primitive`` kernel and replaced 
@@ -299,8 +311,8 @@ For the base cases, where there was a remainder for the ``m`` dimension, we did 
     :lineno-match:
     :caption: ``m%5`` base case for the ``identity_primitive``
 
-4.5.2 Identity Transposition Implementation
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+4.2.2.2 Identity Transposition Implementation
+-----------------------------------------------
 
 After implementing the general identity, we implemented a transposition version.
 Our intuition to transpose the identity was to again look at the :ref:`4x4 tranposition kernel <3.7 Transposition>`.
@@ -348,5 +360,8 @@ For both of these cases we would consider a similar implementing approach as for
     :lineno-match:
     :caption: ``4x2`` base case for the ``identity_trans_primitive``
 
-4.5.2 Benchmarks the Identity Kernel Performance
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+4.2.2.3 Benchmarks the Identity Kernel Performance
+----------------------------------------------------
+
+4.2.3 ReLU Primitive
+===========================
