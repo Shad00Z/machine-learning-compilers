@@ -42,7 +42,7 @@ For this kernel we needed a loop to iterate over the ``k`` dimension.
 
 As a last step we measured the performance of our generated code, resulting in the following results:
 
-.. literalinclude:: ../../src/benchmark/benchmarking_results_matmul_16_6.txt
+.. literalinclude:: ../../benchmarks/benchmarking_results_matmul_16_6.txt
     :language: text
     :caption: GFLOPs results of the ``matmul_16_6_1`` and ``matmul_16_6_k`` kernels
 
@@ -153,14 +153,14 @@ Our idea was run each of these benchmarks for a time of ``1.5s`` in order to gua
 During this time we calculated the number of iterations our ``matmul_m_n_k`` kernel would perform.
 Using this metrics we could then calculate the performance in GFLOPs for the respective execution.
 
-.. literalinclude:: ../../src/benchmark.cpp
+.. literalinclude:: ../../src/benchmarks/matmul_m_n_k.bench.cpp
     :language: cpp
-    :lines: 145-162
+    :lines: 45-67
     :caption: ``matmul_m_n_k`` benchmarking approach for different M, N, and K.
 
 The results that we obtained were saved under ``src/benchmark/gemm_perf.csv``. 
 
-.. literalinclude:: ../../src/benchmark/gemm_perf.csv
+.. literalinclude:: ../../benchmarks/gemm_perf.csv
     :language: text
     :lines: 1-15
     :caption: Snippet of executed benchmarks for ``matmul_m_n_k``
@@ -236,33 +236,34 @@ We reduced the time for our benchmarks to ``1.0s``.
 Beside the fact, that we would now consider 16 Matrices for A and B, the calculation 
 for the GFLOPs was than similar to the normal ``GEMM``.
 
-.. literalinclude:: ../../src/benchmark.cpp
+.. literalinclude:: ../../src/benchmarks/Matmul_br_m_n_k.bench.cpp
     :language: cpp
-    :lines: 206-223
+    :lines: 47-69
     :caption: ``matmul_br_m_n_k`` benchmarking approach for a batch size of 16 and different M, N, and K values
 
 The results that we obtained were saved under ``src/benchmark/br_gemm_perf.csv``. 
 
-.. literalinclude:: ../../src/benchmark/brgemm_perf.csv
+.. literalinclude:: ../../benchmarks/brgemm_perf.csv
     :language: text
     :lines: 1-15
     :caption: Snippet of executed benchmarks for ``matmul_br_m_n_k``
 
 Evaluating our GFLOP performance, we can see that we achieve a similar performance as in our ``matmul_m_n_k`` benchmark.
 
-4.4 Unary Primitives
+4.5 Identity Primitives
 -----------------------
 
-4.4.2 Identity Primitive
--------------------------
-
-4.4.2.1 Identity Implementation
+4.5.1 Identity Implementation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Firstly we implemented the general identity for a matrix A.
 
+...
+
+4.5.2 Identity Transposition Implementation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+After implementing the general identity, we implemented a transposition version.
 Our intuition to transpose the identity was to again look at the :ref:`4x4 tranposition kernel <3.7 Transposition>`.
-
-4.4.2.2 Identity Transposition Implementation
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 We decided to take the 4x4 matrix as our general case. 
 We would then first proceed, always in ``4x4`` blocks, in the ``m`` dimension.
@@ -304,5 +305,5 @@ For both of these cases we would consider a similar implementing approach as for
     :lines: 534-551
     :caption: ``4x2`` base case for the ``identity_trans_primitive``
 
-4.4.2.3 Benchmarks the Identity Kernel Performance
+4.5.2 Benchmarks the Identity Kernel Performance
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
