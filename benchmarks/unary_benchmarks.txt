@@ -1,0 +1,140 @@
+Running identity_primitive 50x50 benchmark
+Total time (s):                       3
+Total reps:                           20480531
+Total number of elements:             51201327500
+Total amount of processed data (GiB): 381.48
+Bandwidth (GiB/s)                     127.16
+--------------------------------------------------
+Running identity_primitive 64x64 benchmark
+Total time (s):                       3
+Total reps:                           12977240
+Total number of elements:             53154775040
+Total amount of processed data (GiB): 396.034
+Bandwidth (GiB/s)                     132.011
+--------------------------------------------------
+Running identity_primitive 512x512 benchmark
+Total time (s):                       3.00001
+Total reps:                           185684
+Total number of elements:             48675946496
+Total amount of processed data (GiB): 362.664
+Bandwidth (GiB/s)                     120.888
+--------------------------------------------------
+Running identity_primitive 2048x2048 benchmark
+Total time (s):                       3.00032
+Total reps:                           7175
+Total number of elements:             30094131200
+Total amount of processed data (GiB): 224.219
+Bandwidth (GiB/s)                     74.7316
+--------------------------------------------------
+Running identity_trans_primitive 50x50 benchmark
+Total time (s):                       3
+Total reps:                           17861804
+Total number of elements:             44654510000
+Total amount of processed data (GiB): 332.702
+Bandwidth (GiB/s)                     110.901
+--------------------------------------------------
+Running identity_trans_primitive 64x64 benchmark
+Total time (s):                       3
+Total reps:                           11494934
+Total number of elements:             47083249664
+Total amount of processed data (GiB): 350.798
+Bandwidth (GiB/s)                     116.933
+--------------------------------------------------
+Running identity_trans_primitive 512x512 benchmark
+Total time (s):                       3.00027
+Total reps:                           6246
+Total number of elements:             1637351424
+Total amount of processed data (GiB): 12.1992
+Bandwidth (GiB/s)                     4.06604
+--------------------------------------------------
+Running identity_trans_primitive 2048x2048 benchmark
+Total time (s):                       3.00591
+Total reps:                           340
+Total number of elements:             1426063360
+Total amount of processed data (GiB): 10.625
+Bandwidth (GiB/s)                     3.5347
+--------------------------------------------------
+Running relu_primitive 50x50 benchmark
+Total time (s):                       3
+Total reps:                           19834838
+Total number of elements:             49587095000
+Total amount of processed data (GiB): 369.453
+Bandwidth (GiB/s)                     123.151
+--------------------------------------------------
+Running relu_primitive 64x64 benchmark
+Total time (s):                       3
+Total reps:                           12560424
+Total number of elements:             51447496704
+Total amount of processed data (GiB): 383.314
+Bandwidth (GiB/s)                     127.771
+--------------------------------------------------
+Running relu_primitive 512x512 benchmark
+Total time (s):                       3
+Total reps:                           182661
+Total number of elements:             47883485184
+Total amount of processed data (GiB): 356.76
+Bandwidth (GiB/s)                     118.92
+--------------------------------------------------
+Running relu_primitive 2048x2048 benchmark
+Total time (s):                       3.00002
+Total reps:                           9074
+Total number of elements:             38059114496
+Total amount of processed data (GiB): 283.562
+Bandwidth (GiB/s)                     94.52
+--------------------------------------------------
+Running relu_trans_primitive 50x50 benchmark
+Total time (s):                       3
+Total reps:                           17395954
+Total number of elements:             43489885000
+Total amount of processed data (GiB): 324.025
+Bandwidth (GiB/s)                     108.008
+--------------------------------------------------
+Running relu_trans_primitive 64x64 benchmark
+Total time (s):                       3
+Total reps:                           11249652
+Total number of elements:             46078574592
+Total amount of processed data (GiB): 343.312
+Bandwidth (GiB/s)                     114.437
+--------------------------------------------------
+Running relu_trans_primitive 512x512 benchmark
+Total time (s):                       3.00035
+Total reps:                           6218
+Total number of elements:             1630011392
+Total amount of processed data (GiB): 12.1445
+Bandwidth (GiB/s)                     4.04771
+--------------------------------------------------
+Running relu_trans_primitive 2048x2048 benchmark
+Total time (s):                       3.00482
+Total reps:                           344
+Total number of elements:             1442840576
+Total amount of processed data (GiB): 10.75
+Bandwidth (GiB/s)                     3.57758
+--------------------------------------------------
+Running zero_primitive 50x50 benchmark
+Total time (s):                       3
+Total reps:                           23865551
+Total number of elements:             59663877500
+Total amount of processed data (GiB): 444.531
+Bandwidth (GiB/s)                     148.177
+--------------------------------------------------
+Running zero_primitive 64x64 benchmark
+Total time (s):                       3
+Total reps:                           14076657
+Total number of elements:             57657987072
+Total amount of processed data (GiB): 429.585
+Bandwidth (GiB/s)                     143.195
+--------------------------------------------------
+Running zero_primitive 512x512 benchmark
+Total time (s):                       3
+Total reps:                           321957
+Total number of elements:             84399095808
+Total amount of processed data (GiB): 628.822
+Bandwidth (GiB/s)                     209.607
+--------------------------------------------------
+Running zero_primitive 2048x2048 benchmark
+Total time (s):                       3.00023
+Total reps:                           8656
+Total number of elements:             36305895424
+Total amount of processed data (GiB): 270.5
+Bandwidth (GiB/s)                     90.1597
+--------------------------------------------------

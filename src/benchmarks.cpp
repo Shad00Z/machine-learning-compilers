@@ -118,11 +118,13 @@ int main(int argc, char *argv[])
     {
         gemm_benchmark();
     }
-    else if (has_brgemm)
+
+    if (has_brgemm)
     {
         brgemm_benchmark();
     }
-    else if (has_matmul)
+
+    if (has_matmul)
     {
         mini_jit::benchmarks::Matmul_m_n_k_bench bench_mnk(3.0, 2048, 2048, 2048);
         mini_jit::benchmarks::Matmul_br_m_n_k_bench bench_brmnk(3.0, 1024, 1024, 1024, 16);
@@ -131,7 +133,8 @@ int main(int argc, char *argv[])
         matmul_benchmark(bench_brmnk, matmul_bm, "Matmul_br_m_n_k 1024x1024x1024 br=16");
         matmul_bm.close();
     }
-    else if (has_unary)
+    
+    if (has_unary)
     {    
         const double RUN_TIME = 3.0;
         std::ofstream unary_bm("benchmarks/unary_benchmarks.txt");

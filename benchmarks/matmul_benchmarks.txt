@@ -1,0 +1,12 @@
+Running Matmul_m_n_k 2048x2048x2048 benchmark
+Total time (s):                  3.9425
+Total reps:                      4
+Total floating point operations: 68719476736
+Estimated GFLOPS/sec:            17.4304
+--------------------------------------------------
+Running Matmul_br_m_n_k 1024x1024x1024 br=16 benchmark
+Total time (s):                  3.20605
+Total reps:                      5
+Total floating point operations: 171798691840
+Estimated GFLOPS/sec:            53.5858
+--------------------------------------------------
