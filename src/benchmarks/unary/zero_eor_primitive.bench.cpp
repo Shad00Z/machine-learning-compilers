@@ -1,21 +1,21 @@
 #include <random>
 #include <chrono>
-#include "zero_primitive.bench.h"
+#include "zero_eor_primitive.bench.h"
 #include "benchmarks/Benchmark.h"
 #include "kernels/unary/zero_primitive.h"
 #include "Kernel.h"
 #include "Unary.h"
 
-mini_jit::benchmarks::Zero_primitive_bench::Zero_primitive_bench(double runTime,
-                                                                 uint32_t m,
-                                                                 uint32_t n) : Benchmark()
+mini_jit::benchmarks::Zero_eor_primitive_bench::Zero_eor_primitive_bench(double runTime,
+                                                                         uint32_t m,
+                                                                         uint32_t n) : Benchmark()
 {
     m_M = m;
     m_N = n;
     m_runTime = runTime;
 }
 
-void mini_jit::benchmarks::Zero_primitive_bench::run()
+void mini_jit::benchmarks::Zero_eor_primitive_bench::run()
 {
     m_A = new float[m_M * m_N];
     m_B = new float[m_M * m_N];

@@ -281,8 +281,13 @@ Evaluating our GFLOP performance, we can see that we achieve a similar performan
 4.2 Unary Primitives
 **********************
 
+.. note::
+    For this submission, we overhauled our benchmarking framework. After compilation, the main entry point can be called using ``./build/<OS_NAME>/benchmarks``, but that will not actually run any benchmarks. Which benchmark types should be run is specified using command like arguments, such as ``matmul`` or ``unary``. Multiple benchmarks can be run at once, for example by running: ``./build/OS_NAME/benchmarks matmul unary``. The results are saved in the ``benchmarks`` folder in text files.
+
 4.2.1 Zero Primitive
 ===========================
+
+The first unary primitive we implemented was the zero primitive. This kernel is supposed to set all elements of the output matrix to zero, while ignoring the input matrix.
 
 4.2.2 Identity Primitive
 ===========================
@@ -362,6 +367,16 @@ For both of these cases we would consider a similar implementing approach as for
 
 4.2.2.3 Benchmarks the Identity Kernel Performance
 ----------------------------------------------------
+
+We benchmarked the performance of our identity kernel for the given parameters (M=N=50, M=N=64, M=N=512 and M=N=2048) and obtained the following results:
+
+.. literalinclude:: ../../benchmarks/unary_benchmarks.txt
+    :language: text
+    :lines: 1-56
+    :lineno-match:
+    :caption: Benchmarking results for the identity kernels
+
+Most notably, we can see that the performance of the transposition kernel is significantly lower for larger matrices, such as 512x512 and 2048x2048. Here we only achieved a bandwidth of 3.5 to 4 GiB/s, while most other configurations achieved a bandwidths greater than 100 GiB/s.
 
 4.2.3 ReLU Primitive
 ===========================

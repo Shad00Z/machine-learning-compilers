@@ -8,6 +8,7 @@
 #include "unary/identity_trans_primitive.bench.h"
 #include "unary/relu_primitive.bench.h"
 #include "unary/relu_trans_primitive.bench.h"
-#include "unary/zero_primitive.bench.h"
+#include "unary/zero_eor_primitive.bench.h"
+#include "unary/zero_xzr_primitive.bench.h"
 
 #endif // ALL_BENCHMARKS_H

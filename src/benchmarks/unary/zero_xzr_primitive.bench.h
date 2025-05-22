@@ -1,5 +1,5 @@
-#ifndef ZERO_PRIMITIVE_BENCH_H
-#define ZERO_PRIMITIVE_BENCH_H
+#ifndef ZERO_XZR_PRIMITIVE_BENCH_H
+#define ZERO_XZR_PRIMITIVE_BENCH_H
 #include "benchmarks/Benchmark.h"
 #include <cstdint>
 
@@ -7,20 +7,20 @@ namespace mini_jit
 {
     namespace benchmarks
     {
-        class Zero_primitive_bench : public Benchmark
+        class Zero_xzr_primitive_bench : public Benchmark
         {
         public:
             /**
-             * @brief Constructor for the benchmark for the Zero primitive.
+             * @brief Constructor for the benchmark for the XZR Zero primitive.
              * @param runTime The time to run the benchmark in seconds.
              * @param m number of rows in A and B.
              * @param n number of columns in A and B.
              */
-            Zero_primitive_bench(double runTime,
-                                 uint32_t m,
-                                 uint32_t n);
+            Zero_xzr_primitive_bench(double runTime,
+                                     uint32_t m,
+                                     uint32_t n);
             //! Destructor
-            ~Zero_primitive_bench() override = default;
+            ~Zero_xzr_primitive_bench() override = default;
             //! Runs the benchmark.
             void run() override;
 
@@ -35,4 +35,4 @@ namespace mini_jit
     }
 }
 
-#endif // ZERO_PRIMITIVE_BENCH_H
+#endif // ZERO_XZR_PRIMITIVE_BENCH_H
