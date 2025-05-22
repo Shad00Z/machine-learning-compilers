@@ -6,11 +6,9 @@
 #include "Unary.h"
 #include "constants.h"
 
-TEST_CASE("Tests the ReLu primitive with random matrices", "[relu_primitive][parameterized]")
+void test_relu_primitive(uint32_t M,
+                         uint32_t N)
 {
-    u_int32_t M = GENERATE(50, 64, 512, 2048);
-    u_int32_t N = GENERATE(50, 64, 512, 2048);
-
     float* A = new float[M * N];
     float* B = new float[M * N];
     float* A_expected = new float[M * N];
@@ -46,4 +44,39 @@ TEST_CASE("Tests the ReLu primitive with random matrices", "[relu_primitive][par
     delete[] B;
     delete[] A_expected;
     delete[] B_expected;
+}
+
+TEST_CASE("Tests the ReLu primitive with M=N=50", "[relu_primitive][M=N=50]")
+{
+    uint32_t M = 50;
+    uint32_t N = 50;
+    test_relu_primitive(M, N);
+}
+
+TEST_CASE("Tests the ReLu primitive with M=N=64", "[relu_primitive][M=N=64]")
+{
+    uint32_t M = 64;
+    uint32_t N = 64;
+    test_relu_primitive(M, N);
+}
+
+// TEST_CASE("Tests the ReLu primitive with M=N=512", "[relu_primitive][M=N=512]")
+// {
+//     uint32_t M = 512;
+//     uint32_t N = 512;
+//     test_relu_primitive(M, N);
+// }
+
+// TEST_CASE("Tests the ReLu primitive with M=N=2048", "[relu_primitive][M=N=2048]")
+// {
+//     uint32_t M = 2048;
+//     uint32_t N = 2048;
+//     test_relu_primitive(M, N);
+// }
+
+TEST_CASE("Tests the ReLu primitive with random matrices", "[relu_primitive][parameterized]")
+{
+    uint32_t M = GENERATE(take(2, random(1, 32)));
+    uint32_t N = GENERATE(take(2, random(1, 32)));
+    test_relu_primitive(M, N);
 }

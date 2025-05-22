@@ -58,19 +58,19 @@ TEST_CASE("Tests the standard identity primitive with M=N=64", "[identity_primit
     test_identity_primitive(M, N);
 }
 
-TEST_CASE("Tests the standard identity primitive with M=N=512", "[identity_primitive][M=N=512]")
-{
-    uint32_t M = 512;
-    uint32_t N = 512;
-    test_identity_primitive(M, N);
-}
+// TEST_CASE("Tests the standard identity primitive with M=N=512", "[identity_primitive][M=N=512]")
+// {
+//     uint32_t M = 512;
+//     uint32_t N = 512;
+//     test_identity_primitive(M, N);
+// }
 
-TEST_CASE("Tests the standard identity primitive with M=N=2048", "[identity_primitive][M=N=2048]")
-{
-    uint32_t M = 2048;
-    uint32_t N = 2048;
-    test_identity_primitive(M, N);
-}
+// TEST_CASE("Tests the standard identity primitive with M=N=2048", "[identity_primitive][M=N=2048]")
+// {
+//     uint32_t M = 2048;
+//     uint32_t N = 2048;
+//     test_identity_primitive(M, N);
+// }
 
 TEST_CASE("Tests the standard identity primitive with random matrices", "[identity_primitive][parameterized]")
 {

@@ -1,4 +1,4 @@
-#include "zero_primitive_str.h"
+#include "zero_primitive_xzr.h"
 #include "Kernel.h"
 
 #include "registers/gp_registers.h"
@@ -9,7 +9,7 @@ namespace inst = mini_jit::instructions;
 namespace base = inst::base;
 namespace simd_fp = inst::simd_fp;
 
-void mini_jit::kernels::unary::zero_str(mini_jit::Kernel &kernel,
+void mini_jit::kernels::unary::zero_xzr(mini_jit::Kernel &kernel,
                                         u_int32_t m,
                                         u_int32_t n,
                                         u_int32_t trans_b)
@@ -121,6 +121,6 @@ void mini_jit::kernels::unary::zero_str(mini_jit::Kernel &kernel,
     kernel.add_instr(base::ldpPost(gpr_t::x29, gpr_t::x30, gpr_t::sp, 16));
 
     kernel.add_instr(inst::ret());
-    kernel.write("zero_primitive_str.bin");
+    kernel.write("zero_primitive_xzr.bin");
     kernel.set_kernel();
 }
