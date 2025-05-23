@@ -10,7 +10,17 @@ extern "C" {
                          int64_t lda,
                          int64_t ldb );
 
+    void v2_trans_neon_8_8( float const *a,
+                         float const *b,
+                         int64_t lda,
+                         int64_t ldb );
+
     void trans_neon_4_4( float const *a,
+                         float const *b,
+                         int64_t lda,
+                         int64_t ldb );
+
+    void v2_trans_neon_4_4( float const *a,
                          float const *b,
                          int64_t lda,
                          int64_t ldb );
@@ -40,6 +50,12 @@ extern "C" {
 
     std::string trans_4_4( "neon_4_4" );
     int res_2 = trans_4_4.compare( instruction );
+
+    std::string v2_trans_8_8( "v2_neon_8_8" );
+    int res_3 = v2_trans_8_8.compare( instruction );
+
+    std::string v2_trans_4_4( "v2_neon_4_4" );
+    int res_4 = v2_trans_4_4.compare( instruction );
 
     double opsPerMatmul = 1;
     double total_bytes = 0;
@@ -83,9 +99,47 @@ extern "C" {
         // (16 elements * 4 bytes) * 2 (Read / Write) * iterations
         total_bytes = (16 * 4) * 2 * iter;
     }
+    else if ( res_3 == 0 )
+    {
+        // Warmup
+        for ( int i = 0; i < 1000; i++ )
+        {
+            v2_trans_neon_8_8( a, b, m, n );
+        }
 
-    double movPerSec = total_bytes / ( elapsedTime * 1e9 );
-    double gib_per_sec = total_bytes / ( elapsedTime * 1e9 ) / ( 1024 * 1024 * 1024 );
+        auto l_start_time = std::chrono::high_resolution_clock::now();
+        for ( int i = 0; i < iter; i++ )
+        {
+            v2_trans_neon_8_8( a, b, m, n );
+        }
+        auto l_end_time = std::chrono::high_resolution_clock::now();
+        elapsedTime = std::chrono::duration_cast<std::chrono::microseconds>( l_end_time - l_start_time ).count() / 1e6;
+
+        // (64 elements * 4 bytes) * 2 (Read / Write) * iterations
+        total_bytes = (64 * 4) * 2 * iter;
+    }
+    else if ( res_3 == 0 )
+    {
+        // Warmup
+        for ( int i = 0; i < 1000; i++ )
+        {
+            v2_trans_neon_4_4( a, b, m, n );
+        }
+
+        auto l_start_time = std::chrono::high_resolution_clock::now();
+        for ( int i = 0; i < iter; i++ )
+        {
+            v2_trans_neon_4_4( a, b, m, n );
+        }
+        auto l_end_time = std::chrono::high_resolution_clock::now();
+        elapsedTime = std::chrono::duration_cast<std::chrono::microseconds>( l_end_time - l_start_time ).count() / 1e6;
+
+        // (16 elements * 4 bytes) * 2 (Read / Write) * iterations
+        total_bytes = (16 * 4) * 2 * iter;
+    }
+
+    double movPerSec = total_bytes / ( elapsedTime );
+    double gib_per_sec = total_bytes / ( elapsedTime * 1e9 );
 
     std::cout << "Measuring throughput for transposition in GiB/s\n";
     std::cout << "Total time (s):   " << elapsedTime << "\n";
@@ -114,6 +168,13 @@ int main()
 
     std::cout << "\nBenchmarking trans_neon_8_8 performance ...\n";
     benchmark_thr( l_iter, neon_8_8, A, B, M, N );
+
+    std::memset( B, 0, M * N * sizeof(float) ); 
+
+    std::string v2_neon_8_8( "v2_neon_8_8" );
+
+    std::cout << "\nBenchmarking v2_trans_neon_8_8 performance ...\n";
+    benchmark_thr( l_iter, v2_neon_8_8, A, B, M, N );
 
     return 0;
 }

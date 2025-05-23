@@ -214,11 +214,11 @@ trans_neon_8_8:
     * Part 2.2:
     * Transpose 4x4 block.
     */
-    zip1 v8.4s, v4.4s, v5.4s
-    zip1 v9.4s, v6.4s, v7.4s
+    zip1 v8.4s, v4.4s, v5.4s    // B "column" 0
+    zip1 v9.4s, v6.4s, v7.4s    // B "column" 1
 
-    zip2 v10.4s, v4.4s, v5.4s
-    zip2 v11.4s, v6.4s, v7.4s
+    zip2 v10.4s, v4.4s, v5.4s   // B "column" 2
+    zip2 v11.4s, v6.4s, v7.4s   // B "column" 3
 
     /*
     * Part 3:
