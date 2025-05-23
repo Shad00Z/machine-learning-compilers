@@ -155,5 +155,5 @@ run_tests: tests
 	rm -rf *.bin
 
 clean:
-	rm -rf $(BIN_DIR)/$(SRC_DIR)
+	rm -rf $(BIN_DIR)
 	rm -rf *.bin

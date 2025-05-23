@@ -11,12 +11,12 @@ namespace mini_jit
         public:
             /**
              * @brief Constructor for the benchmark for matrix multiplication using GEMM.
-             * @param runTime The time to run the benchmark in seconds.
+             * @param run_time The time to run the benchmark in seconds.
              * @param m number of rows in A and C.
              * @param n number of columns in B and C.
              * @param k number of columns in A and rows in B.
              */
-            Matmul_m_n_k_bench(double runTime,
+            Matmul_m_n_k_bench(double run_time,
                                int m,
                                int n,
                                int k);
@@ -29,7 +29,7 @@ namespace mini_jit
             int m_M;
             int m_N;
             int m_K;
-            double m_runTime;
+            double m_run_time;
             float *m_A;
             float *m_B;
             float *m_C;

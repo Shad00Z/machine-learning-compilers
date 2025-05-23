@@ -6,7 +6,7 @@
 #include "Brgemm.h"
 #include "kernels/matmul/matmul_m_n_k.h"
 
-mini_jit::benchmarks::Matmul_m_n_k_bench::Matmul_m_n_k_bench(double runTime,
+mini_jit::benchmarks::Matmul_m_n_k_bench::Matmul_m_n_k_bench(double run_time,
                                                              int m,
                                                              int n,
                                                              int k) : Benchmark()
@@ -14,7 +14,7 @@ mini_jit::benchmarks::Matmul_m_n_k_bench::Matmul_m_n_k_bench(double runTime,
     m_M = m;
     m_N = n;
     m_K = k;
-    m_runTime = runTime;
+    m_run_time = run_time;
 }
 
 void mini_jit::benchmarks::Matmul_m_n_k_bench::run()
@@ -51,7 +51,7 @@ void mini_jit::benchmarks::Matmul_m_n_k_bench::run()
     long l_num_reps = 0;
     auto l_start_time = std::chrono::high_resolution_clock::now();
     double l_elapsed = 0.0;
-    double l_runTimeMs = m_runTime * 1e6;
+    double l_runTimeMs = m_run_time * 1e6;
     do
     {
         l_kernel_t(m_A, m_B, m_C, m_M, m_K, m_M, 0, 0);
