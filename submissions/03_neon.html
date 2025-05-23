@@ -1620,24 +1620,122 @@ Each of the 4 <code class="docutils literal notranslate"><span class="pre">4x4</
 <ol class="arabic simple" start="4">
 <li><p>The bottom right matrix (in the image D) would be transposed and stored at the loading position.</p></li>
 </ol>
+<p>To optimize our first version we removed the PCS to all registers that we did not use.
+We also wrote our kernel in a more compact manner.</p>
+<div class="literal-block-wrapper docutils container" id="id44">
+<div class="code-block-caption"><span class="caption-text">Optimized second transposition kernel</span><a class="headerlink" href="#id44" title="Link to this code"></a></div>
+<div class="highlight-asm notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 40</span><span class="w">    </span><span class="nf">mov</span><span class="w"> </span><span class="no">x9</span><span class="p">,</span><span class="w"> </span><span class="mi">#2</span><span class="w"> </span><span class="c1">// n loop</span>
+<span class="linenos"> 41</span>
+<span class="linenos"> 42</span><span class="nl">n_loop:</span>
+<span class="linenos"> 43</span>
+<span class="linenos"> 44</span><span class="w">    </span><span class="nf">mov</span><span class="w"> </span><span class="no">x6</span><span class="p">,</span><span class="w"> </span><span class="mi">#2</span><span class="w"> </span><span class="c1">// m loop</span>
+<span class="linenos"> 45</span>
+<span class="linenos"> 46</span><span class="nl">m_loop:</span>
+<span class="linenos"> 47</span><span class="w">    </span><span class="cm">/*</span>
+<span class="linenos"> 48</span><span class="cm">     * Part 1:</span>
+<span class="linenos"> 49</span><span class="cm">     * Transpose 4x4 block.</span>
+<span class="linenos"> 50</span><span class="cm">     */</span>
+<span class="linenos"> 51</span><span class="w">    </span><span class="nf">mov</span><span class="w"> </span><span class="no">x7</span><span class="p">,</span><span class="w"> </span><span class="no">x4</span>
+<span class="linenos"> 52</span><span class="w">    </span><span class="nf">mov</span><span class="w"> </span><span class="no">x8</span><span class="p">,</span><span class="w"> </span><span class="no">x5</span>
+<span class="linenos"> 53</span>
+<span class="linenos"> 54</span><span class="w">    </span><span class="nf">ldr</span><span class="w"> </span><span class="no">q0</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x7</span><span class="p">]</span>
+<span class="linenos"> 55</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x7</span><span class="p">,</span><span class="w"> </span><span class="no">x7</span><span class="p">,</span><span class="w"> </span><span class="no">x2</span>
+<span class="linenos"> 56</span>
+<span class="linenos"> 57</span><span class="w">    </span><span class="nf">ldr</span><span class="w"> </span><span class="no">q1</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x7</span><span class="p">]</span>
+<span class="linenos"> 58</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x7</span><span class="p">,</span><span class="w"> </span><span class="no">x7</span><span class="p">,</span><span class="w"> </span><span class="no">x2</span>
+<span class="linenos"> 59</span>
+<span class="linenos"> 60</span><span class="w">    </span><span class="nf">ldr</span><span class="w"> </span><span class="no">q2</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x7</span><span class="p">]</span>
+<span class="linenos"> 61</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x7</span><span class="p">,</span><span class="w"> </span><span class="no">x7</span><span class="p">,</span><span class="w"> </span><span class="no">x2</span>
+<span class="linenos"> 62</span>
+<span class="linenos"> 63</span><span class="w">    </span><span class="nf">ldr</span><span class="w"> </span><span class="no">q3</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x7</span><span class="p">]</span>
+<span class="linenos"> 64</span>
+<span class="linenos"> 65</span><span class="w">    </span><span class="cm">/*</span>
+<span class="linenos"> 66</span><span class="cm">    * Part 2.1:</span>
+<span class="linenos"> 67</span><span class="cm">    * Transpose 4x4 block.</span>
+<span class="linenos"> 68</span><span class="cm">    */</span>
+<span class="linenos"> 69</span><span class="w">    </span><span class="nf">trn1</span><span class="w"> </span><span class="no">v4.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v0.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v2.4s</span>
+<span class="linenos"> 70</span><span class="w">    </span><span class="nf">trn1</span><span class="w"> </span><span class="no">v5.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v1.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v3.4s</span>
+<span class="linenos"> 71</span>
+<span class="linenos"> 72</span><span class="w">    </span><span class="nf">trn2</span><span class="w"> </span><span class="no">v6.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v0.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v2.4s</span>
+<span class="linenos"> 73</span><span class="w">    </span><span class="nf">trn2</span><span class="w"> </span><span class="no">v7.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v1.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v3.4s</span>
+<span class="linenos"> 74</span>
+<span class="linenos"> 75</span><span class="w">    </span><span class="cm">/*</span>
+<span class="linenos"> 76</span><span class="cm">    * Part 2.2:</span>
+<span class="linenos"> 77</span><span class="cm">    * Transpose 4x4 block.</span>
+<span class="linenos"> 78</span><span class="cm">    */</span>
+<span class="linenos"> 79</span><span class="w">    </span><span class="nf">zip1</span><span class="w"> </span><span class="no">v16.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v4.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v5.4s</span>
+<span class="linenos"> 80</span><span class="w">    </span><span class="nf">zip1</span><span class="w"> </span><span class="no">v17.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v6.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v7.4s</span>
+<span class="linenos"> 81</span>
+<span class="linenos"> 82</span><span class="w">    </span><span class="nf">zip2</span><span class="w"> </span><span class="no">v18.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v4.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v5.4s</span>
+<span class="linenos"> 83</span><span class="w">    </span><span class="nf">zip2</span><span class="w"> </span><span class="no">v19.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v6.4s</span><span class="p">,</span><span class="w"> </span><span class="no">v7.4s</span>
+<span class="linenos"> 84</span>
+<span class="linenos"> 85</span><span class="w">    </span><span class="cm">/*</span>
+<span class="linenos"> 86</span><span class="cm">    * Part 3:</span>
+<span class="linenos"> 87</span><span class="cm">    * Store 4x4 block of A into B.</span>
+<span class="linenos"> 88</span><span class="cm">    */</span>
+<span class="linenos"> 89</span><span class="w">    </span><span class="nf">str</span><span class="w"> </span><span class="no">q16</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x8</span><span class="p">]</span>
+<span class="linenos"> 90</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x8</span><span class="p">,</span><span class="w"> </span><span class="no">x8</span><span class="p">,</span><span class="w"> </span><span class="no">x3</span>
+<span class="linenos"> 91</span>
+<span class="linenos"> 92</span><span class="w">    </span><span class="nf">str</span><span class="w"> </span><span class="no">q17</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x8</span><span class="p">]</span>
+<span class="linenos"> 93</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x8</span><span class="p">,</span><span class="w"> </span><span class="no">x8</span><span class="p">,</span><span class="w"> </span><span class="no">x3</span>
+<span class="linenos"> 94</span>
+<span class="linenos"> 95</span><span class="w">    </span><span class="nf">str</span><span class="w"> </span><span class="no">q18</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x8</span><span class="p">]</span>
+<span class="linenos"> 96</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x8</span><span class="p">,</span><span class="w"> </span><span class="no">x8</span><span class="p">,</span><span class="w"> </span><span class="no">x3</span>
+<span class="linenos"> 97</span>
+<span class="linenos"> 98</span><span class="w">    </span><span class="nf">str</span><span class="w"> </span><span class="no">q19</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x8</span><span class="p">]</span>
+<span class="linenos"> 99</span>
+<span class="linenos">100</span><span class="w">    </span><span class="c1">// Jump 4 rows in A</span>
+<span class="linenos">101</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x4</span><span class="p">,</span><span class="w"> </span><span class="no">x4</span><span class="p">,</span><span class="w"> </span><span class="no">x25</span>
+<span class="linenos">102</span>
+<span class="linenos">103</span><span class="w">    </span><span class="c1">// Jump 4 columns in B</span>
+<span class="linenos">104</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x5</span><span class="p">,</span><span class="w"> </span><span class="no">x5</span><span class="p">,</span><span class="w"> </span><span class="no">x27</span>
+<span class="linenos">105</span>
+<span class="linenos">106</span><span class="w">    </span><span class="nf">sub</span><span class="w"> </span><span class="no">x6</span><span class="p">,</span><span class="w"> </span><span class="no">x6</span><span class="p">,</span><span class="w"> </span><span class="mi">#1</span>
+<span class="linenos">107</span><span class="w">    </span><span class="nf">cbnz</span><span class="w"> </span><span class="no">x6</span><span class="p">,</span><span class="w"> </span><span class="no">m_loop</span>
+<span class="linenos">108</span>
+<span class="linenos">109</span>
+<span class="linenos">110</span><span class="w">    </span><span class="c1">// Restore Pointer for A and B</span>
+<span class="linenos">111</span><span class="w">    </span><span class="nf">mov</span><span class="w"> </span><span class="no">x4</span><span class="p">,</span><span class="w"> </span><span class="no">x0</span>
+<span class="linenos">112</span><span class="w">    </span><span class="nf">mov</span><span class="w"> </span><span class="no">x5</span><span class="p">,</span><span class="w"> </span><span class="no">x1</span>
+<span class="linenos">113</span>
+<span class="linenos">114</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x12</span><span class="p">,</span><span class="w"> </span><span class="no">x12</span><span class="p">,</span><span class="w"> </span><span class="no">x26</span>
+<span class="linenos">115</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x13</span><span class="p">,</span><span class="w"> </span><span class="no">x13</span><span class="p">,</span><span class="w"> </span><span class="no">x25</span>
+<span class="linenos">116</span>
+<span class="linenos">117</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x4</span><span class="p">,</span><span class="w"> </span><span class="no">x4</span><span class="p">,</span><span class="w"> </span><span class="no">x12</span>
+<span class="linenos">118</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x5</span><span class="p">,</span><span class="w"> </span><span class="no">x5</span><span class="p">,</span><span class="w"> </span><span class="no">x13</span>
+<span class="linenos">119</span>
+<span class="linenos">120</span><span class="w">    </span><span class="nf">sub</span><span class="w"> </span><span class="no">x9</span><span class="p">,</span><span class="w"> </span><span class="no">x9</span><span class="p">,</span><span class="w"> </span><span class="mi">#1</span>
+<span class="linenos">121</span><span class="w">    </span><span class="nf">cbnz</span><span class="w"> </span><span class="no">x9</span><span class="p">,</span><span class="w"> </span><span class="no">n_loop</span>
+</pre></div>
+</div>
+</div>
 </section>
 <section id="performance-measuring">
 <h3>3.7.2 Performance Measuring<a class="headerlink" href="#performance-measuring" title="Link to this heading"></a></h3>
 <p>We also wanted to know the performance of our transposition kernel, which in
 our case would be the loading and storing of elements.</p>
-<div class="literal-block-wrapper docutils container" id="id44">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">trans_8_8</span></code> performance in <code class="docutils literal notranslate"><span class="pre">GiB/s</span></code></span><a class="headerlink" href="#id44" title="Link to this code"></a></div>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span>Benchmarking trans_neon_8_8 performance ...
-<span class="linenos">2</span>-----------------------------------------------
-<span class="linenos">3</span>Measuring throughput for transposition in GiB/s
-<span class="linenos">4</span>Total time (s):   1.25447
-<span class="linenos">5</span>Data movements per Second:   81.6281
-<span class="linenos">6</span>Estimated GiB/s:   7.60221e-08 GiB/s
-<span class="linenos">7</span>-----------------------------------------------
+<div class="literal-block-wrapper docutils container" id="id45">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">trans_8_8</span></code> performance in <code class="docutils literal notranslate"><span class="pre">GiB/s</span></code></span><a class="headerlink" href="#id45" title="Link to this code"></a></div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span>Benchmarking trans_neon_8_8 performance ...
+<span class="linenos"> 2</span>-----------------------------------------------
+<span class="linenos"> 3</span>Measuring throughput for transposition in GiB/s
+<span class="linenos"> 4</span>Total time (s):   1.26545
+<span class="linenos"> 5</span>Data movements per Second:   8.09199e+10
+<span class="linenos"> 6</span>Estimated GiB/s:   80.9199 GiB/s
+<span class="linenos"> 7</span>-----------------------------------------------
+<span class="linenos"> 8</span>
+<span class="linenos"> 9</span>Benchmarking v2_trans_neon_8_8 performance ...
+<span class="linenos">10</span>-----------------------------------------------
+<span class="linenos">11</span>Measuring throughput for transposition in GiB/s
+<span class="linenos">12</span>Total time (s):   0.902975
+<span class="linenos">13</span>Data movements per Second:   1.13403e+11
+<span class="linenos">14</span>Estimated GiB/s:   113.403 GiB/s
+<span class="linenos">15</span>-----------------------------------------------
 </pre></div>
 </div>
 </div>
-<p>Our results showed that we were transferring about <code class="docutils literal notranslate"><span class="pre">8</span> <span class="pre">MB/s</span></code>.</p>
+<p>Our results showed that we for our first version we are transferring about <code class="docutils literal notranslate"><span class="pre">80</span> <span class="pre">GiB/s</span></code>.
+In our optimized version we <strong>increase</strong> this performance by roughly <code class="docutils literal notranslate"><span class="pre">33</span> <span class="pre">GiB/s</span></code>.</p>
 </section>
 </section>
 </section>

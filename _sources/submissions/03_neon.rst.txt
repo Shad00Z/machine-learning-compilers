@@ -496,6 +496,15 @@ Each of the 4 ``4x4 submatrices`` would be transposed using our ``trans_4_4`` ke
 
 4. The bottom right matrix (in the image D) would be transposed and stored at the loading position.
 
+To optimize our first version we removed the PCS to all registers that we did not use. 
+We also wrote our kernel in a more compact manner.
+
+.. literalinclude:: ../../src/submissions/03_neon/07_transposition/optimization/v2_trans_neon_8_8.S
+    :language: asm
+    :lines: 40-121
+    :lineno-match:
+    :caption: Optimized second transposition kernel
+
 3.7.2 Performance Measuring
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -507,4 +516,5 @@ our case would be the loading and storing of elements.
     :lineno-match:
     :caption: ``trans_8_8`` performance in ``GiB/s``
 
-Our results showed that we were transferring about ``8 MB/s``.
+Our results showed that we for our first version we are transferring about ``80 GiB/s``.
+In our optimized version we **increase** this performance by roughly ``33 GiB/s``. 
