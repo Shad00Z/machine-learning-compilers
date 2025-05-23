@@ -83,35 +83,22 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a0fcd9bd204abefa4ed4f0e9ec5189f9f" id="r_a0fcd9bd204abefa4ed4f0e9ec5189f9f"><td class="memItemLeft" align="right" valign="top"><a id="a0fcd9bd204abefa4ed4f0e9ec5189f9f" name="a0fcd9bd204abefa4ed4f0e9ec5189f9f"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmini__jit_1_1Unary.html#a0fcd9bd204abefa4ed4f0e9ec5189f9f">dtype_t</a> : uint32_t { <b>fp32</b> = 0
-, <b>fp64</b> = 1
- }</td></tr>
-<tr class="memdesc:a0fcd9bd204abefa4ed4f0e9ec5189f9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">data type <br /></td></tr>
-<tr class="separator:a0fcd9bd204abefa4ed4f0e9ec5189f9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5f3885faa74f47cc3e851c29acd62a41" id="r_a5f3885faa74f47cc3e851c29acd62a41"><td class="memItemLeft" align="right" valign="top"><a id="a5f3885faa74f47cc3e851c29acd62a41" name="a5f3885faa74f47cc3e851c29acd62a41"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmini__jit_1_1Unary.html#a5f3885faa74f47cc3e851c29acd62a41">ptype_t</a> : uint32_t { <b>zero</b> = 0
-, <b>identity</b> = 1
-, <b>relu</b> = 2
- }</td></tr>
-<tr class="memdesc:a5f3885faa74f47cc3e851c29acd62a41"><td class="mdescLeft">&#160;</td><td class="mdescRight">primitive type <br /></td></tr>
-<tr class="separator:a5f3885faa74f47cc3e851c29acd62a41"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab97a1707a127a6aa5bd820b2ecddf01a" id="r_ab97a1707a127a6aa5bd820b2ecddf01a"><td class="memItemLeft" align="right" valign="top"><a id="ab97a1707a127a6aa5bd820b2ecddf01a" name="ab97a1707a127a6aa5bd820b2ecddf01a"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmini__jit_1_1Unary.html#ab97a1707a127a6aa5bd820b2ecddf01a">error_t</a> : int32_t { <br />
-&#160;&#160;<b>success</b> = 0
-, <b>wrong_m_dimension</b> = 1
-, <b>wrong_n_dimension</b> = 2
-, <b>wrong_ptype</b> = 3
-, <br />
-&#160;&#160;<b>operation_not_supported</b> = 4
-<br />
- }</td></tr>
-<tr class="memdesc:ab97a1707a127a6aa5bd820b2ecddf01a"><td class="mdescLeft">&#160;</td><td class="mdescRight">error codes <br /></td></tr>
-<tr class="separator:ab97a1707a127a6aa5bd820b2ecddf01a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f266a1a25a11f33e156a079a7aa2480" id="r_a9f266a1a25a11f33e156a079a7aa2480"><td class="memItemLeft" align="right" valign="top"><a id="a9f266a1a25a11f33e156a079a7aa2480" name="a9f266a1a25a11f33e156a079a7aa2480"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>dtype_t</b> = <a class="el" href="classmini__jit_1_1TensorOperation.html#ad920716f058a88bd49bfa2580017d855">mini_jit::TensorOperation::dtype_t</a></td></tr>
+<tr class="separator:a9f266a1a25a11f33e156a079a7aa2480"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d1087210c26087e30fab9c4933cee69" id="r_a7d1087210c26087e30fab9c4933cee69"><td class="memItemLeft" align="right" valign="top"><a id="a7d1087210c26087e30fab9c4933cee69" name="a7d1087210c26087e30fab9c4933cee69"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>ptype_t</b> = <a class="el" href="classmini__jit_1_1TensorOperation.html#aedfe089fbfc959da26a7c9ce8117a9a9">mini_jit::TensorOperation::ptype_t</a></td></tr>
+<tr class="separator:a7d1087210c26087e30fab9c4933cee69"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f88feae471656f51f174114a5a92d02" id="r_a6f88feae471656f51f174114a5a92d02"><td class="memItemLeft" align="right" valign="top"><a id="a6f88feae471656f51f174114a5a92d02" name="a6f88feae471656f51f174114a5a92d02"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>error_t</b> = <a class="el" href="classmini__jit_1_1TensorOperation.html#ae751ad39e2cffc2260805d363127411b">mini_jit::TensorOperation::error_t</a></td></tr>
+<tr class="separator:a6f88feae471656f51f174114a5a92d02"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a356443316c5e323fd6af0f6efb8859a3" id="r_a356443316c5e323fd6af0f6efb8859a3"><td class="memItemLeft" align="right" valign="top"><a id="a356443316c5e323fd6af0f6efb8859a3" name="a356443316c5e323fd6af0f6efb8859a3"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>kernel_t</b> = void(*)(void const *a, void *b, int64_t ld_a, int64_t ld_b)</td></tr>
 <tr class="separator:a356443316c5e323fd6af0f6efb8859a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ab8974cee23349b58a20bc8329e9919fe" id="r_ab8974cee23349b58a20bc8329e9919fe"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmini__jit_1_1Unary.html#ab97a1707a127a6aa5bd820b2ecddf01a">error_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmini__jit_1_1Unary.html#ab8974cee23349b58a20bc8329e9919fe">generate</a> (uint32_t m, uint32_t n, uint32_t trans_b, <a class="el" href="classmini__jit_1_1Unary.html#a0fcd9bd204abefa4ed4f0e9ec5189f9f">dtype_t</a> dtype, <a class="el" href="classmini__jit_1_1Unary.html#a5f3885faa74f47cc3e851c29acd62a41">ptype_t</a> ptype)</td></tr>
+<tr class="memitem:ab8974cee23349b58a20bc8329e9919fe" id="r_ab8974cee23349b58a20bc8329e9919fe"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmini__jit_1_1TensorOperation.html#ae751ad39e2cffc2260805d363127411b">error_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmini__jit_1_1Unary.html#ab8974cee23349b58a20bc8329e9919fe">generate</a> (uint32_t m, uint32_t n, uint32_t trans_b, <a class="el" href="classmini__jit_1_1TensorOperation.html#ad920716f058a88bd49bfa2580017d855">dtype_t</a> dtype, <a class="el" href="classmini__jit_1_1TensorOperation.html#aedfe089fbfc959da26a7c9ce8117a9a9">ptype_t</a> ptype)</td></tr>
 <tr class="memdesc:ab8974cee23349b58a20bc8329e9919fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate a kernel for a unary primitive.  <br /></td></tr>
 <tr class="separator:ab8974cee23349b58a20bc8329e9919fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7ef08b4895135a02f5057733927455d4" id="r_a7ef08b4895135a02f5057733927455d4"><td class="memItemLeft" align="right" valign="top">kernel_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmini__jit_1_1Unary.html#a7ef08b4895135a02f5057733927455d4">get_kernel</a> () const</td></tr>
@@ -126,7 +113,7 @@ Public Member Functions</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classmini__jit_1_1Unary.html#ab97a1707a127a6aa5bd820b2ecddf01a">mini_jit::Unary::error_t</a> mini_jit::Unary::generate </td>
+          <td class="memname"><a class="el" href="classmini__jit_1_1TensorOperation.html#ae751ad39e2cffc2260805d363127411b">mini_jit::Unary::error_t</a> mini_jit::Unary::generate </td>
           <td>(</td>
           <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>m</em>, </td>
@@ -146,13 +133,13 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classmini__jit_1_1Unary.html#a0fcd9bd204abefa4ed4f0e9ec5189f9f">dtype_t</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="classmini__jit_1_1TensorOperation.html#ad920716f058a88bd49bfa2580017d855">dtype_t</a>&#160;</td>
           <td class="paramname"><em>dtype</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classmini__jit_1_1Unary.html#a5f3885faa74f47cc3e851c29acd62a41">ptype_t</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="classmini__jit_1_1TensorOperation.html#aedfe089fbfc959da26a7c9ce8117a9a9">ptype_t</a>&#160;</td>
           <td class="paramname"><em>ptype</em>&#160;</td>
         </tr>
         <tr>
