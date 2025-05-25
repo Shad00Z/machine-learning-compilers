@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <span>
+#include <vector>
 
 #include "types.h"
 #include "Unary.h"
@@ -16,12 +17,38 @@ namespace mini_jit
 class mini_jit::TensorOperation
 {
 private:
+    /// used dtype
+    mini_jit::dtype_t m_dtype;
+
+    /// first touch primitive type
+    mini_jit::ptype_t m_prim_first_touch;
     /// first touch primitive
-    mini_jit::Unary::kernel_t m_prim_first_touch;
+    mini_jit::Unary::kernel_t m_prim_first_touch_kernel;
+
+    /// first touch primitive type
+    mini_jit::ptype_t m_prim_main;
     /// main primitive
-    mini_jit::Brgemm::kernel_t m_prim_main;
+    mini_jit::Brgemm::kernel_t m_prim_main_kernel;
+
+    /// first touch primitive type
+    mini_jit::ptype_t m_prim_last_touch;
     /// last touch primitive;
-    mini_jit::Unary::kernel_t m_prim_last_touch;
+    mini_jit::Unary::kernel_t m_prim_last_touch_kernel;
+
+    /// dimension types of the loops (m, n, k)
+    std::vector<dim_t> m_dim_types;
+    /// execution types of the loops (seq, shared, prim)
+    std::vector<exec_t> m_exec_types;
+    /// sizes of the dimensions (loops)
+    std::vector<int64_t> m_loop_sizes;
+    /// strides of the first input tensor
+    std::vector<int64_t> m_strides_in0;
+    /// strides of the second input tensor
+    std::vector<int64_t> m_strides_in1;
+    /// strides of the output tensor
+    std::vector<int64_t> m_strides_out;
+    /// location of first primitive loop
+    int64_t m_id_first_primitive_loop;
 
 public:
     /**
@@ -39,16 +66,17 @@ public:
      * @param strides_out       Strides of the output tensor.
      * @return error_t::success on success, another error_t value otherwise.
      **/
-    error_t setup(dtype_t dtype,
-                  ptype_t prim_first_touch,
-                  ptype_t prim_main,
-                  ptype_t prim_last_touch,
-                  std::span<const dim_t> dim_types,
-                  std::span<const exec_t> exec_types,
-                  std::span<const int64_t> dim_sizes,
-                  std::span<const int64_t> strides_in0,
-                  std::span<const int64_t> strides_in1,
-                  std::span<const int64_t> strides_out);
+    error_t
+    setup(dtype_t dtype,
+          ptype_t prim_first_touch,
+          ptype_t prim_main,
+          ptype_t prim_last_touch,
+          std::span<const dim_t> dim_types,
+          std::span<const exec_t> exec_types,
+          std::span<const int64_t> dim_sizes,
+          std::span<const int64_t> strides_in0,
+          std::span<const int64_t> strides_in1,
+          std::span<const int64_t> strides_out);
 
     /**
      * Execute the tensor operation.
