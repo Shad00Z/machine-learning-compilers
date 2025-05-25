@@ -72,6 +72,8 @@ mini_jit::error_t mini_jit::Brgemm::generate(uint32_t m,
     }
     else
     {
+        reset_kernel();
+
         if (br_size == 1)
         {
             mini_jit::kernels::matmul::matmul_m_n_k(*m_kernel, m, n, k);
@@ -89,4 +91,14 @@ mini_jit::error_t mini_jit::Brgemm::generate(uint32_t m,
 mini_jit::Brgemm::kernel_t mini_jit::Brgemm::get_kernel() const
 {
     return reinterpret_cast<kernel_t>(const_cast<void *>(m_kernel->get_kernel()));
+}
+
+void mini_jit::Brgemm::reset_kernel()
+{
+    if (m_kernel)
+    {
+        delete m_kernel;
+        m_kernel = nullptr;
+    }
+    m_kernel = new mini_jit::Kernel();
 }
