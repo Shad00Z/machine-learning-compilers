@@ -106,6 +106,11 @@ public:
                       char *ptr_out,
                       bool first_access,
                       bool last_access);
+
+    int dtype_size() const
+    {
+        return m_dtype == dtype_t::fp32 ? 4 : 8;
+    }
 };
 
 #endif
