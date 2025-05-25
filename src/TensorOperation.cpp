@@ -1,4 +1,6 @@
 #include "TensorOperation.h"
+#include "kernels/matmul/matmul_m_n_k.h"
+#include <iostream>
 
 mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
                                                    ptype_t prim_first_touch,
@@ -45,9 +47,9 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
 
     // Assigning to member
     m_dtype = dtype;
-
-    mini_jit::Unary l_unary;
-    mini_jit::Brgemm l_brgemm;
+    m_idx_m = 0;
+    m_idx_n = 0;
+    m_idx_k = 0;
 
     /*
      * r = dim_sizes[0]
@@ -59,22 +61,19 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
      */
     if (ptype_t::none != prim_first_touch)
     {
-        l_unary.generate(dim_sizes[3], dim_sizes[4], 0, dtype, prim_first_touch);
-        m_prim_first_touch_kernel = l_unary.get_kernel();
+        m_prim_first_touch_unary.generate(dim_sizes[3], dim_sizes[4], 0, dtype, prim_first_touch);
     }
     m_prim_first_touch = prim_first_touch;
 
     if (ptype_t::none != prim_main)
     {
-        l_brgemm.generate(dim_sizes[3], dim_sizes[4], dim_sizes[5], dim_sizes[2], 0, 0, 0, dtype);
-        m_prim_main_kernel = l_brgemm.get_kernel();
+        m_prim_main_gemm.generate(dim_sizes[3], dim_sizes[4], dim_sizes[5], dim_sizes[2], 0, 0, 0, dtype);
     }
     m_prim_main = prim_main;
 
     if (ptype_t::none != prim_last_touch)
     {
-        l_unary.generate(dim_sizes[3], dim_sizes[4], 0, dtype, prim_last_touch);
-        m_prim_last_touch_kernel = l_unary.get_kernel();
+        m_prim_last_touch_unary.generate(dim_sizes[3], dim_sizes[4], 0, dtype, prim_last_touch);
     }
     m_prim_last_touch = prim_last_touch;
 
@@ -106,6 +105,19 @@ void mini_jit::TensorOperation::execute_iter(int64_t id_loop,
         bool is_first = (l_iter == 0);
         bool is_last = (l_iter == l_size - 1);
 
+        if (id_loop == 1)
+        {
+            m_idx_n = l_iter;
+        }
+        else if (id_loop == 0)
+        {
+            m_idx_m = l_iter;
+        }
+        else if (id_loop == 2)
+        {
+            m_idx_k = l_iter;
+        }
+
         /*
          * r = m_loop_sizes[0]
          * p = m_loop_sizes[1]
@@ -114,31 +126,40 @@ void mini_jit::TensorOperation::execute_iter(int64_t id_loop,
          * q = m_loop_sizes[4]
          * u = m_loop_sizes[5]
          */
-        int64_t offset_A = m_loop_sizes[2] * m_strides_in0[0] + m_loop_sizes[2] * m_strides_in0[2];
-        int64_t offset_B = m_loop_sizes[1] * m_strides_in1[1] + m_loop_sizes[2] * m_strides_in1[2];
-        int64_t offset_C = m_loop_sizes[1] * m_strides_out[1] + m_loop_sizes[0] * m_strides_out[0];
+        // int64_t offset_A = m_strides_in0[0] * m_idx_n; // u*s
 
-        char const *sub_ptr_in0 = ptr_in0;
-        char const *sub_ptr_in1 = ptr_in1;
-        char *sub_ptr_out = ptr_out;
+        int64_t offset_A = m_strides_in0[2] * m_idx_k + m_strides_in0[0] * m_idx_m;
+        int64_t offset_B = m_strides_in1[1] * m_idx_n + m_strides_in1[2] * m_idx_k;
+        int64_t offset_C = m_strides_out[1] * m_idx_n + m_strides_out[0] * m_idx_m;
+
+        char const *sub_ptr_in0 = ptr_in0 + offset_A * dtype_size();
+        char const *sub_ptr_in1 = ptr_in1 + offset_B * dtype_size();
+        char *sub_ptr_out = ptr_out + offset_C * dtype_size();
 
         // Recursive Call
         if (id_loop + 1 < m_id_first_primitive_loop)
         {
-            execute_iter(id_loop + 1, sub_ptr_in0, sub_ptr_in1, sub_ptr_out, is_first && first_access, is_last && last_access);
+            execute_iter(id_loop + 1, ptr_in0, ptr_in1, ptr_out, is_first && first_access, is_last && last_access);
         }
         else
         {
             // First Touch
             // Main
-            m_prim_main_kernel(sub_ptr_in0,                       // A
+            mini_jit::Brgemm::kernel_t l_prim_main_kernel = m_prim_main_gemm.get_kernel();
+
+            std::cout << "M, N, K: " << m_idx_m << ", " << m_idx_n << ", " << m_idx_k << std::endl;
+            std::cout << "Offset A: " << offset_A << std::endl;
+            std::cout << "Offset B: " << offset_B << std::endl;
+            std::cout << "Offset C: " << offset_C << std::endl;
+
+            l_prim_main_kernel(sub_ptr_in0,                       // A
                                sub_ptr_in1,                       // B
                                sub_ptr_out,                       // C
                                m_loop_sizes[3],                   // ldA = s
                                m_loop_sizes[2] * m_loop_sizes[5], // ldB = t * u
                                m_loop_sizes[0] * m_loop_sizes[3], // ldC = r * s
-                               0,                                 // br_size_A
-                               0                                  // br_size_B
+                               1,                                 // br_size_A
+                               1                                  // br_size_B
             );
             // Last Touch
         }

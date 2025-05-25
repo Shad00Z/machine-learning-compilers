@@ -22,18 +22,18 @@ private:
 
     /// first touch primitive type
     mini_jit::ptype_t m_prim_first_touch;
-    /// first touch primitive
-    mini_jit::Unary::kernel_t m_prim_first_touch_kernel;
+    /// first touch primitive unary
+    mini_jit::Unary m_prim_first_touch_unary;
 
     /// first touch primitive type
     mini_jit::ptype_t m_prim_main;
     /// main primitive
-    mini_jit::Brgemm::kernel_t m_prim_main_kernel;
+    mini_jit::Brgemm m_prim_main_gemm;
 
     /// first touch primitive type
     mini_jit::ptype_t m_prim_last_touch;
     /// last touch primitive;
-    mini_jit::Unary::kernel_t m_prim_last_touch_kernel;
+    mini_jit::Unary m_prim_last_touch_unary;
 
     /// dimension types of the loops (m, n, k)
     std::vector<dim_t> m_dim_types;
@@ -49,6 +49,11 @@ private:
     std::vector<int64_t> m_strides_out;
     /// location of first primitive loop
     int64_t m_id_first_primitive_loop;
+
+    /// seq loop positions
+    int64_t m_idx_m;
+    int64_t m_idx_n;
+    int64_t m_idx_k;
 
 public:
     /**
