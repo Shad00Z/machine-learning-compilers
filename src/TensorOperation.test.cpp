@@ -8,7 +8,7 @@
 #include "constants.h"
 #include "types.h"
 
-TEST_CASE("Reference test for tensor operation kernel with variable R, P, T, S, Q, U", "[matmul][parameterized]")
+TEST_CASE("Reference test for ZERO + GEMM/BRGEMM tensor operation kernel with variable R, P, T, S, Q, U", "[tensor_operation][parameterized]")
 {
     const int R = GENERATE(2, 3, 5);
     const int P = GENERATE(2, 3, 5);
@@ -45,8 +45,8 @@ TEST_CASE("Reference test for tensor operation kernel with variable R, P, T, S, 
                     int col = t * U + u;
                     int idx = col * (R * S) + row;
 
-                    A[idx] = aVal;
-                    A_raw[id_Raw++] = aVal;
+                    A[idx] = aVal * 1.0f;;
+                    A_raw[id_Raw++] = aVal * 1.0f;;
                     aVal++;
                 }
             }
@@ -55,12 +55,13 @@ TEST_CASE("Reference test for tensor operation kernel with variable R, P, T, S, 
 
     for (int i = 0; i < SIZE_B; ++i)
     {
-        B[i] = i;
+        B[i] = i * 1.0f;
     }
 
     for (int i = 0; i < SIZE_C; ++i)
     {
-        C[i] = 0.0f;
+        //TODO: init with values to check zero first touch
+        C[i] = i * 0.0f;
         C_expected[i] = 0.0f;
     }
 
@@ -119,7 +120,7 @@ TEST_CASE("Reference test for tensor operation kernel with variable R, P, T, S, 
 
     mini_jit::TensorOperation l_top;
     l_top.setup(mini_jit::dtype_t::fp32,
-                mini_jit::ptype_t::none,
+                mini_jit::ptype_t::zero,
                 mini_jit::ptype_t::gemm,
                 mini_jit::ptype_t::none,
                 dim_types,

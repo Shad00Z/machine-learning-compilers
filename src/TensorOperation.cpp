@@ -83,25 +83,43 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
     /////////////////////////////////////////////////////////////////////
     if (prim_first_touch != ptype_t::none)
     {
-        m_prim_first_touch_unary.generate(dim_sizes[3], dim_sizes[4], 0, dtype, prim_first_touch);
+        m_prim_first_touch_unary.generate(dim_sizes[3], 
+                                          dim_sizes[4], 
+                                          0, 
+                                          dtype, 
+                                          prim_first_touch);
     }
-    m_prim_first_touch = prim_first_touch;
-
     if (prim_main == ptype_t::gemm || prim_main == ptype_t::brgemm)
     {
-        m_prim_main_gemm.generate(dim_sizes[3], dim_sizes[4], dim_sizes[5], dim_sizes[2], 0, 0, 0, dtype);
+        m_prim_main_gemm.generate(dim_sizes[3], 
+                                  dim_sizes[4], 
+                                  dim_sizes[5], 
+                                  dim_sizes[2], 
+                                  0, 
+                                  0, 
+                                  0, 
+                                  dtype);
     }
     else if (prim_main == ptype_t::identity)
     {
         // TODO: check if transpose or not
-        m_prim_main_unary.generate(dim_sizes[3], dim_sizes[4], 0, dtype, ptype_t::identity);
+        m_prim_main_unary.generate(dim_sizes[3], 
+                                   dim_sizes[4], 
+                                   0, 
+                                   dtype, 
+                                   prim_main);
     }
-    m_prim_main = prim_main;
-
     if (prim_last_touch != ptype_t::none)
     {
-        m_prim_last_touch_unary.generate(dim_sizes[3], dim_sizes[4], 0, dtype, prim_last_touch);
+        m_prim_last_touch_unary.generate(dim_sizes[3], 
+                                         dim_sizes[4], 
+                                         0, 
+                                         dtype, 
+                                         prim_last_touch);
     }
+
+    m_prim_first_touch = prim_first_touch;
+    m_prim_main = prim_main;
     m_prim_last_touch = prim_last_touch;
 
     return error_t::success;
@@ -166,7 +184,12 @@ void mini_jit::TensorOperation::execute_iter(int64_t id_loop,
         // Recursive Call
         if (id_loop + 1 < m_id_first_primitive_loop)
         {
-            execute_iter(id_loop + 1, ptr_in0, ptr_in1, ptr_out, is_first && first_access, is_last && last_access);
+            execute_iter(id_loop + 1, 
+                         ptr_in0, 
+                         ptr_in1, 
+                         ptr_out, 
+                         is_first && first_access, 
+                         is_last && last_access);
         }
         else
         {
@@ -175,15 +198,21 @@ void mini_jit::TensorOperation::execute_iter(int64_t id_loop,
             /////////////////////////////////////////////////////////////////////
             if (is_first && first_access && m_prim_first_touch != ptype_t::none)
             {
-                char const *unary_ptr_in0 = sub_ptr_out;
-                char *unary_ptr_out = sub_ptr_out;
-
+                mini_jit::Unary::kernel_t l_prim_first_touch_kernel = m_prim_first_touch_unary.get_kernel();
                 if (m_prim_first_touch == ptype_t::zero)
                 {
-                    unary_ptr_in0 = nullptr; // Zero kernel
+                    l_prim_first_touch_kernel(nullptr,
+                                              sub_ptr_out,
+                                              0,                                  // ldA = 0
+                                              m_loop_sizes[0] * m_loop_sizes[3]); // ldB = r * s
                 }
-                mini_jit::Unary::kernel_t l_prim_first_touch_kernel = m_prim_first_touch_unary.get_kernel();
-                l_prim_first_touch_kernel(unary_ptr_in0, unary_ptr_out, m_loop_sizes[3], m_loop_sizes[4]);
+                else if (m_prim_first_touch == ptype_t::relu)
+                {
+                    l_prim_first_touch_kernel(sub_ptr_out,
+                                              sub_ptr_out,
+                                              m_loop_sizes[0] * m_loop_sizes[3],  // ldA = r * s
+                                              m_loop_sizes[0] * m_loop_sizes[3]); // ldB = r * s
+                }
             }
             /////////////////////////////////////////////////////////////////////
             // Main
@@ -214,15 +243,21 @@ void mini_jit::TensorOperation::execute_iter(int64_t id_loop,
             // in theory, zero kernel is not possible here but kept for consistency
             if (is_last && last_access && m_prim_last_touch != ptype_t::none)
             {
-                char const *unary_ptr_in0 = sub_ptr_out;
-                char *unary_ptr_out = sub_ptr_out;
-
-                if (m_prim_last_touch == ptype_t::zero)
+                mini_jit::Unary::kernel_t l_prim_first_touch_kernel = m_prim_first_touch_unary.get_kernel();
+                if (m_prim_first_touch == ptype_t::zero)
                 {
-                    unary_ptr_in0 = nullptr; // Zero kernel
+                    l_prim_first_touch_kernel(nullptr,
+                                              sub_ptr_out,
+                                              0,                                  // ldA = 0
+                                              m_loop_sizes[0] * m_loop_sizes[3]); // ldB = r * s
                 }
-                mini_jit::Unary::kernel_t l_prim_last_touch_kernel = m_prim_last_touch_unary.get_kernel();
-                l_prim_last_touch_kernel(unary_ptr_in0, unary_ptr_out, m_loop_sizes[3], m_loop_sizes[4]);
+                else if (m_prim_first_touch == ptype_t::relu)
+                {
+                    l_prim_first_touch_kernel(sub_ptr_out,
+                                              sub_ptr_out,
+                                              m_loop_sizes[0] * m_loop_sizes[3],  // ldA = r * s
+                                              m_loop_sizes[0] * m_loop_sizes[3]); // ldB = r * s
+                }
             }
         }
     }
