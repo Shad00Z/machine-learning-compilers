@@ -101,7 +101,7 @@ void unary_benchmark(mini_jit::Benchmark &bench, std::ofstream &unary_bm, std::s
 int main(int argc, char *argv[])
 {
     // check console arguments
-    bool has_gemm = false, has_brgemm = false, has_matmul = false, has_unary = false;
+    bool has_gemm = false, has_brgemm = false, has_matmul = false, has_unary = false, tensor_operations = false;
     for (int i = 1; i < argc; ++i)
     {
         if (strcmp(argv[i], "gemm") == 0)
@@ -112,6 +112,8 @@ int main(int argc, char *argv[])
             has_matmul = true;
         else if (strcmp(argv[i], "unary") == 0)
             has_unary = true;
+        else if (strcmp(argv[i], "top") == 0)
+            tensor_operations = true;
     }
 
     if (has_gemm)
@@ -133,9 +135,9 @@ int main(int argc, char *argv[])
         matmul_benchmark(bench_brmnk, matmul_bm, "Matmul_br_m_n_k 1024x1024x1024 br=16");
         matmul_bm.close();
     }
-    
+
     if (has_unary)
-    {    
+    {
         const double RUN_TIME = 3.0;
         std::ofstream unary_bm("benchmarks/unary_benchmarks.txt");
 
@@ -200,6 +202,96 @@ int main(int argc, char *argv[])
         unary_benchmark(bench_zero_xzr_2048_2048, unary_bm, "zero_xzr_primitive 2048x2048");
 
         unary_bm.close();
+    }
+
+    if (tensor_operations)
+    {
+        const double RUN_TIME = 3.0;
+        std::ofstream top_bm("benchmarks/tensor_operation_benchmarks.txt");
+
+        std::vector<mini_jit::dim_t> l_dims_1 = {mini_jit::dim_t::m, mini_jit::dim_t::n, mini_jit::dim_t::k, mini_jit::dim_t::m, mini_jit::dim_t::n, mini_jit::dim_t::k};
+        std::vector<mini_jit::exec_t> l_execs_1 = {mini_jit::exec_t::seq, mini_jit::exec_t::seq, mini_jit::exec_t::seq, mini_jit::exec_t::prim, mini_jit::exec_t::prim, mini_jit::exec_t::prim};
+        std::vector<int64_t> l_sizes_1 = {32, 32, 8, 32, 32, 32};
+        std::vector<int64_t> l_strides_in0_1 = {8192, 0, 1024, 1, 0, 32};
+        std::vector<int64_t> l_strides_in1_1 = {0, 8192, 1024, 0, 32, 1};
+        std::vector<int64_t> l_strides_out_1 = {32768, 1024, 0, 1, 32, 0};
+        mini_jit::benchmarks::TensorOperationBench tensor_bench_1(RUN_TIME,
+                                                                  mini_jit::dtype_t::fp32,
+                                                                  mini_jit::ptype_t::none,
+                                                                  mini_jit::ptype_t::gemm,
+                                                                  mini_jit::ptype_t::none,
+                                                                  l_dims_1,
+                                                                  l_execs_1,
+                                                                  l_sizes_1,
+                                                                  l_strides_in0_1,
+                                                                  l_strides_in1_1,
+                                                                  l_strides_out_1);
+
+        std::vector<mini_jit::dim_t> l_dims_2 = {mini_jit::dim_t::m, mini_jit::dim_t::n, mini_jit::dim_t::k, mini_jit::dim_t::m, mini_jit::dim_t::n, mini_jit::dim_t::k};
+        std::vector<mini_jit::exec_t> l_execs_2 = {mini_jit::exec_t::seq, mini_jit::exec_t::seq, mini_jit::exec_t::prim, mini_jit::exec_t::prim, mini_jit::exec_t::prim, mini_jit::exec_t::prim};
+        std::vector<int64_t> l_sizes_2 = {32, 32, 8, 32, 32, 32};
+        std::vector<int64_t> l_strides_in0_2 = {8192, 0, 1024, 1, 0, 32};
+        std::vector<int64_t> l_strides_in1_2 = {0, 8192, 1024, 0, 32, 1};
+        std::vector<int64_t> l_strides_out_2 = {32768, 1024, 0, 1, 32, 0};
+        mini_jit::benchmarks::TensorOperationBench tensor_bench_2(RUN_TIME,
+                                                                  mini_jit::dtype_t::fp32,
+                                                                  mini_jit::ptype_t::none,
+                                                                  mini_jit::ptype_t::brgemm,
+                                                                  mini_jit::ptype_t::none,
+                                                                  l_dims_2,
+                                                                  l_execs_2,
+                                                                  l_sizes_2,
+                                                                  l_strides_in0_2,
+                                                                  l_strides_in1_2,
+                                                                  l_strides_out_2);
+
+        std::vector<mini_jit::dim_t> l_dims_3 = {mini_jit::dim_t::m, mini_jit::dim_t::n, mini_jit::dim_t::k, mini_jit::dim_t::m, mini_jit::dim_t::n, mini_jit::dim_t::k};
+        std::vector<mini_jit::exec_t> l_execs_3 = {mini_jit::exec_t::seq, mini_jit::exec_t::seq, mini_jit::exec_t::prim, mini_jit::exec_t::prim, mini_jit::exec_t::prim, mini_jit::exec_t::prim};
+        std::vector<int64_t> l_sizes_3 = {32, 32, 8, 32, 32, 32};
+        std::vector<int64_t> l_strides_in0_3 = {8192, 0, 1024, 1, 0, 32};
+        std::vector<int64_t> l_strides_in1_3 = {0, 8192, 1024, 0, 32, 1};
+        std::vector<int64_t> l_strides_out_3 = {32768, 1024, 0, 1, 32, 0};
+        mini_jit::benchmarks::TensorOperationBench tensor_bench_3(RUN_TIME,
+                                                                  mini_jit::dtype_t::fp32,
+                                                                  mini_jit::ptype_t::zero,
+                                                                  mini_jit::ptype_t::brgemm,
+                                                                  mini_jit::ptype_t::relu,
+                                                                  l_dims_3,
+                                                                  l_execs_3,
+                                                                  l_sizes_3,
+                                                                  l_strides_in0_3,
+                                                                  l_strides_in1_3,
+                                                                  l_strides_out_3);
+
+        top_bm << "Running TensorOperationBench benchmark #1" << std::endl;
+        std::cout << "Running TensorOperationBench benchmark #1" << std::endl;
+        tensor_bench_1.run();
+        mini_jit::Benchmark::benchmark_result result = tensor_bench_1.getResult();
+        top_bm << "Total time (s):                  " << result.elapsedSeconds << std::endl;
+        top_bm << "Total reps:                      " << result.numReps << std::endl;
+        top_bm << "Total floating point operations: " << result.totalOperations << std::endl;
+        top_bm << "Estimated GFLOPS/sec:            " << result.gflops << std::endl;
+        top_bm << "--------------------------------------------------" << std::endl;
+
+        top_bm << "Running TensorOperationBench benchmark #2" << std::endl;
+        std::cout << "Running TensorOperationBench benchmark #2" << std::endl;
+        tensor_bench_2.run();
+        result = tensor_bench_2.getResult();
+        top_bm << "Total time (s):                  " << result.elapsedSeconds << std::endl;
+        top_bm << "Total reps:                      " << result.numReps << std::endl;
+        top_bm << "Total floating point operations: " << result.totalOperations << std::endl;
+        top_bm << "Estimated GFLOPS/sec:            " << result.gflops << std::endl;
+        top_bm << "--------------------------------------------------" << std::endl;
+
+        top_bm << "Running TensorOperationBench benchmark #3" << std::endl;
+        std::cout << "Running TensorOperationBench benchmark #3" << std::endl;
+        tensor_bench_3.run();
+        result = tensor_bench_3.getResult();
+        top_bm << "Total time (s):                  " << result.elapsedSeconds << std::endl;
+        top_bm << "Total reps:                      " << result.numReps << std::endl;
+        top_bm << "Total floating point operations: " << result.totalOperations << std::endl;
+        top_bm << "Estimated GFLOPS/sec:            " << result.gflops << std::endl;
+        top_bm << "--------------------------------------------------" << std::endl;
     }
 
     return 0;

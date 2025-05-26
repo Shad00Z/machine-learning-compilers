@@ -50,6 +50,7 @@ namespace mini_jit
         operation_not_supported = 4,
         wrong_matrix_ordering_format = 5,
         wrong_dtype = 6,
+        wrong_exec_type = 7,
     };
 }
 #endif // MINI_JIT_TYPES_H

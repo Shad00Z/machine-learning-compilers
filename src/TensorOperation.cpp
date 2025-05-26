@@ -1,6 +1,4 @@
 #include "TensorOperation.h"
-#include "kernels/matmul/matmul_m_n_k.h"
-#include <iostream>
 #include <algorithm>
 
 mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
@@ -23,6 +21,19 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
     }
 
     /////////////////////////////////////////////////////////////////////
+    // Check the number of prim exec types
+    /////////////////////////////////////////////////////////////////////
+    int prim_count = std::count(exec_types.begin(), exec_types.end(), exec_t::prim);
+    if (prim_main == ptype_t::brgemm && prim_count != 4)
+    {
+        return error_t::wrong_exec_type;
+    }
+    else if (prim_main == ptype_t::gemm && prim_count != 3)
+    {
+        return error_t::wrong_exec_type;
+    }
+
+    /////////////////////////////////////////////////////////////////////
     // Assign member variables
     /////////////////////////////////////////////////////////////////////
     m_dim_types.assign(dim_types.begin(), dim_types.end());
@@ -32,9 +43,9 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
     m_strides_in1.assign(strides_in1.begin(), strides_in1.end());
     m_strides_out.assign(strides_out.begin(), strides_out.end());
     m_dtype = dtype;
-    m_idx_m = 0;
-    m_idx_n = 0;
-    m_idx_k = 0;
+    m_idx_m = 0; // -1;
+    m_idx_n = 0; // -1;
+    m_idx_k = 0; // -1;
 
     /////////////////////////////////////////////////////////////////////
     // Check allowed data type
@@ -78,54 +89,111 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
         m_id_first_primitive_loop = 0;
     }
 
+    m_dim_s = -1;
+    m_dim_q = -1;
+    m_dim_u = -1;
+    m_dim_r = -1;
+    m_dim_p = -1;
+    m_dim_t = -1;
+    m_exists_seq_k = false;
+
+    /////////////////////////////////////////////////////////////////////
+    // Read PRIM dimensions using dim types
+    /////////////////////////////////////////////////////////////////////
+    for (size_t i = m_dim_types.size() - 1; i > 0; i--)
+    {
+        if (m_exec_types[i] == exec_t::prim)
+        {
+            if (m_dim_types[i] == dim_t::m && m_dim_s == -1)
+            {
+                m_dim_s = m_loop_sizes[i];
+            }
+            else if (m_dim_types[i] == dim_t::n && m_dim_q == -1)
+            {
+                m_dim_q = m_loop_sizes[i];
+            }
+            else if (m_dim_types[i] == dim_t::k && m_dim_u == -1)
+            {
+                m_dim_u = m_loop_sizes[i];
+            }
+            else if (m_dim_types[i] == dim_t::k)
+            {
+                m_dim_t = m_loop_sizes[i];
+            }
+        }
+    }
+
+    /////////////////////////////////////////////////////////////////////
+    // Read SEQ dimensions using dim types
+    /////////////////////////////////////////////////////////////////////
+    for (size_t i = 0; i < m_dim_types.size(); ++i)
+    {
+        if (m_exec_types[i] == exec_t::seq)
+        {
+            if (m_dim_types[i] == dim_t::m)
+            {
+                m_dim_r = m_loop_sizes[i];
+            }
+            else if (m_dim_types[i] == dim_t::n)
+            {
+                m_dim_p = m_loop_sizes[i];
+            }
+            else if (m_dim_types[i] == dim_t::k)
+            {
+                m_exists_seq_k = true;
+                m_dim_t = m_loop_sizes[i];
+            }
+        }
+    }
+
     /////////////////////////////////////////////////////////////////////
     // Generate kernels
     /////////////////////////////////////////////////////////////////////
     if (prim_first_touch != ptype_t::none)
     {
-        m_prim_first_touch_unary.generate(dim_sizes[3], 
-                                          dim_sizes[4], 
-                                          0, 
-                                          dtype, 
+        m_prim_first_touch_unary.generate(m_dim_s,
+                                          m_dim_q,
+                                          0,
+                                          dtype,
                                           prim_first_touch);
     }
     if (prim_main == ptype_t::gemm)
     {
-        m_prim_main_gemm.generate(dim_sizes[3], 
-                                  dim_sizes[4], 
-                                  dim_sizes[5], 
-                                  1, 
-                                  0, 
-                                  0, 
-                                  0, 
+        m_prim_main_gemm.generate(m_dim_s,
+                                  m_dim_q,
+                                  m_dim_u,
+                                  1,
+                                  0,
+                                  0,
+                                  0,
                                   dtype);
     }
     else if (prim_main == ptype_t::brgemm)
     {
-        m_prim_main_gemm.generate(dim_sizes[3], 
-                                  dim_sizes[4], 
-                                  dim_sizes[5], 
-                                  dim_sizes[2], 
-                                  0, 
-                                  0, 
-                                  0, 
+        m_prim_main_gemm.generate(m_dim_s,
+                                  m_dim_q,
+                                  m_dim_u,
+                                  m_dim_t,
+                                  0,
+                                  0,
+                                  0,
                                   dtype);
     }
     else if (prim_main == ptype_t::identity)
     {
         // TODO: check if transpose or not
-        m_prim_main_unary.generate(dim_sizes[3], 
-                                   dim_sizes[4], 
-                                   0, 
-                                   dtype, 
+        m_prim_main_unary.generate(m_dim_s,
+                                   m_dim_q,
+                                   0,
+                                   dtype,
                                    prim_main);
     }
     if (prim_last_touch != ptype_t::none)
     {
-        m_prim_last_touch_unary.generate(dim_sizes[3], 
-                                         dim_sizes[4], 
-                                         0, 
-                                         dtype, 
+        m_prim_last_touch_unary.generate(m_dim_s,
+                                         m_dim_q,
+                                         0,
+                                         dtype,
                                          prim_last_touch);
     }
 
@@ -184,14 +252,13 @@ void mini_jit::TensorOperation::execute_iter(int64_t id_loop,
             is_last = true;
         }
 
-        /*
-         * r = m_loop_sizes[0]
-         * p = m_loop_sizes[1]
-         * t = m_loop_sizes[2]
-         * s = m_loop_sizes[3]
-         * q = m_loop_sizes[4]
-         * u = m_loop_sizes[5]
-         */
+        if (m_prim_main == ptype_t::brgemm &&
+            !m_exists_seq_k)
+        {
+            // is_first = true;
+            is_last = true;
+        }
+
         int64_t offset_A = m_strides_in0[2] * m_idx_k + m_strides_in0[0] * m_idx_m;
         int64_t offset_B = m_strides_in1[1] * m_idx_n + m_strides_in1[2] * m_idx_k;
         int64_t offset_C = m_strides_out[1] * m_idx_n + m_strides_out[0] * m_idx_m;
@@ -203,10 +270,10 @@ void mini_jit::TensorOperation::execute_iter(int64_t id_loop,
         // Recursive Call
         if (id_loop + 1 < m_id_first_primitive_loop)
         {
-            execute_iter(id_loop + 1, 
-                         ptr_in0, 
-                         ptr_in1, 
-                         ptr_out, 
+            execute_iter(id_loop + 1,
+                         ptr_in0,
+                         ptr_in1,
+                         ptr_out,
                          is_first,
                          is_last);
         }
@@ -222,15 +289,15 @@ void mini_jit::TensorOperation::execute_iter(int64_t id_loop,
                 {
                     l_prim_first_touch_kernel(nullptr,
                                               sub_ptr_out,
-                                              0,                                  // ldA = 0
-                                              m_loop_sizes[0] * m_loop_sizes[3]); // ldB = r * s
+                                              0,                  // ldA = 0
+                                              m_dim_r * m_dim_s); // ldB = r * s
                 }
                 else if (m_prim_first_touch == ptype_t::relu)
                 {
                     l_prim_first_touch_kernel(sub_ptr_out,
                                               sub_ptr_out,
-                                              m_loop_sizes[0] * m_loop_sizes[3],  // ldA = r * s
-                                              m_loop_sizes[0] * m_loop_sizes[3]); // ldB = r * s
+                                              m_dim_r * m_dim_s,  // ldA = r * s
+                                              m_dim_r * m_dim_s); // ldB = r * s
                 }
             }
             /////////////////////////////////////////////////////////////////////
@@ -239,34 +306,34 @@ void mini_jit::TensorOperation::execute_iter(int64_t id_loop,
             if (m_prim_main == ptype_t::gemm)
             {
                 mini_jit::Brgemm::kernel_t l_prim_main_kernel = m_prim_main_gemm.get_kernel();
-                l_prim_main_kernel(sub_ptr_in0,                                         // A
-                                   sub_ptr_in1,                                         // B
-                                   sub_ptr_out,                                         // C
-                                   m_loop_sizes[3],                                     // ldA = s
-                                   m_loop_sizes[2] * m_loop_sizes[5],                   // ldB = t * u
-                                   m_loop_sizes[0] * m_loop_sizes[3],                   // ldC = r * s
+                l_prim_main_kernel(sub_ptr_in0,       // A
+                                   sub_ptr_in1,       // B
+                                   sub_ptr_out,       // C
+                                   m_dim_s,           // ldA = s
+                                   m_dim_t * m_dim_u, // ldB = t * u
+                                   m_dim_r * m_dim_s, // ldC = r * s
                                    1,
                                    1);
             }
             else if (m_prim_main == ptype_t::brgemm)
             {
                 mini_jit::Brgemm::kernel_t l_prim_main_kernel = m_prim_main_gemm.get_kernel();
-                l_prim_main_kernel(sub_ptr_in0,                                         // A
-                                   sub_ptr_in1,                                         // B
-                                   sub_ptr_out,                                         // C
-                                   m_loop_sizes[3],                                     // ldA = s
-                                   m_loop_sizes[2] * m_loop_sizes[5],                   // ldB = t * u
-                                   m_loop_sizes[0] * m_loop_sizes[3],                   // ldC = r * s
-                                   m_loop_sizes[0] * m_loop_sizes[3] * m_loop_sizes[5], // br_size_A = r * s * u
-                                   m_loop_sizes[5]);                                    // br_size_B = u
+                l_prim_main_kernel(sub_ptr_in0,                 // A
+                                   sub_ptr_in1,                 // B
+                                   sub_ptr_out,                 // C
+                                   m_dim_s,                     // ldA = s
+                                   m_dim_t * m_dim_u,           // ldB = t * u
+                                   m_dim_r * m_dim_s,           // ldC = r * s
+                                   m_dim_r * m_dim_s * m_dim_u, // br_size_A = r * s * u
+                                   m_dim_u);                    // br_size_B = u
             }
             else if (m_prim_main == ptype_t::identity)
             {
                 mini_jit::Unary::kernel_t l_prim_main_kernel = m_prim_main_unary.get_kernel();
-                l_prim_main_kernel(sub_ptr_in0,                                          // A
-                                   sub_ptr_out,                                          // C
-                                   m_loop_sizes[5] * m_loop_sizes[3],                    // u * s
-                                   m_loop_sizes[2] * m_loop_sizes[5] * m_loop_sizes[0]); // t * u * r
+                l_prim_main_kernel(sub_ptr_in0,                  // A
+                                   sub_ptr_out,                  // C
+                                   m_dim_u * m_dim_s,            // u * s
+                                   m_dim_t * m_dim_u * m_dim_r); // t * u * r
             }
             /////////////////////////////////////////////////////////////////////
             // Last Touch
@@ -279,15 +346,15 @@ void mini_jit::TensorOperation::execute_iter(int64_t id_loop,
                 {
                     l_prim_last_touch_kernel(nullptr,
                                              sub_ptr_out,
-                                             0,                                  // ldA = 0
-                                             m_loop_sizes[0] * m_loop_sizes[3]); // ldB = r * s
+                                             0,                  // ldA = 0
+                                             m_dim_r * m_dim_s); // ldB = r * s
                 }
                 else if (m_prim_last_touch == ptype_t::relu)
                 {
                     l_prim_last_touch_kernel(sub_ptr_out,
                                              sub_ptr_out,
-                                             m_loop_sizes[0] * m_loop_sizes[3],  // ldA = r * s
-                                             m_loop_sizes[0] * m_loop_sizes[3]); // ldB = r * s
+                                             m_dim_r * m_dim_s,  // ldA = r * s
+                                             m_dim_r * m_dim_s); // ldB = r * s
                 }
             }
         }

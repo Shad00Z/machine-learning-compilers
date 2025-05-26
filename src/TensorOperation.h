@@ -57,6 +57,18 @@ private:
     int64_t m_idx_n;
     int64_t m_idx_k;
 
+    /// save matrix dimensions
+    int64_t m_dim_s;
+    int64_t m_dim_q;
+    int64_t m_dim_u;
+
+    /// sequential loop sizes
+    int64_t m_dim_r;
+    int64_t m_dim_p;
+    int64_t m_dim_t;
+
+    bool m_exists_seq_k;
+
 public:
     /**
      * Setup for a binary tensor contraction or a unary tensor operation.

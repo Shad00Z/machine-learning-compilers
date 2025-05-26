@@ -149,28 +149,6 @@ void runTensorOperationTest(mini_jit::ptype_t first_touch_type,
 
     l_top.execute(A_raw, B, C);
 
-    //    // Print result matrix C (column-major order)
-    // std::cout << "Matrix C_expected (column-major order):" << std::endl;
-    // for (int row = 0; row < (R * S); ++row)
-    // {
-    //     for (int col = 0; col < (P * Q); ++col)
-    //     {
-    //         std::cout << C_expected[row + col * (R * S)] << " ";
-    //     }
-    //     std::cout << std::endl;
-    // }
-
-    //    // Print result matrix C (column-major order)
-    // std::cout << "Matrix C (column-major order):" << std::endl;
-    // for (int row = 0; row < (R * S); ++row)
-    // {
-    //     for (int col = 0; col < (P * Q); ++col)
-    //     {
-    //         std::cout << C[row + col * (R * S)] << " ";
-    //     }
-    //     std::cout << std::endl;
-    // }
-
     for (int i = 0; i < SIZE_C; ++i)
     {
         REQUIRE(C[i] == Approx(C_expected[i]).margin(FLOAT_ERROR_MARGIN));
@@ -195,8 +173,7 @@ TEST_CASE("Reference test for ZERO + GEMM tensor operation kernel with variable 
         mini_jit::exec_t::seq,
         mini_jit::exec_t::prim,
         mini_jit::exec_t::prim,
-        mini_jit::exec_t::prim
-    };
+        mini_jit::exec_t::prim};
     runTensorOperationTest(first_touch_type,
                            main_type,
                            last_touch_type,
@@ -241,21 +218,21 @@ TEST_CASE("Reference test for ZERO + GEMM + RELU tensor operation kernel with va
                            exec_types);
 }
 
-// TEST_CASE("Reference test for ZERO + BRGEMM + RELU tensor operation kernel with variable R, P, T, S, Q, U", "[tensor_operation][parameterized][zero][brgemm][relu]")
-// {
-//     const mini_jit::ptype_t first_touch_type = mini_jit::ptype_t::zero;
-//     const mini_jit::ptype_t main_type = mini_jit::ptype_t::brgemm;
-//     const mini_jit::ptype_t last_touch_type = mini_jit::ptype_t::relu;
+TEST_CASE("Reference test for ZERO + BRGEMM + RELU tensor operation kernel with variable R, P, T, S, Q, U", "[tensor_operation][parameterized][zero][brgemm][relu]")
+{
+    const mini_jit::ptype_t first_touch_type = mini_jit::ptype_t::zero;
+    const mini_jit::ptype_t main_type = mini_jit::ptype_t::brgemm;
+    const mini_jit::ptype_t last_touch_type = mini_jit::ptype_t::relu;
 
-//     std::vector<mini_jit::exec_t> exec_types = {
-//         mini_jit::exec_t::seq,
-//         mini_jit::exec_t::seq,
-//         mini_jit::exec_t::prim,
-//         mini_jit::exec_t::prim,
-//         mini_jit::exec_t::prim,
-//         mini_jit::exec_t::prim};
-//     runTensorOperationTest(first_touch_type,
-//                            main_type,
-//                            last_touch_type,
-//                            exec_types);
-// }
+    std::vector<mini_jit::exec_t> exec_types = {
+        mini_jit::exec_t::seq,
+        mini_jit::exec_t::seq,
+        mini_jit::exec_t::prim,
+        mini_jit::exec_t::prim,
+        mini_jit::exec_t::prim,
+        mini_jit::exec_t::prim};
+    runTensorOperationTest(first_touch_type,
+                           main_type,
+                           last_touch_type,
+                           exec_types);
+}
