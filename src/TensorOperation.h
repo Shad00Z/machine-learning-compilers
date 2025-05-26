@@ -27,8 +27,10 @@ private:
 
     /// first touch primitive type
     mini_jit::ptype_t m_prim_main;
-    /// main primitive
+    /// main gemm primitive
     mini_jit::Brgemm m_prim_main_gemm;
+    /// main unary primitive
+    mini_jit::Unary m_prim_main_unary;
 
     /// first touch primitive type
     mini_jit::ptype_t m_prim_last_touch;

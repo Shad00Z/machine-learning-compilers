@@ -87,7 +87,7 @@ TEST_CASE("Reference test for tensor operation kernel with variable R, P, T, S, 
         mini_jit::dim_t::k};
 
     // when T is 1, it is a seq loop of the mnk kernel,
-    // otherwise it is a prim dimension of the brgemm kernel    
+    // otherwise it is a prim dimension of the brgemm kernel
     std::vector<mini_jit::exec_t> exec_types = {
         mini_jit::exec_t::seq,
         mini_jit::exec_t::seq,
@@ -111,7 +111,7 @@ TEST_CASE("Reference test for tensor operation kernel with variable R, P, T, S, 
                                         T * U,
                                         1};
     std::vector<int64_t> strides_out = {S,
-                                        Q * R * S, 
+                                        Q * R * S,
                                         0,
                                         1,
                                         R * S,
