@@ -89,7 +89,18 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
                                           dtype, 
                                           prim_first_touch);
     }
-    if (prim_main == ptype_t::gemm || prim_main == ptype_t::brgemm)
+    if (prim_main == ptype_t::gemm)
+    {
+        m_prim_main_gemm.generate(dim_sizes[3], 
+                                  dim_sizes[4], 
+                                  dim_sizes[5], 
+                                  1, 
+                                  0, 
+                                  0, 
+                                  0, 
+                                  dtype);
+    }
+    else if (prim_main == ptype_t::brgemm)
     {
         m_prim_main_gemm.generate(dim_sizes[3], 
                                   dim_sizes[4], 
@@ -147,9 +158,6 @@ void mini_jit::TensorOperation::execute_iter(int64_t id_loop,
 
     for (int64_t l_iter = 0; l_iter < l_size; l_iter++)
     {
-        bool is_first = (l_iter == 0);
-        bool is_last = (l_iter == l_size - 1);
-
         switch (id_loop)
         {
         case 0:
@@ -163,6 +171,17 @@ void mini_jit::TensorOperation::execute_iter(int64_t id_loop,
             break;
         default:
             break;
+        }
+
+        bool is_first = false;
+        bool is_last = false;
+        if (m_idx_k == 0)
+        {
+            is_first = true;
+        }
+        else if (m_idx_k == l_size - 1)
+        {
+            is_last = true;
         }
 
         /*
@@ -188,15 +207,15 @@ void mini_jit::TensorOperation::execute_iter(int64_t id_loop,
                          ptr_in0, 
                          ptr_in1, 
                          ptr_out, 
-                         is_first && first_access, 
-                         is_last && last_access);
+                         is_first,
+                         is_last);
         }
         else
         {
             /////////////////////////////////////////////////////////////////////
             // First Touch
             /////////////////////////////////////////////////////////////////////
-            if (is_first && first_access && m_prim_first_touch != ptype_t::none)
+            if (is_first && m_prim_first_touch != ptype_t::none)
             {
                 mini_jit::Unary::kernel_t l_prim_first_touch_kernel = m_prim_first_touch_unary.get_kernel();
                 if (m_prim_first_touch == ptype_t::zero)
@@ -217,7 +236,19 @@ void mini_jit::TensorOperation::execute_iter(int64_t id_loop,
             /////////////////////////////////////////////////////////////////////
             // Main
             /////////////////////////////////////////////////////////////////////
-            if (m_prim_main == ptype_t::gemm || m_prim_main == ptype_t::brgemm)
+            if (m_prim_main == ptype_t::gemm)
+            {
+                mini_jit::Brgemm::kernel_t l_prim_main_kernel = m_prim_main_gemm.get_kernel();
+                l_prim_main_kernel(sub_ptr_in0,                                         // A
+                                   sub_ptr_in1,                                         // B
+                                   sub_ptr_out,                                         // C
+                                   m_loop_sizes[3],                                     // ldA = s
+                                   m_loop_sizes[2] * m_loop_sizes[5],                   // ldB = t * u
+                                   m_loop_sizes[0] * m_loop_sizes[3],                   // ldC = r * s
+                                   1,
+                                   1);
+            }
+            else if (m_prim_main == ptype_t::brgemm)
             {
                 mini_jit::Brgemm::kernel_t l_prim_main_kernel = m_prim_main_gemm.get_kernel();
                 l_prim_main_kernel(sub_ptr_in0,                                         // A
@@ -233,7 +264,7 @@ void mini_jit::TensorOperation::execute_iter(int64_t id_loop,
             {
                 mini_jit::Unary::kernel_t l_prim_main_kernel = m_prim_main_unary.get_kernel();
                 l_prim_main_kernel(sub_ptr_in0,                                          // A
-                                   sub_ptr_out,                                          // B
+                                   sub_ptr_out,                                          // C
                                    m_loop_sizes[5] * m_loop_sizes[3],                    // u * s
                                    m_loop_sizes[2] * m_loop_sizes[5] * m_loop_sizes[0]); // t * u * r
             }
@@ -241,22 +272,22 @@ void mini_jit::TensorOperation::execute_iter(int64_t id_loop,
             // Last Touch
             /////////////////////////////////////////////////////////////////////
             // in theory, zero kernel is not possible here but kept for consistency
-            if (is_last && last_access && m_prim_last_touch != ptype_t::none)
+            if (is_last && m_prim_last_touch != ptype_t::none)
             {
-                mini_jit::Unary::kernel_t l_prim_first_touch_kernel = m_prim_first_touch_unary.get_kernel();
-                if (m_prim_first_touch == ptype_t::zero)
+                mini_jit::Unary::kernel_t l_prim_last_touch_kernel = m_prim_last_touch_unary.get_kernel();
+                if (m_prim_last_touch == ptype_t::zero)
                 {
-                    l_prim_first_touch_kernel(nullptr,
-                                              sub_ptr_out,
-                                              0,                                  // ldA = 0
-                                              m_loop_sizes[0] * m_loop_sizes[3]); // ldB = r * s
+                    l_prim_last_touch_kernel(nullptr,
+                                             sub_ptr_out,
+                                             0,                                  // ldA = 0
+                                             m_loop_sizes[0] * m_loop_sizes[3]); // ldB = r * s
                 }
-                else if (m_prim_first_touch == ptype_t::relu)
+                else if (m_prim_last_touch == ptype_t::relu)
                 {
-                    l_prim_first_touch_kernel(sub_ptr_out,
-                                              sub_ptr_out,
-                                              m_loop_sizes[0] * m_loop_sizes[3],  // ldA = r * s
-                                              m_loop_sizes[0] * m_loop_sizes[3]); // ldB = r * s
+                    l_prim_last_touch_kernel(sub_ptr_out,
+                                             sub_ptr_out,
+                                             m_loop_sizes[0] * m_loop_sizes[3],  // ldA = r * s
+                                             m_loop_sizes[0] * m_loop_sizes[3]); // ldB = r * s
                 }
             }
         }
