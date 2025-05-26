@@ -147,10 +147,14 @@ void mini_jit::TensorOperation::execute_iter(int64_t id_loop,
             // Main
             mini_jit::Brgemm::kernel_t l_prim_main_kernel = m_prim_main_gemm.get_kernel();
 
-            std::cout << "M, N, K: " << m_idx_m << ", " << m_idx_n << ", " << m_idx_k << std::endl;
-            std::cout << "Offset A: " << offset_A << std::endl;
-            std::cout << "Offset B: " << offset_B << std::endl;
-            std::cout << "Offset C: " << offset_C << std::endl;
+            // std::cout << "M, N, K: " << m_idx_m << ", " << m_idx_n << ", " << m_idx_k << std::endl;
+            // std::cout << "Offset A: " << offset_A << std::endl;
+            // std::cout << "Offset B: " << offset_B << std::endl;
+            // std::cout << "Offset C: " << offset_C << std::endl;
+            // std::cout << "ldA: " << m_loop_sizes[3] << std::endl;
+            // std::cout << "ldB: " << m_loop_sizes[2] * m_loop_sizes[5] << std::endl;
+            // std::cout << "ldC: " << m_loop_sizes[0] * m_loop_sizes[3] << std::endl;
+            // std::cout << "--------------------------------------------" << std::endl;
 
             l_prim_main_kernel(sub_ptr_in0,                       // A
                                sub_ptr_in1,                       // B
