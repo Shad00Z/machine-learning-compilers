@@ -318,7 +318,7 @@ void mini_jit::kernels::unary::internal::identityM3N4( mini_jit::Kernel &kernel 
     kernel.add_instr(base::add(gpr_t::x8, gpr_t::x8, gpr_t::x3, 0, 0));
 
     kernel.add_instr(simd_fp::strPost(simd_fp_t::v18, gpr_t::x8, 8, neon_size_spec_t::d));
-    kernel.add_instr(simd_fp::str(simd_fp_t::v19, gpr_t::x8, 0, neon_size_spec_t::q));
+    kernel.add_instr(simd_fp::str(simd_fp_t::v19, gpr_t::x8, 0, neon_size_spec_t::d));
 }
 
 void mini_jit::kernels::unary::internal::identityM2N4( mini_jit::Kernel &kernel )
