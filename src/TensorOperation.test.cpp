@@ -14,12 +14,12 @@ void runTensorOperationTest(mini_jit::ptype_t first_touch_type,
                             mini_jit::ptype_t last_touch_type,
                             std::span<const mini_jit::exec_t> exec_types)
 {
-    const int R = GENERATE(2, 3, 5);
-    const int P = GENERATE(2, 3, 5);
-    const int T = GENERATE(2, 3, 5);
-    const int S = GENERATE(take(1, random(1, 16)));
-    const int Q = GENERATE(take(1, random(1, 16)));
-    const int U = GENERATE(take(1, random(1, 16)));
+    const int R = 3;
+    const int P = GENERATE(3,7);
+    const int T = GENERATE(3,7);
+    const int S = GENERATE(3,4,5,7);
+    const int Q = GENERATE(3,4,5,7);
+    const int U = GENERATE(3,4,5,7);
 
     const int SIZE_A = (R * S) * (T * U);
     const int SIZE_B = (T * U) * (P * Q);

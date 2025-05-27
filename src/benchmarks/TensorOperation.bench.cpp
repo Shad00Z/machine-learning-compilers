@@ -1,5 +1,6 @@
 #include <random>
 #include <chrono>
+#include <span>
 #include "TensorOperation.bench.h"
 #include "benchmarks/Benchmark.h"
 

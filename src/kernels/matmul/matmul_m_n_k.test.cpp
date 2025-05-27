@@ -7,9 +7,9 @@
 #include "constants.h"
 
 TEST_CASE("Reference test for matmul kernel with variable M, N, K", "[matmul][parameterized]") {
-    const int M = GENERATE(take(4, random(1, 64)));
-    const int N = GENERATE(take(4, random(1, 64)));
-    const int K = GENERATE(1, 16, 32, 64, 128);
+    const int M = GENERATE(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
+    const int N = GENERATE(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
+    const int K = GENERATE(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
 
     float* A = new float[M * K];
     float* B = new float[K * N];

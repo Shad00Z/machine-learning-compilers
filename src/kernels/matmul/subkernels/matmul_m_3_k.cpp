@@ -590,12 +590,6 @@ void mini_jit::kernels::matmul::subkernels::internal::generateM7N3Loop(mini_jit:
     kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v6, gpr_t::x20, 16, neon_size_spec_t::q));
     kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v7, gpr_t::x20, 8, neon_size_spec_t::d));
     kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v8, gpr_t::x20, 0, neon_size_spec_t::s));
-    // fourth column
-    kernel.add_instr(base::add(gpr_t::x12, gpr_t::x12, gpr_t::x5, 0, 0));
-    kernel.add_instr(base::mov(gpr_t::x20, gpr_t::x12));
-    kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v9, gpr_t::x20, 16, neon_size_spec_t::q));
-    kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v10, gpr_t::x20, 8, neon_size_spec_t::d));
-    kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v11, gpr_t::x20, 0, neon_size_spec_t::s));
 
     // case_7_km1n3_loop:
     kernel.add_label("k_m7n3_loop");
