@@ -95,7 +95,6 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
     m_dim_r = -1;
     m_dim_p = -1;
     m_dim_t = -1;
-    m_exists_seq_k = false;
 
     /////////////////////////////////////////////////////////////////////
     // Read PRIM dimensions using dim types
@@ -140,7 +139,6 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
             }
             else if (m_dim_types[i] == dim_t::k)
             {
-                m_exists_seq_k = true;
                 m_dim_t = m_loop_sizes[i];
             }
         }
@@ -217,7 +215,12 @@ void mini_jit::TensorOperation::execute(void const *tensor_in0,
     auto ptr_in1 = static_cast<char const *>(tensor_in1);
     auto ptr_out = static_cast<char *>(tensor_out);
 
-    execute_iter(0, ptr_in0, ptr_in1, ptr_out, true, true);
+    execute_iter(0, 
+                 ptr_in0, 
+                 ptr_in1, 
+                 ptr_out, 
+                 true, 
+                 true);
 }
 
 void mini_jit::TensorOperation::execute_iter(int64_t id_loop,
@@ -246,22 +249,12 @@ void mini_jit::TensorOperation::execute_iter(int64_t id_loop,
             break;
         }
 
-        bool is_first = false;
-        bool is_last = false;
-        if (m_idx_k == 0)
+        bool is_first = first_access;
+        bool is_last = last_access;
+        if (m_dim_types[id_loop] == dim_t::k)
         {
-            is_first = true;
-        }
-        else if (m_idx_k == l_size - 1)
-        {
-            is_last = true;
-        }
-
-        if (m_kernel_main_type == ptype_t::brgemm &&
-            !m_exists_seq_k)
-        {
-            // is_first = true;
-            is_last = true;
+            is_first = first_access && (l_iter == 0);
+            is_last = last_access && (l_iter == m_loop_sizes[id_loop] - 1);
         }
 
         int64_t offset_A = m_strides_in0[2] * m_idx_k + m_strides_in0[0] * m_idx_m;

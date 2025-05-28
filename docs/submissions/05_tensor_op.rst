@@ -58,7 +58,7 @@ However, if the ``4th`` dimension is a ``prim``, we will construct a ``BRGEMM`` 
 
 .. literalinclude:: ../../src/TensorOperation.cpp
     :language: cpp
-    :lines: 126-147
+    :lines: 125-145
     :lineno-match:
     :caption: assign the size of the ``seq`` dimensions according to the order in ``dim_types``
     :dedent:
@@ -67,7 +67,7 @@ After checking all these things, we were then able to create our kernels accordi
 
 .. literalinclude:: ../../src/TensorOperation.cpp
     :language: cpp
-    :lines: 149-204
+    :lines: 147-201
     :lineno-match:
     :caption: construct kernels based on assigned member variables
     :dedent:
@@ -84,47 +84,44 @@ them to our ``execute_iter`` function.
 
 .. literalinclude:: ../../src/TensorOperation.cpp
     :language: cpp
-    :lines: 212-227
+    :lines: 210-224
     :lineno-match:
     :caption: starting point: ``execute`` function
     :dedent:
 
-The 'real' execution happens in the ``execute_iter`` function. We use our ``execute_iter`` function to recursively call 
-the ``execute_iter`` function based on how many ``seq`` dimensions exist in our ``exec_types``.
+The 'real' execution happens in the ``execute_iter`` function. We first check the current iteration is the first or last access to a block in our output matrix.
+Next, we update the pointers to the matrices accordingly.
 
 .. literalinclude:: ../../src/TensorOperation.cpp
     :language: cpp
-    :lines: 275-284
+    :lines: 252-258
+    :lineno-match:
+    :caption: calculate if it is the ``first`` or ``last`` access in our output matrix
+    :dedent:
+
+.. literalinclude:: ../../src/TensorOperation.cpp
+    :language: cpp
+    :lines: 238-266
+    :lineno-match:
+    :caption: calculate the offsets of our matrices
+    :dedent:
+
+In the following step, we use our ``execute_iter`` function to recursively call the ``execute_iter`` function based on how many ``seq`` dimensions exist in our ``exec_types``.
+
+.. literalinclude:: ../../src/TensorOperation.cpp
+    :language: cpp
+    :lines: 268-277
     :lineno-match:
     :caption: recursive call to ``execute_iter``
     :dedent:
 
-.. note:: TODO: fix following code
-
-If we have no further recursive call, we have to again calculate two things:
+If we have no further recursive call, we can execute the kernels.
 
 .. literalinclude:: ../../src/TensorOperation.cpp
     :language: cpp
-    :lines: 244-260
+    :lines: 278-300
     :lineno-match:
-    :caption: calculate if it is the ``first`` or ``last`` access in our output matrix
-    :dedent:
-
-.. literalinclude:: ../../src/TensorOperation.cpp
-    :language: cpp
-    :lines: 262-268
-    :lineno-match:
-    :caption: calculate the offset of our matrices
-    :dedent:
-
-Based on these calculations, we are then able to call in the ``else``-branch of our recursive call 
-our constructed kernels: 
-
-.. literalinclude:: ../../src/TensorOperation.cpp
-    :language: cpp
-    :lines: 280-360
-    :lineno-match:
-    :caption: calculate if it is the ``first`` or ``last`` access in our output matrix
+    :caption: execute the kernels
     :dedent:
 
 *******************************
