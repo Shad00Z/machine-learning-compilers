@@ -43,9 +43,6 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
     m_strides_in1.assign(strides_in1.begin(), strides_in1.end());
     m_strides_out.assign(strides_out.begin(), strides_out.end());
     m_dtype = dtype;
-    m_idx_m = 0;
-    m_idx_n = 0;
-    m_idx_k = 0;
 
     /////////////////////////////////////////////////////////////////////
     // Check allowed data type
@@ -89,6 +86,7 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
         m_id_first_primitive_loop = 0;
     }
 
+    // TODO: refactor this! no 6 hard coded variables..
     m_dim_s = -1;
     m_dim_q = -1;
     m_dim_u = -1;
@@ -215,11 +213,11 @@ void mini_jit::TensorOperation::execute(void const *tensor_in0,
     auto ptr_in1 = static_cast<char const *>(tensor_in1);
     auto ptr_out = static_cast<char *>(tensor_out);
 
-    execute_iter(0, 
-                 ptr_in0, 
-                 ptr_in1, 
-                 ptr_out, 
-                 true, 
+    execute_iter(0,
+                 ptr_in0,
+                 ptr_in1,
+                 ptr_out,
+                 true,
                  true);
 }
 
@@ -231,24 +229,12 @@ void mini_jit::TensorOperation::execute_iter(int64_t id_loop,
                                              bool last_access)
 {
     int64_t l_size = m_loop_sizes[id_loop];
+    int64_t l_stride_in0 = m_strides_in0[id_loop];
+    int64_t l_stride_in1 = m_strides_in1[id_loop];
+    int64_t l_stride_out = m_strides_out[id_loop];
 
     for (int64_t l_iter = 0; l_iter < l_size; l_iter++)
     {
-        switch (id_loop)
-        {
-        case 0:
-            m_idx_m = l_iter;
-            break;
-        case 1:
-            m_idx_n = l_iter;
-            break;
-        case 2:
-            m_idx_k = l_iter;
-            break;
-        default:
-            break;
-        }
-
         bool is_first = first_access;
         bool is_last = last_access;
         if (m_dim_types[id_loop] == dim_t::k)
@@ -257,21 +243,17 @@ void mini_jit::TensorOperation::execute_iter(int64_t id_loop,
             is_last = last_access && (l_iter == m_loop_sizes[id_loop] - 1);
         }
 
-        int64_t offset_A = m_strides_in0[2] * m_idx_k + m_strides_in0[0] * m_idx_m;
-        int64_t offset_B = m_strides_in1[1] * m_idx_n + m_strides_in1[2] * m_idx_k;
-        int64_t offset_C = m_strides_out[1] * m_idx_n + m_strides_out[0] * m_idx_m;
-
-        char const *sub_ptr_in0 = ptr_in0 + offset_A * dtype_size();
-        char const *sub_ptr_in1 = ptr_in1 + offset_B * dtype_size();
-        char *sub_ptr_out = ptr_out + offset_C * dtype_size();
+        char const *sub_ptr_in0 = ptr_in0 + l_iter * l_stride_in0 * dtype_size();
+        char const *sub_ptr_in1 = ptr_in1 + l_iter * l_stride_in1 * dtype_size();
+        char *sub_ptr_out = ptr_out + l_iter * l_stride_out * dtype_size();
 
         // Recursive Call
         if (id_loop + 1 < m_id_first_primitive_loop)
         {
             execute_iter(id_loop + 1,
-                         ptr_in0,
-                         ptr_in1,
-                         ptr_out,
+                         sub_ptr_in0,
+                         sub_ptr_in1,
+                         sub_ptr_out,
                          is_first,
                          is_last);
         }

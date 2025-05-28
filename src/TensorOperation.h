@@ -77,11 +77,6 @@ private:
     /// location of first primitive loop
     int64_t m_id_first_primitive_loop;
 
-    /// seq loop positions
-    int64_t m_idx_m;
-    int64_t m_idx_n;
-    int64_t m_idx_k;
-
     /// save matrix dimensions
     int64_t m_dim_s;
     int64_t m_dim_q;
