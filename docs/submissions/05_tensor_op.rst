@@ -84,7 +84,7 @@ them to our ``execute_iter`` function.
 
 .. literalinclude:: ../../src/TensorOperation.cpp
     :language: cpp
-    :lines: 207-216
+    :lines: 212-227
     :lineno-match:
     :caption: starting point: ``execute`` function
     :dedent:
@@ -94,10 +94,12 @@ the ``execute_iter`` function based on how many ``seq`` dimensions exist in our 
 
 .. literalinclude:: ../../src/TensorOperation.cpp
     :language: cpp
-    :lines: 270-279
+    :lines: 275-284
     :lineno-match:
     :caption: recursive call to ``execute_iter``
     :dedent:
+
+.. note:: TODO: fix following code
 
 If we have no further recursive call, we have to again calculate two things:
 
