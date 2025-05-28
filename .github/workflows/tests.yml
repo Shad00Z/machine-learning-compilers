@@ -17,11 +17,12 @@ jobs:
           sudo apt-get install valgrind
       - name: Checkout Repository
         uses: actions/checkout@v1
+      - name: Compile Tests
+        run: |
+            make tests
       - name: Run Valgrind
         run: |
-            make
             valgrind ./build/linux/tests
       - name: Run Tests
         run: |
-            make
             ./build/linux/tests
