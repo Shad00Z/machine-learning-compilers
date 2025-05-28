@@ -26,21 +26,21 @@ In our setup function, we check several things:
 
 .. literalinclude:: ../../src/TensorOperation.cpp
     :language: cpp
-    :lines: 36-48
+    :lines: 36-45
     :lineno-match:
     :caption: assigning configuration parameters to member variables
     :dedent:
 
 .. literalinclude:: ../../src/TensorOperation.cpp
     :language: cpp
-    :lines: 50-76
+    :lines: 47-73
     :lineno-match:
-    :caption: assign correct first and last touch, and main primitive
+    :caption: check data type and assign correct first and last touch, and main primitive
     :dedent:
 
 .. literalinclude:: ../../src/TensorOperation.cpp
     :language: cpp
-    :lines: 78-90
+    :lines: 75-87
     :lineno-match:
     :caption: find the first ``prim`` position in ``exec_types``
     :dedent:
@@ -49,14 +49,14 @@ We need to know the position of the first prim, to determine when we need to cal
 
 .. literalinclude:: ../../src/TensorOperation.cpp
     :language: cpp
-    :lines: 92-124
+    :lines: 90-121
     :lineno-match:
     :caption: assign the size of the ``prim`` dimensions according to the order in ``dim_types``
     :dedent:
 
 .. literalinclude:: ../../src/TensorOperation.cpp
     :language: cpp
-    :lines: 125-145
+    :lines: 123-143
     :lineno-match:
     :caption: assign the size of the ``seq`` dimensions according to the order in ``dim_types``
     :dedent:
@@ -65,7 +65,7 @@ After checking all these things, we were then able to create our kernels accordi
 
 .. literalinclude:: ../../src/TensorOperation.cpp
     :language: cpp
-    :lines: 147-201
+    :lines: 145-199
     :lineno-match:
     :caption: construct kernels based on assigned member variables
     :dedent:
@@ -82,33 +82,26 @@ them to our ``execute_iter`` function.
 
 .. literalinclude:: ../../src/TensorOperation.cpp
     :language: cpp
-    :lines: 210-224
+    :lines: 208-222
     :lineno-match:
     :caption: starting point: ``execute`` function
     :dedent:
 
-The 'real' execution happens in the ``execute_iter`` function. We first check the current iteration is the first or last access to a block in our output matrix.
+The 'real' execution happens in the ``execute_iter`` function. We first check if the current iteration is the first or last access to a block in our output matrix.
 Next, we update the pointers to the matrices accordingly.
 
 .. literalinclude:: ../../src/TensorOperation.cpp
     :language: cpp
-    :lines: 252-258
+    :lines: 238-248
     :lineno-match:
-    :caption: calculate if it is the ``first`` or ``last`` access in our output matrix
-    :dedent:
-
-.. literalinclude:: ../../src/TensorOperation.cpp
-    :language: cpp
-    :lines: 238-266
-    :lineno-match:
-    :caption: calculate the offsets of our matrices
+    :caption: calculate if it is the first or last access in our output matrix and update pointers
     :dedent:
 
 In the following step, we use our ``execute_iter`` function to recursively call the ``execute_iter`` function based on how many ``seq`` dimensions exist in our ``exec_types``.
 
 .. literalinclude:: ../../src/TensorOperation.cpp
     :language: cpp
-    :lines: 268-277
+    :lines: 250-259
     :lineno-match:
     :caption: recursive call to ``execute_iter``
     :dedent:
@@ -117,7 +110,7 @@ If we have no further recursive call, we can execute the kernels.
 
 .. literalinclude:: ../../src/TensorOperation.cpp
     :language: cpp
-    :lines: 278-300
+    :lines: 260-282
     :lineno-match:
     :caption: execute the kernels
     :dedent:
@@ -126,7 +119,7 @@ If we have no further recursive call, we can execute the kernels.
 5.3 Performance Benchmarking
 *******************************
 
-To test the performance of our at runtime constructed kernels and to see if everything works seemlessly together, 
+To test the performance of our at runtime constructed kernels and to see if everything works seamlessly together, 
 we were performing some reference benchmarks. 
 
 We were given a number of configuration parameters, that we should check:
