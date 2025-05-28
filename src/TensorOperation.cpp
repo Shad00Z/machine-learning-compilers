@@ -43,9 +43,9 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
     m_strides_in1.assign(strides_in1.begin(), strides_in1.end());
     m_strides_out.assign(strides_out.begin(), strides_out.end());
     m_dtype = dtype;
-    m_idx_m = 0; // -1;
-    m_idx_n = 0; // -1;
-    m_idx_k = 0; // -1;
+    m_idx_m = 0;
+    m_idx_n = 0;
+    m_idx_k = 0;
 
     /////////////////////////////////////////////////////////////////////
     // Check allowed data type
