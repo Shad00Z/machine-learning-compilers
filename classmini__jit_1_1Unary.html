@@ -83,37 +83,32 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a9f266a1a25a11f33e156a079a7aa2480" id="r_a9f266a1a25a11f33e156a079a7aa2480"><td class="memItemLeft" align="right" valign="top"><a id="a9f266a1a25a11f33e156a079a7aa2480" name="a9f266a1a25a11f33e156a079a7aa2480"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>dtype_t</b> = <a class="el" href="classmini__jit_1_1TensorOperation.html#ad920716f058a88bd49bfa2580017d855">mini_jit::TensorOperation::dtype_t</a></td></tr>
-<tr class="separator:a9f266a1a25a11f33e156a079a7aa2480"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7d1087210c26087e30fab9c4933cee69" id="r_a7d1087210c26087e30fab9c4933cee69"><td class="memItemLeft" align="right" valign="top"><a id="a7d1087210c26087e30fab9c4933cee69" name="a7d1087210c26087e30fab9c4933cee69"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>ptype_t</b> = <a class="el" href="classmini__jit_1_1TensorOperation.html#aedfe089fbfc959da26a7c9ce8117a9a9">mini_jit::TensorOperation::ptype_t</a></td></tr>
-<tr class="separator:a7d1087210c26087e30fab9c4933cee69"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6f88feae471656f51f174114a5a92d02" id="r_a6f88feae471656f51f174114a5a92d02"><td class="memItemLeft" align="right" valign="top"><a id="a6f88feae471656f51f174114a5a92d02" name="a6f88feae471656f51f174114a5a92d02"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>error_t</b> = <a class="el" href="classmini__jit_1_1TensorOperation.html#ae751ad39e2cffc2260805d363127411b">mini_jit::TensorOperation::error_t</a></td></tr>
-<tr class="separator:a6f88feae471656f51f174114a5a92d02"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab73a9a5cf9e4d90805bfee2374c64f89" id="r_ab73a9a5cf9e4d90805bfee2374c64f89"><td class="memItemLeft" align="right" valign="top"><a id="ab73a9a5cf9e4d90805bfee2374c64f89" name="ab73a9a5cf9e4d90805bfee2374c64f89"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>kernel_t</b> = void(*)(void const *a, void *b, int64_t ld_a, int64_t ld_b)</td></tr>
 <tr class="separator:ab73a9a5cf9e4d90805bfee2374c64f89"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ab8974cee23349b58a20bc8329e9919fe" id="r_ab8974cee23349b58a20bc8329e9919fe"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmini__jit_1_1TensorOperation.html#ae751ad39e2cffc2260805d363127411b">error_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmini__jit_1_1Unary.html#ab8974cee23349b58a20bc8329e9919fe">generate</a> (uint32_t m, uint32_t n, uint32_t trans_b, <a class="el" href="classmini__jit_1_1TensorOperation.html#ad920716f058a88bd49bfa2580017d855">dtype_t</a> dtype, <a class="el" href="classmini__jit_1_1TensorOperation.html#aedfe089fbfc959da26a7c9ce8117a9a9">ptype_t</a> ptype)</td></tr>
-<tr class="memdesc:ab8974cee23349b58a20bc8329e9919fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate a kernel for a unary primitive.  <br /></td></tr>
-<tr class="separator:ab8974cee23349b58a20bc8329e9919fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaaea16c0e70c93ac02f0b2a069c84435" id="r_aaaea16c0e70c93ac02f0b2a069c84435"><td class="memItemLeft" align="right" valign="top"><a id="aaaea16c0e70c93ac02f0b2a069c84435" name="aaaea16c0e70c93ac02f0b2a069c84435"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>~Unary</b> () noexcept</td></tr>
+<tr class="memdesc:aaaea16c0e70c93ac02f0b2a069c84435"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor. <br /></td></tr>
+<tr class="separator:aaaea16c0e70c93ac02f0b2a069c84435"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6f861dddb8cc0e0e6177a04315b64cd" id="r_ae6f861dddb8cc0e0e6177a04315b64cd"><td class="memItemLeft" align="right" valign="top">error_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmini__jit_1_1Unary.html#ae6f861dddb8cc0e0e6177a04315b64cd">generate</a> (uint32_t m, uint32_t n, uint32_t trans_b, mini_jit::dtype_t dtype, mini_jit::ptype_t ptype)</td></tr>
+<tr class="memdesc:ae6f861dddb8cc0e0e6177a04315b64cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate a kernel for a unary primitive.  <br /></td></tr>
+<tr class="separator:ae6f861dddb8cc0e0e6177a04315b64cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7ef08b4895135a02f5057733927455d4" id="r_a7ef08b4895135a02f5057733927455d4"><td class="memItemLeft" align="right" valign="top">kernel_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmini__jit_1_1Unary.html#a7ef08b4895135a02f5057733927455d4">get_kernel</a> () const</td></tr>
 <tr class="memdesc:a7ef08b4895135a02f5057733927455d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the generated kernel: B := op(A).  <br /></td></tr>
 <tr class="separator:a7ef08b4895135a02f5057733927455d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="ab8974cee23349b58a20bc8329e9919fe" name="ab8974cee23349b58a20bc8329e9919fe"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab8974cee23349b58a20bc8329e9919fe">&#9670;&#160;</a></span>generate()</h2>
+<a id="ae6f861dddb8cc0e0e6177a04315b64cd" name="ae6f861dddb8cc0e0e6177a04315b64cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6f861dddb8cc0e0e6177a04315b64cd">&#9670;&#160;</a></span>generate()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classmini__jit_1_1TensorOperation.html#ae751ad39e2cffc2260805d363127411b">mini_jit::Unary::error_t</a> mini_jit::Unary::generate </td>
+          <td class="memname">mini_jit::error_t mini_jit::Unary::generate </td>
           <td>(</td>
           <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>m</em>, </td>
@@ -133,13 +128,13 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classmini__jit_1_1TensorOperation.html#ad920716f058a88bd49bfa2580017d855">dtype_t</a>&#160;</td>
+          <td class="paramtype">mini_jit::dtype_t&#160;</td>
           <td class="paramname"><em>dtype</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classmini__jit_1_1TensorOperation.html#aedfe089fbfc959da26a7c9ce8117a9a9">ptype_t</a>&#160;</td>
+          <td class="paramtype">mini_jit::ptype_t&#160;</td>
           <td class="paramname"><em>ptype</em>&#160;</td>
         </tr>
         <tr>

@@ -58,6 +58,7 @@
 <li class="toctree-l1"><a class="reference internal" href="submissions/02_base.html">2. Base</a></li>
 <li class="toctree-l1"><a class="reference internal" href="submissions/03_neon.html">3. Neon</a></li>
 <li class="toctree-l1"><a class="reference internal" href="submissions/04_code_gen.html">4. Code Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="submissions/05_tensor_op.html">5. Tensor Operation Backend</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API</span></p>
 <ul>
@@ -130,12 +131,23 @@
 <li class="toctree-l2"><a class="reference internal" href="submissions/04_code_gen.html#unary-primitives">4.2 Unary Primitives</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="submissions/05_tensor_op.html">5. Tensor Operation Backend</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="submissions/05_tensor_op.html#user-interface">5.1 User Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="submissions/05_tensor_op.html#recursive-loops-over-primitives">5.2 Recursive Loops over Primitives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="submissions/05_tensor_op.html#performance-benchmarking">5.3 Performance Benchmarking</a></li>
+</ul>
+</li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">API</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="api/namespaces/mini_jit.html">mini_jit</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit.html#_CPPv4N8mini_jit6exec_tE"><code class="docutils literal notranslate"><span class="pre">exec_t</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit.html#_CPPv4N8mini_jit7ptype_tE"><code class="docutils literal notranslate"><span class="pre">ptype_t</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit.html#_CPPv4N8mini_jit5dim_tE"><code class="docutils literal notranslate"><span class="pre">dim_t</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit.html#_CPPv4N8mini_jit7dtype_tE"><code class="docutils literal notranslate"><span class="pre">dtype_t</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit.html#_CPPv4N8mini_jit7error_tE"><code class="docutils literal notranslate"><span class="pre">error_t</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit.html#_CPPv4N8mini_jit8mini_jit9BenchmarkE"><code class="docutils literal notranslate"><span class="pre">mini_jit::Benchmark</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit.html#_CPPv4N8mini_jit8mini_jit6BrgemmE"><code class="docutils literal notranslate"><span class="pre">mini_jit::Brgemm</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit.html#_CPPv4N8mini_jit8mini_jit6KernelE"><code class="docutils literal notranslate"><span class="pre">mini_jit::Kernel</span></code></a></li>
@@ -150,6 +162,7 @@
 <li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit_benchmarks.html#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks18Matmul_m_n_k_benchE"><code class="docutils literal notranslate"><span class="pre">mini_jit::benchmarks::Matmul_m_n_k_bench</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit_benchmarks.html#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks20Relu_primitive_benchE"><code class="docutils literal notranslate"><span class="pre">mini_jit::benchmarks::Relu_primitive_bench</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit_benchmarks.html#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks26Relu_trans_primitive_benchE"><code class="docutils literal notranslate"><span class="pre">mini_jit::benchmarks::Relu_trans_primitive_bench</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit_benchmarks.html#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks20TensorOperationBenchE"><code class="docutils literal notranslate"><span class="pre">mini_jit::benchmarks::TensorOperationBench</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit_benchmarks.html#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks24Zero_eor_primitive_benchE"><code class="docutils literal notranslate"><span class="pre">mini_jit::benchmarks::Zero_eor_primitive_bench</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit_benchmarks.html#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks24Zero_xzr_primitive_benchE"><code class="docutils literal notranslate"><span class="pre">mini_jit::benchmarks::Zero_xzr_primitive_bench</span></code></a></li>
 </ul>

@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['ptype_5ft_0',['ptype_t',['../classmini__jit_1_1TensorOperation.html#aedfe089fbfc959da26a7c9ce8117a9a9',1,'mini_jit::TensorOperation']]]
+  ['set_5fkernel_0',['set_kernel',['../classmini__jit_1_1Kernel.html#a2e918407d18f577869072b0f5637f300',1,'mini_jit::Kernel']]],
+  ['setup_1',['setup',['../classmini__jit_1_1TensorOperation.html#a91660762456eb86f0f8cd6263fe8bbdf',1,'mini_jit::TensorOperation']]]
 ];

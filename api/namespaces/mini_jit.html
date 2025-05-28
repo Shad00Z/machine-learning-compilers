@@ -26,7 +26,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="mini_jit::benchmarks" href="mini_jit_benchmarks.html" />
-    <link rel="prev" title="4. Code Generation" href="../../submissions/04_code_gen.html" /> 
+    <link rel="prev" title="5. Tensor Operation Backend" href="../../submissions/05_tensor_op.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -59,10 +59,49 @@
 <li class="toctree-l1"><a class="reference internal" href="../../submissions/02_base.html">2. Base</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../submissions/03_neon.html">3. Neon</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../submissions/04_code_gen.html">4. Code Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../submissions/05_tensor_op.html">5. Tensor Operation Backend</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">mini_jit</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#_CPPv4N8mini_jit6exec_tE"><code class="docutils literal notranslate"><span class="pre">exec_t</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit6exec_t3seqE"><code class="docutils literal notranslate"><span class="pre">seq</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit6exec_t4primE"><code class="docutils literal notranslate"><span class="pre">prim</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit6exec_t6sharedE"><code class="docutils literal notranslate"><span class="pre">shared</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#_CPPv4N8mini_jit7ptype_tE"><code class="docutils literal notranslate"><span class="pre">ptype_t</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit7ptype_t4zeroE"><code class="docutils literal notranslate"><span class="pre">zero</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit7ptype_t8identityE"><code class="docutils literal notranslate"><span class="pre">identity</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit7ptype_t4reluE"><code class="docutils literal notranslate"><span class="pre">relu</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit7ptype_t4gemmE"><code class="docutils literal notranslate"><span class="pre">gemm</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit7ptype_t6brgemmE"><code class="docutils literal notranslate"><span class="pre">brgemm</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit7ptype_t4noneE"><code class="docutils literal notranslate"><span class="pre">none</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#_CPPv4N8mini_jit5dim_tE"><code class="docutils literal notranslate"><span class="pre">dim_t</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit5dim_t1cE"><code class="docutils literal notranslate"><span class="pre">c</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit5dim_t1mE"><code class="docutils literal notranslate"><span class="pre">m</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit5dim_t1nE"><code class="docutils literal notranslate"><span class="pre">n</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit5dim_t1kE"><code class="docutils literal notranslate"><span class="pre">k</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit5dim_t9undefinedE"><code class="docutils literal notranslate"><span class="pre">undefined</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#_CPPv4N8mini_jit7dtype_tE"><code class="docutils literal notranslate"><span class="pre">dtype_t</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit7dtype_t4fp32E"><code class="docutils literal notranslate"><span class="pre">fp32</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit7dtype_t4fp64E"><code class="docutils literal notranslate"><span class="pre">fp64</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#_CPPv4N8mini_jit7error_tE"><code class="docutils literal notranslate"><span class="pre">error_t</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit7error_t7successE"><code class="docutils literal notranslate"><span class="pre">success</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit7error_t15wrong_dimensionE"><code class="docutils literal notranslate"><span class="pre">wrong_dimension</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit7error_t11wrong_ptypeE"><code class="docutils literal notranslate"><span class="pre">wrong_ptype</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit7error_t23operation_not_supportedE"><code class="docutils literal notranslate"><span class="pre">operation_not_supported</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit7error_t28wrong_matrix_ordering_formatE"><code class="docutils literal notranslate"><span class="pre">wrong_matrix_ordering_format</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit7error_t11wrong_dtypeE"><code class="docutils literal notranslate"><span class="pre">wrong_dtype</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit7error_t15wrong_exec_typeE"><code class="docutils literal notranslate"><span class="pre">wrong_exec_type</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit9BenchmarkE"><code class="docutils literal notranslate"><span class="pre">mini_jit::Benchmark</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit9BenchmarkD0Ev"><code class="docutils literal notranslate"><span class="pre">~Benchmark()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit9Benchmark3runEv"><code class="docutils literal notranslate"><span class="pre">run()</span></code></a></li>
@@ -80,23 +119,9 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit6BrgemmE"><code class="docutils literal notranslate"><span class="pre">mini_jit::Brgemm</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit6Brgemm7dtype_tE"><code class="docutils literal notranslate"><span class="pre">dtype_t</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit6Brgemm7dtype_t4fp32E"><code class="docutils literal notranslate"><span class="pre">fp32</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit6Brgemm7dtype_t4fp64E"><code class="docutils literal notranslate"><span class="pre">fp64</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit6Brgemm7error_tE"><code class="docutils literal notranslate"><span class="pre">error_t</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit6Brgemm7error_t7successE"><code class="docutils literal notranslate"><span class="pre">success</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit6Brgemm7error_t17wrong_m_dimensionE"><code class="docutils literal notranslate"><span class="pre">wrong_m_dimension</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit6Brgemm7error_t17wrong_n_dimensionE"><code class="docutils literal notranslate"><span class="pre">wrong_n_dimension</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit6Brgemm7error_t17wrong_k_dimensionE"><code class="docutils literal notranslate"><span class="pre">wrong_k_dimension</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit6Brgemm7error_t23wrong_batch_reduce_sizeE"><code class="docutils literal notranslate"><span class="pre">wrong_batch_reduce_size</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit6Brgemm7error_t28wrong_matrix_ordering_formatE"><code class="docutils literal notranslate"><span class="pre">wrong_matrix_ordering_format</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit6Brgemm7error_t21wrong_matrix_datatypeE"><code class="docutils literal notranslate"><span class="pre">wrong_matrix_datatype</span></code></a></li>
-</ul>
-</li>
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit6Brgemm8kernel_tE"><code class="docutils literal notranslate"><span class="pre">kernel_t</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit6Brgemm8generateE8uint32_t8uint32_t8uint32_t8uint32_t8uint32_t8uint32_t8uint32_t7dtype_t"><code class="docutils literal notranslate"><span class="pre">generate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit6BrgemmD0Ev"><code class="docutils literal notranslate"><span class="pre">~Brgemm()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit6Brgemm8generateE8uint32_t8uint32_t8uint32_t8uint32_t8uint32_t8uint32_t8uint32_tN8mini_jit7dtype_tE"><code class="docutils literal notranslate"><span class="pre">generate()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv4NK8mini_jit8mini_jit6Brgemm10get_kernelEv"><code class="docutils literal notranslate"><span class="pre">get_kernel()</span></code></a></li>
 </ul>
 </li>
@@ -118,52 +143,16 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit15TensorOperationE"><code class="docutils literal notranslate"><span class="pre">mini_jit::TensorOperation</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation6exec_tE"><code class="docutils literal notranslate"><span class="pre">exec_t</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation6exec_t3seqE"><code class="docutils literal notranslate"><span class="pre">seq</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation6exec_t4primE"><code class="docutils literal notranslate"><span class="pre">prim</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation6exec_t6sharedE"><code class="docutils literal notranslate"><span class="pre">shared</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation7ptype_tE"><code class="docutils literal notranslate"><span class="pre">ptype_t</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation7ptype_t4zeroE"><code class="docutils literal notranslate"><span class="pre">zero</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation7ptype_t8identityE"><code class="docutils literal notranslate"><span class="pre">identity</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation7ptype_t4reluE"><code class="docutils literal notranslate"><span class="pre">relu</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation7ptype_t4gemmE"><code class="docutils literal notranslate"><span class="pre">gemm</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation7ptype_t6brgemmE"><code class="docutils literal notranslate"><span class="pre">brgemm</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation7ptype_t4noneE"><code class="docutils literal notranslate"><span class="pre">none</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation5dim_tE"><code class="docutils literal notranslate"><span class="pre">dim_t</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation5dim_t1cE"><code class="docutils literal notranslate"><span class="pre">c</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation5dim_t1mE"><code class="docutils literal notranslate"><span class="pre">m</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation5dim_t1nE"><code class="docutils literal notranslate"><span class="pre">n</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation5dim_t1kE"><code class="docutils literal notranslate"><span class="pre">k</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation5dim_t9undefinedE"><code class="docutils literal notranslate"><span class="pre">undefined</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation7dtype_tE"><code class="docutils literal notranslate"><span class="pre">dtype_t</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation7dtype_t4fp32E"><code class="docutils literal notranslate"><span class="pre">fp32</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation7dtype_t4fp64E"><code class="docutils literal notranslate"><span class="pre">fp64</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation7error_tE"><code class="docutils literal notranslate"><span class="pre">error_t</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation7error_t7successE"><code class="docutils literal notranslate"><span class="pre">success</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation7error_t15wrong_dimensionE"><code class="docutils literal notranslate"><span class="pre">wrong_dimension</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation7error_t11wrong_ptypeE"><code class="docutils literal notranslate"><span class="pre">wrong_ptype</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation7error_t23operation_not_supportedE"><code class="docutils literal notranslate"><span class="pre">operation_not_supported</span></code></a></li>
-</ul>
-</li>
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation5setupE7dtype_t7ptype_t7ptype_t7ptype_tNSt4spanIK5dim_tEENSt4spanIK6exec_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEE"><code class="docutils literal notranslate"><span class="pre">setup()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation7executeEPKvPKvPv"><code class="docutils literal notranslate"><span class="pre">execute()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation12execute_iterE7int64_tPKcPKcPcbb"><code class="docutils literal notranslate"><span class="pre">execute_iter()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4NK8mini_jit8mini_jit15TensorOperation10dtype_sizeEv"><code class="docutils literal notranslate"><span class="pre">dtype_size()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit5UnaryE"><code class="docutils literal notranslate"><span class="pre">mini_jit::Unary</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit5Unary7dtype_tE"><code class="docutils literal notranslate"><span class="pre">dtype_t</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit5Unary7ptype_tE"><code class="docutils literal notranslate"><span class="pre">ptype_t</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit5Unary7error_tE"><code class="docutils literal notranslate"><span class="pre">error_t</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit5Unary8kernel_tE"><code class="docutils literal notranslate"><span class="pre">kernel_t</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit5Unary8generateE8uint32_t8uint32_t8uint32_t7dtype_t7ptype_t"><code class="docutils literal notranslate"><span class="pre">generate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit5UnaryD0Ev"><code class="docutils literal notranslate"><span class="pre">~Unary()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit5Unary8generateE8uint32_t8uint32_t8uint32_tN8mini_jit7dtype_tEN8mini_jit7ptype_tE"><code class="docutils literal notranslate"><span class="pre">generate()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv4NK8mini_jit8mini_jit5Unary10get_kernelEv"><code class="docutils literal notranslate"><span class="pre">get_kernel()</span></code></a></li>
 </ul>
 </li>
@@ -202,10 +191,160 @@
              
   <section id="mini-jit">
 <span id="api-mini-jit"></span><h1>mini_jit<a class="headerlink" href="#mini-jit" title="Link to this heading"></a></h1>
+<dl class="cpp enum-class">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit6exec_tE">
+<span id="_CPPv3N8mini_jit6exec_tE"></span><span id="_CPPv2N8mini_jit6exec_tE"></span><span class="target" id="types_8h_1ab15f6e70b80d4fcb37c8fd04e87d1775"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">exec_t</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">uint32_t</span></span><a class="headerlink" href="#_CPPv4N8mini_jit6exec_tE" title="Link to this definition"></a><br /></dt>
+<dd><p>execution type </p>
+<p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit6exec_t3seqE">
+<span id="_CPPv3N8mini_jit6exec_t3seqE"></span><span id="_CPPv2N8mini_jit6exec_t3seqE"></span><span class="target" id="types_8h_1ab15f6e70b80d4fcb37c8fd04e87d1775ae068c2de26d760f20cf10afc4b87ef0f"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">seq</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit6exec_t3seqE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit6exec_t4primE">
+<span id="_CPPv3N8mini_jit6exec_t4primE"></span><span id="_CPPv2N8mini_jit6exec_t4primE"></span><span class="target" id="types_8h_1ab15f6e70b80d4fcb37c8fd04e87d1775a60bec1a80a84d0258edc5aaf54952563"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">prim</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit6exec_t4primE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit6exec_t6sharedE">
+<span id="_CPPv3N8mini_jit6exec_t6sharedE"></span><span id="_CPPv2N8mini_jit6exec_t6sharedE"></span><span class="target" id="types_8h_1ab15f6e70b80d4fcb37c8fd04e87d1775a9e81e7b963c71363e2fb3eefcfecfc0e"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">shared</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit6exec_t6sharedE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="cpp enum-class">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit7ptype_tE">
+<span id="_CPPv3N8mini_jit7ptype_tE"></span><span id="_CPPv2N8mini_jit7ptype_tE"></span><span class="target" id="types_8h_1af0bd070698e0899d886a78002e02e9c1"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">ptype_t</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">uint32_t</span></span><a class="headerlink" href="#_CPPv4N8mini_jit7ptype_tE" title="Link to this definition"></a><br /></dt>
+<dd><p>primitive type </p>
+<p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit7ptype_t4zeroE">
+<span id="_CPPv3N8mini_jit7ptype_t4zeroE"></span><span id="_CPPv2N8mini_jit7ptype_t4zeroE"></span><span class="target" id="types_8h_1af0bd070698e0899d886a78002e02e9c1ad02c4c4cde7ae76252540d116a40f23a"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">zero</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit7ptype_t4zeroE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit7ptype_t8identityE">
+<span id="_CPPv3N8mini_jit7ptype_t8identityE"></span><span id="_CPPv2N8mini_jit7ptype_t8identityE"></span><span class="target" id="types_8h_1af0bd070698e0899d886a78002e02e9c1aff483d1ff591898a9942916050d2ca3f"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">identity</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit7ptype_t8identityE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit7ptype_t4reluE">
+<span id="_CPPv3N8mini_jit7ptype_t4reluE"></span><span id="_CPPv2N8mini_jit7ptype_t4reluE"></span><span class="target" id="types_8h_1af0bd070698e0899d886a78002e02e9c1abc5ce62b39aff2f661146911808eadc1"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">relu</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit7ptype_t4reluE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit7ptype_t4gemmE">
+<span id="_CPPv3N8mini_jit7ptype_t4gemmE"></span><span id="_CPPv2N8mini_jit7ptype_t4gemmE"></span><span class="target" id="types_8h_1af0bd070698e0899d886a78002e02e9c1a7b21c4129b3cddb8a221d5888db787c9"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">gemm</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit7ptype_t4gemmE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit7ptype_t6brgemmE">
+<span id="_CPPv3N8mini_jit7ptype_t6brgemmE"></span><span id="_CPPv2N8mini_jit7ptype_t6brgemmE"></span><span class="target" id="types_8h_1af0bd070698e0899d886a78002e02e9c1a9928ce523d9f3cd1abe09ccc88da30a1"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">brgemm</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit7ptype_t6brgemmE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit7ptype_t4noneE">
+<span id="_CPPv3N8mini_jit7ptype_t4noneE"></span><span id="_CPPv2N8mini_jit7ptype_t4noneE"></span><span class="target" id="types_8h_1af0bd070698e0899d886a78002e02e9c1a334c4a4c42fdb79d7ebc3e73b517e6f8"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">none</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit7ptype_t4noneE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="cpp enum-class">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit5dim_tE">
+<span id="_CPPv3N8mini_jit5dim_tE"></span><span id="_CPPv2N8mini_jit5dim_tE"></span><span class="target" id="types_8h_1a34f69b4a986f81c1c37ccde985e307ca"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">dim_t</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">uint32_t</span></span><a class="headerlink" href="#_CPPv4N8mini_jit5dim_tE" title="Link to this definition"></a><br /></dt>
+<dd><p>dimension type </p>
+<p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit5dim_t1cE">
+<span id="_CPPv3N8mini_jit5dim_t1cE"></span><span id="_CPPv2N8mini_jit5dim_t1cE"></span><span class="target" id="types_8h_1a34f69b4a986f81c1c37ccde985e307caa4a8a08f09d37b73795649038408b5f33"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">c</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit5dim_t1cE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit5dim_t1mE">
+<span id="_CPPv3N8mini_jit5dim_t1mE"></span><span id="_CPPv2N8mini_jit5dim_t1mE"></span><span class="target" id="types_8h_1a34f69b4a986f81c1c37ccde985e307caa6f8f57715090da2632453988d9a1501b"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">m</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit5dim_t1mE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit5dim_t1nE">
+<span id="_CPPv3N8mini_jit5dim_t1nE"></span><span id="_CPPv2N8mini_jit5dim_t1nE"></span><span class="target" id="types_8h_1a34f69b4a986f81c1c37ccde985e307caa7b8b965ad4bca0e41ab51de7b31363a1"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">n</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit5dim_t1nE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit5dim_t1kE">
+<span id="_CPPv3N8mini_jit5dim_t1kE"></span><span id="_CPPv2N8mini_jit5dim_t1kE"></span><span class="target" id="types_8h_1a34f69b4a986f81c1c37ccde985e307caa8ce4b16b22b58894aa86c421e8759df3"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">k</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit5dim_t1kE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit5dim_t9undefinedE">
+<span id="_CPPv3N8mini_jit5dim_t9undefinedE"></span><span id="_CPPv2N8mini_jit5dim_t9undefinedE"></span><span class="target" id="types_8h_1a34f69b4a986f81c1c37ccde985e307caa5e543256c480ac577d30f76f9120eb74"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">undefined</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit5dim_t9undefinedE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="cpp enum-class">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit7dtype_tE">
+<span id="_CPPv3N8mini_jit7dtype_tE"></span><span id="_CPPv2N8mini_jit7dtype_tE"></span><span class="target" id="types_8h_1abb260fdbc06d94b97281570110842ab6"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">dtype_t</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">uint32_t</span></span><a class="headerlink" href="#_CPPv4N8mini_jit7dtype_tE" title="Link to this definition"></a><br /></dt>
+<dd><p>data type </p>
+<p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit7dtype_t4fp32E">
+<span id="_CPPv3N8mini_jit7dtype_t4fp32E"></span><span id="_CPPv2N8mini_jit7dtype_t4fp32E"></span><span class="target" id="types_8h_1abb260fdbc06d94b97281570110842ab6a4e1bd87474ad81110395b71013094b35"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">fp32</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit7dtype_t4fp32E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit7dtype_t4fp64E">
+<span id="_CPPv3N8mini_jit7dtype_t4fp64E"></span><span id="_CPPv2N8mini_jit7dtype_t4fp64E"></span><span class="target" id="types_8h_1abb260fdbc06d94b97281570110842ab6a36dd759373a12bd5960718d0c482a2d4"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">fp64</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit7dtype_t4fp64E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="cpp enum-class">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit7error_tE">
+<span id="_CPPv3N8mini_jit7error_tE"></span><span id="_CPPv2N8mini_jit7error_tE"></span><span class="target" id="types_8h_1a4014578dcb53d25b777c2bfc37b1b284"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">error_t</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int32_t</span></span><a class="headerlink" href="#_CPPv4N8mini_jit7error_tE" title="Link to this definition"></a><br /></dt>
+<dd><p>error codes </p>
+<p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit7error_t7successE">
+<span id="_CPPv3N8mini_jit7error_t7successE"></span><span id="_CPPv2N8mini_jit7error_t7successE"></span><span class="target" id="types_8h_1a4014578dcb53d25b777c2bfc37b1b284a260ca9dd8a4577fc00b7bd5810298076"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">success</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit7error_t7successE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit7error_t15wrong_dimensionE">
+<span id="_CPPv3N8mini_jit7error_t15wrong_dimensionE"></span><span id="_CPPv2N8mini_jit7error_t15wrong_dimensionE"></span><span class="target" id="types_8h_1a4014578dcb53d25b777c2bfc37b1b284ac6fbc4d35bd67db2c8e3731b57ca9fb6"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">wrong_dimension</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit7error_t15wrong_dimensionE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit7error_t11wrong_ptypeE">
+<span id="_CPPv3N8mini_jit7error_t11wrong_ptypeE"></span><span id="_CPPv2N8mini_jit7error_t11wrong_ptypeE"></span><span class="target" id="types_8h_1a4014578dcb53d25b777c2bfc37b1b284a6c18581cb880099446e0f540371a78bd"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">wrong_ptype</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit7error_t11wrong_ptypeE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit7error_t23operation_not_supportedE">
+<span id="_CPPv3N8mini_jit7error_t23operation_not_supportedE"></span><span id="_CPPv2N8mini_jit7error_t23operation_not_supportedE"></span><span class="target" id="types_8h_1a4014578dcb53d25b777c2bfc37b1b284a69bf074bf052ee4c9047b62fe7c24569"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">operation_not_supported</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit7error_t23operation_not_supportedE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit7error_t28wrong_matrix_ordering_formatE">
+<span id="_CPPv3N8mini_jit7error_t28wrong_matrix_ordering_formatE"></span><span id="_CPPv2N8mini_jit7error_t28wrong_matrix_ordering_formatE"></span><span class="target" id="types_8h_1a4014578dcb53d25b777c2bfc37b1b284a77379bb1d87adcefce42d9bdcf307868"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">wrong_matrix_ordering_format</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit7error_t28wrong_matrix_ordering_formatE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit7error_t11wrong_dtypeE">
+<span id="_CPPv3N8mini_jit7error_t11wrong_dtypeE"></span><span id="_CPPv2N8mini_jit7error_t11wrong_dtypeE"></span><span class="target" id="types_8h_1a4014578dcb53d25b777c2bfc37b1b284a4d5adc86bb48d181820ee1a854f21fab"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">wrong_dtype</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit7error_t11wrong_dtypeE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit7error_t15wrong_exec_typeE">
+<span id="_CPPv3N8mini_jit7error_t15wrong_exec_typeE"></span><span id="_CPPv2N8mini_jit7error_t15wrong_exec_typeE"></span><span class="target" id="types_8h_1a4014578dcb53d25b777c2bfc37b1b284af0da4ea578342a30919206fa869078e6"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">wrong_exec_type</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit7error_t15wrong_exec_typeE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit9BenchmarkE">
 <span id="_CPPv3N8mini_jit8mini_jit9BenchmarkE"></span><span id="_CPPv2N8mini_jit8mini_jit9BenchmarkE"></span><span id="mini_jit::mini_jit::Benchmark"></span><span class="target" id="classmini__jit_1_1Benchmark"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Benchmark</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit9BenchmarkE" title="Link to this definition"></a><br /></dt>
-<dd><p>Subclassed by <a class="reference internal" href="mini_jit_benchmarks.html#classmini__jit_1_1benchmarks_1_1Identity__primitive__bench"><span class="std std-ref">mini_jit::benchmarks::Identity_primitive_bench</span></a>, <a class="reference internal" href="mini_jit_benchmarks.html#classmini__jit_1_1benchmarks_1_1Identity__trans__primitive__bench"><span class="std std-ref">mini_jit::benchmarks::Identity_trans_primitive_bench</span></a>, <a class="reference internal" href="mini_jit_benchmarks.html#classmini__jit_1_1benchmarks_1_1Matmul__br__m__n__k__bench"><span class="std std-ref">mini_jit::benchmarks::Matmul_br_m_n_k_bench</span></a>, <a class="reference internal" href="mini_jit_benchmarks.html#classmini__jit_1_1benchmarks_1_1Matmul__m__n__k__bench"><span class="std std-ref">mini_jit::benchmarks::Matmul_m_n_k_bench</span></a>, <a class="reference internal" href="mini_jit_benchmarks.html#classmini__jit_1_1benchmarks_1_1Relu__primitive__bench"><span class="std std-ref">mini_jit::benchmarks::Relu_primitive_bench</span></a>, <a class="reference internal" href="mini_jit_benchmarks.html#classmini__jit_1_1benchmarks_1_1Relu__trans__primitive__bench"><span class="std std-ref">mini_jit::benchmarks::Relu_trans_primitive_bench</span></a>, <a class="reference internal" href="mini_jit_benchmarks.html#classmini__jit_1_1benchmarks_1_1Zero__eor__primitive__bench"><span class="std std-ref">mini_jit::benchmarks::Zero_eor_primitive_bench</span></a>, <a class="reference internal" href="mini_jit_benchmarks.html#classmini__jit_1_1benchmarks_1_1Zero__xzr__primitive__bench"><span class="std std-ref">mini_jit::benchmarks::Zero_xzr_primitive_bench</span></a></p>
+<dd><p>Subclassed by <a class="reference internal" href="mini_jit_benchmarks.html#classmini__jit_1_1benchmarks_1_1Identity__primitive__bench"><span class="std std-ref">mini_jit::benchmarks::Identity_primitive_bench</span></a>, <a class="reference internal" href="mini_jit_benchmarks.html#classmini__jit_1_1benchmarks_1_1Identity__trans__primitive__bench"><span class="std std-ref">mini_jit::benchmarks::Identity_trans_primitive_bench</span></a>, <a class="reference internal" href="mini_jit_benchmarks.html#classmini__jit_1_1benchmarks_1_1Matmul__br__m__n__k__bench"><span class="std std-ref">mini_jit::benchmarks::Matmul_br_m_n_k_bench</span></a>, <a class="reference internal" href="mini_jit_benchmarks.html#classmini__jit_1_1benchmarks_1_1Matmul__m__n__k__bench"><span class="std std-ref">mini_jit::benchmarks::Matmul_m_n_k_bench</span></a>, <a class="reference internal" href="mini_jit_benchmarks.html#classmini__jit_1_1benchmarks_1_1Relu__primitive__bench"><span class="std std-ref">mini_jit::benchmarks::Relu_primitive_bench</span></a>, <a class="reference internal" href="mini_jit_benchmarks.html#classmini__jit_1_1benchmarks_1_1Relu__trans__primitive__bench"><span class="std std-ref">mini_jit::benchmarks::Relu_trans_primitive_bench</span></a>, <a class="reference internal" href="mini_jit_benchmarks.html#classmini__jit_1_1benchmarks_1_1TensorOperationBench"><span class="std std-ref">mini_jit::benchmarks::TensorOperationBench</span></a>, <a class="reference internal" href="mini_jit_benchmarks.html#classmini__jit_1_1benchmarks_1_1Zero__eor__primitive__bench"><span class="std std-ref">mini_jit::benchmarks::Zero_eor_primitive_bench</span></a>, <a class="reference internal" href="mini_jit_benchmarks.html#classmini__jit_1_1benchmarks_1_1Zero__xzr__primitive__bench"><span class="std std-ref">mini_jit::benchmarks::Zero_xzr_primitive_bench</span></a></p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
@@ -276,65 +415,6 @@
 <span id="_CPPv3N8mini_jit8mini_jit6BrgemmE"></span><span id="_CPPv2N8mini_jit8mini_jit6BrgemmE"></span><span id="mini_jit::mini_jit::Brgemm"></span><span class="target" id="classmini__jit_1_1Brgemm"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Brgemm</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit6BrgemmE" title="Link to this definition"></a><br /></dt>
 <dd><div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
-<dl class="cpp enum-class">
-<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit6Brgemm7dtype_tE">
-<span id="_CPPv3N8mini_jit8mini_jit6Brgemm7dtype_tE"></span><span id="_CPPv2N8mini_jit8mini_jit6Brgemm7dtype_tE"></span><span class="target" id="classmini__jit_1_1Brgemm_1adcd40a288f7d4a7648a17446725a21a0"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dtype_t</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">uint32_t</span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit6Brgemm7dtype_tE" title="Link to this definition"></a><br /></dt>
-<dd><p>data type </p>
-<p><em>Values:</em></p>
-<dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit6Brgemm7dtype_t4fp32E">
-<span id="_CPPv3N8mini_jit8mini_jit6Brgemm7dtype_t4fp32E"></span><span id="_CPPv2N8mini_jit8mini_jit6Brgemm7dtype_t4fp32E"></span><span class="target" id="classmini__jit_1_1Brgemm_1adcd40a288f7d4a7648a17446725a21a0a4e1bd87474ad81110395b71013094b35"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">fp32</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit6Brgemm7dtype_t4fp32E" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit6Brgemm7dtype_t4fp64E">
-<span id="_CPPv3N8mini_jit8mini_jit6Brgemm7dtype_t4fp64E"></span><span id="_CPPv2N8mini_jit8mini_jit6Brgemm7dtype_t4fp64E"></span><span class="target" id="classmini__jit_1_1Brgemm_1adcd40a288f7d4a7648a17446725a21a0a36dd759373a12bd5960718d0c482a2d4"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">fp64</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit6Brgemm7dtype_t4fp64E" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="cpp enum-class">
-<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit6Brgemm7error_tE">
-<span id="_CPPv3N8mini_jit8mini_jit6Brgemm7error_tE"></span><span id="_CPPv2N8mini_jit8mini_jit6Brgemm7error_tE"></span><span class="target" id="classmini__jit_1_1Brgemm_1a05637601f53309d736c060184bccae91"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">error_t</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int32_t</span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit6Brgemm7error_tE" title="Link to this definition"></a><br /></dt>
-<dd><p>error codes </p>
-<p><em>Values:</em></p>
-<dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit6Brgemm7error_t7successE">
-<span id="_CPPv3N8mini_jit8mini_jit6Brgemm7error_t7successE"></span><span id="_CPPv2N8mini_jit8mini_jit6Brgemm7error_t7successE"></span><span class="target" id="classmini__jit_1_1Brgemm_1a05637601f53309d736c060184bccae91a260ca9dd8a4577fc00b7bd5810298076"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">success</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit6Brgemm7error_t7successE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit6Brgemm7error_t17wrong_m_dimensionE">
-<span id="_CPPv3N8mini_jit8mini_jit6Brgemm7error_t17wrong_m_dimensionE"></span><span id="_CPPv2N8mini_jit8mini_jit6Brgemm7error_t17wrong_m_dimensionE"></span><span class="target" id="classmini__jit_1_1Brgemm_1a05637601f53309d736c060184bccae91ab98c8512904f3c777d26fad937b425b0"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">wrong_m_dimension</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit6Brgemm7error_t17wrong_m_dimensionE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit6Brgemm7error_t17wrong_n_dimensionE">
-<span id="_CPPv3N8mini_jit8mini_jit6Brgemm7error_t17wrong_n_dimensionE"></span><span id="_CPPv2N8mini_jit8mini_jit6Brgemm7error_t17wrong_n_dimensionE"></span><span class="target" id="classmini__jit_1_1Brgemm_1a05637601f53309d736c060184bccae91a3e12dd0a956ab61242daee44e65cf1a0"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">wrong_n_dimension</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit6Brgemm7error_t17wrong_n_dimensionE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit6Brgemm7error_t17wrong_k_dimensionE">
-<span id="_CPPv3N8mini_jit8mini_jit6Brgemm7error_t17wrong_k_dimensionE"></span><span id="_CPPv2N8mini_jit8mini_jit6Brgemm7error_t17wrong_k_dimensionE"></span><span class="target" id="classmini__jit_1_1Brgemm_1a05637601f53309d736c060184bccae91a5bdbd866f23ffb5e55ddf7997b005507"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">wrong_k_dimension</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit6Brgemm7error_t17wrong_k_dimensionE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit6Brgemm7error_t23wrong_batch_reduce_sizeE">
-<span id="_CPPv3N8mini_jit8mini_jit6Brgemm7error_t23wrong_batch_reduce_sizeE"></span><span id="_CPPv2N8mini_jit8mini_jit6Brgemm7error_t23wrong_batch_reduce_sizeE"></span><span class="target" id="classmini__jit_1_1Brgemm_1a05637601f53309d736c060184bccae91a8c2fcfe05cd2e3760975a8424e625307"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">wrong_batch_reduce_size</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit6Brgemm7error_t23wrong_batch_reduce_sizeE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit6Brgemm7error_t28wrong_matrix_ordering_formatE">
-<span id="_CPPv3N8mini_jit8mini_jit6Brgemm7error_t28wrong_matrix_ordering_formatE"></span><span id="_CPPv2N8mini_jit8mini_jit6Brgemm7error_t28wrong_matrix_ordering_formatE"></span><span class="target" id="classmini__jit_1_1Brgemm_1a05637601f53309d736c060184bccae91a77379bb1d87adcefce42d9bdcf307868"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">wrong_matrix_ordering_format</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit6Brgemm7error_t28wrong_matrix_ordering_formatE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit6Brgemm7error_t21wrong_matrix_datatypeE">
-<span id="_CPPv3N8mini_jit8mini_jit6Brgemm7error_t21wrong_matrix_datatypeE"></span><span id="_CPPv2N8mini_jit8mini_jit6Brgemm7error_t21wrong_matrix_datatypeE"></span><span class="target" id="classmini__jit_1_1Brgemm_1a05637601f53309d736c060184bccae91a8eb9574b5ace1741141c387795d8a474"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">wrong_matrix_datatype</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit6Brgemm7error_t21wrong_matrix_datatypeE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
 <dl class="cpp type">
 <dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit6Brgemm8kernel_tE">
 <span id="_CPPv3N8mini_jit8mini_jit6Brgemm8kernel_tE"></span><span id="_CPPv2N8mini_jit8mini_jit6Brgemm8kernel_tE"></span><span class="target" id="classmini__jit_1_1Brgemm_1af6af549e1547c5ce52072353383fb64a"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">kernel_t</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">(</span></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">a</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="n"><span class="pre">ld_a</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="n"><span class="pre">ld_b</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="n"><span class="pre">ld_c</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="n"><span class="pre">br_stride_a</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="n"><span class="pre">br_stride_b</span></span><span class="p"><span class="pre">)</span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit6Brgemm8kernel_tE" title="Link to this definition"></a><br /></dt>
@@ -344,8 +424,14 @@
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit6Brgemm8generateE8uint32_t8uint32_t8uint32_t8uint32_t8uint32_t8uint32_t8uint32_t7dtype_t">
-<span id="_CPPv3N8mini_jit8mini_jit6Brgemm8generateE8uint32_t8uint32_t8uint32_t8uint32_t8uint32_t8uint32_t8uint32_t7dtype_t"></span><span id="_CPPv2N8mini_jit8mini_jit6Brgemm8generateE8uint32_t8uint32_t8uint32_t8uint32_t8uint32_t8uint32_t8uint32_t7dtype_t"></span><span id="mini_jit::mini_jit::Brgemm::generate__uint32_t.uint32_t.uint32_t.uint32_t.uint32_t.uint32_t.uint32_t.dtype_t"></span><span class="target" id="classmini__jit_1_1Brgemm_1a491982ce1ba45de53d7847cc1b6dc100"></span><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit6Brgemm7error_tE" title="mini_jit::mini_jit::Brgemm::error_t"><span class="n"><span class="pre">error_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">generate</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">k</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">br_size</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">trans_a</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">trans_b</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">trans_c</span></span>, <a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit6Brgemm7dtype_tE" title="mini_jit::mini_jit::Brgemm::dtype_t"><span class="n"><span class="pre">dtype_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">dtype</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit6Brgemm8generateE8uint32_t8uint32_t8uint32_t8uint32_t8uint32_t8uint32_t8uint32_t7dtype_t" title="Link to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit6BrgemmD0Ev">
+<span id="_CPPv3N8mini_jit8mini_jit6BrgemmD0Ev"></span><span id="_CPPv2N8mini_jit8mini_jit6BrgemmD0Ev"></span><span id="mini_jit::mini_jit::Brgemm::~Brgemm"></span><span class="target" id="classmini__jit_1_1Brgemm_1a4c5b3738e8dd44703f0f28437aba3360"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~Brgemm</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit6BrgemmD0Ev" title="Link to this definition"></a><br /></dt>
+<dd><p>Destructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit6Brgemm8generateE8uint32_t8uint32_t8uint32_t8uint32_t8uint32_t8uint32_t8uint32_tN8mini_jit7dtype_tE">
+<span id="_CPPv3N8mini_jit8mini_jit6Brgemm8generateE8uint32_t8uint32_t8uint32_t8uint32_t8uint32_t8uint32_t8uint32_tN8mini_jit7dtype_tE"></span><span id="_CPPv2N8mini_jit8mini_jit6Brgemm8generateE8uint32_t8uint32_t8uint32_t8uint32_t8uint32_t8uint32_t8uint32_tN8mini_jit7dtype_tE"></span><span id="mini_jit::mini_jit::Brgemm::generate__uint32_t.uint32_t.uint32_t.uint32_t.uint32_t.uint32_t.uint32_t.mini_jit::dtype_t"></span><span class="target" id="classmini__jit_1_1Brgemm_1a368fba286849baf4a86413784ee20dd1"></span><a class="reference internal" href="#_CPPv4N8mini_jit7error_tE" title="mini_jit::error_t"><span class="n"><span class="pre">error_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">generate</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">k</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">br_size</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">trans_a</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">trans_b</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">trans_c</span></span>, <span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">dtype_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dtype</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit6Brgemm8generateE8uint32_t8uint32_t8uint32_t8uint32_t8uint32_t8uint32_t8uint32_tN8mini_jit7dtype_tE" title="Link to this definition"></a><br /></dt>
 <dd><p>Generate a kernel for batch-reduce matrix multiplication. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -505,148 +591,10 @@
 <dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit15TensorOperationE">
 <span id="_CPPv3N8mini_jit8mini_jit15TensorOperationE"></span><span id="_CPPv2N8mini_jit8mini_jit15TensorOperationE"></span><span id="mini_jit::mini_jit::TensorOperation"></span><span class="target" id="classmini__jit_1_1TensorOperation"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TensorOperation</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit15TensorOperationE" title="Link to this definition"></a><br /></dt>
 <dd><div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
-<dl class="cpp enum-class">
-<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit15TensorOperation6exec_tE">
-<span id="_CPPv3N8mini_jit8mini_jit15TensorOperation6exec_tE"></span><span id="_CPPv2N8mini_jit8mini_jit15TensorOperation6exec_tE"></span><span class="target" id="classmini__jit_1_1TensorOperation_1a909b1728427f0bb49dc4067349083adf"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">exec_t</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">uint32_t</span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation6exec_tE" title="Link to this definition"></a><br /></dt>
-<dd><p>execution type </p>
-<p><em>Values:</em></p>
-<dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit15TensorOperation6exec_t3seqE">
-<span id="_CPPv3N8mini_jit8mini_jit15TensorOperation6exec_t3seqE"></span><span id="_CPPv2N8mini_jit8mini_jit15TensorOperation6exec_t3seqE"></span><span class="target" id="classmini__jit_1_1TensorOperation_1a909b1728427f0bb49dc4067349083adfae068c2de26d760f20cf10afc4b87ef0f"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">seq</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation6exec_t3seqE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit15TensorOperation6exec_t4primE">
-<span id="_CPPv3N8mini_jit8mini_jit15TensorOperation6exec_t4primE"></span><span id="_CPPv2N8mini_jit8mini_jit15TensorOperation6exec_t4primE"></span><span class="target" id="classmini__jit_1_1TensorOperation_1a909b1728427f0bb49dc4067349083adfa60bec1a80a84d0258edc5aaf54952563"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">prim</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation6exec_t4primE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit15TensorOperation6exec_t6sharedE">
-<span id="_CPPv3N8mini_jit8mini_jit15TensorOperation6exec_t6sharedE"></span><span id="_CPPv2N8mini_jit8mini_jit15TensorOperation6exec_t6sharedE"></span><span class="target" id="classmini__jit_1_1TensorOperation_1a909b1728427f0bb49dc4067349083adfa9e81e7b963c71363e2fb3eefcfecfc0e"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">shared</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation6exec_t6sharedE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="cpp enum-class">
-<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit15TensorOperation7ptype_tE">
-<span id="_CPPv3N8mini_jit8mini_jit15TensorOperation7ptype_tE"></span><span id="_CPPv2N8mini_jit8mini_jit15TensorOperation7ptype_tE"></span><span class="target" id="classmini__jit_1_1TensorOperation_1aedfe089fbfc959da26a7c9ce8117a9a9"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ptype_t</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">uint32_t</span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation7ptype_tE" title="Link to this definition"></a><br /></dt>
-<dd><p>primitive type </p>
-<p><em>Values:</em></p>
-<dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit15TensorOperation7ptype_t4zeroE">
-<span id="_CPPv3N8mini_jit8mini_jit15TensorOperation7ptype_t4zeroE"></span><span id="_CPPv2N8mini_jit8mini_jit15TensorOperation7ptype_t4zeroE"></span><span class="target" id="classmini__jit_1_1TensorOperation_1aedfe089fbfc959da26a7c9ce8117a9a9ad02c4c4cde7ae76252540d116a40f23a"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">zero</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation7ptype_t4zeroE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit15TensorOperation7ptype_t8identityE">
-<span id="_CPPv3N8mini_jit8mini_jit15TensorOperation7ptype_t8identityE"></span><span id="_CPPv2N8mini_jit8mini_jit15TensorOperation7ptype_t8identityE"></span><span class="target" id="classmini__jit_1_1TensorOperation_1aedfe089fbfc959da26a7c9ce8117a9a9aff483d1ff591898a9942916050d2ca3f"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">identity</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation7ptype_t8identityE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit15TensorOperation7ptype_t4reluE">
-<span id="_CPPv3N8mini_jit8mini_jit15TensorOperation7ptype_t4reluE"></span><span id="_CPPv2N8mini_jit8mini_jit15TensorOperation7ptype_t4reluE"></span><span class="target" id="classmini__jit_1_1TensorOperation_1aedfe089fbfc959da26a7c9ce8117a9a9abc5ce62b39aff2f661146911808eadc1"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">relu</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation7ptype_t4reluE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit15TensorOperation7ptype_t4gemmE">
-<span id="_CPPv3N8mini_jit8mini_jit15TensorOperation7ptype_t4gemmE"></span><span id="_CPPv2N8mini_jit8mini_jit15TensorOperation7ptype_t4gemmE"></span><span class="target" id="classmini__jit_1_1TensorOperation_1aedfe089fbfc959da26a7c9ce8117a9a9a7b21c4129b3cddb8a221d5888db787c9"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">gemm</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation7ptype_t4gemmE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit15TensorOperation7ptype_t6brgemmE">
-<span id="_CPPv3N8mini_jit8mini_jit15TensorOperation7ptype_t6brgemmE"></span><span id="_CPPv2N8mini_jit8mini_jit15TensorOperation7ptype_t6brgemmE"></span><span class="target" id="classmini__jit_1_1TensorOperation_1aedfe089fbfc959da26a7c9ce8117a9a9a9928ce523d9f3cd1abe09ccc88da30a1"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">brgemm</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation7ptype_t6brgemmE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit15TensorOperation7ptype_t4noneE">
-<span id="_CPPv3N8mini_jit8mini_jit15TensorOperation7ptype_t4noneE"></span><span id="_CPPv2N8mini_jit8mini_jit15TensorOperation7ptype_t4noneE"></span><span class="target" id="classmini__jit_1_1TensorOperation_1aedfe089fbfc959da26a7c9ce8117a9a9a334c4a4c42fdb79d7ebc3e73b517e6f8"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">none</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation7ptype_t4noneE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="cpp enum-class">
-<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit15TensorOperation5dim_tE">
-<span id="_CPPv3N8mini_jit8mini_jit15TensorOperation5dim_tE"></span><span id="_CPPv2N8mini_jit8mini_jit15TensorOperation5dim_tE"></span><span class="target" id="classmini__jit_1_1TensorOperation_1acbe64c70d9ecdd9a8ec9c7408a339d32"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dim_t</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">uint32_t</span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation5dim_tE" title="Link to this definition"></a><br /></dt>
-<dd><p>dimension type </p>
-<p><em>Values:</em></p>
-<dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit15TensorOperation5dim_t1cE">
-<span id="_CPPv3N8mini_jit8mini_jit15TensorOperation5dim_t1cE"></span><span id="_CPPv2N8mini_jit8mini_jit15TensorOperation5dim_t1cE"></span><span class="target" id="classmini__jit_1_1TensorOperation_1acbe64c70d9ecdd9a8ec9c7408a339d32a4a8a08f09d37b73795649038408b5f33"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">c</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation5dim_t1cE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit15TensorOperation5dim_t1mE">
-<span id="_CPPv3N8mini_jit8mini_jit15TensorOperation5dim_t1mE"></span><span id="_CPPv2N8mini_jit8mini_jit15TensorOperation5dim_t1mE"></span><span class="target" id="classmini__jit_1_1TensorOperation_1acbe64c70d9ecdd9a8ec9c7408a339d32a6f8f57715090da2632453988d9a1501b"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">m</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation5dim_t1mE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit15TensorOperation5dim_t1nE">
-<span id="_CPPv3N8mini_jit8mini_jit15TensorOperation5dim_t1nE"></span><span id="_CPPv2N8mini_jit8mini_jit15TensorOperation5dim_t1nE"></span><span class="target" id="classmini__jit_1_1TensorOperation_1acbe64c70d9ecdd9a8ec9c7408a339d32a7b8b965ad4bca0e41ab51de7b31363a1"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">n</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation5dim_t1nE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit15TensorOperation5dim_t1kE">
-<span id="_CPPv3N8mini_jit8mini_jit15TensorOperation5dim_t1kE"></span><span id="_CPPv2N8mini_jit8mini_jit15TensorOperation5dim_t1kE"></span><span class="target" id="classmini__jit_1_1TensorOperation_1acbe64c70d9ecdd9a8ec9c7408a339d32a8ce4b16b22b58894aa86c421e8759df3"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">k</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation5dim_t1kE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit15TensorOperation5dim_t9undefinedE">
-<span id="_CPPv3N8mini_jit8mini_jit15TensorOperation5dim_t9undefinedE"></span><span id="_CPPv2N8mini_jit8mini_jit15TensorOperation5dim_t9undefinedE"></span><span class="target" id="classmini__jit_1_1TensorOperation_1acbe64c70d9ecdd9a8ec9c7408a339d32a5e543256c480ac577d30f76f9120eb74"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">undefined</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation5dim_t9undefinedE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="cpp enum-class">
-<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit15TensorOperation7dtype_tE">
-<span id="_CPPv3N8mini_jit8mini_jit15TensorOperation7dtype_tE"></span><span id="_CPPv2N8mini_jit8mini_jit15TensorOperation7dtype_tE"></span><span class="target" id="classmini__jit_1_1TensorOperation_1ad920716f058a88bd49bfa2580017d855"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dtype_t</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">uint32_t</span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation7dtype_tE" title="Link to this definition"></a><br /></dt>
-<dd><p>data type </p>
-<p><em>Values:</em></p>
-<dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit15TensorOperation7dtype_t4fp32E">
-<span id="_CPPv3N8mini_jit8mini_jit15TensorOperation7dtype_t4fp32E"></span><span id="_CPPv2N8mini_jit8mini_jit15TensorOperation7dtype_t4fp32E"></span><span class="target" id="classmini__jit_1_1TensorOperation_1ad920716f058a88bd49bfa2580017d855a4e1bd87474ad81110395b71013094b35"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">fp32</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation7dtype_t4fp32E" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit15TensorOperation7dtype_t4fp64E">
-<span id="_CPPv3N8mini_jit8mini_jit15TensorOperation7dtype_t4fp64E"></span><span id="_CPPv2N8mini_jit8mini_jit15TensorOperation7dtype_t4fp64E"></span><span class="target" id="classmini__jit_1_1TensorOperation_1ad920716f058a88bd49bfa2580017d855a36dd759373a12bd5960718d0c482a2d4"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">fp64</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation7dtype_t4fp64E" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="cpp enum-class">
-<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit15TensorOperation7error_tE">
-<span id="_CPPv3N8mini_jit8mini_jit15TensorOperation7error_tE"></span><span id="_CPPv2N8mini_jit8mini_jit15TensorOperation7error_tE"></span><span class="target" id="classmini__jit_1_1TensorOperation_1ae751ad39e2cffc2260805d363127411b"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">error_t</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int32_t</span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation7error_tE" title="Link to this definition"></a><br /></dt>
-<dd><p>error codes </p>
-<p><em>Values:</em></p>
-<dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit15TensorOperation7error_t7successE">
-<span id="_CPPv3N8mini_jit8mini_jit15TensorOperation7error_t7successE"></span><span id="_CPPv2N8mini_jit8mini_jit15TensorOperation7error_t7successE"></span><span class="target" id="classmini__jit_1_1TensorOperation_1ae751ad39e2cffc2260805d363127411ba260ca9dd8a4577fc00b7bd5810298076"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">success</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation7error_t7successE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit15TensorOperation7error_t15wrong_dimensionE">
-<span id="_CPPv3N8mini_jit8mini_jit15TensorOperation7error_t15wrong_dimensionE"></span><span id="_CPPv2N8mini_jit8mini_jit15TensorOperation7error_t15wrong_dimensionE"></span><span class="target" id="classmini__jit_1_1TensorOperation_1ae751ad39e2cffc2260805d363127411bac6fbc4d35bd67db2c8e3731b57ca9fb6"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">wrong_dimension</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation7error_t15wrong_dimensionE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit15TensorOperation7error_t11wrong_ptypeE">
-<span id="_CPPv3N8mini_jit8mini_jit15TensorOperation7error_t11wrong_ptypeE"></span><span id="_CPPv2N8mini_jit8mini_jit15TensorOperation7error_t11wrong_ptypeE"></span><span class="target" id="classmini__jit_1_1TensorOperation_1ae751ad39e2cffc2260805d363127411ba6c18581cb880099446e0f540371a78bd"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">wrong_ptype</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation7error_t11wrong_ptypeE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit15TensorOperation7error_t23operation_not_supportedE">
-<span id="_CPPv3N8mini_jit8mini_jit15TensorOperation7error_t23operation_not_supportedE"></span><span id="_CPPv2N8mini_jit8mini_jit15TensorOperation7error_t23operation_not_supportedE"></span><span class="target" id="classmini__jit_1_1TensorOperation_1ae751ad39e2cffc2260805d363127411ba69bf074bf052ee4c9047b62fe7c24569"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">operation_not_supported</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation7error_t23operation_not_supportedE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-</div>
-<div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit15TensorOperation5setupE7dtype_t7ptype_t7ptype_t7ptype_tNSt4spanIK5dim_tEENSt4spanIK6exec_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEE">
-<span id="_CPPv3N8mini_jit8mini_jit15TensorOperation5setupE7dtype_t7ptype_t7ptype_t7ptype_tNSt4spanIK5dim_tEENSt4spanIK6exec_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEE"></span><span id="_CPPv2N8mini_jit8mini_jit15TensorOperation5setupE7dtype_t7ptype_t7ptype_t7ptype_tNSt4spanIK5dim_tEENSt4spanIK6exec_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEE"></span><span id="mini_jit::mini_jit::TensorOperation::setup__dtype_t.ptype_t.ptype_t.ptype_t.std::span:dim_tC:.std::span:exec_tC:.std::span:int64_tC:.std::span:int64_tC:.std::span:int64_tC:.std::span:int64_tC:"></span><span class="target" id="classmini__jit_1_1TensorOperation_1a9e292b8c93c6aba13087532d7d68e1a1"></span><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation7error_tE" title="mini_jit::mini_jit::TensorOperation::error_t"><span class="n"><span class="pre">error_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setup</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation7dtype_tE" title="mini_jit::mini_jit::TensorOperation::dtype_t"><span class="n"><span class="pre">dtype_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">dtype</span></span>, <a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation7ptype_tE" title="mini_jit::mini_jit::TensorOperation::ptype_t"><span class="n"><span class="pre">ptype_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">prim_first_touch</span></span>, <a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation7ptype_tE" title="mini_jit::mini_jit::TensorOperation::ptype_t"><span class="n"><span class="pre">ptype_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">prim_main</span></span>, <a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation7ptype_tE" title="mini_jit::mini_jit::TensorOperation::ptype_t"><span class="n"><span class="pre">ptype_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">prim_last_touch</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">span</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation5dim_tE" title="mini_jit::mini_jit::TensorOperation::dim_t"><span class="n"><span class="pre">dim_t</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dim_types</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">span</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation6exec_tE" title="mini_jit::mini_jit::TensorOperation::exec_t"><span class="n"><span class="pre">exec_t</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">exec_types</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">span</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">int64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dim_sizes</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">span</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">int64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">strides_in0</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">span</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">int64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">strides_in1</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">span</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">int64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">strides_out</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation5setupE7dtype_t7ptype_t7ptype_t7ptype_tNSt4spanIK5dim_tEENSt4spanIK6exec_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEE" title="Link to this definition"></a><br /></dt>
+<span id="_CPPv3N8mini_jit8mini_jit15TensorOperation5setupE7dtype_t7ptype_t7ptype_t7ptype_tNSt4spanIK5dim_tEENSt4spanIK6exec_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEE"></span><span id="_CPPv2N8mini_jit8mini_jit15TensorOperation5setupE7dtype_t7ptype_t7ptype_t7ptype_tNSt4spanIK5dim_tEENSt4spanIK6exec_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEE"></span><span id="mini_jit::mini_jit::TensorOperation::setup__dtype_t.ptype_t.ptype_t.ptype_t.std::span:dim_tC:.std::span:exec_tC:.std::span:int64_tC:.std::span:int64_tC:.std::span:int64_tC:.std::span:int64_tC:"></span><span class="target" id="classmini__jit_1_1TensorOperation_1a91660762456eb86f0f8cd6263fe8bbdf"></span><a class="reference internal" href="#_CPPv4N8mini_jit7error_tE" title="mini_jit::error_t"><span class="n"><span class="pre">error_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setup</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N8mini_jit7dtype_tE" title="mini_jit::dtype_t"><span class="n"><span class="pre">dtype_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">dtype</span></span>, <a class="reference internal" href="#_CPPv4N8mini_jit7ptype_tE" title="mini_jit::ptype_t"><span class="n"><span class="pre">ptype_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">prim_first_touch</span></span>, <a class="reference internal" href="#_CPPv4N8mini_jit7ptype_tE" title="mini_jit::ptype_t"><span class="n"><span class="pre">ptype_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">prim_main</span></span>, <a class="reference internal" href="#_CPPv4N8mini_jit7ptype_tE" title="mini_jit::ptype_t"><span class="n"><span class="pre">ptype_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">prim_last_touch</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">span</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N8mini_jit5dim_tE" title="mini_jit::dim_t"><span class="n"><span class="pre">dim_t</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dim_types</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">span</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N8mini_jit6exec_tE" title="mini_jit::exec_t"><span class="n"><span class="pre">exec_t</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">exec_types</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">span</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">int64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dim_sizes</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">span</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">int64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">strides_in0</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">span</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">int64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">strides_in1</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">span</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">int64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">strides_out</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation5setupE7dtype_t7ptype_t7ptype_t7ptype_tNSt4spanIK5dim_tEENSt4spanIK6exec_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEE" title="Link to this definition"></a><br /></dt>
 <dd><p>Setup for a binary tensor contraction or a unary tensor operation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -702,6 +650,11 @@
 </dl>
 </dd></dl>
 
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK8mini_jit8mini_jit15TensorOperation10dtype_sizeEv">
+<span id="_CPPv3NK8mini_jit8mini_jit15TensorOperation10dtype_sizeEv"></span><span id="_CPPv2NK8mini_jit8mini_jit15TensorOperation10dtype_sizeEv"></span><span id="mini_jit::mini_jit::TensorOperation::dtype_sizeC"></span><span class="target" id="classmini__jit_1_1TensorOperation_1a181f7a662d3a3d368ca02f609d0700de"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dtype_size</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK8mini_jit8mini_jit15TensorOperation10dtype_sizeEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
 </div>
 </dd></dl>
 
@@ -711,21 +664,6 @@
 <dd><div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp type">
-<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit5Unary7dtype_tE">
-<span id="_CPPv3N8mini_jit8mini_jit5Unary7dtype_tE"></span><span id="_CPPv2N8mini_jit8mini_jit5Unary7dtype_tE"></span><span class="target" id="classmini__jit_1_1Unary_1a9f266a1a25a11f33e156a079a7aa2480"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dtype_t</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit15TensorOperationE" title="mini_jit::mini_jit::TensorOperation"><span class="n"><span class="pre">TensorOperation</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation7dtype_tE" title="mini_jit::mini_jit::TensorOperation::dtype_t"><span class="n"><span class="pre">dtype_t</span></span></a><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit5Unary7dtype_tE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp type">
-<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit5Unary7ptype_tE">
-<span id="_CPPv3N8mini_jit8mini_jit5Unary7ptype_tE"></span><span id="_CPPv2N8mini_jit8mini_jit5Unary7ptype_tE"></span><span class="target" id="classmini__jit_1_1Unary_1a7d1087210c26087e30fab9c4933cee69"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ptype_t</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit15TensorOperationE" title="mini_jit::mini_jit::TensorOperation"><span class="n"><span class="pre">TensorOperation</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation7ptype_tE" title="mini_jit::mini_jit::TensorOperation::ptype_t"><span class="n"><span class="pre">ptype_t</span></span></a><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit5Unary7ptype_tE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp type">
-<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit5Unary7error_tE">
-<span id="_CPPv3N8mini_jit8mini_jit5Unary7error_tE"></span><span id="_CPPv2N8mini_jit8mini_jit5Unary7error_tE"></span><span class="target" id="classmini__jit_1_1Unary_1a6f88feae471656f51f174114a5a92d02"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">error_t</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit15TensorOperationE" title="mini_jit::mini_jit::TensorOperation"><span class="n"><span class="pre">TensorOperation</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation7error_tE" title="mini_jit::mini_jit::TensorOperation::error_t"><span class="n"><span class="pre">error_t</span></span></a><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit5Unary7error_tE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp type">
 <dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit5Unary8kernel_tE">
 <span id="_CPPv3N8mini_jit8mini_jit5Unary8kernel_tE"></span><span id="_CPPv2N8mini_jit8mini_jit5Unary8kernel_tE"></span><span class="target" id="classmini__jit_1_1Unary_1ab73a9a5cf9e4d90805bfee2374c64f89"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">kernel_t</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">(</span></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">a</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="n"><span class="pre">ld_a</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="n"><span class="pre">ld_b</span></span><span class="p"><span class="pre">)</span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit5Unary8kernel_tE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
@@ -734,8 +672,14 @@
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit5Unary8generateE8uint32_t8uint32_t8uint32_t7dtype_t7ptype_t">
-<span id="_CPPv3N8mini_jit8mini_jit5Unary8generateE8uint32_t8uint32_t8uint32_t7dtype_t7ptype_t"></span><span id="_CPPv2N8mini_jit8mini_jit5Unary8generateE8uint32_t8uint32_t8uint32_t7dtype_t7ptype_t"></span><span id="mini_jit::mini_jit::Unary::generate__uint32_t.uint32_t.uint32_t.dtype_t.ptype_t"></span><span class="target" id="classmini__jit_1_1Unary_1ab8974cee23349b58a20bc8329e9919fe"></span><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit5Unary7error_tE" title="mini_jit::mini_jit::Unary::error_t"><span class="n"><span class="pre">error_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">generate</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">trans_b</span></span>, <a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit5Unary7dtype_tE" title="mini_jit::mini_jit::Unary::dtype_t"><span class="n"><span class="pre">dtype_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">dtype</span></span>, <a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit5Unary7ptype_tE" title="mini_jit::mini_jit::Unary::ptype_t"><span class="n"><span class="pre">ptype_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">ptype</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit5Unary8generateE8uint32_t8uint32_t8uint32_t7dtype_t7ptype_t" title="Link to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit5UnaryD0Ev">
+<span id="_CPPv3N8mini_jit8mini_jit5UnaryD0Ev"></span><span id="_CPPv2N8mini_jit8mini_jit5UnaryD0Ev"></span><span id="mini_jit::mini_jit::Unary::~Unary"></span><span class="target" id="classmini__jit_1_1Unary_1aaaea16c0e70c93ac02f0b2a069c84435"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~Unary</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit5UnaryD0Ev" title="Link to this definition"></a><br /></dt>
+<dd><p>Destructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit5Unary8generateE8uint32_t8uint32_t8uint32_tN8mini_jit7dtype_tEN8mini_jit7ptype_tE">
+<span id="_CPPv3N8mini_jit8mini_jit5Unary8generateE8uint32_t8uint32_t8uint32_tN8mini_jit7dtype_tEN8mini_jit7ptype_tE"></span><span id="_CPPv2N8mini_jit8mini_jit5Unary8generateE8uint32_t8uint32_t8uint32_tN8mini_jit7dtype_tEN8mini_jit7ptype_tE"></span><span id="mini_jit::mini_jit::Unary::generate__uint32_t.uint32_t.uint32_t.mini_jit::dtype_t.mini_jit::ptype_t"></span><span class="target" id="classmini__jit_1_1Unary_1ae6f861dddb8cc0e0e6177a04315b64cd"></span><a class="reference internal" href="#_CPPv4N8mini_jit7error_tE" title="mini_jit::error_t"><span class="n"><span class="pre">error_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">generate</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">trans_b</span></span>, <span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">dtype_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dtype</span></span>, <span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ptype_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ptype</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit5Unary8generateE8uint32_t8uint32_t8uint32_tN8mini_jit7dtype_tEN8mini_jit7ptype_tE" title="Link to this definition"></a><br /></dt>
 <dd><p>Generate a kernel for a unary primitive. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -773,7 +717,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../../submissions/04_code_gen.html" class="btn btn-neutral float-left" title="4. Code Generation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../../submissions/05_tensor_op.html" class="btn btn-neutral float-left" title="5. Tensor Operation Backend" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="mini_jit_benchmarks.html" class="btn btn-neutral float-right" title="mini_jit::benchmarks" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
