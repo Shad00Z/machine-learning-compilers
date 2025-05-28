@@ -8,11 +8,21 @@ name: Run Tests
 on: [push, workflow_dispatch]
 jobs:
   run-tests:
-    name: Run Tests
+    name: Run Tests (+ Valgrind)
     runs-on: ubuntu-24.04-arm
     steps:
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install valgrind
       - name: Checkout Repository
         uses: actions/checkout@v1
+      - name: Compile Tests
+        run: |
+            make tests
+      - name: Run Valgrind
+        run: |
+            valgrind ./build/linux/tests
       - name: Run Tests
         run: |
-            make run_tests
+            ./build/linux/tests

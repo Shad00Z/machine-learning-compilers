@@ -47,17 +47,17 @@ void test_relu_primitive(uint32_t M,
     delete[] B_expected;
 }
 
-TEST_CASE("Tests the ReLu primitive with M=N=50", "[relu_primitive][M=N=50]")
+TEST_CASE("Tests the ReLU primitive with different M and N", "[relu_primitive][parameterized]")
 {
-    uint32_t M = 50;
-    uint32_t N = 50;
+    uint32_t M = GENERATE(1, 2, 3, 4, 5, 6, 7, 8);
+    uint32_t N = GENERATE(1, 2, 3, 4, 5, 6, 7, 8);
     test_relu_primitive(M, N);
 }
 
-TEST_CASE("Tests the ReLu primitive with M=N=64", "[relu_primitive][M=N=64]")
+TEST_CASE("Tests the ReLU primitive with larger M and N", "[relu_primitive][large]")
 {
     uint32_t M = 64;
-    uint32_t N = 64;
+    uint32_t N = 65;
     test_relu_primitive(M, N);
 }
 
@@ -74,10 +74,3 @@ TEST_CASE("Tests the ReLu primitive with M=N=64", "[relu_primitive][M=N=64]")
 //     uint32_t N = 2048;
 //     test_relu_primitive(M, N);
 // }
-
-TEST_CASE("Tests the ReLu primitive with random matrices", "[relu_primitive][parameterized]")
-{
-    uint32_t M = GENERATE(take(2, random(1, 32)));
-    uint32_t N = GENERATE(take(2, random(1, 32)));
-    test_relu_primitive(M, N);
-}
