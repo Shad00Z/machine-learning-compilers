@@ -45,9 +45,7 @@ In our setup function, we check several things:
     :caption: find the first ``prim`` position in ``exec_types``
     :dedent:
 
-This first position is needed, as depending on the position a different kernel will be constructed.
-E.g. for ``6 dimensions``, if the ``4th`` position is an ``seq``, we will construct a ``GEMM`` kernel. 
-However, if the ``4th`` dimension is a ``prim``, we will construct a ``BRGEMM`` kernel.
+We need to know the position of the first prim, to determine when we need to call the main kernel instead of recursively going deeper into the loop structure. In other words, we traverse the first sequential loops and as soon as we reach the first primary dimension, we start calling the main kernel.
 
 .. literalinclude:: ../../src/TensorOperation.cpp
     :language: cpp

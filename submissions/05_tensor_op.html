@@ -205,9 +205,7 @@ primitives are constructed at runtime.</p>
 </pre></div>
 </div>
 </div>
-<p>This first position is needed, as depending on the position a different kernel will be constructed.
-E.g. for <code class="docutils literal notranslate"><span class="pre">6</span> <span class="pre">dimensions</span></code>, if the <code class="docutils literal notranslate"><span class="pre">4th</span></code> position is an <code class="docutils literal notranslate"><span class="pre">seq</span></code>, we will construct a <code class="docutils literal notranslate"><span class="pre">GEMM</span></code> kernel.
-However, if the <code class="docutils literal notranslate"><span class="pre">4th</span></code> dimension is a <code class="docutils literal notranslate"><span class="pre">prim</span></code>, we will construct a <code class="docutils literal notranslate"><span class="pre">BRGEMM</span></code> kernel.</p>
+<p>We need to know the position of the first prim, to determine when we need to call the main kernel instead of recursively going deeper into the loop structure. In other words, we traverse the first sequential loops and as soon as we reach the first primary dimension, we start calling the main kernel.</p>
 <div class="literal-block-wrapper docutils container" id="id5">
 <div class="code-block-caption"><span class="caption-text">assign the size of the <code class="docutils literal notranslate"><span class="pre">prim</span></code> dimensions according to the order in <code class="docutils literal notranslate"><span class="pre">dim_types</span></code></span><a class="headerlink" href="#id5" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 92</span><span class="n">m_dim_s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">-1</span><span class="p">;</span>
