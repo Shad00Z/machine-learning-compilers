@@ -20,22 +20,47 @@ private:
     /// used dtype
     mini_jit::dtype_t m_dtype;
 
-    /// first touch primitive type
-    mini_jit::ptype_t m_prim_first_touch;
-    /// first touch primitive unary
-    mini_jit::Unary m_prim_first_touch_unary;
+    /// Brgemm object for main kernel
+    mini_jit::Brgemm m_brgemm_main;
+    /// Unary object for first touch kernel
+    mini_jit::Unary m_unary_first_touch;
+    /// Unary object for main kernel
+    mini_jit::Unary m_unary_main;
+    /// Unary object for last touch kernel
+    mini_jit::Unary m_unary_last_touch;
 
-    /// first touch primitive type
-    mini_jit::ptype_t m_prim_main;
-    /// main gemm primitive
-    mini_jit::Brgemm m_prim_main_gemm;
-    /// main unary primitive
-    mini_jit::Unary m_prim_main_unary;
+    /// first touch kernel type
+    mini_jit::ptype_t m_kernel_first_touch_type;
+    /// first touch kernel
+    void (*m_kernel_first_touch)(void const *,
+                                 void *,
+                                 int64_t,
+                                 int64_t);
+    /// main kernel type
+    mini_jit::ptype_t m_kernel_main_type;
+    /// main unary kernel
+    void (*m_kernel_unary_main)(void const *,
+                                void *,
+                                int64_t,
+                                int64_t);
 
-    /// first touch primitive type
-    mini_jit::ptype_t m_prim_last_touch;
-    /// last touch primitive;
-    mini_jit::Unary m_prim_last_touch_unary;
+    /// main brgemm kernel
+    void (*m_kernel_gemm_main)(void const *,
+                               void const *,
+                               void *,
+                               int64_t,
+                               int64_t,
+                               int64_t,
+                               int64_t,
+                               int64_t);
+
+    /// last touch kernel type
+    mini_jit::ptype_t m_kernel_last_touch_type;
+    /// last touch kernel
+    void (*m_kernel_last_touch)(void const *,
+                                void *,
+                                int64_t,
+                                int64_t);
 
     /// dimension types of the loops (m, n, k)
     std::vector<dim_t> m_dim_types;
@@ -68,6 +93,45 @@ private:
     int64_t m_dim_t;
 
     bool m_exists_seq_k;
+
+    /**
+     * Executes the first touch kernel.
+     *
+     * @param ptr_out Pointer to the output tensor.
+     * @param ldOut   Leading dimension of the output tensor.
+     */
+    void execute_kernel_first_touch(char *ptr_out,
+                                    int64_t ldOut);
+
+    /**
+     * Executes the main kernel.
+     *
+     * @param ptr_in0      Pointer to the first input tensor.
+     * @param ptr_in1      Pointer to the second input tensor (use nullptr if unary).
+     * @param ptr_out      Pointer to the output tensor.
+     * @param ldA          Leading dimension of the first input tensor.
+     * @param ldB          Leading dimension of the second input tensor.
+     * @param ldC          Leading dimension of the output tensor.
+     * @param br_size_A    Batch reduce size of the first input tensor (for brgemm).
+     * @param br_size_B    Batch reduce of the second input tensor (for brgemm).
+     */
+    void execute_kernel_main(char const *ptr_in0,
+                             char const *ptr_in1,
+                             char *ptr_out,
+                             int64_t ldA,
+                             int64_t ldB,
+                             int64_t ldC,
+                             int64_t br_size_A,
+                             int64_t br_size_B);
+
+    /**
+     * Executes the last touch kernel.
+     *
+     * @param ptr_out Pointer to the output tensor.
+     * @param ldOut   Leading dimension of the output tensor.
+     */
+    void execute_kernel_last_touch(char *ptr_out,
+                                   int64_t ldOut);
 
 public:
     /**
