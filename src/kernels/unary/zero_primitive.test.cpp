@@ -83,17 +83,17 @@ void test_xzr_zero_primitive(uint32_t M,
     delete[] B_expected;
 }
 
-TEST_CASE("Tests the EOR Zero primitive with M=N=50", "[eor_zero_primitive][M=N=50]")
+TEST_CASE("Tests the Zero EOR primitive with different M and N", "[zero_eor_primitive][parameterized]")
 {
-    uint32_t M = 50;
-    uint32_t N = 50;
+    uint32_t M = GENERATE(1, 2, 3, 4, 5, 6, 7, 8);
+    uint32_t N = GENERATE(1, 2, 3, 4, 5, 6, 7, 8);
     test_eor_zero_primitive(M, N);
 }
 
-TEST_CASE("Tests the EOR Zero primitive with M=N=64", "[eor_zero_primitive][M=N=64]")
+TEST_CASE("Tests the Zero EOR primitive with larger M and N", "[zero_eor_primitive][large]")
 {
     uint32_t M = 64;
-    uint32_t N = 64;
+    uint32_t N = 65;
     test_eor_zero_primitive(M, N);
 }
 
@@ -111,24 +111,17 @@ TEST_CASE("Tests the EOR Zero primitive with M=N=64", "[eor_zero_primitive][M=N=
 //     test_eor_zero_primitive(M, N);
 // }
 
-TEST_CASE("Tests the EOR Zero primitive with random matrices", "[eor_zero_primitive][parameterized]")
+TEST_CASE("Tests the Zero XZR primitive with different M and N", "[zero_xzr_primitive][parameterized]")
 {
-    uint32_t M = GENERATE(take(2, random(1, 32)));
-    uint32_t N = GENERATE(take(2, random(1, 32)));
-    test_eor_zero_primitive(M, N);
-}
-
-TEST_CASE("Tests the XZR Zero primitive with M=N=50", "[xzr_zero_primitive][M=N=50]")
-{
-    uint32_t M = 50;
-    uint32_t N = 50;
+    uint32_t M = GENERATE(1, 2, 3, 4, 5, 6, 7, 8);
+    uint32_t N = GENERATE(1, 2, 3, 4, 5, 6, 7, 8);
     test_xzr_zero_primitive(M, N);
 }
 
-TEST_CASE("Tests the XZR Zero primitive with M=N=64", "[xzr_zero_primitive][M=N=64]")
+TEST_CASE("Tests the Zero XZR primitive with larger M and N", "[zero_xzr_primitive][large]")
 {
     uint32_t M = 64;
-    uint32_t N = 64;
+    uint32_t N = 65;
     test_xzr_zero_primitive(M, N);
 }
 
@@ -145,10 +138,3 @@ TEST_CASE("Tests the XZR Zero primitive with M=N=64", "[xzr_zero_primitive][M=N=
 //     uint32_t N = 2048;
 //     test_xzr_zero_primitive(M, N);
 // }
-
-TEST_CASE("Tests the XZR Zero primitive with random matrices", "[xzr_zero_primitive][parameterized]")
-{
-    uint32_t M = GENERATE(take(2, random(1, 32)));
-    uint32_t N = GENERATE(take(2, random(1, 32)));
-    test_xzr_zero_primitive(M, N);
-}
