@@ -106,6 +106,16 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
         }
     }
 
+    auto it = std::find(exec_types.begin(), exec_types.end(), exec_t::prim);
+    if (it != exec_types.end())
+    {
+        m_id_first_primitive_loop = std::distance(exec_types.begin(), it);
+    }
+    else
+    {
+        m_id_first_primitive_loop = 0;
+    }
+
     /////////////////////////////////////////////////////////////////////
     // Read SEQ dimensions using dim types
     /////////////////////////////////////////////////////////////////////
@@ -257,8 +267,8 @@ void mini_jit::TensorOperation::execute_iter(int64_t id_loop,
                                 m_strides_in0[m_dim_id_prim_K],
                                 m_strides_in1[m_dim_id_prim_N],
                                 m_strides_out[m_dim_id_prim_N],
-                                m_strides_in0[m_dim_id_prim_BR],
-                                m_strides_in1[m_dim_id_prim_BR]);
+                                m_dim_id_prim_BR != -1 ? m_strides_in0[m_dim_id_prim_BR] : 1,
+                                m_dim_id_prim_BR != -1 ? m_strides_in1[m_dim_id_prim_BR] : 1);
 
             if (is_last)
             {
