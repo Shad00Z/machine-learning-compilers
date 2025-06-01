@@ -38,7 +38,7 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
     /////////////////////////////////////////////////////////////////////
     m_dim_types.assign(dim_types.begin(), dim_types.end());
     m_exec_types.assign(exec_types.begin(), exec_types.end());
-    m_loop_sizes.assign(dim_sizes.begin(), dim_sizes.end());
+    m_dim_sizes.assign(dim_sizes.begin(), dim_sizes.end());
     m_strides_in0.assign(strides_in0.begin(), strides_in0.end());
     m_strides_in1.assign(strides_in1.begin(), strides_in1.end());
     m_strides_out.assign(strides_out.begin(), strides_out.end());
@@ -72,27 +72,13 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
         return error_t::wrong_ptype;
     }
 
-    /////////////////////////////////////////////////////////////////////
-    // Find first "prim" position
-    /////////////////////////////////////////////////////////////////////
-    auto it = std::find(exec_types.begin(), exec_types.end(), exec_t::prim);
-
-    if (it != exec_types.end())
-    {
-        m_id_first_primitive_loop = std::distance(exec_types.begin(), it);
-    }
-    else
-    {
-        m_id_first_primitive_loop = 0;
-    }
-
-    // TODO: refactor this! no 6 hard coded variables..
-    m_dim_s = -1;
-    m_dim_q = -1;
-    m_dim_u = -1;
-    m_dim_r = -1;
-    m_dim_p = -1;
-    m_dim_t = -1;
+    m_dim_id_prim_M = -1;
+    m_dim_id_prim_N = -1;
+    m_dim_id_prim_K = -1;
+    m_dim_id_prim_BR = -1;
+    m_dim_id_seq_M = -1;
+    m_dim_id_seq_N = -1;
+    m_dim_id_seq_K = -1;
 
     /////////////////////////////////////////////////////////////////////
     // Read PRIM dimensions using dim types
@@ -101,21 +87,21 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
     {
         if (m_exec_types[i] == exec_t::prim)
         {
-            if (m_dim_types[i] == dim_t::m && m_dim_s == -1)
+            if (m_dim_id_prim_M == -1 && m_dim_types[i] == dim_t::m)
             {
-                m_dim_s = m_loop_sizes[i];
+                m_dim_id_prim_M = i;
             }
-            else if (m_dim_types[i] == dim_t::n && m_dim_q == -1)
+            else if (m_dim_id_prim_N == -1 && m_dim_types[i] == dim_t::n)
             {
-                m_dim_q = m_loop_sizes[i];
+                m_dim_id_prim_N = i;
             }
-            else if (m_dim_types[i] == dim_t::k && m_dim_u == -1)
+            else if ( m_dim_id_prim_K == -1 && m_dim_types[i] == dim_t::k)
             {
-                m_dim_u = m_loop_sizes[i];
+                m_dim_id_prim_K = i;
             }
-            else if (m_dim_types[i] == dim_t::k)
+            else if (m_dim_id_prim_K != -1 && m_dim_id_prim_BR == -1 && m_dim_types[i] == dim_t::k)
             {
-                m_dim_t = m_loop_sizes[i];
+                m_dim_id_prim_BR = i;
             }
         }
     }
@@ -129,15 +115,15 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
         {
             if (m_dim_types[i] == dim_t::m)
             {
-                m_dim_r = m_loop_sizes[i];
+                m_dim_id_seq_M = i;
             }
             else if (m_dim_types[i] == dim_t::n)
             {
-                m_dim_p = m_loop_sizes[i];
+                m_dim_id_seq_N = i;
             }
             else if (m_dim_types[i] == dim_t::k)
             {
-                m_dim_t = m_loop_sizes[i];
+                m_dim_id_seq_K = i;
             }
         }
     }
@@ -147,8 +133,8 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
     /////////////////////////////////////////////////////////////////////
     if (prim_first_touch != ptype_t::none)
     {
-        m_unary_first_touch.generate(m_dim_s,
-                                     m_dim_q,
+        m_unary_first_touch.generate(m_dim_sizes[m_dim_id_prim_M],
+                                     m_dim_sizes[m_dim_id_prim_N],
                                      0,
                                      dtype,
                                      prim_first_touch);
@@ -156,9 +142,9 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
     }
     if (prim_main == ptype_t::gemm)
     {
-        m_brgemm_main.generate(m_dim_s,
-                               m_dim_q,
-                               m_dim_u,
+        m_brgemm_main.generate(m_dim_sizes[m_dim_id_prim_M],
+                               m_dim_sizes[m_dim_id_prim_N],
+                               m_dim_sizes[m_dim_id_prim_K],
                                1,
                                0,
                                0,
@@ -168,10 +154,10 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
     }
     else if (prim_main == ptype_t::brgemm)
     {
-        m_brgemm_main.generate(m_dim_s,
-                               m_dim_q,
-                               m_dim_u,
-                               m_dim_t,
+        m_brgemm_main.generate(m_dim_sizes[m_dim_id_prim_M],
+                               m_dim_sizes[m_dim_id_prim_N],
+                               m_dim_sizes[m_dim_id_prim_K],
+                               m_dim_sizes[m_dim_id_prim_BR],
                                0,
                                0,
                                0,
@@ -181,8 +167,8 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
     else if (prim_main == ptype_t::identity)
     {
         // TODO: check if transpose or not
-        m_unary_main.generate(m_dim_s,
-                              m_dim_q,
+        m_unary_main.generate(m_dim_sizes[m_dim_id_prim_M],
+                              m_dim_sizes[m_dim_id_prim_N],
                               0,
                               dtype,
                               prim_main);
@@ -190,8 +176,8 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
     }
     if (prim_last_touch != ptype_t::none)
     {
-        m_unary_last_touch.generate(m_dim_s,
-                                    m_dim_q,
+        m_unary_last_touch.generate(m_dim_sizes[m_dim_id_prim_M],
+                                    m_dim_sizes[m_dim_id_prim_N],
                                     0,
                                     dtype,
                                     prim_last_touch);
@@ -228,7 +214,7 @@ void mini_jit::TensorOperation::execute_iter(int64_t id_loop,
                                              bool first_access,
                                              bool last_access)
 {
-    int64_t l_size = m_loop_sizes[id_loop];
+    int64_t l_size = m_dim_sizes[id_loop];
     int64_t l_stride_in0 = m_strides_in0[id_loop];
     int64_t l_stride_in1 = m_strides_in1[id_loop];
     int64_t l_stride_out = m_strides_out[id_loop];
@@ -240,7 +226,7 @@ void mini_jit::TensorOperation::execute_iter(int64_t id_loop,
         if (m_dim_types[id_loop] == dim_t::k)
         {
             is_first = first_access && (l_iter == 0);
-            is_last = last_access && (l_iter == m_loop_sizes[id_loop] - 1);
+            is_last = last_access && (l_iter == m_dim_sizes[id_loop] - 1);
         }
 
         char const *sub_ptr_in0 = ptr_in0 + l_iter * l_stride_in0 * dtype_size();
@@ -262,22 +248,22 @@ void mini_jit::TensorOperation::execute_iter(int64_t id_loop,
             if (is_first)
             {
                 execute_kernel_first_touch(sub_ptr_out,
-                                           m_dim_r * m_dim_s); // ld = r * s
+                                           m_strides_out[m_dim_id_prim_N]);
             }
 
             execute_kernel_main(sub_ptr_in0,
                                 sub_ptr_in1,
                                 sub_ptr_out,
-                                m_dim_s,                     // ldA = s
-                                m_dim_t * m_dim_u,           // ldB = t * u
-                                m_dim_r * m_dim_s,           // ldC = r * s
-                                m_dim_r * m_dim_s * m_dim_u, // br_size_A = r * s * u
-                                m_dim_u);                    // br_size_B = u
+                                m_strides_in0[m_dim_id_prim_K],
+                                m_strides_in1[m_dim_id_prim_N],
+                                m_strides_out[m_dim_id_prim_N],
+                                m_strides_in0[m_dim_id_prim_BR],
+                                m_strides_in1[m_dim_id_prim_BR]);
 
             if (is_last)
             {
                 execute_kernel_last_touch(sub_ptr_out,
-                                          m_dim_r * m_dim_s); // ld = r * s
+                                          m_strides_out[m_dim_id_prim_N]);
             }
         }
     }

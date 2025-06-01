@@ -67,7 +67,7 @@ private:
     /// execution types of the loops (seq, shared, prim)
     std::vector<exec_t> m_exec_types;
     /// sizes of the dimensions (loops)
-    std::vector<int64_t> m_loop_sizes;
+    std::vector<int64_t> m_dim_sizes;
     /// strides of the first input tensor
     std::vector<int64_t> m_strides_in0;
     /// strides of the second input tensor
@@ -76,14 +76,21 @@ private:
     std::vector<int64_t> m_strides_out;
     /// location of first primitive loop
     int64_t m_id_first_primitive_loop;
-
-    /// save matrix dimensions
-    int64_t m_dim_s;
-    int64_t m_dim_q;
-    int64_t m_dim_u;
-    int64_t m_dim_r;
-    int64_t m_dim_p;
-    int64_t m_dim_t;
+    
+    /// primary M dimension id
+    int64_t m_dim_id_prim_M;
+    /// primary N dimension id
+    int64_t m_dim_id_prim_N;
+    /// primary K dimension id
+    int64_t m_dim_id_prim_K;
+    /// primary BR dimension id
+    int64_t m_dim_id_prim_BR;
+    /// sequential M dimension id
+    int64_t m_dim_id_seq_M;
+    /// sequential N dimension id
+    int64_t m_dim_id_seq_N;
+    /// sequential K dimension id
+    int64_t m_dim_id_seq_K;
 
     /**
      * Executes the first touch kernel.

@@ -11,6 +11,18 @@ CPP_VERSION = c++20
 # LIBS
 LIBS = 
 
+# COMPILER FLAGS
+CXXFLAGS  = -std=$(CPP_VERSION)
+CXXFLAGS += -O2
+CXXFLAGS += -g
+CXXFLAGS += -Wall
+CXXFLAGS += -Wextra
+CXXFLAGS += -Wpedantic
+#CXXFLAGS += -fsanitize=address
+
+# LINKER FLAGS
+#LDFLAGS = -fsanitize=address
+
 # DIRECTORIES
 SRC_DIR = src
 BIN_DIR_ROOT = build
@@ -57,14 +69,6 @@ INCFLAGS += -I/usr/local/include
 ifeq ($(ARCH),arm64)
 	INCFLAGS += -I/opt/homebrew/include
 endif
-
-# COMPILER FLAGS
-CXXFLAGS  = -std=$(CPP_VERSION)
-CXXFLAGS += -O2
-CXXFLAGS += -g
-CXXFLAGS += -Wall
-CXXFLAGS += -Wextra
-CXXFLAGS += -Wpedantic
 
 # LINKER LIBRARIES
 ifeq ($(OS),macOS)
