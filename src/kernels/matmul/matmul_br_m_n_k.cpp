@@ -27,8 +27,8 @@ void mini_jit::kernels::matmul::matmul_br_m_n_k(mini_jit::Kernel &kernel,
     // Prepare the kernel
     int nLoopIterations = n / 4;
     int nLoopRemainder = n % 4;
-    int mLoopIterations = m / 8;
-    int mLoopRemainder = m % 8;
+    int mLoopIterations = m / 16;
+    int mLoopRemainder = m % 16;
 
     // PCS
     kernel.add_instr(base::stpPre(gpr_t::x29, gpr_t::x30, gpr_t::sp, -16));
@@ -39,12 +39,12 @@ void mini_jit::kernels::matmul::matmul_br_m_n_k(mini_jit::Kernel &kernel,
     kernel.add_instr(base::stpPre(gpr_t::x21, gpr_t::x22, gpr_t::sp, -16));
     kernel.add_instr(base::stpPre(gpr_t::x23, gpr_t::x24, gpr_t::sp, -16));
     kernel.add_instr(base::stpPre(gpr_t::x25, gpr_t::x26, gpr_t::sp, -16));
-    // kernel.add_instr(base::stpPre(gpr_t::x27, gpr_t::x28, gpr_t::sp, -16));
+    kernel.add_instr(base::stpPre(gpr_t::x27, gpr_t::x28, gpr_t::sp, -16));
 
     kernel.add_instr(simd_fp::stpPre(simd_fp_t::v8, simd_fp_t::v9, gpr_t::sp, -16, neon_size_spec_t::d));
     kernel.add_instr(simd_fp::stpPre(simd_fp_t::v10, simd_fp_t::v11, gpr_t::sp, -16, neon_size_spec_t::d));
-    // kernel.add_instr(simd_fp::stpPre(simd_fp_t::v12, simd_fp_t::v13, gpr_t::sp, -16, neon_size_spec_t::d));
-    // kernel.add_instr(simd_fp::stpPre(simd_fp_t::v14, simd_fp_t::v15, gpr_t::sp, -16, neon_size_spec_t::d));
+    kernel.add_instr(simd_fp::stpPre(simd_fp_t::v12, simd_fp_t::v13, gpr_t::sp, -16, neon_size_spec_t::d));
+    kernel.add_instr(simd_fp::stpPre(simd_fp_t::v14, simd_fp_t::v15, gpr_t::sp, -16, neon_size_spec_t::d));
 
     // Strides
     // lsl #2 -> *4
@@ -72,19 +72,19 @@ void mini_jit::kernels::matmul::matmul_br_m_n_k(mini_jit::Kernel &kernel,
 
     if (nLoopIterations > 0)
     {
-        //n_loop:
+        // n_loop:
         kernel.add_label("n_loop");
 
         // Save base matrix pointers
-        kernel.add_instr(base::mov(gpr_t::x8, gpr_t::x0)); // A
-        kernel.add_instr(base::mov(gpr_t::x9, gpr_t::x20)); // B
+        kernel.add_instr(base::mov(gpr_t::x8, gpr_t::x0));   // A
+        kernel.add_instr(base::mov(gpr_t::x9, gpr_t::x20));  // B
         kernel.add_instr(base::mov(gpr_t::x10, gpr_t::x21)); // C
 
         if (mLoopIterations > 0)
         {
-            internal_subkernels::generateM8N4Loop(kernel, mLoopIterations, k);
+            internal_subkernels::generateM16N4Loop(kernel, mLoopIterations, k);
         }
-    
+
         if (mLoopRemainder > 0)
         {
             // set up k loop counter
@@ -93,7 +93,7 @@ void mini_jit::kernels::matmul::matmul_br_m_n_k(mini_jit::Kernel &kernel,
             kernel.add_instr(base::mov(gpr_t::x15, gpr_t::x8)); // A
             kernel.add_instr(base::mov(gpr_t::x16, gpr_t::x9)); // B
             kernel.add_instr(base::mov(gpr_t::x17, 0));         // row count B
-    
+
             switch (mLoopRemainder)
             {
             case 1:
@@ -117,6 +117,30 @@ void mini_jit::kernels::matmul::matmul_br_m_n_k(mini_jit::Kernel &kernel,
             case 7:
                 internal_subkernels::generateM7N4Loop(kernel);
                 break;
+            case 8:
+                internal_subkernels::generateM8N4Loop(kernel);
+                break;
+            case 9:
+                internal_subkernels::generateM9N4Loop(kernel);
+                break;
+            case 10:
+                internal_subkernels::generateM10N4Loop(kernel);
+                break;
+            case 11:
+                internal_subkernels::generateM11N4Loop(kernel);
+                break;
+            case 12:
+                internal_subkernels::generateM12N4Loop(kernel);
+                break;
+            case 13:
+                internal_subkernels::generateM13N4Loop(kernel);
+                break;
+            case 14:
+                internal_subkernels::generateM14N4Loop(kernel);
+                break;
+            case 15:
+                internal_subkernels::generateM15N4Loop(kernel);
+                break;
             default:
                 break;
             }
@@ -138,8 +162,8 @@ void mini_jit::kernels::matmul::matmul_br_m_n_k(mini_jit::Kernel &kernel,
     if (nLoopRemainder > 0)
     {
         // Save base matrix pointers
-        kernel.add_instr(base::mov(gpr_t::x8, gpr_t::x0)); // A
-        kernel.add_instr(base::mov(gpr_t::x9, gpr_t::x20)); // B
+        kernel.add_instr(base::mov(gpr_t::x8, gpr_t::x0));   // A
+        kernel.add_instr(base::mov(gpr_t::x9, gpr_t::x20));  // B
         kernel.add_instr(base::mov(gpr_t::x10, gpr_t::x21)); // C
 
         switch (nLoopRemainder)
@@ -177,12 +201,12 @@ void mini_jit::kernels::matmul::matmul_br_m_n_k(mini_jit::Kernel &kernel,
     // END BATCH LOOP
 
     // Restore callee-saved registers
-    // kernel.add_instr(simd_fp::ldpPost(simd_fp_t::v14, simd_fp_t::v15, gpr_t::sp, 16, neon_size_spec_t::d));
-    // kernel.add_instr(simd_fp::ldpPost(simd_fp_t::v12, simd_fp_t::v13, gpr_t::sp, 16, neon_size_spec_t::d));
+    kernel.add_instr(simd_fp::ldpPost(simd_fp_t::v14, simd_fp_t::v15, gpr_t::sp, 16, neon_size_spec_t::d));
+    kernel.add_instr(simd_fp::ldpPost(simd_fp_t::v12, simd_fp_t::v13, gpr_t::sp, 16, neon_size_spec_t::d));
     kernel.add_instr(simd_fp::ldpPost(simd_fp_t::v10, simd_fp_t::v11, gpr_t::sp, 16, neon_size_spec_t::d));
     kernel.add_instr(simd_fp::ldpPost(simd_fp_t::v8, simd_fp_t::v9, gpr_t::sp, 16, neon_size_spec_t::d));
 
-    // kernel.add_instr(base::ldpPost(gpr_t::x27, gpr_t::x28, gpr_t::sp, 16));
+    kernel.add_instr(base::ldpPost(gpr_t::x27, gpr_t::x28, gpr_t::sp, 16));
     kernel.add_instr(base::ldpPost(gpr_t::x25, gpr_t::x26, gpr_t::sp, 16));
     kernel.add_instr(base::ldpPost(gpr_t::x23, gpr_t::x24, gpr_t::sp, 16));
     kernel.add_instr(base::ldpPost(gpr_t::x21, gpr_t::x22, gpr_t::sp, 16));
