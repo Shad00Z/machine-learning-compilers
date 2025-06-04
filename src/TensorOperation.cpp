@@ -86,7 +86,9 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
     /////////////////////////////////////////////////////////////////////
     // Read PRIM dimensions using dim types
     /////////////////////////////////////////////////////////////////////
-    for (size_t i = m_dim_types.size() - 1; i > 0; i--)
+    // convert to int so negative values are allowed
+    int l_dim_types_size = static_cast<int>(m_dim_types.size());
+    for (int i = l_dim_types_size - 1; i >= 0; i--)
     {
         if (m_exec_types[i] == exec_t::prim)
         {
@@ -272,7 +274,8 @@ void mini_jit::TensorOperation::execute_iter(int64_t id_loop,
                                              bool first_access,
                                              bool last_access)
 {
-    int64_t l_size = m_dim_sizes[id_loop];
+    // if the first dimension is a prim, we should only loop once
+    int64_t l_size = m_id_first_primitive_loop != 0 ? m_dim_sizes[id_loop] : 1;
     int64_t l_stride_in0 = m_strides_in0[id_loop];
     int64_t l_stride_in1 = m_strides_in1[id_loop];
     int64_t l_stride_out = m_strides_out[id_loop];

@@ -1126,7 +1126,7 @@ void mini_jit::kernels::matmul::subkernels::internal::generateM14N3Loop(mini_jit
     kernel.add_instr(simd_fp::ldp(simd_fp_t::v10, simd_fp_t::v11, gpr_t::x12, 0, neon_size_spec_t::q));
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v12, gpr_t::x12, 32, neon_size_spec_t::q));
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v13, gpr_t::x12, 48, neon_size_spec_t::d));
-    
+
     // case_14_k_loop:
     kernel.add_label("k_m14n3_loop");
     // load column of A (14 values)
@@ -1134,7 +1134,6 @@ void mini_jit::kernels::matmul::subkernels::internal::generateM14N3Loop(mini_jit
     kernel.add_instr(simd_fp::ldp(simd_fp_t::v24, simd_fp_t::v25, gpr_t::x24, 0, neon_size_spec_t::q));
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v26, gpr_t::x24, 32, neon_size_spec_t::q));
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v27, gpr_t::x24, 48, neon_size_spec_t::d));
-
     // B: COLUMN 0
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v29, gpr_t::x16, 0, neon_size_spec_t::s));
     kernel.add_instr(simd_fp::fmlaElem(simd_fp_t::v0, simd_fp_t::v24, simd_fp_t::v29, arr_spec_t::s4));
