@@ -295,21 +295,21 @@ TEST_CASE("Reference shared test for ZERO + BRGEMM + RELU tensor operation kerne
 }
 
 // Funktioniert nur mit der anderen Implementierung (Haggis)
-// TEST_CASE("Reference shared test for ZERO + BRGEMM + RELU tensor operation kernel with variable R(Shared), P(shared), T, S, Q, U", "[tensor_operation][parameterized][zero][brgemm][relu][shared]")
-// {
-//     const mini_jit::ptype_t first_touch_type = mini_jit::ptype_t::zero;
-//     const mini_jit::ptype_t main_type = mini_jit::ptype_t::brgemm;
-//     const mini_jit::ptype_t last_touch_type = mini_jit::ptype_t::relu;
+TEST_CASE("Reference shared test for ZERO + BRGEMM + RELU tensor operation kernel with variable R(Shared), P(shared), T, S, Q, U", "[tensor_operation][parameterized][zero][brgemm][relu][shared]")
+{
+    const mini_jit::ptype_t first_touch_type = mini_jit::ptype_t::zero;
+    const mini_jit::ptype_t main_type = mini_jit::ptype_t::brgemm;
+    const mini_jit::ptype_t last_touch_type = mini_jit::ptype_t::relu;
 
-//     std::vector<mini_jit::exec_t> exec_types = {
-//         mini_jit::exec_t::shared,
-//         mini_jit::exec_t::shared,
-//         mini_jit::exec_t::prim,
-//         mini_jit::exec_t::prim,
-//         mini_jit::exec_t::prim,
-//         mini_jit::exec_t::prim};
-//     runTensorOperationTest(first_touch_type,
-//                            main_type,
-//                            last_touch_type,
-//                            exec_types);
-// }
+    std::vector<mini_jit::exec_t> exec_types = {
+        mini_jit::exec_t::shared,
+        mini_jit::exec_t::seq,
+        mini_jit::exec_t::prim,
+        mini_jit::exec_t::prim,
+        mini_jit::exec_t::prim,
+        mini_jit::exec_t::prim};
+    runTensorOperationTest(first_touch_type,
+                           main_type,
+                           last_touch_type,
+                           exec_types);
+}
