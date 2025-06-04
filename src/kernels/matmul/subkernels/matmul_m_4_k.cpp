@@ -1336,7 +1336,6 @@ void mini_jit::kernels::matmul::subkernels::internal::generateM14N4Loop(mini_jit
     kernel.add_instr(simd_fp::ldp(simd_fp_t::v24, simd_fp_t::v25, gpr_t::x24, 0, neon_size_spec_t::q));
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v26, gpr_t::x24, 32, neon_size_spec_t::q));
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v27, gpr_t::x24, 48, neon_size_spec_t::d));
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v28, gpr_t::x24, 56, neon_size_spec_t::s));
     // B: COLUMN 0
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v29, gpr_t::x16, 0, neon_size_spec_t::s));
     kernel.add_instr(simd_fp::fmlaElem(simd_fp_t::v0, simd_fp_t::v24, simd_fp_t::v29, arr_spec_t::s4));
