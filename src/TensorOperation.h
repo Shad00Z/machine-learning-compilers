@@ -76,7 +76,9 @@ private:
     std::vector<int64_t> m_strides_out;
     /// location of first primitive loop
     int64_t m_id_first_primitive_loop;
-    
+    /// location of first sequential loop
+    int64_t m_id_first_seq_loop;
+
     /// primary M dimension id
     int64_t m_dim_id_prim_M;
     /// primary N dimension id
@@ -91,6 +93,19 @@ private:
     int64_t m_dim_id_seq_N;
     /// sequential K dimension id
     int64_t m_dim_id_seq_K;
+
+    /// shared M dimension id
+    int64_t m_dim_id_sha_M;
+    /// shared N dimension id
+    int64_t m_dim_id_sha_N;
+
+    /// shared loop ids
+    std::vector<int64_t> m_shared_loop_ids;
+    /// shared loop sizes
+    std::vector<int64_t> m_shared_loop_sizes;
+
+    /// number of parallel loops
+    int64_t m_num_parallel_loops;
 
     /**
      * Executes the first touch kernel.
@@ -187,6 +202,21 @@ public:
                       char *ptr_out,
                       bool first_access,
                       bool last_access);
+
+    /**
+     * General-purpose loop implementation featuring first and last touch operations with parallelization.
+     *
+     * @param ptr_in0      Pointer to the first input tensor's data.
+     * @param ptr_in1      Pointer to the second input tensor's data (use nullptr if unary).
+     * @param ptr_out      Pointer to the output tensor's data.
+     * @param first_access True if first time accessing data of output tensor.
+     * @param last_access  True if last time accessing data of output tensor.
+     **/
+    void execute_iter_parallel(char const *ptr_in0,
+                               char const *ptr_in1,
+                               char *ptr_out,
+                               bool first_access,
+                               bool last_access);
 
     int dtype_size() const
     {

@@ -15,11 +15,11 @@ void runTensorOperationTest(mini_jit::ptype_t first_touch_type,
                             std::span<const mini_jit::exec_t> exec_types)
 {
     const int R = 3;
-    const int P = GENERATE(3,7);
-    const int T = GENERATE(3,7);
-    const int S = GENERATE(3,4,5,7);
-    const int Q = GENERATE(3,4,5,7);
-    const int U = GENERATE(3,4,5,7);
+    const int P = GENERATE(3, 7);
+    const int T = GENERATE(3, 7);
+    const int S = GENERATE(3, 4, 5, 7);
+    const int Q = GENERATE(3, 4, 5, 7);
+    const int U = GENERATE(3, 4, 5, 7);
 
     const int SIZE_A = (R * S) * (T * U);
     const int SIZE_B = (T * U) * (P * Q);
@@ -236,3 +236,80 @@ TEST_CASE("Reference test for ZERO + BRGEMM + RELU tensor operation kernel with 
                            last_touch_type,
                            exec_types);
 }
+
+TEST_CASE("Reference shared test for ZERO + GEMM tensor operation kernel with variable R(Shared), P, T, S, Q, U", "[tensor_operation][parameterized][zero][gemm][shared]")
+{
+    const mini_jit::ptype_t first_touch_type = mini_jit::ptype_t::zero;
+    const mini_jit::ptype_t main_type = mini_jit::ptype_t::gemm;
+    const mini_jit::ptype_t last_touch_type = mini_jit::ptype_t::none;
+
+    std::vector<mini_jit::exec_t> exec_types = {
+        mini_jit::exec_t::shared,
+        mini_jit::exec_t::seq,
+        mini_jit::exec_t::seq,
+        mini_jit::exec_t::prim,
+        mini_jit::exec_t::prim,
+        mini_jit::exec_t::prim};
+    runTensorOperationTest(first_touch_type,
+                           main_type,
+                           last_touch_type,
+                           exec_types);
+}
+
+TEST_CASE("Reference shared test for ZERO + GEMM tensor operation kernel with variable R(Shared), P(Shared), T, S, Q, U", "[tensor_operation][parameterized][zero][gemm][shared]")
+{
+    const mini_jit::ptype_t first_touch_type = mini_jit::ptype_t::zero;
+    const mini_jit::ptype_t main_type = mini_jit::ptype_t::gemm;
+    const mini_jit::ptype_t last_touch_type = mini_jit::ptype_t::none;
+
+    std::vector<mini_jit::exec_t> exec_types = {
+        mini_jit::exec_t::shared,
+        mini_jit::exec_t::shared,
+        mini_jit::exec_t::seq,
+        mini_jit::exec_t::prim,
+        mini_jit::exec_t::prim,
+        mini_jit::exec_t::prim};
+    runTensorOperationTest(first_touch_type,
+                           main_type,
+                           last_touch_type,
+                           exec_types);
+}
+
+TEST_CASE("Reference shared test for ZERO + BRGEMM + RELU tensor operation kernel with variable R(Shared), P, T, S, Q, U", "[tensor_operation][parameterized][zero][brgemm][relu][shared]")
+{
+    const mini_jit::ptype_t first_touch_type = mini_jit::ptype_t::zero;
+    const mini_jit::ptype_t main_type = mini_jit::ptype_t::brgemm;
+    const mini_jit::ptype_t last_touch_type = mini_jit::ptype_t::relu;
+
+    std::vector<mini_jit::exec_t> exec_types = {
+        mini_jit::exec_t::shared,
+        mini_jit::exec_t::seq,
+        mini_jit::exec_t::prim,
+        mini_jit::exec_t::prim,
+        mini_jit::exec_t::prim,
+        mini_jit::exec_t::prim};
+    runTensorOperationTest(first_touch_type,
+                           main_type,
+                           last_touch_type,
+                           exec_types);
+}
+
+// Funktioniert nur mit der anderen Implementierung (Haggis)
+// TEST_CASE("Reference shared test for ZERO + BRGEMM + RELU tensor operation kernel with variable R(Shared), P(shared), T, S, Q, U", "[tensor_operation][parameterized][zero][brgemm][relu][shared]")
+// {
+//     const mini_jit::ptype_t first_touch_type = mini_jit::ptype_t::zero;
+//     const mini_jit::ptype_t main_type = mini_jit::ptype_t::brgemm;
+//     const mini_jit::ptype_t last_touch_type = mini_jit::ptype_t::relu;
+
+//     std::vector<mini_jit::exec_t> exec_types = {
+//         mini_jit::exec_t::shared,
+//         mini_jit::exec_t::shared,
+//         mini_jit::exec_t::prim,
+//         mini_jit::exec_t::prim,
+//         mini_jit::exec_t::prim,
+//         mini_jit::exec_t::prim};
+//     runTensorOperationTest(first_touch_type,
+//                            main_type,
+//                            last_touch_type,
+//                            exec_types);
+// }

@@ -1,0 +1,18 @@
+Running SharedTensorOperationBench benchmark #1
+Total time (s):                  3.00137
+Total reps:                      2002
+Total floating point operations: 1074815565824
+Estimated GFLOPS/sec:            358.108
+--------------------------------------------------
+Running SharedTensorOperationBench benchmark #2
+Total time (s):                  3.00123
+Total reps:                      2094
+Total floating point operations: 1124207689728
+Estimated GFLOPS/sec:            374.582
+--------------------------------------------------
+Running SharedTensorOperationBench benchmark #3
+Total time (s):                  3.00141
+Total reps:                      2102
+Total floating point operations: 1128502657024
+Estimated GFLOPS/sec:            375.99
+--------------------------------------------------

@@ -79,6 +79,9 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
     m_dim_id_seq_M = -1;
     m_dim_id_seq_N = -1;
     m_dim_id_seq_K = -1;
+    m_dim_id_sha_M = -1;
+    m_dim_id_sha_N = -1;
+    m_num_parallel_loops = 0;
 
     /////////////////////////////////////////////////////////////////////
     // Read PRIM dimensions using dim types
@@ -95,7 +98,7 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
             {
                 m_dim_id_prim_N = i;
             }
-            else if ( m_dim_id_prim_K == -1 && m_dim_types[i] == dim_t::k)
+            else if (m_dim_id_prim_K == -1 && m_dim_types[i] == dim_t::k)
             {
                 m_dim_id_prim_K = i;
             }
@@ -116,6 +119,16 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
         m_id_first_primitive_loop = 0;
     }
 
+    it = std::find(exec_types.begin(), exec_types.end(), exec_t::seq);
+    if (it != exec_types.end())
+    {
+        m_id_first_seq_loop = std::distance(exec_types.begin(), it);
+    }
+    else
+    {
+        m_id_first_seq_loop = -1;
+    }
+
     /////////////////////////////////////////////////////////////////////
     // Read SEQ dimensions using dim types
     /////////////////////////////////////////////////////////////////////
@@ -134,6 +147,19 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
             else if (m_dim_types[i] == dim_t::k)
             {
                 m_dim_id_seq_K = i;
+            }
+        }
+        else if (m_exec_types[i] == exec_t::shared)
+        {
+            if (m_dim_types[i] == dim_t::m)
+            {
+                m_dim_id_sha_M = i;
+                m_num_parallel_loops++;
+            }
+            else if (m_dim_types[i] == dim_t::n)
+            {
+                m_dim_id_sha_N = i;
+                m_num_parallel_loops++;
             }
         }
     }
@@ -209,12 +235,25 @@ void mini_jit::TensorOperation::execute(void const *tensor_in0,
     auto ptr_in1 = static_cast<char const *>(tensor_in1);
     auto ptr_out = static_cast<char *>(tensor_out);
 
-    execute_iter(0,
-                 ptr_in0,
-                 ptr_in1,
-                 ptr_out,
-                 true,
-                 true);
+    if (m_num_parallel_loops == 0)
+    {
+        // No shared loops, execute sequentially
+        execute_iter(0,
+                     ptr_in0,
+                     ptr_in1,
+                     ptr_out,
+                     true,
+                     true);
+    }
+    else
+    {
+        // Shared loops, execute in parallel
+        execute_iter_parallel(ptr_in0,
+                              ptr_in1,
+                              ptr_out,
+                              true,
+                              true);
+    }
 }
 
 void mini_jit::TensorOperation::execute_iter(int64_t id_loop,
@@ -278,6 +317,104 @@ void mini_jit::TensorOperation::execute_iter(int64_t id_loop,
         }
     }
 }
+
+void mini_jit::TensorOperation::execute_iter_parallel(char const *ptr_in0,
+                                                      char const *ptr_in1,
+                                                      char *ptr_out,
+                                                      bool first_access,
+                                                      bool last_access)
+{
+    // int64_t l_size_parallel_loops = m_dim_id_sha_M > 0 ? m_dim_sizes [m_dim_id_sha_M] : m_dim_sizes[m_dim_id_sha_N];
+    int64_t size_sha_M = (m_dim_id_sha_M != -1) ? m_dim_sizes[m_dim_id_sha_M] : 1;
+    int64_t size_sha_N = (m_dim_id_sha_N != -1) ? m_dim_sizes[m_dim_id_sha_N] : 1;
+    int64_t total_threads = size_sha_M * size_sha_N;
+
+#pragma omp parallel for
+    for (int64_t l_it_all = 0; l_it_all < total_threads; l_it_all++) // l_size_parallel_loops; l_it_all++)
+    {
+        int64_t id_m = (m_dim_id_sha_M != -1) ? l_it_all / size_sha_N : 0;
+        int64_t id_n = (m_dim_id_sha_N != -1) ? l_it_all % size_sha_N : 0;
+
+        // int64_t l_it_remaining = l_it_all;
+
+        // for (int64_t l_id_loop = m_num_parallel_loops - 1; l_id_loop >= 0; l_id_loop--)
+        // {
+
+        //     // calculate loop index l_it for loop l_id_loop
+        //     int64_t l_it = l_it_remaining % m_dim_sizes[l_id_loop];
+        //     l_it_remaining = l_it_remaining / m_dim_sizes[l_id_loop];
+
+        //     // derive if this is first or last access to the output block
+
+        //     // update pointer with strides
+        // }
+        // // call non parallel loops or kernel
+
+        char const *sub_ptr_in0 = ptr_in0 + id_m * m_strides_in0[m_dim_id_sha_M] * dtype_size() + id_n * m_strides_in0[m_dim_id_sha_N] * dtype_size();
+        char const *sub_ptr_in1 = ptr_in1 + id_m * m_strides_in1[m_dim_id_sha_M] * dtype_size() + id_n * m_strides_in1[m_dim_id_sha_N] * dtype_size();
+        char *sub_ptr_out = ptr_out + id_m * m_strides_out[m_dim_id_sha_M] * dtype_size() + id_n * m_strides_out[m_dim_id_sha_N] * dtype_size();
+
+        execute_iter((m_id_first_seq_loop != -1) ? m_id_first_seq_loop : m_id_first_primitive_loop,
+                     sub_ptr_in0,
+                     sub_ptr_in1,
+                     sub_ptr_out,
+                     first_access,
+                     last_access);
+    }
+}
+
+// Funktioniert nur auf Haggis, nicht lokal
+// void mini_jit::TensorOperation::execute_iter_parallel(char const *ptr_in0,
+//                                                       char const *ptr_in1,
+//                                                       char *ptr_out,
+//                                                       bool first_access,
+//                                                       bool last_access)
+// {
+//     // Compute total number of iterations over shared loops
+//     int64_t l_size_parallel_loops = 1;
+//     for (auto current_loop_size : m_shared_loop_sizes)
+//     {
+//         l_size_parallel_loops *= current_loop_size;
+//     }
+
+// #pragma omp parallel for
+//     for (int64_t l_it_all = 0; l_it_all < l_size_parallel_loops; ++l_it_all)
+//     {
+//         // Compute N-dimensional shared loop indices
+//         int64_t remainder = l_it_all;
+//         std::vector<int64_t> loop_indices(m_shared_loop_ids.size());
+
+//         for (int64_t i = m_shared_loop_ids.size() - 1; i >= 0; --i)
+//         {
+//             loop_indices[i] = remainder % m_shared_loop_sizes[i];
+//             remainder /= m_shared_loop_sizes[i];
+//         }
+
+//         // Compute pointer offsets using strides and loop indices
+//         char const *sub_ptr_in0 = ptr_in0;
+//         char const *sub_ptr_in1 = ptr_in1;
+//         char *sub_ptr_out = ptr_out;
+
+//         int dtype_sz = dtype_size();
+//         for (size_t i = 0; i < m_shared_loop_ids.size(); ++i)
+//         {
+//             int64_t dim_id = m_shared_loop_ids[i];
+//             int64_t idx = loop_indices[i];
+
+//             sub_ptr_in0 += idx * m_strides_in0[dim_id] * dtype_sz;
+//             sub_ptr_in1 += idx * m_strides_in1[dim_id] * dtype_sz;
+//             sub_ptr_out += idx * m_strides_out[dim_id] * dtype_sz;
+//         }
+
+//         // Call remaining loops
+//         execute_iter((m_id_first_seq_loop != -1) ? m_id_first_seq_loop : m_id_first_primitive_loop,
+//                      sub_ptr_in0,
+//                      sub_ptr_in1,
+//                      sub_ptr_out,
+//                      first_access,
+//                      last_access);
+//     }
+// }
 
 void mini_jit::TensorOperation::execute_kernel_first_touch(char *ptr_out,
                                                            int64_t ldOut)
