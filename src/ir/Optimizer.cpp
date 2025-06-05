@@ -3,7 +3,8 @@
 #include <limits.h>
 
 void mini_jit::ir::Optimizer::optimize(std::vector<mini_jit::ir::Dimension> &dimensions,
-                                       int64_t thread_target)
+                                       int64_t thread_target,
+                                       int64_t max_kernel_size)
 {
     identifyPrimitives(dimensions);
 
@@ -18,7 +19,8 @@ void mini_jit::ir::Optimizer::optimize(std::vector<mini_jit::ir::Dimension> &dim
         throw std::invalid_argument("Optimizer: Expected 3 or 4 primitive dimensions, found " + std::to_string(prim_count) + ". Try setting all dimensions to seq or undefined.");
     }
 
-    splitDimensions(dimensions);
+    splitDimensions(dimensions,
+                    max_kernel_size);
 
     createSharedLoops(dimensions,
                       thread_target);
@@ -142,9 +144,9 @@ void mini_jit::ir::Optimizer::identifyPrimitives(std::vector<mini_jit::ir::Dimen
     }
 }
 
-void mini_jit::ir::Optimizer::splitDimensions(std::vector<mini_jit::ir::Dimension> &dimensions)
+void mini_jit::ir::Optimizer::splitDimensions(std::vector<mini_jit::ir::Dimension> &dimensions,
+                                              int64_t max_kernel_size)
 {
-    const int64_t l_max_size = 1024;
     // Primitive dimensions should be split if they are too large (> 1024)
     for (size_t i = 0; i < dimensions.size(); i++)
     {
@@ -153,7 +155,7 @@ void mini_jit::ir::Optimizer::splitDimensions(std::vector<mini_jit::ir::Dimensio
             int64_t l_size_seq = 0;
             int64_t l_size_prim = 0;
             findBestSplit(dimensions[i].size,
-                          l_max_size,
+                          max_kernel_size,
                           dimensions[i].type,
                           l_size_seq,
                           l_size_prim);
@@ -186,7 +188,7 @@ void mini_jit::ir::Optimizer::createSharedLoops(std::vector<mini_jit::ir::Dimens
     {
         if (dimensions[i].exec_type == exec_t::shared)
         {
-            // increase thread number for each shared dimension
+            // increase thread number for each existing shared dimension
             l_num_threads *= dimensions[i].size;
         }
     }
@@ -196,7 +198,7 @@ void mini_jit::ir::Optimizer::createSharedLoops(std::vector<mini_jit::ir::Dimens
         // no need to create more shared loops
         return;
     }
-
+    // Creation of new shared loops:
     for (size_t i = 0; i < dimensions.size(); i++)
     {
         // if the dimension can be set to shared and we did not reach the target number of threads yet
@@ -220,7 +222,7 @@ void mini_jit::ir::Optimizer::createSharedLoops(std::vector<mini_jit::ir::Dimens
 }
 
 void mini_jit::ir::Optimizer::findBestSplit(int64_t i_size,
-                                            int64_t i_max_size,
+                                            int64_t i_max_kernel_size,
                                             dim_t i_type,
                                             int64_t &o_size_0,
                                             int64_t &o_size_1)
@@ -237,14 +239,14 @@ void mini_jit::ir::Optimizer::findBestSplit(int64_t i_size,
         // multiples of (multiples of) 4 are efficient (LDP, STP)
         for (int64_t i = 16; i > 4; i -= 4)
         {
-            findLargestMultipleOfDivisor(i, i_size, i_max_size, o_size_0, o_size_1);
+            findLargestMultipleOfDivisor(i, i_size, i_max_kernel_size, o_size_0, o_size_1);
             if (o_size_0 > 1)
             {
                 return;
             }
         }
         // split by 2
-        findLargestMultipleOfDivisor(2, i_size, i_max_size, o_size_0, o_size_1);
+        findLargestMultipleOfDivisor(2, i_size, i_max_kernel_size, o_size_0, o_size_1);
         if (o_size_0 > 1)
         {
             return;
@@ -254,13 +256,13 @@ void mini_jit::ir::Optimizer::findBestSplit(int64_t i_size,
     else if (i_type == dim_t::n)
     {
         // split by 4
-        findLargestMultipleOfDivisor(4, i_size, i_max_size, o_size_0, o_size_1);
+        findLargestMultipleOfDivisor(4, i_size, i_max_kernel_size, o_size_0, o_size_1);
         if (o_size_0 > 1)
         {
             return;
         }
         // split by 2
-        findLargestMultipleOfDivisor(2, i_size, i_max_size, o_size_0, o_size_1);
+        findLargestMultipleOfDivisor(2, i_size, i_max_kernel_size, o_size_0, o_size_1);
         if (o_size_0 > 1)
         {
             return;
@@ -270,7 +272,7 @@ void mini_jit::ir::Optimizer::findBestSplit(int64_t i_size,
     else if (i_type == dim_t::k)
     {
         // split by 2
-        findLargestMultipleOfDivisor(2, i_size, i_max_size, o_size_0, o_size_1);
+        findLargestMultipleOfDivisor(2, i_size, i_max_kernel_size, o_size_0, o_size_1);
         if (o_size_0 > 1)
         {
             return;

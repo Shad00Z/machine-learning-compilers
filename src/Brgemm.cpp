@@ -25,9 +25,9 @@ mini_jit::error_t mini_jit::Brgemm::generate(uint32_t m,
         std::cout << ("M must be greater than 0") << std::endl;
         return error_t::wrong_dimension;
     }
-    else if (m >= 1025)
+    else if (m > 2048)
     {
-        std::cout << ("M must not greater than 1024") << std::endl;
+        std::cout << ("M must not be greater than 2048") << std::endl;
         return error_t::wrong_dimension;
     }
     else if (n <= 0)
@@ -35,9 +35,9 @@ mini_jit::error_t mini_jit::Brgemm::generate(uint32_t m,
         std::cout << ("N must be greater than 0") << std::endl;
         return error_t::wrong_dimension;
     }
-    else if (n >= 1025)
+    else if (n > 2048)
     {
-        std::cout << ("N must not be greater than 1024") << std::endl;
+        std::cout << ("N must not be greater than 2048") << std::endl;
         return error_t::wrong_dimension;
     }
     else if (k <= 0)
@@ -45,7 +45,7 @@ mini_jit::error_t mini_jit::Brgemm::generate(uint32_t m,
         std::cout << ("K must be greater than 0") << std::endl;
         return error_t::wrong_dimension;
     }
-    else if (k >= 2049)
+    else if (k > 2048)
     {
         std::cout << ("K must not be greater than 2048") << std::endl;
         return error_t::wrong_dimension;
@@ -55,9 +55,9 @@ mini_jit::error_t mini_jit::Brgemm::generate(uint32_t m,
         std::cout << ("BR_SIZE must greater than 0") << std::endl;
         return error_t::wrong_dimension;
     }
-    else if (br_size >= 1025)
+    else if (br_size > 2048)
     {
-        std::cout << ("BR_SIZE must not be greater than 1024") << std::endl;
+        std::cout << ("BR_SIZE must not be greater than 2048") << std::endl;
         return error_t::wrong_dimension;
     }
     else if (trans_a != 0 || trans_b != 0 || trans_c != 0)

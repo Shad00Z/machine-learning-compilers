@@ -22,8 +22,13 @@ TEST_CASE("Test Optimizer #1")
     std::vector<int64_t> strides_out = {25, 1, 40000, 1600, 0, 0};
 
     // convert config object to IR
-    mini_jit::ir::IRConverter::convertConfigToDimensions(
-        dim_types, exec_types, dim_sizes, strides_in0, strides_in1, strides_out, dimensions);
+    mini_jit::ir::IRConverter::convertConfigToDimensions(dim_types,
+                                                         exec_types,
+                                                         dim_sizes,
+                                                         strides_in0,
+                                                         strides_in1,
+                                                         strides_out,
+                                                         dimensions);
 
     std::cout << "Before optimization:" << std::endl;
     for (const auto &dim : dimensions)
@@ -37,7 +42,8 @@ TEST_CASE("Test Optimizer #1")
                   << std::endl;
     }
 
-    mini_jit::ir::Optimizer::optimize(dimensions, INT_MAX);
+    // Optimize with max INT_MAX threads (INT_MAX shared loop iterations) and max kernel size of 1024
+    mini_jit::ir::Optimizer::optimize(dimensions, INT_MAX, 1024);
 
     std::cout << "After optimization:" << std::endl;
     for (const auto &dim : dimensions)
@@ -65,8 +71,13 @@ TEST_CASE("Test Optimizer #2")
     std::vector<int64_t> strides_out = {1, 1600, 0};
 
     // convert config object to IR
-    mini_jit::ir::IRConverter::convertConfigToDimensions(
-        dim_types, exec_types, dim_sizes, strides_in0, strides_in1, strides_out, dimensions);
+    mini_jit::ir::IRConverter::convertConfigToDimensions(dim_types,
+                                                         exec_types,
+                                                         dim_sizes,
+                                                         strides_in0,
+                                                         strides_in1,
+                                                         strides_out,
+                                                         dimensions);
 
     std::cout << "Before optimization:" << std::endl;
     for (const auto &dim : dimensions)
@@ -80,7 +91,10 @@ TEST_CASE("Test Optimizer #2")
                   << std::endl;
     }
 
-    mini_jit::ir::Optimizer::optimize(dimensions, 5);
+    // Optimize with max 16 threads (16 shared loop iterations) and max kernel size of 512
+    mini_jit::ir::Optimizer::optimize(dimensions,
+                                      16,
+                                      512);
 
     std::cout << "After optimization:" << std::endl;
     for (const auto &dim : dimensions)
