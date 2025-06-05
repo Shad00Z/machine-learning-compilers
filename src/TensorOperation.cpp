@@ -111,6 +111,9 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
         }
     }
 
+    /////////////////////////////////////////////////////////////////////
+    // Find first PRIM and SEQ dimensions in exec types
+    /////////////////////////////////////////////////////////////////////
     auto it = std::find(exec_types.begin(), exec_types.end(), exec_t::prim);
     if (it != exec_types.end())
     {
@@ -131,6 +134,9 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
         m_id_first_seq_loop = -1;
     }
 
+    /////////////////////////////////////////////////////////////////////
+    // Find SHARED dimensions in exec types
+    /////////////////////////////////////////////////////////////////////
     for (size_t i = 0; i < m_exec_types.size(); ++i)
     {
         if (m_exec_types[i] == exec_t::shared)
@@ -346,7 +352,7 @@ void mini_jit::TensorOperation::execute_iter_parallel(char const *ptr_in0,
 #pragma omp parallel for
     for (int64_t l_it_all = 0; l_it_all < l_size_parallel_loops; ++l_it_all)
     {
-        // Compute N-dimensional shared loop indices
+        // Unflatten l_it_all into loop indices
         int64_t remainder = l_it_all;
         std::vector<int64_t> loop_indices(m_shared_loop_ids.size());
 

@@ -40,23 +40,24 @@ In our setup function, we check several things:
 
 .. literalinclude:: ../../src/TensorOperation.cpp
     :language: cpp
-    :lines: 75-87
+    :lines: 114-135
     :lineno-match:
-    :caption: find the first ``prim`` position in ``exec_types``
+    :caption: find the first ``prim`` and ``seq`` position in ``exec_types``
     :dedent:
 
-We need to know the position of the first prim, to determine when we need to call the main kernel instead of recursively going deeper into the loop structure. In other words, we traverse the first sequential loops and as soon as we reach the first primary dimension, we start calling the main kernel.
+We need to know the position of the first prim, to determine when we need to call the main kernel instead of recursively going deeper into the loop structure. 
+In other words, we traverse the first sequential loops and as soon as we reach the first primary dimension, we start calling the main kernel.
 
 .. literalinclude:: ../../src/TensorOperation.cpp
     :language: cpp
-    :lines: 90-121
+    :lines: 86-112
     :lineno-match:
     :caption: assign the size of the ``prim`` dimensions according to the order in ``dim_types``
     :dedent:
 
 .. literalinclude:: ../../src/TensorOperation.cpp
     :language: cpp
-    :lines: 123-143
+    :lines: 149-168
     :lineno-match:
     :caption: assign the size of the ``seq`` dimensions according to the order in ``dim_types``
     :dedent:
@@ -65,7 +66,7 @@ After checking all these things, we were then able to create our kernels accordi
 
 .. literalinclude:: ../../src/TensorOperation.cpp
     :language: cpp
-    :lines: 145-199
+    :lines: 184-238
     :lineno-match:
     :caption: construct kernels based on assigned member variables
     :dedent:
@@ -82,7 +83,7 @@ them to our ``execute_iter`` function.
 
 .. literalinclude:: ../../src/TensorOperation.cpp
     :language: cpp
-    :lines: 208-222
+    :lines: 247-274
     :lineno-match:
     :caption: starting point: ``execute`` function
     :dedent:
@@ -92,7 +93,7 @@ Next, we update the pointers to the matrices accordingly.
 
 .. literalinclude:: ../../src/TensorOperation.cpp
     :language: cpp
-    :lines: 238-248
+    :lines: 291-301
     :lineno-match:
     :caption: calculate if it is the first or last access in our output matrix and update pointers
     :dedent:
@@ -101,7 +102,7 @@ In the following step, we use our ``execute_iter`` function to recursively call 
 
 .. literalinclude:: ../../src/TensorOperation.cpp
     :language: cpp
-    :lines: 250-259
+    :lines: 303-312
     :lineno-match:
     :caption: recursive call to ``execute_iter``
     :dedent:
@@ -110,10 +111,12 @@ If we have no further recursive call, we can execute the kernels.
 
 .. literalinclude:: ../../src/TensorOperation.cpp
     :language: cpp
-    :lines: 260-282
+    :lines: 313-335
     :lineno-match:
     :caption: execute the kernels
     :dedent:
+
+.. _5.3 Sequential Benchmarking:
 
 *******************************
 5.3 Performance Benchmarking
@@ -206,8 +209,103 @@ When benchmarking our configurations we achieved the following ``GFLOP`` perform
 .. literalinclude:: ../../benchmarks/tensor_operation_benchmarks.txt
     :language: text
     :lineno-match:
-    :caption: ``GFLOP`` performance of our benchmarks
+    :caption: ``GFLOP`` performance of our benchmark configuration
     :dedent:
 
 The results show that we achieve between ``71-73 GFLOPs`` for all our executions. 
 These results are somewhat consistent with calling the kernels themselves independently.
+
+.. note::
+    Since the submission we made some minor changes to our implementation.
+    First, we fixed some errors and were then able to use the strides that we were provided with.
+    Secondly, we decided to enhance our ``matmul_m_n_k`` implementation. 
+    Afterwards we able to calculate kernels of size ``16x4`` instead of ``8x4``.
+    This helped us increase the results from ``71-73 GFLOPs`` to around ``90-91 GFLOPs``.
+
+.. literalinclude:: ../../benchmarks/tensor_operation_benchmarks_2.txt
+    :language: text
+    :lineno-match:
+    :caption: ``GFLOP`` performance initial benchmark configuration with enhanced ``matmul`` kernel
+    :dedent:
+
+**********************************
+5.4 Shared Memory Parallelization
+**********************************
+
+To enable the execution of shared loops, we needed to make a few adjustments to our ``setup`` code:
+
+.. literalinclude:: ../../src/TensorOperation.cpp
+    :language: cpp
+    :lines: 137-147
+    :lineno-match:
+    :caption: gather shared loop id's and dimension sizes
+    :dedent:
+
+.. literalinclude:: ../../src/TensorOperation.cpp
+    :language: cpp
+    :lines: 169-181
+    :lineno-match:
+    :caption: assign the size of the ``shared`` dimensions according to the order in ``dim_types``
+    :dedent:
+
+In our execute function we would just needed to check if our ``m_num_parallel_loops`` variable would be greater 
+than zero. If this was the case we would execute our ``execute_iter_parallel`` function:
+
+.. literalinclude:: ../../src/TensorOperation.cpp
+    :language: cpp
+    :lines: 345-350
+    :lineno-match:
+    :caption: multiply ``shared`` loop sizes to get total number of iterations
+    :dedent:
+
+The idea is to get a flat iteration space that can be used to parallelize over.
+
+.. literalinclude:: ../../src/TensorOperation.cpp
+    :language: cpp
+    :lines: 352-363
+    :lineno-match:
+    :caption: multiply ``shared`` loop sizes to get total number of iterations
+    :dedent:
+
+We 'unflatten' the OpenMP iteration index ``l_it_all`` into a set of loop indices, one for each shared loop dimension. 
+These indices are then used to compute the offsets for the ``in0``, ``in1``, and ``out`` tensors: 
+
+.. literalinclude:: ../../src/TensorOperation.cpp
+    :language: cpp
+    :lines: 365-379
+    :lineno-match:
+    :caption: calculate the tensor ``offsets``
+    :dedent:
+
+Here we are calculating the offset for the current thread. 
+Every shared loop contributes to the calculation with its corresponding stride. 
+
+Lastly, we call our ``execute_iter`` function. 
+Depending on whether we have a ``seq`` dimension, we need to be careful, which id we pass to the function:
+
+.. literalinclude:: ../../src/TensorOperation.cpp
+    :language: cpp
+    :lines: 381-387
+    :lineno-match:
+    :caption: call remaining loops with ``execute_iter``
+    :dedent:
+
+To verify the correctness of our implementations, we were also testing our implementation:
+
+.. literalinclude:: ../../src/TensorOperation.test.cpp
+    :language: cpp
+    :lines: 240-257
+    :lineno-match:
+    :caption: test function for ``shared`` dimensions
+    :dedent:
+
+And we were also executing the benchmark configurations from the :ref:`sequential execution<5.3 Sequential Benchmarking>` task.
+We were executing our benchmarks using ``OMP_NUM_THREADS=4``:
+
+.. literalinclude:: ../../benchmarks/shared_tensor_operation_benchmarks.txt
+    :language: text
+    :lineno-match:
+    :caption: ``GFLOP`` performance for ``4 shared`` loop execution
+    :dedent:
+
+With the parallelization we achieve about ``360 - 390 GFLOPs``. 
