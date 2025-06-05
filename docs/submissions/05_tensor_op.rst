@@ -290,16 +290,7 @@ Depending on whether we have a ``seq`` dimension, we need to be careful, which i
     :caption: call remaining loops with ``execute_iter``
     :dedent:
 
-To verify the correctness of our implementations, we were also testing our implementation:
-
-.. literalinclude:: ../../src/TensorOperation.test.cpp
-    :language: cpp
-    :lines: 240-257
-    :lineno-match:
-    :caption: test function for ``shared`` dimensions
-    :dedent:
-
-And we were also executing the benchmark configurations from the :ref:`sequential execution<5.3 Sequential Benchmarking>` task.
+We were also executing the benchmark configurations from the :ref:`sequential execution<5.3 Sequential Benchmarking>` task.
 We were executing our benchmarks using ``OMP_NUM_THREADS=4``:
 
 .. literalinclude:: ../../benchmarks/shared_tensor_operation_benchmarks.txt
