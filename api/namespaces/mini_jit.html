@@ -146,6 +146,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation5setupE7dtype_t7ptype_t7ptype_t7ptype_tNSt4spanIK5dim_tEENSt4spanIK6exec_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEE"><code class="docutils literal notranslate"><span class="pre">setup()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation7executeEPKvPKvPv"><code class="docutils literal notranslate"><span class="pre">execute()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation12execute_iterE7int64_tPKcPKcPcbb"><code class="docutils literal notranslate"><span class="pre">execute_iter()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation21execute_iter_parallelEPKcPKcPcbb"><code class="docutils literal notranslate"><span class="pre">execute_iter_parallel()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv4NK8mini_jit8mini_jit15TensorOperation10dtype_sizeEv"><code class="docutils literal notranslate"><span class="pre">dtype_size()</span></code></a></li>
 </ul>
 </li>
@@ -640,6 +641,23 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>id_loop</strong> – Dimension id of the loop which is executed. </p></li>
+<li><p><strong>ptr_in0</strong> – Pointer to the first input tensor’s data. </p></li>
+<li><p><strong>ptr_in1</strong> – Pointer to the second input tensor’s data (use nullptr if unary). </p></li>
+<li><p><strong>ptr_out</strong> – Pointer to the output tensor’s data. </p></li>
+<li><p><strong>first_access</strong> – True if first time accessing data of output tensor. </p></li>
+<li><p><strong>last_access</strong> – True if last time accessing data of output tensor. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit15TensorOperation21execute_iter_parallelEPKcPKcPcbb">
+<span id="_CPPv3N8mini_jit8mini_jit15TensorOperation21execute_iter_parallelEPKcPKcPcbb"></span><span id="_CPPv2N8mini_jit8mini_jit15TensorOperation21execute_iter_parallelEPKcPKcPcbb"></span><span id="mini_jit::mini_jit::TensorOperation::execute_iter_parallel__cCP.cCP.cP.b.b"></span><span class="target" id="classmini__jit_1_1TensorOperation_1a6dac990d66b46b6dbdbab780a82c4b0a"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">execute_iter_parallel</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ptr_in0</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ptr_in1</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ptr_out</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">first_access</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">last_access</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit8mini_jit15TensorOperation21execute_iter_parallelEPKcPKcPcbb" title="Link to this definition"></a><br /></dt>
+<dd><p>General-purpose loop implementation featuring first and last touch operations with parallelization.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
 <li><p><strong>ptr_in0</strong> – Pointer to the first input tensor’s data. </p></li>
 <li><p><strong>ptr_in1</strong> – Pointer to the second input tensor’s data (use nullptr if unary). </p></li>
 <li><p><strong>ptr_out</strong> – Pointer to the output tensor’s data. </p></li>

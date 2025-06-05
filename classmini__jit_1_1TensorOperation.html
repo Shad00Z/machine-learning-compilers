@@ -88,6 +88,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a276bc964af6dee58a2d0428a1d89cd8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa92a53140c7236964c8fd54586081dba" id="r_aa92a53140c7236964c8fd54586081dba"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmini__jit_1_1TensorOperation.html#aa92a53140c7236964c8fd54586081dba">execute_iter</a> (int64_t id_loop, char const *ptr_in0, char const *ptr_in1, char *ptr_out, bool first_access, bool last_access)</td></tr>
 <tr class="separator:aa92a53140c7236964c8fd54586081dba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6dac990d66b46b6dbdbab780a82c4b0a" id="r_a6dac990d66b46b6dbdbab780a82c4b0a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmini__jit_1_1TensorOperation.html#a6dac990d66b46b6dbdbab780a82c4b0a">execute_iter_parallel</a> (char const *ptr_in0, char const *ptr_in1, char *ptr_out, bool first_access, bool last_access)</td></tr>
+<tr class="separator:a6dac990d66b46b6dbdbab780a82c4b0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a181f7a662d3a3d368ca02f609d0700de" id="r_a181f7a662d3a3d368ca02f609d0700de"><td class="memItemLeft" align="right" valign="top"><a id="a181f7a662d3a3d368ca02f609d0700de" name="a181f7a662d3a3d368ca02f609d0700de"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>dtype_size</b> () const</td></tr>
 <tr class="separator:a181f7a662d3a3d368ca02f609d0700de"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -189,6 +191,63 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>dtype_size</b> () cons
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">id_loop</td><td>Dimension id of the loop which is executed. </td></tr>
+    <tr><td class="paramname">ptr_in0</td><td>Pointer to the first input tensor's data. </td></tr>
+    <tr><td class="paramname">ptr_in1</td><td>Pointer to the second input tensor's data (use nullptr if unary). </td></tr>
+    <tr><td class="paramname">ptr_out</td><td>Pointer to the output tensor's data. </td></tr>
+    <tr><td class="paramname">first_access</td><td>True if first time accessing data of output tensor. </td></tr>
+    <tr><td class="paramname">last_access</td><td>True if last time accessing data of output tensor. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a6dac990d66b46b6dbdbab780a82c4b0a" name="a6dac990d66b46b6dbdbab780a82c4b0a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6dac990d66b46b6dbdbab780a82c4b0a">&#9670;&#160;</a></span>execute_iter_parallel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void mini_jit::TensorOperation::execute_iter_parallel </td>
+          <td>(</td>
+          <td class="paramtype">char const *&#160;</td>
+          <td class="paramname"><em>ptr_in0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char const *&#160;</td>
+          <td class="paramname"><em>ptr_in1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>ptr_out</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>first_access</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>last_access</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>General-purpose loop implementation featuring first and last touch operations with parallelization.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
     <tr><td class="paramname">ptr_in0</td><td>Pointer to the first input tensor's data. </td></tr>
     <tr><td class="paramname">ptr_in1</td><td>Pointer to the second input tensor's data (use nullptr if unary). </td></tr>
     <tr><td class="paramname">ptr_out</td><td>Pointer to the output tensor's data. </td></tr>
