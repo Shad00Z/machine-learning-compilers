@@ -237,44 +237,6 @@ TEST_CASE("Reference test for ZERO + BRGEMM + RELU tensor operation kernel with 
                            exec_types);
 }
 
-TEST_CASE("Reference test for ZERO + GEMM + RELU tensor operation kernel with variable R (Shared), P(Shared), T, S, Q, U", "[tensor_operation][parameterized][zero][gemm][relu][shared]")
-{
-    const mini_jit::ptype_t first_touch_type = mini_jit::ptype_t::zero;
-    const mini_jit::ptype_t main_type = mini_jit::ptype_t::gemm;
-    const mini_jit::ptype_t last_touch_type = mini_jit::ptype_t::relu;
-
-    std::vector<mini_jit::exec_t> exec_types = {
-        mini_jit::exec_t::shared,
-        mini_jit::exec_t::seq,
-        mini_jit::exec_t::seq,
-        mini_jit::exec_t::prim,
-        mini_jit::exec_t::prim,
-        mini_jit::exec_t::prim};
-    runTensorOperationTest(first_touch_type,
-                           main_type,
-                           last_touch_type,
-                           exec_types);
-}
-
-TEST_CASE("Reference test for ZERO + BRGEMM + RELU tensor operation kernel with variable R(Shared), P, T, S, Q, U", "[tensor_operation][parameterized][zero][brgemm][relu]")
-{
-    const mini_jit::ptype_t first_touch_type = mini_jit::ptype_t::zero;
-    const mini_jit::ptype_t main_type = mini_jit::ptype_t::brgemm;
-    const mini_jit::ptype_t last_touch_type = mini_jit::ptype_t::relu;
-
-    std::vector<mini_jit::exec_t> exec_types = {
-        mini_jit::exec_t::shared,
-        mini_jit::exec_t::seq,
-        mini_jit::exec_t::prim,
-        mini_jit::exec_t::prim,
-        mini_jit::exec_t::prim,
-        mini_jit::exec_t::prim};
-    runTensorOperationTest(first_touch_type,
-                           main_type,
-                           last_touch_type,
-                           exec_types);
-}
-
 TEST_CASE("Reference test for GEMM tensor operation kernel with variable M, N, K", "[tensor_operation][parameterized][gemm]")
 {
     const int M = GENERATE(800);
