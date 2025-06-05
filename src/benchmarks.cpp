@@ -101,7 +101,7 @@ void unary_benchmark(mini_jit::Benchmark &bench, std::ofstream &unary_bm, std::s
 int main(int argc, char *argv[])
 {
     // check console arguments
-    bool has_gemm = false, has_brgemm = false, has_matmul = false, has_unary = false, tensor_operations = false, shared_tensor_operations = false;
+    bool has_gemm = false, has_brgemm = false, has_matmul = false, has_unary = false, tensor_operations = false, shared_tensor_operations = false, opt_tensor_operations = false;
     for (int i = 1; i < argc; ++i)
     {
         if (strcmp(argv[i], "gemm") == 0)
@@ -116,6 +116,8 @@ int main(int argc, char *argv[])
             tensor_operations = true;
         else if (strcmp(argv[i], "top-shared") == 0)
             shared_tensor_operations = true;
+        else if (strcmp(argv[i], "top-opt") == 0)
+            opt_tensor_operations = true;
     }
 
     if (has_gemm)
@@ -379,6 +381,69 @@ int main(int argc, char *argv[])
         std::cout << "Running SharedTensorOperationBench benchmark #3" << std::endl;
         tensor_bench_3.run();
         result = tensor_bench_3.getResult();
+        top_bm << "Total time (s):                  " << result.elapsedSeconds << std::endl;
+        top_bm << "Total reps:                      " << result.numReps << std::endl;
+        top_bm << "Total floating point operations: " << result.totalOperations << std::endl;
+        top_bm << "Estimated GFLOPS/sec:            " << result.gflops << std::endl;
+        top_bm << "--------------------------------------------------" << std::endl;
+    }
+
+    if (opt_tensor_operations)
+    {
+        const double RUN_TIME = 3.0;
+        std::ofstream top_bm("benchmarks/optimized_tensor_operation_benchmarks.txt");
+
+        std::vector<mini_jit::dim_t> l_dims_1 = {mini_jit::dim_t::m, mini_jit::dim_t::n, mini_jit::dim_t::k, mini_jit::dim_t::m, mini_jit::dim_t::n, mini_jit::dim_t::k};
+        std::vector<mini_jit::exec_t> l_execs_1 = {mini_jit::exec_t::shared, mini_jit::exec_t::shared, mini_jit::exec_t::seq, mini_jit::exec_t::prim, mini_jit::exec_t::prim, mini_jit::exec_t::prim};
+        std::vector<int64_t> l_sizes_1 = {64, 64, 64, 25, 25, 25};
+        std::vector<int64_t> l_strides_in0_1 = {25, 0, 40000, 1, 0, 1600};
+        std::vector<int64_t> l_strides_in1_1 = {0, 40000, 25, 0, 1600, 1};
+        std::vector<int64_t> l_strides_out_1 = {25, 40000, 0, 1, 1600, 0};
+
+        mini_jit::benchmarks::TensorOperationBench tensor_bench_1(RUN_TIME,
+                                                                  mini_jit::dtype_t::fp32,
+                                                                  mini_jit::ptype_t::none,
+                                                                  mini_jit::ptype_t::gemm,
+                                                                  mini_jit::ptype_t::none,
+                                                                  l_dims_1,
+                                                                  l_execs_1,
+                                                                  l_sizes_1,
+                                                                  l_strides_in0_1,
+                                                                  l_strides_in1_1,
+                                                                  l_strides_out_1);
+
+        std::vector<mini_jit::dim_t> l_dims_2 = {mini_jit::dim_t::n, mini_jit::dim_t::m, mini_jit::dim_t::k, mini_jit::dim_t::m, mini_jit::dim_t::n, mini_jit::dim_t::k};
+        std::vector<mini_jit::exec_t> l_execs_2 = {mini_jit::exec_t::shared, mini_jit::exec_t::shared, mini_jit::exec_t::seq, mini_jit::exec_t::prim, mini_jit::exec_t::prim, mini_jit::exec_t::prim};
+        std::vector<int64_t> l_sizes_2 = {4, 4, 4, 400, 400, 400};
+        std::vector<int64_t> l_strides_in0_2 = {0, 400, 640000, 1, 0, 1600};
+        std::vector<int64_t> l_strides_in1_2 = {640000, 0, 400, 0, 1600, 1};
+        std::vector<int64_t> l_strides_out_2 = {640000, 400, 0, 1, 1600, 0};
+        mini_jit::benchmarks::TensorOperationBench tensor_bench_2(RUN_TIME,
+                                                                  mini_jit::dtype_t::fp32,
+                                                                  mini_jit::ptype_t::none,
+                                                                  mini_jit::ptype_t::gemm,
+                                                                  mini_jit::ptype_t::none,
+                                                                  l_dims_2,
+                                                                  l_execs_2,
+                                                                  l_sizes_2,
+                                                                  l_strides_in0_2,
+                                                                  l_strides_in1_2,
+                                                                  l_strides_out_2);
+
+        top_bm << "Running SharedTensorOperationBench benchmark #1" << std::endl;
+        std::cout << "Running SharedTensorOperationBench benchmark #1" << std::endl;
+        tensor_bench_1.run();
+        mini_jit::Benchmark::benchmark_result result = tensor_bench_1.getResult();
+        top_bm << "Total time (s):                  " << result.elapsedSeconds << std::endl;
+        top_bm << "Total reps:                      " << result.numReps << std::endl;
+        top_bm << "Total floating point operations: " << result.totalOperations << std::endl;
+        top_bm << "Estimated GFLOPS/sec:            " << result.gflops << std::endl;
+        top_bm << "--------------------------------------------------" << std::endl;
+
+        top_bm << "Running SharedTensorOperationBench benchmark #2" << std::endl;
+        std::cout << "Running SharedTensorOperationBench benchmark #2" << std::endl;
+        tensor_bench_2.run();
+        result = tensor_bench_2.getResult();
         top_bm << "Total time (s):                  " << result.elapsedSeconds << std::endl;
         top_bm << "Total reps:                      " << result.numReps << std::endl;
         top_bm << "Total floating point operations: " << result.totalOperations << std::endl;
