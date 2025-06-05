@@ -245,7 +245,7 @@ TEST_CASE("Reference test for ZERO + GEMM + RELU tensor operation kernel with va
 
     std::vector<mini_jit::exec_t> exec_types = {
         mini_jit::exec_t::shared,
-        mini_jit::exec_t::shared,
+        mini_jit::exec_t::seq,
         mini_jit::exec_t::seq,
         mini_jit::exec_t::prim,
         mini_jit::exec_t::prim,
