@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['zero_5feor_5fprimitive_5fbench_0',['zero_eor_primitive_bench',['../classmini__jit_1_1benchmarks_1_1Zero__eor__primitive__bench.html',1,'mini_jit::benchmarks::Zero_eor_primitive_bench'],['../classmini__jit_1_1benchmarks_1_1Zero__eor__primitive__bench.html#a8c3695f7fd510737496f106868939ce3',1,'mini_jit::benchmarks::Zero_eor_primitive_bench::Zero_eor_primitive_bench()']]],
-  ['zero_5fxzr_5fprimitive_5fbench_1',['zero_xzr_primitive_bench',['../classmini__jit_1_1benchmarks_1_1Zero__xzr__primitive__bench.html',1,'mini_jit::benchmarks::Zero_xzr_primitive_bench'],['../classmini__jit_1_1benchmarks_1_1Zero__xzr__primitive__bench.html#a4781c333ebcd8fc73a7f17bf25a08d9d',1,'mini_jit::benchmarks::Zero_xzr_primitive_bench::Zero_xzr_primitive_bench()']]]
+  ['tensoroperation_0',['TensorOperation',['../classmini__jit_1_1TensorOperation.html',1,'mini_jit']]],
+  ['tensoroperationbench_1',['tensoroperationbench',['../classmini__jit_1_1benchmarks_1_1TensorOperationBench.html',1,'mini_jit::benchmarks::TensorOperationBench'],['../classmini__jit_1_1benchmarks_1_1TensorOperationBench.html#ab31d715af778486422ac980a274a0934',1,'mini_jit::benchmarks::TensorOperationBench::TensorOperationBench()']]],
+  ['type_2',['type',['../structmini__jit_1_1ir_1_1Dimension.html#add70526b340466589e3a142f9cda467b',1,'mini_jit::ir::Dimension']]]
 ];

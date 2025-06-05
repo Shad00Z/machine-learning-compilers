@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['tensoroperationbench_0',['TensorOperationBench',['../classmini__jit_1_1benchmarks_1_1TensorOperationBench.html#ab31d715af778486422ac980a274a0934',1,'mini_jit::benchmarks::TensorOperationBench']]]
+  ['optimize_0',['optimize',['../classmini__jit_1_1ir_1_1Optimizer.html#a767d8333b2d14781978417d4d3663d6d',1,'mini_jit::ir::Optimizer']]],
+  ['optimizer_1',['Optimizer',['../classmini__jit_1_1ir_1_1Optimizer.html#af04059ad017da7366cf5ed392e70bf59',1,'mini_jit::ir::Optimizer']]]
 ];

@@ -68,6 +68,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit6exec_t3seqE"><code class="docutils literal notranslate"><span class="pre">seq</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit6exec_t4primE"><code class="docutils literal notranslate"><span class="pre">prim</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit6exec_t6sharedE"><code class="docutils literal notranslate"><span class="pre">shared</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit6exec_t9undefinedE"><code class="docutils literal notranslate"><span class="pre">undefined</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#_CPPv4N8mini_jit7ptype_tE"><code class="docutils literal notranslate"><span class="pre">ptype_t</span></code></a><ul>
@@ -102,6 +103,11 @@
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit7error_t15wrong_exec_typeE"><code class="docutils literal notranslate"><span class="pre">wrong_exec_type</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#_CPPv4N8mini_jit9to_stringE6exec_t"><code class="docutils literal notranslate"><span class="pre">to_string()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#_CPPv4N8mini_jit9to_stringE7ptype_t"><code class="docutils literal notranslate"><span class="pre">to_string()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#_CPPv4N8mini_jit9to_stringE5dim_t"><code class="docutils literal notranslate"><span class="pre">to_string()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#_CPPv4N8mini_jit9to_stringE7dtype_t"><code class="docutils literal notranslate"><span class="pre">to_string()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#_CPPv4N8mini_jit9to_stringE7error_t"><code class="docutils literal notranslate"><span class="pre">to_string()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit9BenchmarkE"><code class="docutils literal notranslate"><span class="pre">mini_jit::Benchmark</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit9BenchmarkD0Ev"><code class="docutils literal notranslate"><span class="pre">~Benchmark()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit8mini_jit9Benchmark3runEv"><code class="docutils literal notranslate"><span class="pre">run()</span></code></a></li>
@@ -162,6 +168,7 @@
 <li class="toctree-l1"><a class="reference internal" href="mini_jit_benchmarks.html">mini_jit::benchmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mini_jit_converters.html">mini_jit::converters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mini_jit_instructions.html">mini_jit::instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mini_jit_ir.html">mini_jit::ir</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mini_jit_kernels.html">mini_jit::kernels</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mini_jit_registers.html">mini_jit::registers</a></li>
 </ul>
@@ -210,6 +217,11 @@
 <dl class="cpp enumerator">
 <dt class="sig sig-object cpp" id="_CPPv4N8mini_jit6exec_t6sharedE">
 <span id="_CPPv3N8mini_jit6exec_t6sharedE"></span><span id="_CPPv2N8mini_jit6exec_t6sharedE"></span><span class="target" id="types_8h_1ab15f6e70b80d4fcb37c8fd04e87d1775a9e81e7b963c71363e2fb3eefcfecfc0e"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">shared</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit6exec_t6sharedE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit6exec_t9undefinedE">
+<span id="_CPPv3N8mini_jit6exec_t9undefinedE"></span><span id="_CPPv2N8mini_jit6exec_t9undefinedE"></span><span class="target" id="types_8h_1ab15f6e70b80d4fcb37c8fd04e87d1775a5e543256c480ac577d30f76f9120eb74"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">undefined</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit6exec_t9undefinedE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -341,6 +353,31 @@
 <dd></dd></dl>
 
 </dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit9to_stringE6exec_t">
+<span id="_CPPv3N8mini_jit9to_stringE6exec_t"></span><span id="_CPPv2N8mini_jit9to_stringE6exec_t"></span><span id="mini_jit::to_string__exec_t"></span><span class="target" id="types_8h_1a706c8193cb77e81b0317b42098e9228a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">to_string</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N8mini_jit6exec_tE" title="mini_jit::exec_t"><span class="n"><span class="pre">exec_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">e</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit9to_stringE6exec_t" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit9to_stringE7ptype_t">
+<span id="_CPPv3N8mini_jit9to_stringE7ptype_t"></span><span id="_CPPv2N8mini_jit9to_stringE7ptype_t"></span><span id="mini_jit::to_string__ptype_t"></span><span class="target" id="types_8h_1a8580c976ba078a7c6a83bac8e8964f6a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">to_string</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N8mini_jit7ptype_tE" title="mini_jit::ptype_t"><span class="n"><span class="pre">ptype_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">p</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit9to_stringE7ptype_t" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit9to_stringE5dim_t">
+<span id="_CPPv3N8mini_jit9to_stringE5dim_t"></span><span id="_CPPv2N8mini_jit9to_stringE5dim_t"></span><span id="mini_jit::to_string__dim_t"></span><span class="target" id="types_8h_1aa936145116f92e0da3d29c86b05dc88d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">to_string</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N8mini_jit5dim_tE" title="mini_jit::dim_t"><span class="n"><span class="pre">dim_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">d</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit9to_stringE5dim_t" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit9to_stringE7dtype_t">
+<span id="_CPPv3N8mini_jit9to_stringE7dtype_t"></span><span id="_CPPv2N8mini_jit9to_stringE7dtype_t"></span><span id="mini_jit::to_string__dtype_t"></span><span class="target" id="types_8h_1abd7d8b907395330c6e38c0ed120538cf"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">to_string</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N8mini_jit7dtype_tE" title="mini_jit::dtype_t"><span class="n"><span class="pre">dtype_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">d</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit9to_stringE7dtype_t" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit9to_stringE7error_t">
+<span id="_CPPv3N8mini_jit9to_stringE7error_t"></span><span id="_CPPv2N8mini_jit9to_stringE7error_t"></span><span id="mini_jit::to_string__error_t"></span><span class="target" id="types_8h_1a8d00fd259e896eeec8d87e333feac768"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">to_string</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N8mini_jit7error_tE" title="mini_jit::error_t"><span class="n"><span class="pre">error_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">e</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit9to_stringE7error_t" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
 
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N8mini_jit8mini_jit9BenchmarkE">

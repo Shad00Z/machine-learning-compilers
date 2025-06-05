@@ -1,5 +1,7 @@
 var searchData=
 [
-  ['identity_5fprimitive_5fbench_0',['identity_primitive_bench',['../classmini__jit_1_1benchmarks_1_1Identity__primitive__bench.html',1,'mini_jit::benchmarks::Identity_primitive_bench'],['../classmini__jit_1_1benchmarks_1_1Identity__primitive__bench.html#a498090d294a39d1aed325c6817e9e2bc',1,'mini_jit::benchmarks::Identity_primitive_bench::Identity_primitive_bench()']]],
-  ['identity_5ftrans_5fprimitive_5fbench_1',['identity_trans_primitive_bench',['../classmini__jit_1_1benchmarks_1_1Identity__trans__primitive__bench.html',1,'mini_jit::benchmarks::Identity_trans_primitive_bench'],['../classmini__jit_1_1benchmarks_1_1Identity__trans__primitive__bench.html#a59837e36b5097ac8cc6a86e560b2d0ac',1,'mini_jit::benchmarks::Identity_trans_primitive_bench::Identity_trans_primitive_bench()']]]
+  ['exec_5ftype_0',['exec_type',['../structmini__jit_1_1ir_1_1Dimension.html#ae2a891b22af5a20a6a3b93703772f969',1,'mini_jit::ir::Dimension']]],
+  ['execute_1',['execute',['../classmini__jit_1_1TensorOperation.html#a276bc964af6dee58a2d0428a1d89cd8a',1,'mini_jit::TensorOperation']]],
+  ['execute_5fiter_2',['execute_iter',['../classmini__jit_1_1TensorOperation.html#aa92a53140c7236964c8fd54586081dba',1,'mini_jit::TensorOperation']]],
+  ['execute_5fiter_5fparallel_3',['execute_iter_parallel',['../classmini__jit_1_1TensorOperation.html#a6dac990d66b46b6dbdbab780a82c4b0a',1,'mini_jit::TensorOperation']]]
 ];

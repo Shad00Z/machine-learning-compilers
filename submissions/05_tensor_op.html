@@ -64,6 +64,13 @@
 <li class="toctree-l2"><a class="reference internal" href="#recursive-loops-over-primitives">5.2 Recursive Loops over Primitives</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#performance-benchmarking">5.3 Performance Benchmarking</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#shared-memory-parallelization">5.4 Shared Memory Parallelization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#optimization-passes">5.5 Optimization Passes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#primitive-identification">5.5.1 Primitive Identification</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#splitting-dimensions">5.5.2 Splitting Dimensions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id1">5.5.3 Shared Memory Parallelization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#performance-benchmarks">5.5.6 Performance Benchmarks</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -73,6 +80,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../api/namespaces/mini_jit_benchmarks.html">mini_jit::benchmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api/namespaces/mini_jit_converters.html">mini_jit::converters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api/namespaces/mini_jit_instructions.html">mini_jit::instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/namespaces/mini_jit_ir.html">mini_jit::ir</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api/namespaces/mini_jit_kernels.html">mini_jit::kernels</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api/namespaces/mini_jit_registers.html">mini_jit::registers</a></li>
 </ul>
@@ -113,8 +121,8 @@ Our common entry point is our <code class="docutils literal notranslate"><span c
 parse a number of configuration parameters, from which the corresponding kernels and
 primitives are constructed at runtime.</p>
 <p>In our setup function, we check several things:</p>
-<div class="literal-block-wrapper docutils container" id="id1">
-<div class="code-block-caption"><span class="caption-text">error handling for dimensions and execution types</span><a class="headerlink" href="#id1" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">error handling for dimensions and execution types</span><a class="headerlink" href="#id2" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="linenos">15</span><span class="c1">/////////////////////////////////////////////////////////////////////</span>
 <span class="linenos">16</span><span class="c1">// Check the number of dimensions</span>
 <span class="linenos">17</span><span class="c1">/////////////////////////////////////////////////////////////////////</span>
@@ -138,8 +146,8 @@ primitives are constructed at runtime.</p>
 </pre></div>
 </div>
 </div>
-<div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text">assigning configuration parameters to member variables</span><a class="headerlink" href="#id2" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">assigning configuration parameters to member variables</span><a class="headerlink" href="#id3" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="linenos">36</span><span class="c1">/////////////////////////////////////////////////////////////////////</span>
 <span class="linenos">37</span><span class="c1">// Assign member variables</span>
 <span class="linenos">38</span><span class="c1">/////////////////////////////////////////////////////////////////////</span>
@@ -153,8 +161,8 @@ primitives are constructed at runtime.</p>
 </pre></div>
 </div>
 </div>
-<div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-text">check data type and assign correct first and last touch, and main primitive</span><a class="headerlink" href="#id3" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">check data type and assign correct first and last touch, and main primitive</span><a class="headerlink" href="#id4" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="linenos">47</span><span class="c1">/////////////////////////////////////////////////////////////////////</span>
 <span class="linenos">48</span><span class="c1">// Check allowed data type</span>
 <span class="linenos">49</span><span class="c1">/////////////////////////////////////////////////////////////////////</span>
@@ -185,8 +193,8 @@ primitives are constructed at runtime.</p>
 </pre></div>
 </div>
 </div>
-<div class="literal-block-wrapper docutils container" id="id4">
-<div class="code-block-caption"><span class="caption-text">find the first <code class="docutils literal notranslate"><span class="pre">prim</span></code> and <code class="docutils literal notranslate"><span class="pre">seq</span></code> position in <code class="docutils literal notranslate"><span class="pre">exec_types</span></code></span><a class="headerlink" href="#id4" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text">find the first <code class="docutils literal notranslate"><span class="pre">prim</span></code> and <code class="docutils literal notranslate"><span class="pre">seq</span></code> position in <code class="docutils literal notranslate"><span class="pre">exec_types</span></code></span><a class="headerlink" href="#id5" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="linenos">114</span><span class="c1">/////////////////////////////////////////////////////////////////////</span>
 <span class="linenos">115</span><span class="c1">// Find first PRIM and SEQ dimensions in exec types</span>
 <span class="linenos">116</span><span class="c1">/////////////////////////////////////////////////////////////////////</span>
@@ -214,8 +222,8 @@ primitives are constructed at runtime.</p>
 </div>
 <p>We need to know the position of the first prim, to determine when we need to call the main kernel instead of recursively going deeper into the loop structure.
 In other words, we traverse the first sequential loops and as soon as we reach the first primary dimension, we start calling the main kernel.</p>
-<div class="literal-block-wrapper docutils container" id="id5">
-<div class="code-block-caption"><span class="caption-text">assign the size of the <code class="docutils literal notranslate"><span class="pre">prim</span></code> dimensions according to the order in <code class="docutils literal notranslate"><span class="pre">dim_types</span></code></span><a class="headerlink" href="#id5" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text">assign the size of the <code class="docutils literal notranslate"><span class="pre">prim</span></code> dimensions according to the order in <code class="docutils literal notranslate"><span class="pre">dim_types</span></code></span><a class="headerlink" href="#id6" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 86</span><span class="c1">/////////////////////////////////////////////////////////////////////</span>
 <span class="linenos"> 87</span><span class="c1">// Read PRIM dimensions using dim types</span>
 <span class="linenos"> 88</span><span class="c1">/////////////////////////////////////////////////////////////////////</span>
@@ -246,8 +254,8 @@ In other words, we traverse the first sequential loops and as soon as we reach t
 </pre></div>
 </div>
 </div>
-<div class="literal-block-wrapper docutils container" id="id6">
-<div class="code-block-caption"><span class="caption-text">assign the size of the <code class="docutils literal notranslate"><span class="pre">seq</span></code> dimensions according to the order in <code class="docutils literal notranslate"><span class="pre">dim_types</span></code></span><a class="headerlink" href="#id6" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text">assign the size of the <code class="docutils literal notranslate"><span class="pre">seq</span></code> dimensions according to the order in <code class="docutils literal notranslate"><span class="pre">dim_types</span></code></span><a class="headerlink" href="#id7" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="linenos">149</span><span class="c1">/////////////////////////////////////////////////////////////////////</span>
 <span class="linenos">150</span><span class="c1">// Read SEQ dimensions using dim types</span>
 <span class="linenos">151</span><span class="c1">/////////////////////////////////////////////////////////////////////</span>
@@ -272,8 +280,8 @@ In other words, we traverse the first sequential loops and as soon as we reach t
 </div>
 </div>
 <p>After checking all these things, we were then able to create our kernels accordingly.</p>
-<div class="literal-block-wrapper docutils container" id="id7">
-<div class="code-block-caption"><span class="caption-text">construct kernels based on assigned member variables</span><a class="headerlink" href="#id7" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id8">
+<div class="code-block-caption"><span class="caption-text">construct kernels based on assigned member variables</span><a class="headerlink" href="#id8" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="linenos">184</span><span class="c1">/////////////////////////////////////////////////////////////////////</span>
 <span class="linenos">185</span><span class="c1">// Generate kernels</span>
 <span class="linenos">186</span><span class="c1">/////////////////////////////////////////////////////////////////////</span>
@@ -339,8 +347,8 @@ In other words, we traverse the first sequential loops and as soon as we reach t
 in order to combine our main primitive with our first and last touches.</p>
 <p>Our starting point is an <code class="docutils literal notranslate"><span class="pre">execute</span></code> function that takes the pointers to our matrices and passes
 them to our <code class="docutils literal notranslate"><span class="pre">execute_iter</span></code> function.</p>
-<div class="literal-block-wrapper docutils container" id="id8">
-<div class="code-block-caption"><span class="caption-text">starting point: <code class="docutils literal notranslate"><span class="pre">execute</span></code> function</span><a class="headerlink" href="#id8" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text">starting point: <code class="docutils literal notranslate"><span class="pre">execute</span></code> function</span><a class="headerlink" href="#id9" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="linenos">247</span><span class="kt">void</span><span class="w"> </span><span class="nf">mini_jit::TensorOperation::execute</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">*</span><span class="n">tensor_in0</span><span class="p">,</span>
 <span class="linenos">248</span><span class="w">                                        </span><span class="kt">void</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">*</span><span class="n">tensor_in1</span><span class="p">,</span>
 <span class="linenos">249</span><span class="w">                                        </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">tensor_out</span><span class="p">)</span>
@@ -374,8 +382,8 @@ them to our <code class="docutils literal notranslate"><span class="pre">execute
 </div>
 <p>The ‘real’ execution happens in the <code class="docutils literal notranslate"><span class="pre">execute_iter</span></code> function. We first check if the current iteration is the first or last access to a block in our output matrix.
 Next, we update the pointers to the matrices accordingly.</p>
-<div class="literal-block-wrapper docutils container" id="id9">
-<div class="code-block-caption"><span class="caption-text">calculate if it is the first or last access in our output matrix and update pointers</span><a class="headerlink" href="#id9" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id10">
+<div class="code-block-caption"><span class="caption-text">calculate if it is the first or last access in our output matrix and update pointers</span><a class="headerlink" href="#id10" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="linenos">291</span><span class="kt">bool</span><span class="w"> </span><span class="n">is_first</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">first_access</span><span class="p">;</span>
 <span class="linenos">292</span><span class="kt">bool</span><span class="w"> </span><span class="n">is_last</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">last_access</span><span class="p">;</span>
 <span class="linenos">293</span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">m_dim_types</span><span class="p">[</span><span class="n">id_loop</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">dim_t</span><span class="o">::</span><span class="n">k</span><span class="p">)</span>
@@ -391,8 +399,8 @@ Next, we update the pointers to the matrices accordingly.</p>
 </div>
 </div>
 <p>In the following step, we use our <code class="docutils literal notranslate"><span class="pre">execute_iter</span></code> function to recursively call the <code class="docutils literal notranslate"><span class="pre">execute_iter</span></code> function based on how many <code class="docutils literal notranslate"><span class="pre">seq</span></code> dimensions exist in our <code class="docutils literal notranslate"><span class="pre">exec_types</span></code>.</p>
-<div class="literal-block-wrapper docutils container" id="id10">
-<div class="code-block-caption"><span class="caption-text">recursive call to <code class="docutils literal notranslate"><span class="pre">execute_iter</span></code></span><a class="headerlink" href="#id10" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id11">
+<div class="code-block-caption"><span class="caption-text">recursive call to <code class="docutils literal notranslate"><span class="pre">execute_iter</span></code></span><a class="headerlink" href="#id11" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="linenos">303</span><span class="c1">// Recursive Call</span>
 <span class="linenos">304</span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">id_loop</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">m_id_first_primitive_loop</span><span class="p">)</span>
 <span class="linenos">305</span><span class="p">{</span>
@@ -407,8 +415,8 @@ Next, we update the pointers to the matrices accordingly.</p>
 </div>
 </div>
 <p>If we have no further recursive call, we can execute the kernels.</p>
-<div class="literal-block-wrapper docutils container" id="id11">
-<div class="code-block-caption"><span class="caption-text">execute the kernels</span><a class="headerlink" href="#id11" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id12">
+<div class="code-block-caption"><span class="caption-text">execute the kernels</span><a class="headerlink" href="#id12" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="linenos">313</span><span class="k">else</span>
 <span class="linenos">314</span><span class="p">{</span>
 <span class="linenos">315</span><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">is_first</span><span class="p">)</span>
@@ -441,8 +449,8 @@ Next, we update the pointers to the matrices accordingly.</p>
 <p>To test the performance of our at runtime constructed kernels and to see if everything works seamlessly together,
 we were performing some reference benchmarks.</p>
 <p>We were given a number of configuration parameters, that we should check:</p>
-<table class="docutils align-default" id="id12">
-<caption><span class="caption-text">Benchmark Configuration</span><a class="headerlink" href="#id12" title="Link to this table"></a></caption>
+<table class="docutils align-default" id="id13">
+<caption><span class="caption-text">Benchmark Configuration</span><a class="headerlink" href="#id13" title="Link to this table"></a></caption>
 <colgroup>
 <col style="width: 25.0%" />
 <col style="width: 25.0%" />
@@ -511,8 +519,8 @@ we were performing some reference benchmarks.</p>
 </table>
 <p>However, when benchmarking our implementation with these strides, we were running into memory leaks.
 For that reason, we decided to adjust the strides of the benchmarks slightly.</p>
-<table class="docutils align-default" id="id13">
-<caption><span class="caption-text">Our Benchmark Configuration (bold are changes)</span><a class="headerlink" href="#id13" title="Link to this table"></a></caption>
+<table class="docutils align-default" id="id14">
+<caption><span class="caption-text">Our Benchmark Configuration (bold are changes)</span><a class="headerlink" href="#id14" title="Link to this table"></a></caption>
 <colgroup>
 <col style="width: 25.0%" />
 <col style="width: 25.0%" />
@@ -550,8 +558,8 @@ For that reason, we decided to adjust the strides of the benchmarks slightly.</p
 </tbody>
 </table>
 <p>When benchmarking our configurations we achieved the following <code class="docutils literal notranslate"><span class="pre">GFLOP</span></code> performance:</p>
-<div class="literal-block-wrapper docutils container" id="id14">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">GFLOP</span></code> performance of our benchmark configuration</span><a class="headerlink" href="#id14" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id15">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">GFLOP</span></code> performance of our benchmark configuration</span><a class="headerlink" href="#id15" title="Link to this code"></a></div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span>Running TensorOperationBench benchmark #1
 <span class="linenos"> 2</span>Total time (s):                  3.0052
 <span class="linenos"> 3</span>Total reps:                      398
@@ -583,8 +591,8 @@ Secondly, we decided to enhance our <code class="docutils literal notranslate"><
 Afterwards we able to calculate kernels of size <code class="docutils literal notranslate"><span class="pre">16x4</span></code> instead of <code class="docutils literal notranslate"><span class="pre">8x4</span></code>.
 This helped us increase the results from <code class="docutils literal notranslate"><span class="pre">71-73</span> <span class="pre">GFLOPs</span></code> to around <code class="docutils literal notranslate"><span class="pre">90-91</span> <span class="pre">GFLOPs</span></code>.</p>
 </div>
-<div class="literal-block-wrapper docutils container" id="id15">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">GFLOP</span></code> performance initial benchmark configuration with enhanced <code class="docutils literal notranslate"><span class="pre">matmul</span></code> kernel</span><a class="headerlink" href="#id15" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id16">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">GFLOP</span></code> performance initial benchmark configuration with enhanced <code class="docutils literal notranslate"><span class="pre">matmul</span></code> kernel</span><a class="headerlink" href="#id16" title="Link to this code"></a></div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span>Running TensorOperationBench benchmark #1
 <span class="linenos"> 2</span>Total time (s):                  3.00343
 <span class="linenos"> 3</span>Total reps:                      510
@@ -610,8 +618,8 @@ This helped us increase the results from <code class="docutils literal notransla
 <section id="shared-memory-parallelization">
 <h2>5.4 Shared Memory Parallelization<a class="headerlink" href="#shared-memory-parallelization" title="Link to this heading"></a></h2>
 <p>To enable the execution of shared loops, we needed to make a few adjustments to our <code class="docutils literal notranslate"><span class="pre">setup</span></code> code:</p>
-<div class="literal-block-wrapper docutils container" id="id16">
-<div class="code-block-caption"><span class="caption-text">gather shared loop id’s and dimension sizes</span><a class="headerlink" href="#id16" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id17">
+<div class="code-block-caption"><span class="caption-text">gather shared loop id’s and dimension sizes</span><a class="headerlink" href="#id17" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="linenos">137</span><span class="c1">/////////////////////////////////////////////////////////////////////</span>
 <span class="linenos">138</span><span class="c1">// Find SHARED dimensions in exec types</span>
 <span class="linenos">139</span><span class="c1">/////////////////////////////////////////////////////////////////////</span>
@@ -626,8 +634,8 @@ This helped us increase the results from <code class="docutils literal notransla
 </pre></div>
 </div>
 </div>
-<div class="literal-block-wrapper docutils container" id="id17">
-<div class="code-block-caption"><span class="caption-text">assign the size of the <code class="docutils literal notranslate"><span class="pre">shared</span></code> dimensions according to the order in <code class="docutils literal notranslate"><span class="pre">dim_types</span></code></span><a class="headerlink" href="#id17" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id18">
+<div class="code-block-caption"><span class="caption-text">assign the size of the <code class="docutils literal notranslate"><span class="pre">shared</span></code> dimensions according to the order in <code class="docutils literal notranslate"><span class="pre">dim_types</span></code></span><a class="headerlink" href="#id18" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="linenos">169</span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">m_exec_types</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">exec_t</span><span class="o">::</span><span class="n">shared</span><span class="p">)</span>
 <span class="linenos">170</span><span class="p">{</span>
 <span class="linenos">171</span><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">m_dim_types</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">dim_t</span><span class="o">::</span><span class="n">m</span><span class="p">)</span>
@@ -646,8 +654,8 @@ This helped us increase the results from <code class="docutils literal notransla
 </div>
 <p>In our execute function we would just needed to check if our <code class="docutils literal notranslate"><span class="pre">m_num_parallel_loops</span></code> variable would be greater
 than zero. If this was the case we would execute our <code class="docutils literal notranslate"><span class="pre">execute_iter_parallel</span></code> function:</p>
-<div class="literal-block-wrapper docutils container" id="id18">
-<div class="code-block-caption"><span class="caption-text">multiply <code class="docutils literal notranslate"><span class="pre">shared</span></code> loop sizes to get total number of iterations</span><a class="headerlink" href="#id18" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id19">
+<div class="code-block-caption"><span class="caption-text">multiply <code class="docutils literal notranslate"><span class="pre">shared</span></code> loop sizes to get total number of iterations</span><a class="headerlink" href="#id19" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="linenos">345</span><span class="c1">// Compute total number of iterations over shared loops</span>
 <span class="linenos">346</span><span class="kt">int64_t</span><span class="w"> </span><span class="n">l_size_parallel_loops</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
 <span class="linenos">347</span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">auto</span><span class="w"> </span><span class="n">current_loop_size</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">m_shared_loop_sizes</span><span class="p">)</span>
@@ -658,8 +666,8 @@ than zero. If this was the case we would execute our <code class="docutils liter
 </div>
 </div>
 <p>The idea is to get a flat iteration space that can be used to parallelize over.</p>
-<div class="literal-block-wrapper docutils container" id="id19">
-<div class="code-block-caption"><span class="caption-text">multiply <code class="docutils literal notranslate"><span class="pre">shared</span></code> loop sizes to get total number of iterations</span><a class="headerlink" href="#id19" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id20">
+<div class="code-block-caption"><span class="caption-text">multiply <code class="docutils literal notranslate"><span class="pre">shared</span></code> loop sizes to get total number of iterations</span><a class="headerlink" href="#id20" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="linenos">352</span><span class="cp">#pragma omp parallel for</span>
 <span class="linenos">353</span><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int64_t</span><span class="w"> </span><span class="n">l_it_all</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">l_it_all</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">l_size_parallel_loops</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">l_it_all</span><span class="p">)</span>
 <span class="linenos">354</span><span class="w">    </span><span class="p">{</span>
@@ -677,8 +685,8 @@ than zero. If this was the case we would execute our <code class="docutils liter
 </div>
 <p>We ‘unflatten’ the OpenMP iteration index <code class="docutils literal notranslate"><span class="pre">l_it_all</span></code> into a set of loop indices, one for each shared loop dimension.
 These indices are then used to compute the offsets for the <code class="docutils literal notranslate"><span class="pre">in0</span></code>, <code class="docutils literal notranslate"><span class="pre">in1</span></code>, and <code class="docutils literal notranslate"><span class="pre">out</span></code> tensors:</p>
-<div class="literal-block-wrapper docutils container" id="id20">
-<div class="code-block-caption"><span class="caption-text">calculate the tensor <code class="docutils literal notranslate"><span class="pre">offsets</span></code></span><a class="headerlink" href="#id20" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id21">
+<div class="code-block-caption"><span class="caption-text">calculate the tensor <code class="docutils literal notranslate"><span class="pre">offsets</span></code></span><a class="headerlink" href="#id21" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="linenos">365</span><span class="c1">// Compute pointer offsets using strides and loop indices</span>
 <span class="linenos">366</span><span class="kt">char</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">*</span><span class="n">sub_ptr_in0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ptr_in0</span><span class="p">;</span>
 <span class="linenos">367</span><span class="kt">char</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">*</span><span class="n">sub_ptr_in1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ptr_in1</span><span class="p">;</span>
@@ -701,8 +709,8 @@ These indices are then used to compute the offsets for the <code class="docutils
 Every shared loop contributes to the calculation with its corresponding stride.</p>
 <p>Lastly, we call our <code class="docutils literal notranslate"><span class="pre">execute_iter</span></code> function.
 Depending on whether we have a <code class="docutils literal notranslate"><span class="pre">seq</span></code> dimension, we need to be careful, which id we pass to the function:</p>
-<div class="literal-block-wrapper docutils container" id="id21">
-<div class="code-block-caption"><span class="caption-text">call remaining loops with <code class="docutils literal notranslate"><span class="pre">execute_iter</span></code></span><a class="headerlink" href="#id21" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id22">
+<div class="code-block-caption"><span class="caption-text">call remaining loops with <code class="docutils literal notranslate"><span class="pre">execute_iter</span></code></span><a class="headerlink" href="#id22" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="linenos">381</span><span class="c1">// Call remaining loops</span>
 <span class="linenos">382</span><span class="n">execute_iter</span><span class="p">((</span><span class="n">m_id_first_seq_loop</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">-1</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">m_id_first_seq_loop</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">m_id_first_primitive_loop</span><span class="p">,</span>
 <span class="linenos">383</span><span class="w">             </span><span class="n">sub_ptr_in0</span><span class="p">,</span>
@@ -715,8 +723,8 @@ Depending on whether we have a <code class="docutils literal notranslate"><span 
 </div>
 <p>We were also executing the benchmark configurations from the <a class="reference internal" href="#sequential-benchmarking"><span class="std std-ref">sequential execution</span></a> task.
 We were executing our benchmarks using <code class="docutils literal notranslate"><span class="pre">OMP_NUM_THREADS=4</span></code>:</p>
-<div class="literal-block-wrapper docutils container" id="id22">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">GFLOP</span></code> performance for <code class="docutils literal notranslate"><span class="pre">4</span> <span class="pre">shared</span></code> loop execution</span><a class="headerlink" href="#id22" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id23">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">GFLOP</span></code> performance for <code class="docutils literal notranslate"><span class="pre">4</span> <span class="pre">shared</span></code> loop execution</span><a class="headerlink" href="#id23" title="Link to this code"></a></div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span>Running SharedTensorOperationBench benchmark #1
 <span class="linenos"> 2</span>Total time (s):                  3.00107
 <span class="linenos"> 3</span>Total reps:                      1993
@@ -739,6 +747,292 @@ We were executing our benchmarks using <code class="docutils literal notranslate
 </div>
 </div>
 <p>With the parallelization we achieve about <code class="docutils literal notranslate"><span class="pre">360</span> <span class="pre">-</span> <span class="pre">390</span> <span class="pre">GFLOPs</span></code>.</p>
+</section>
+<section id="optimization-passes">
+<h2>5.5 Optimization Passes<a class="headerlink" href="#optimization-passes" title="Link to this heading"></a></h2>
+<p>Our approach to enhancing the performance of the tensor operations was to use a vector of <code class="docutils literal notranslate"><span class="pre">struct</span></code>’s for each dimension that we have got:</p>
+<div class="literal-block-wrapper docutils container" id="id24">
+<div class="code-block-caption"><span class="caption-text">call remaining loops with <code class="docutils literal notranslate"><span class="pre">execute_iter</span></code></span><a class="headerlink" href="#id24" title="Link to this code"></a></div>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="linenos">17</span><span class="k">struct</span><span class="w"> </span><span class="nc">Dimension</span>
+<span class="linenos">18</span><span class="p">{</span>
+<span class="linenos">19</span><span class="w">    </span><span class="c1">//! Type of the dimension (M, N, K)</span>
+<span class="linenos">20</span><span class="w">    </span><span class="n">dim_t</span><span class="w"> </span><span class="n">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dim_t</span><span class="o">::</span><span class="n">undefined</span><span class="p">;</span>
+<span class="linenos">21</span><span class="w">    </span><span class="c1">//! Execution type (Prim, Seq, Shared, ...)</span>
+<span class="linenos">22</span><span class="w">    </span><span class="n">exec_t</span><span class="w"> </span><span class="n">exec_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">exec_t</span><span class="o">::</span><span class="n">undefined</span><span class="p">;</span>
+<span class="linenos">23</span><span class="w">    </span><span class="c1">//! Dimension size</span>
+<span class="linenos">24</span><span class="w">    </span><span class="kt">int64_t</span><span class="w"> </span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="linenos">25</span><span class="w">    </span><span class="c1">//! Stride in the first input tensor</span>
+<span class="linenos">26</span><span class="w">    </span><span class="kt">int64_t</span><span class="w"> </span><span class="n">stride_in0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="linenos">27</span><span class="w">    </span><span class="c1">//! Stride in the second input tensor</span>
+<span class="linenos">28</span><span class="w">    </span><span class="kt">int64_t</span><span class="w"> </span><span class="n">stride_in1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="linenos">29</span><span class="w">    </span><span class="c1">//! Stride in the output tensor</span>
+<span class="linenos">30</span><span class="w">    </span><span class="kt">int64_t</span><span class="w"> </span><span class="n">stride_out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="linenos">31</span>
+<span class="linenos">32</span><span class="w">    </span><span class="cm">/**</span>
+<span class="linenos">33</span><span class="cm">     * @brief Construct a new Dimension object.</span>
+<span class="linenos">34</span><span class="cm">     *</span>
+<span class="linenos">35</span><span class="cm">     * @param type Type of the dimension (M, N, K).</span>
+<span class="linenos">36</span><span class="cm">     * @param exec_type Execution type (Prim, Seq, Shared, ...).</span>
+<span class="linenos">37</span><span class="cm">     * @param size Size of the dimension.</span>
+<span class="linenos">38</span><span class="cm">     * @param stride_in0 Stride in the first input tensor.</span>
+<span class="linenos">39</span><span class="cm">     * @param stride_in1 Stride in the second input tensor.</span>
+<span class="linenos">40</span><span class="cm">     * @param stride_out Stride in the output tensor.</span>
+<span class="linenos">41</span><span class="cm">     */</span>
+<span class="linenos">42</span><span class="w">    </span><span class="n">Dimension</span><span class="p">(</span><span class="n">dim_t</span><span class="w"> </span><span class="n">type</span><span class="p">,</span>
+<span class="linenos">43</span><span class="w">              </span><span class="n">exec_t</span><span class="w"> </span><span class="n">exec_type</span><span class="p">,</span>
+<span class="linenos">44</span><span class="w">              </span><span class="kt">int64_t</span><span class="w"> </span><span class="n">size</span><span class="p">,</span>
+<span class="linenos">45</span><span class="w">              </span><span class="kt">int64_t</span><span class="w"> </span><span class="n">stride_in0</span><span class="p">,</span>
+<span class="linenos">46</span><span class="w">              </span><span class="kt">int64_t</span><span class="w"> </span><span class="n">stride_in1</span><span class="p">,</span>
+<span class="linenos">47</span><span class="w">              </span><span class="kt">int64_t</span><span class="w"> </span><span class="n">stride_out</span><span class="p">)</span>
+<span class="linenos">48</span><span class="w">        </span><span class="o">:</span><span class="w"> </span><span class="n">type</span><span class="p">(</span><span class="n">type</span><span class="p">),</span>
+<span class="linenos">49</span><span class="w">          </span><span class="n">exec_type</span><span class="p">(</span><span class="n">exec_type</span><span class="p">),</span>
+<span class="linenos">50</span><span class="w">          </span><span class="n">size</span><span class="p">(</span><span class="n">size</span><span class="p">),</span>
+<span class="linenos">51</span><span class="w">          </span><span class="n">stride_in0</span><span class="p">(</span><span class="n">stride_in0</span><span class="p">),</span>
+<span class="linenos">52</span><span class="w">          </span><span class="n">stride_in1</span><span class="p">(</span><span class="n">stride_in1</span><span class="p">),</span>
+<span class="linenos">53</span><span class="w">          </span><span class="n">stride_out</span><span class="p">(</span><span class="n">stride_out</span><span class="p">)</span>
+<span class="linenos">54</span><span class="w">    </span><span class="p">{</span>
+<span class="linenos">55</span><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+<span class="linenos">56</span><span class="w">        </span><span class="p">{</span>
+<span class="linenos">57</span><span class="w">            </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">invalid_argument</span><span class="p">(</span><span class="s">&quot;Dimension size needs to be greater than 0&quot;</span><span class="p">);</span>
+<span class="linenos">58</span><span class="w">        </span><span class="p">}</span>
+<span class="linenos">59</span><span class="w">    </span><span class="p">}</span>
+<span class="linenos">60</span><span class="p">};</span>
+</pre></div>
+</div>
+</div>
+<p>This <code class="docutils literal notranslate"><span class="pre">struct</span></code> is used to store all information about a dimension.</p>
+<p>After setting this up, we could create our optimization passes.</p>
+<section id="primitive-identification">
+<h3>5.5.1 Primitive Identification<a class="headerlink" href="#primitive-identification" title="Link to this heading"></a></h3>
+<p>The first optimization that we performed was to find primitive dimensions.
+This optimization would be useful, for cases, where we were given only sequential loops.
+Our approach to this optimization was the following:</p>
+<div class="literal-block-wrapper docutils container" id="id25">
+<div class="code-block-caption"><span class="caption-text">finding the <code class="docutils literal notranslate"><span class="pre">K2</span> <span class="pre">prim</span></code> dimension for the <code class="docutils literal notranslate"><span class="pre">BRGEMM</span></code> case</span><a class="headerlink" href="#id25" title="Link to this code"></a></div>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="linenos">33</span><span class="c1">/////////////////////////////////////////////////////////////////</span>
+<span class="linenos">34</span><span class="c1">// FIND PRIM BR (second K)</span>
+<span class="linenos">35</span><span class="c1">/////////////////////////////////////////////////////////////////</span>
+<span class="linenos">36</span><span class="c1">// req: no unit stride in in1, stride_out has to be 0</span>
+<span class="linenos">37</span><span class="k">auto</span><span class="w"> </span><span class="n">l_dim_BR_it</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">find_if</span><span class="p">(</span><span class="n">dimensions</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">dimensions</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span>
+<span class="linenos">38</span><span class="w">                                </span><span class="p">[](</span><span class="k">const</span><span class="w"> </span><span class="n">mini_jit</span><span class="o">::</span><span class="n">ir</span><span class="o">::</span><span class="n">Dimension</span><span class="w"> </span><span class="o">&amp;</span><span class="n">dim</span><span class="p">)</span>
+<span class="linenos">39</span><span class="w">                                </span><span class="p">{</span>
+<span class="linenos">40</span><span class="w">                                    </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="n">dim</span><span class="p">.</span><span class="n">type</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">dim_t</span><span class="o">::</span><span class="n">k</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">dim</span><span class="p">.</span><span class="n">type</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">dim_t</span><span class="o">::</span><span class="n">undefined</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<span class="linenos">41</span><span class="w">                                           </span><span class="n">dim</span><span class="p">.</span><span class="n">stride_in1</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<span class="linenos">42</span><span class="w">                                           </span><span class="n">dim</span><span class="p">.</span><span class="n">stride_out</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="linenos">43</span><span class="w">                                </span><span class="p">});</span>
+<span class="linenos">44</span>
+<span class="linenos">45</span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">l_dim_BR_it</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">dimensions</span><span class="p">.</span><span class="n">end</span><span class="p">())</span>
+<span class="linenos">46</span><span class="p">{</span>
+<span class="linenos">47</span><span class="w">    </span><span class="c1">// set dimension data</span>
+<span class="linenos">48</span><span class="w">    </span><span class="n">l_dim_BR_it</span><span class="o">-&gt;</span><span class="n">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dim_t</span><span class="o">::</span><span class="n">k</span><span class="p">;</span>
+<span class="linenos">49</span><span class="w">    </span><span class="n">l_dim_BR_it</span><span class="o">-&gt;</span><span class="n">exec_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">exec_t</span><span class="o">::</span><span class="n">prim</span><span class="p">;</span>
+<span class="linenos">50</span><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">l_dim_BR_it</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">dimensions</span><span class="p">.</span><span class="n">end</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+<span class="linenos">51</span><span class="w">    </span><span class="p">{</span>
+<span class="linenos">52</span><span class="w">        </span><span class="c1">// move BR(K) to the back</span>
+<span class="linenos">53</span><span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">rotate</span><span class="p">(</span><span class="n">l_dim_BR_it</span><span class="p">,</span><span class="w"> </span><span class="n">l_dim_BR_it</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">dimensions</span><span class="p">.</span><span class="n">end</span><span class="p">());</span>
+<span class="linenos">54</span><span class="w">    </span><span class="p">}</span>
+<span class="linenos">55</span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p>We were trying to identify the respective dimensions by looking at the strides of the <code class="docutils literal notranslate"><span class="pre">in1</span></code> and <code class="docutils literal notranslate"><span class="pre">out</span></code> tensors.
+As a starting point we use that for column-major <code class="docutils literal notranslate"><span class="pre">BRGEMM</span></code>’s we have to have a certain mask for our tensors <code class="docutils literal notranslate"><span class="pre">...M,</span> <span class="pre">...K1</span> <span class="pre">-&gt;</span> <span class="pre">...M</span></code>, which we were trying to follow.
+This means that the <code class="docutils literal notranslate"><span class="pre">K2</span></code> that we would need for our <code class="docutils literal notranslate"><span class="pre">BRGEMM</span></code> should not have any unit-stride in the first input tensor.</p>
+<p>Similarly, we did the same for:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">M</span></code> dimension</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">N</span></code> dimension</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">K1</span></code> dimension</p></li>
+</ul>
+<p>For the <code class="docutils literal notranslate"><span class="pre">N</span></code> dimension, where we did not have any indication about which matrix to choose, we simply choose the <code class="docutils literal notranslate"><span class="pre">N</span></code> dimension, with the smallest stride:</p>
+<div class="literal-block-wrapper docutils container" id="id26">
+<div class="code-block-caption"><span class="caption-text">finding the <code class="docutils literal notranslate"><span class="pre">N</span> <span class="pre">prim</span></code> dimension with smallest stride</span><a class="headerlink" href="#id26" title="Link to this code"></a></div>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 85</span><span class="c1">/////////////////////////////////////////////////////////////////</span>
+<span class="linenos"> 86</span><span class="c1">// FIND PRIM N</span>
+<span class="linenos"> 87</span><span class="c1">/////////////////////////////////////////////////////////////////</span>
+<span class="linenos"> 88</span><span class="c1">// req: choose the one with the smallest strides, stride_in0 has to be 0</span>
+<span class="linenos"> 89</span><span class="kt">int</span><span class="w"> </span><span class="n">l_n_dim_strides</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">INT_MAX</span><span class="p">;</span>
+<span class="linenos"> 90</span><span class="kt">int</span><span class="w"> </span><span class="n">l_n_dim_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">-1</span><span class="p">;</span>
+<span class="linenos"> 91</span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">dimensions</span><span class="p">.</span><span class="n">size</span><span class="p">();</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<span class="linenos"> 92</span><span class="p">{</span>
+<span class="linenos"> 93</span><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">((</span><span class="n">dimensions</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">type</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">dim_t</span><span class="o">::</span><span class="n">n</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">dimensions</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">type</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">dim_t</span><span class="o">::</span><span class="n">undefined</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<span class="linenos"> 94</span><span class="w">        </span><span class="n">dimensions</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">stride_in0</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+<span class="linenos"> 95</span><span class="w">    </span><span class="p">{</span>
+<span class="linenos"> 96</span><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">l_current_strides</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dimensions</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">stride_in1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">dimensions</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">stride_out</span><span class="p">;</span>
+<span class="linenos"> 97</span><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">l_current_strides</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">l_n_dim_strides</span><span class="p">)</span>
+<span class="linenos"> 98</span><span class="w">        </span><span class="p">{</span>
+<span class="linenos"> 99</span><span class="w">            </span><span class="n">l_n_dim_strides</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">l_current_strides</span><span class="p">;</span>
+<span class="linenos">100</span><span class="w">            </span><span class="n">l_n_dim_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+<span class="linenos">101</span><span class="w">        </span><span class="p">}</span>
+<span class="linenos">102</span><span class="w">    </span><span class="p">}</span>
+<span class="linenos">103</span><span class="p">}</span>
+<span class="linenos">104</span>
+<span class="linenos">105</span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">l_n_dim_id</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">-1</span><span class="p">)</span>
+<span class="linenos">106</span><span class="p">{</span>
+<span class="linenos">107</span><span class="w">    </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">invalid_argument</span><span class="p">(</span><span class="s">&quot;Optimizer: No suitable primary dimension N found.&quot;</span><span class="p">);</span>
+<span class="linenos">108</span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p>We did the ‘identification’ process in the order <code class="docutils literal notranslate"><span class="pre">K2,</span> <span class="pre">M,</span> <span class="pre">N,</span> <span class="pre">K1</span></code>.
+The reason for this order was that after the identification, we would rotate the respective dimension to the end of the order.
+This would then ultimately lead to the structure: <code class="docutils literal notranslate"><span class="pre">...,</span> <span class="pre">K2,</span> <span class="pre">M,</span> <span class="pre">N,</span> <span class="pre">K1</span></code> for our ‘identified’ primitive dimensions.</p>
+</section>
+<section id="splitting-dimensions">
+<h3>5.5.2 Splitting Dimensions<a class="headerlink" href="#splitting-dimensions" title="Link to this heading"></a></h3>
+<p>For our second optimization pass we decided to look at the dimension sizes of our loops.
+That means for the case that a <code class="docutils literal notranslate"><span class="pre">prim</span></code> dimension would be larger than <code class="docutils literal notranslate"><span class="pre">1024</span></code> we would decide to split it in two dimensions:</p>
+<div class="literal-block-wrapper docutils container" id="id27">
+<div class="code-block-caption"><span class="caption-text">split large <code class="docutils literal notranslate"><span class="pre">prim</span></code> dimensions</span><a class="headerlink" href="#id27" title="Link to this code"></a></div>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="linenos">150</span><span class="c1">// Primitive dimensions should be split if they are too large (&gt; 1024)</span>
+<span class="linenos">151</span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">dimensions</span><span class="p">.</span><span class="n">size</span><span class="p">();</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<span class="linenos">152</span><span class="p">{</span>
+<span class="linenos">153</span><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">dimensions</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">exec_type</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">exec_t</span><span class="o">::</span><span class="n">prim</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">dimensions</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">size</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">1024</span><span class="p">)</span>
+<span class="linenos">154</span><span class="w">    </span><span class="p">{</span>
+<span class="linenos">155</span><span class="w">        </span><span class="kt">int64_t</span><span class="w"> </span><span class="n">l_size_seq</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="linenos">156</span><span class="w">        </span><span class="kt">int64_t</span><span class="w"> </span><span class="n">l_size_prim</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="linenos">157</span><span class="w">        </span><span class="n">findBestSplit</span><span class="p">(</span><span class="n">dimensions</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">size</span><span class="p">,</span>
+<span class="linenos">158</span><span class="w">                      </span><span class="n">max_kernel_size</span><span class="p">,</span>
+<span class="linenos">159</span><span class="w">                      </span><span class="n">dimensions</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">type</span><span class="p">,</span>
+<span class="linenos">160</span><span class="w">                      </span><span class="n">l_size_seq</span><span class="p">,</span>
+<span class="linenos">161</span><span class="w">                      </span><span class="n">l_size_prim</span><span class="p">);</span>
+<span class="linenos">162</span><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">l_size_seq</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+<span class="linenos">163</span><span class="w">        </span><span class="p">{</span>
+<span class="linenos">164</span><span class="w">            </span><span class="c1">// create a new seq dimension</span>
+<span class="linenos">165</span><span class="w">            </span><span class="n">mini_jit</span><span class="o">::</span><span class="n">ir</span><span class="o">::</span><span class="n">Dimension</span><span class="w"> </span><span class="nf">l_dim_seq</span><span class="p">(</span><span class="n">dimensions</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">type</span><span class="p">,</span>
+<span class="linenos">166</span><span class="w">                                              </span><span class="n">exec_t</span><span class="o">::</span><span class="n">seq</span><span class="p">,</span>
+<span class="linenos">167</span><span class="w">                                              </span><span class="n">l_size_seq</span><span class="p">,</span>
+<span class="linenos">168</span><span class="w">                                              </span><span class="n">dimensions</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">stride_in0</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">l_size_prim</span><span class="p">,</span>
+<span class="linenos">169</span><span class="w">                                              </span><span class="n">dimensions</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">stride_in1</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">l_size_prim</span><span class="p">,</span>
+<span class="linenos">170</span><span class="w">                                              </span><span class="n">dimensions</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">stride_out</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">l_size_prim</span><span class="p">);</span>
+<span class="linenos">171</span><span class="w">            </span><span class="c1">// update the prim dimension size</span>
+<span class="linenos">172</span><span class="w">            </span><span class="n">dimensions</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">l_size_prim</span><span class="p">;</span>
+<span class="linenos">173</span><span class="w">            </span><span class="c1">// insert the new seq dimension at the start</span>
+<span class="linenos">174</span><span class="w">            </span><span class="n">dimensions</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">dimensions</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">l_dim_seq</span><span class="p">);</span>
+<span class="linenos">175</span><span class="w">            </span><span class="n">i</span><span class="o">++</span><span class="p">;</span><span class="w"> </span><span class="c1">// skip over new seq dimension</span>
+<span class="linenos">176</span><span class="w">        </span><span class="p">}</span>
+<span class="linenos">177</span><span class="w">    </span><span class="p">}</span>
+<span class="linenos">178</span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p>If a <code class="docutils literal notranslate"><span class="pre">prim</span></code> dimension would be large enough, we would call our <code class="docutils literal notranslate"><span class="pre">findBestSplit</span></code> function.
+Our <code class="docutils literal notranslate"><span class="pre">findBestSplit</span></code> function is designed after the dimensions in our <code class="docutils literal notranslate"><span class="pre">matmul_m_n_k</span></code> kernel.
+Depending on the dimension we want to split we are here selecting the ideal sizes.</p>
+<p>That means we start with the <code class="docutils literal notranslate"><span class="pre">M</span></code> dimension to find an appropriate match:</p>
+<div class="literal-block-wrapper docutils container" id="id28">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">M</span></code> dimension split</span><a class="headerlink" href="#id28" title="Link to this code"></a></div>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="linenos">230</span><span class="n">o_size_0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="linenos">231</span><span class="n">o_size_1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">i_size</span><span class="p">;</span>
+<span class="linenos">232</span><span class="c1">// Optimal sizes:y</span>
+<span class="linenos">233</span><span class="c1">//  M: 16x</span>
+<span class="linenos">234</span><span class="c1">//  N: 4y</span>
+<span class="linenos">235</span><span class="c1">//  K: z</span>
+<span class="linenos">236</span>
+<span class="linenos">237</span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">i_type</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">dim_t</span><span class="o">::</span><span class="n">m</span><span class="p">)</span>
+<span class="linenos">238</span><span class="p">{</span>
+<span class="linenos">239</span><span class="w">    </span><span class="c1">// multiples of (multiples of) 4 are efficient (LDP, STP)</span>
+<span class="linenos">240</span><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int64_t</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">16</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">4</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">-=</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span>
+<span class="linenos">241</span><span class="w">    </span><span class="p">{</span>
+<span class="linenos">242</span><span class="w">        </span><span class="n">findLargestMultipleOfDivisor</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">i_size</span><span class="p">,</span><span class="w"> </span><span class="n">i_max_kernel_size</span><span class="p">,</span><span class="w"> </span><span class="n">o_size_0</span><span class="p">,</span><span class="w"> </span><span class="n">o_size_1</span><span class="p">);</span>
+<span class="linenos">243</span><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">o_size_0</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+<span class="linenos">244</span><span class="w">        </span><span class="p">{</span>
+<span class="linenos">245</span><span class="w">            </span><span class="k">return</span><span class="p">;</span>
+<span class="linenos">246</span><span class="w">        </span><span class="p">}</span>
+<span class="linenos">247</span><span class="w">    </span><span class="p">}</span>
+<span class="linenos">248</span><span class="w">    </span><span class="c1">// split by 2</span>
+<span class="linenos">249</span><span class="w">    </span><span class="n">findLargestMultipleOfDivisor</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">i_size</span><span class="p">,</span><span class="w"> </span><span class="n">i_max_kernel_size</span><span class="p">,</span><span class="w"> </span><span class="n">o_size_0</span><span class="p">,</span><span class="w"> </span><span class="n">o_size_1</span><span class="p">);</span>
+<span class="linenos">250</span><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">o_size_0</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+<span class="linenos">251</span><span class="w">    </span><span class="p">{</span>
+<span class="linenos">252</span><span class="w">        </span><span class="k">return</span><span class="p">;</span>
+<span class="linenos">253</span><span class="w">    </span><span class="p">}</span>
+<span class="linenos">254</span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p>Similarly, we do the same for the <code class="docutils literal notranslate"><span class="pre">N</span></code> dimension, where we want multiples of <code class="docutils literal notranslate"><span class="pre">4</span></code> and for <code class="docutils literal notranslate"><span class="pre">K</span></code> we are flexible.</p>
+</section>
+<section id="id1">
+<h3>5.5.3 Shared Memory Parallelization<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<p>Our third optimization pass was to make all loops that were not a <code class="docutils literal notranslate"><span class="pre">prim</span></code> dimension and of the dimension-type <code class="docutils literal notranslate"><span class="pre">M</span></code> or <code class="docutils literal notranslate"><span class="pre">N</span></code> a <code class="docutils literal notranslate"><span class="pre">shared</span></code> loop.
+For that we initially check how many loops are already of dimension-type <code class="docutils literal notranslate"><span class="pre">shared</span></code>:</p>
+<div class="literal-block-wrapper docutils container" id="id29">
+<div class="code-block-caption"><span class="caption-text">finding the <code class="docutils literal notranslate"><span class="pre">N</span> <span class="pre">prim</span></code> dimension with smallest stride</span><a class="headerlink" href="#id29" title="Link to this code"></a></div>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="linenos">184</span><span class="kt">int64_t</span><span class="w"> </span><span class="n">l_num_threads</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="linenos">185</span>
+<span class="linenos">186</span><span class="c1">// Count the number of possible iterations for shared loops</span>
+<span class="linenos">187</span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">dimensions</span><span class="p">.</span><span class="n">size</span><span class="p">();</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<span class="linenos">188</span><span class="p">{</span>
+<span class="linenos">189</span><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">dimensions</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">exec_type</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">exec_t</span><span class="o">::</span><span class="n">shared</span><span class="p">)</span>
+<span class="linenos">190</span><span class="w">    </span><span class="p">{</span>
+<span class="linenos">191</span><span class="w">        </span><span class="c1">// increase thread number for each existing shared dimension</span>
+<span class="linenos">192</span><span class="w">        </span><span class="n">l_num_threads</span><span class="w"> </span><span class="o">*=</span><span class="w"> </span><span class="n">dimensions</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">size</span><span class="p">;</span>
+<span class="linenos">193</span><span class="w">    </span><span class="p">}</span>
+<span class="linenos">194</span><span class="p">}</span>
+<span class="linenos">195</span>
+<span class="linenos">196</span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">l_num_threads</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">thread_target</span><span class="p">)</span>
+<span class="linenos">197</span><span class="p">{</span>
+<span class="linenos">198</span><span class="w">    </span><span class="c1">// no need to create more shared loops</span>
+<span class="linenos">199</span><span class="w">    </span><span class="k">return</span><span class="p">;</span>
+<span class="linenos">200</span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p>For the case that we already have a high number of <code class="docutils literal notranslate"><span class="pre">shared</span></code> loops we do not create any more and simply return.
+Otherwise we check the <code class="docutils literal notranslate"><span class="pre">seq</span></code> dimensions for potential candidates:</p>
+<div class="literal-block-wrapper docutils container" id="id30">
+<div class="code-block-caption"><span class="caption-text">select <code class="docutils literal notranslate"><span class="pre">shared</span></code> loop candidates</span><a class="headerlink" href="#id30" title="Link to this code"></a></div>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="linenos">202</span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">dimensions</span><span class="p">.</span><span class="n">size</span><span class="p">();</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<span class="linenos">203</span><span class="p">{</span>
+<span class="linenos">204</span><span class="w">    </span><span class="c1">// if the dimension can be set to shared and we did not reach the target number of threads yet</span>
+<span class="linenos">205</span><span class="w">    </span><span class="c1">// we set the dimension to shared</span>
+<span class="linenos">206</span><span class="w">    </span><span class="c1">// also dont parallelize the k dimension (see class slides)</span>
+<span class="linenos">207</span><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">((</span><span class="n">dimensions</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">exec_type</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">exec_t</span><span class="o">::</span><span class="n">seq</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">dimensions</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">exec_type</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">exec_t</span><span class="o">::</span><span class="n">undefined</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<span class="linenos">208</span><span class="w">        </span><span class="n">dimensions</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">type</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">dim_t</span><span class="o">::</span><span class="n">k</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<span class="linenos">209</span><span class="w">        </span><span class="n">l_num_threads</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">dimensions</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">size</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">thread_target</span><span class="p">)</span>
+<span class="linenos">210</span><span class="w">    </span><span class="p">{</span>
+<span class="linenos">211</span><span class="w">        </span><span class="n">dimensions</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">exec_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">exec_t</span><span class="o">::</span><span class="n">shared</span><span class="p">;</span>
+<span class="linenos">212</span><span class="w">        </span><span class="n">l_num_threads</span><span class="w"> </span><span class="o">*=</span><span class="w"> </span><span class="n">dimensions</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">size</span><span class="p">;</span>
+<span class="linenos">213</span><span class="w">    </span><span class="p">}</span>
+<span class="linenos">214</span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p>As a last step we move all our <code class="docutils literal notranslate"><span class="pre">shared</span></code> loops to the front of the order:</p>
+<div class="literal-block-wrapper docutils container" id="id31">
+<div class="code-block-caption"><span class="caption-text">move <code class="docutils literal notranslate"><span class="pre">shared</span></code> loops to the front</span><a class="headerlink" href="#id31" title="Link to this code"></a></div>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="linenos">216</span><span class="c1">// Move all shared loops to the front</span>
+<span class="linenos">217</span><span class="n">std</span><span class="o">::</span><span class="n">stable_partition</span><span class="p">(</span><span class="n">dimensions</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">dimensions</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span>
+<span class="linenos">218</span><span class="w">                      </span><span class="p">[](</span><span class="k">const</span><span class="w"> </span><span class="n">mini_jit</span><span class="o">::</span><span class="n">ir</span><span class="o">::</span><span class="n">Dimension</span><span class="w"> </span><span class="o">&amp;</span><span class="n">dim</span><span class="p">)</span>
+<span class="linenos">219</span><span class="w">                      </span><span class="p">{</span>
+<span class="linenos">220</span><span class="w">                          </span><span class="k">return</span><span class="w"> </span><span class="n">dim</span><span class="p">.</span><span class="n">exec_type</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">exec_t</span><span class="o">::</span><span class="n">shared</span><span class="p">;</span>
+<span class="linenos">221</span><span class="w">                      </span><span class="p">});</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="performance-benchmarks">
+<h3>5.5.6 Performance Benchmarks<a class="headerlink" href="#performance-benchmarks" title="Link to this heading"></a></h3>
+<p>We also benchmarked the results for two given configurations:</p>
+<div class="literal-block-wrapper docutils container" id="id32">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">GFLOP</span></code> performance for sample configurations</span><a class="headerlink" href="#id32" title="Link to this code"></a></div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span>Running SharedTensorOperationBench benchmark #1
+<span class="linenos"> 2</span>Total time (s):                  3.00666
+<span class="linenos"> 3</span>Total reps:                      96
+<span class="linenos"> 4</span>Total floating point operations: 786432000000
+<span class="linenos"> 5</span>Estimated GFLOPS/sec:            261.563
+<span class="linenos"> 6</span>--------------------------------------------------
+<span class="linenos"> 7</span>Running SharedTensorOperationBench benchmark #2
+<span class="linenos"> 8</span>Total time (s):                  3.03082
+<span class="linenos"> 9</span>Total reps:                      94
+<span class="linenos">10</span>Total floating point operations: 770048000000
+<span class="linenos">11</span>Estimated GFLOPS/sec:            254.072
+<span class="linenos">12</span>--------------------------------------------------
+</pre></div>
+</div>
+</div>
+<p>For the execution of these configs we receive around <code class="docutils literal notranslate"><span class="pre">250</span> <span class="pre">-</span> <span class="pre">260</span> <span class="pre">GFLOPs</span></code>.</p>
+</section>
 </section>
 </section>
 

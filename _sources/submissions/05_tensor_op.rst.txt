@@ -300,3 +300,130 @@ We were executing our benchmarks using ``OMP_NUM_THREADS=4``:
     :dedent:
 
 With the parallelization we achieve about ``360 - 390 GFLOPs``. 
+
+**********************************
+5.5 Optimization Passes
+**********************************
+
+Our approach to enhancing the performance of the tensor operations was to use a vector of ``struct``'s for each dimension that we have got:
+
+.. literalinclude:: ../../src/ir/Dimension.h
+    :language: cpp
+    :lines: 17-60
+    :lineno-match:
+    :caption: call remaining loops with ``execute_iter``
+    :dedent:
+
+This ``struct`` is used to store all information about a dimension.
+
+After setting this up, we could create our optimization passes.
+
+5.5.1 Primitive Identification
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The first optimization that we performed was to find primitive dimensions. 
+This optimization would be useful, for cases, where we were given only sequential loops. 
+Our approach to this optimization was the following: 
+
+.. literalinclude:: ../../src/ir/Optimizer.cpp
+    :language: cpp
+    :lines: 33-55
+    :lineno-match:
+    :caption: finding the ``K2 prim`` dimension for the ``BRGEMM`` case
+    :dedent:
+
+We were trying to identify the respective dimensions by looking at the strides of the ``in1`` and ``out`` tensors.
+As a starting point we use that for column-major ``BRGEMM``'s we have to have a certain mask for our tensors ``...M, ...K1 -> ...M``, which we were trying to follow.
+This means that the ``K2`` that we would need for our ``BRGEMM`` should not have any unit-stride in the first input tensor.
+
+Similarly, we did the same for:
+
+- ``M`` dimension
+- ``N`` dimension
+- ``K1`` dimension
+
+For the ``N`` dimension, where we did not have any indication about which matrix to choose, we simply choose the ``N`` dimension, with the smallest stride:
+
+.. literalinclude:: ../../src/ir/Optimizer.cpp
+    :language: cpp
+    :lines: 85-108
+    :lineno-match:
+    :caption: finding the ``N prim`` dimension with smallest stride
+    :dedent:
+
+We did the 'identification' process in the order ``K2, M, N, K1``. 
+The reason for this order was that after the identification, we would rotate the respective dimension to the end of the order.
+This would then ultimately lead to the structure: ``..., K2, M, N, K1`` for our 'identified' primitive dimensions.
+
+5.5.2 Splitting Dimensions
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+For our second optimization pass we decided to look at the dimension sizes of our loops. 
+That means for the case that a ``prim`` dimension would be larger than ``1024`` we would decide to split it in two dimensions:
+
+.. literalinclude:: ../../src/ir/Optimizer.cpp
+    :language: cpp
+    :lines: 150-178
+    :lineno-match:
+    :caption: split large ``prim`` dimensions
+    :dedent:
+
+If a ``prim`` dimension would be large enough, we would call our ``findBestSplit`` function. 
+Our ``findBestSplit`` function is designed after the dimensions in our ``matmul_m_n_k`` kernel. 
+Depending on the dimension we want to split we are here selecting the ideal sizes. 
+
+That means we start with the ``M`` dimension to find an appropriate match: 
+
+.. literalinclude:: ../../src/ir/Optimizer.cpp
+    :language: cpp
+    :lines: 230-254
+    :lineno-match:
+    :caption: ``M`` dimension split
+    :dedent:
+
+Similarly, we do the same for the ``N`` dimension, where we want multiples of ``4`` and for ``K`` we are flexible.
+
+5.5.3 Shared Memory Parallelization
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Our third optimization pass was to make all loops that were not a ``prim`` dimension and of the dimension-type ``M`` or ``N`` a ``shared`` loop.
+For that we initially check how many loops are already of dimension-type ``shared``:
+
+.. literalinclude:: ../../src/ir/Optimizer.cpp
+    :language: cpp
+    :lines: 184-200
+    :lineno-match:
+    :caption: finding the ``N prim`` dimension with smallest stride
+    :dedent:
+
+For the case that we already have a high number of ``shared`` loops we do not create any more and simply return. 
+Otherwise we check the ``seq`` dimensions for potential candidates:
+
+.. literalinclude:: ../../src/ir/Optimizer.cpp
+    :language: cpp
+    :lines: 202-214
+    :lineno-match:
+    :caption: select ``shared`` loop candidates
+    :dedent:
+
+As a last step we move all our ``shared`` loops to the front of the order:
+
+.. literalinclude:: ../../src/ir/Optimizer.cpp
+    :language: cpp
+    :lines: 216-221
+    :lineno-match:
+    :caption: move ``shared`` loops to the front
+    :dedent:
+
+5.5.6 Performance Benchmarks
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+We also benchmarked the results for two given configurations:
+
+.. literalinclude:: ../../benchmarks/optimized_tensor_operation_benchmarks.txt
+    :language: text
+    :lineno-match:
+    :caption: ``GFLOP`` performance for sample configurations
+    :dedent:
+
+For the execution of these configs we receive around ``250 - 260 GFLOPs``. 

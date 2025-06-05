@@ -1,5 +1,7 @@
 var searchData=
 [
-  ['matmul_5fbr_5fm_5fn_5fk_5fbench_0',['matmul_br_m_n_k_bench',['../classmini__jit_1_1benchmarks_1_1Matmul__br__m__n__k__bench.html',1,'mini_jit::benchmarks::Matmul_br_m_n_k_bench'],['../classmini__jit_1_1benchmarks_1_1Matmul__br__m__n__k__bench.html#a6a59ed66f25b491b701c5bef5fec6afc',1,'mini_jit::benchmarks::Matmul_br_m_n_k_bench::Matmul_br_m_n_k_bench()']]],
-  ['matmul_5fm_5fn_5fk_5fbench_1',['matmul_m_n_k_bench',['../classmini__jit_1_1benchmarks_1_1Matmul__m__n__k__bench.html',1,'mini_jit::benchmarks::Matmul_m_n_k_bench'],['../classmini__jit_1_1benchmarks_1_1Matmul__m__n__k__bench.html#a3571fe77cb6649d26a17bd743d545356',1,'mini_jit::benchmarks::Matmul_m_n_k_bench::Matmul_m_n_k_bench()']]]
+  ['identifyprimitives_0',['identifyPrimitives',['../classmini__jit_1_1ir_1_1Optimizer.html#a44b95cb1c150be201373d92bbbe4fe08',1,'mini_jit::ir::Optimizer']]],
+  ['identity_5fprimitive_5fbench_1',['identity_primitive_bench',['../classmini__jit_1_1benchmarks_1_1Identity__primitive__bench.html',1,'mini_jit::benchmarks::Identity_primitive_bench'],['../classmini__jit_1_1benchmarks_1_1Identity__primitive__bench.html#a498090d294a39d1aed325c6817e9e2bc',1,'mini_jit::benchmarks::Identity_primitive_bench::Identity_primitive_bench()']]],
+  ['identity_5ftrans_5fprimitive_5fbench_2',['identity_trans_primitive_bench',['../classmini__jit_1_1benchmarks_1_1Identity__trans__primitive__bench.html',1,'mini_jit::benchmarks::Identity_trans_primitive_bench'],['../classmini__jit_1_1benchmarks_1_1Identity__trans__primitive__bench.html#a59837e36b5097ac8cc6a86e560b2d0ac',1,'mini_jit::benchmarks::Identity_trans_primitive_bench::Identity_trans_primitive_bench()']]],
+  ['irconverter_3',['irconverter',['../classmini__jit_1_1ir_1_1IRConverter.html',1,'mini_jit::ir::IRConverter'],['../classmini__jit_1_1ir_1_1IRConverter.html#ac99454558109916072a89182e30eaa62',1,'mini_jit::ir::IRConverter::IRConverter()']]]
 ];

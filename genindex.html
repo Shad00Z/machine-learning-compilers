@@ -64,6 +64,7 @@
 <li class="toctree-l1"><a class="reference internal" href="api/namespaces/mini_jit_benchmarks.html">mini_jit::benchmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api/namespaces/mini_jit_converters.html">mini_jit::converters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api/namespaces/mini_jit_instructions.html">mini_jit::instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/namespaces/mini_jit_ir.html">mini_jit::ir</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api/namespaces/mini_jit_kernels.html">mini_jit::kernels</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api/namespaces/mini_jit_registers.html">mini_jit::registers</a></li>
 </ul>
@@ -219,6 +220,8 @@
 </li>
       <li><a href="api/namespaces/mini_jit.html#_CPPv4N8mini_jit6exec_t6sharedE">mini_jit::exec_t::shared (C++ enumerator)</a>
 </li>
+      <li><a href="api/namespaces/mini_jit.html#_CPPv4N8mini_jit6exec_t9undefinedE">mini_jit::exec_t::undefined (C++ enumerator)</a>
+</li>
       <li><a href="api/namespaces/mini_jit_instructions.html#_CPPv4N8mini_jit12instructions4base3addE5gpr_t5gpr_t5gpr_t8uint32_t8uint32_t">mini_jit::instructions::base::add (C++ function)</a>, <a href="api/namespaces/mini_jit_instructions.html#_CPPv4N8mini_jit12instructions4base3addE5gpr_t5gpr_t8uint32_t8uint32_t">[1]</a>
 </li>
       <li><a href="api/namespaces/mini_jit_instructions.html#_CPPv4N8mini_jit12instructions4base4cbnzE5gpr_t7int32_t">mini_jit::instructions::base::cbnz (C++ function)</a>
@@ -303,6 +306,42 @@
 </li>
       <li><a href="api/namespaces/mini_jit_instructions.html#_CPPv4N8mini_jit12instructions7simd_fp4zip2E9simd_fp_t9simd_fp_t9simd_fp_t10arr_spec_t">mini_jit::instructions::simd_fp::zip2 (C++ function)</a>
 </li>
+      <li><a href="api/namespaces/mini_jit_ir.html#_CPPv4N8mini_jit2ir8mini_jit2ir9DimensionE">mini_jit::ir::mini_jit::ir::Dimension (C++ struct)</a>
+</li>
+      <li><a href="api/namespaces/mini_jit_ir.html#_CPPv4N8mini_jit2ir8mini_jit2ir9Dimension9DimensionE5dim_t6exec_t7int64_t7int64_t7int64_t7int64_t">mini_jit::ir::mini_jit::ir::Dimension::Dimension (C++ function)</a>
+</li>
+      <li><a href="api/namespaces/mini_jit_ir.html#_CPPv4N8mini_jit2ir8mini_jit2ir9Dimension9exec_typeE">mini_jit::ir::mini_jit::ir::Dimension::exec_type (C++ member)</a>
+</li>
+      <li><a href="api/namespaces/mini_jit_ir.html#_CPPv4N8mini_jit2ir8mini_jit2ir9Dimension4sizeE">mini_jit::ir::mini_jit::ir::Dimension::size (C++ member)</a>
+</li>
+      <li><a href="api/namespaces/mini_jit_ir.html#_CPPv4N8mini_jit2ir8mini_jit2ir9Dimension10stride_in0E">mini_jit::ir::mini_jit::ir::Dimension::stride_in0 (C++ member)</a>
+</li>
+      <li><a href="api/namespaces/mini_jit_ir.html#_CPPv4N8mini_jit2ir8mini_jit2ir9Dimension10stride_in1E">mini_jit::ir::mini_jit::ir::Dimension::stride_in1 (C++ member)</a>
+</li>
+      <li><a href="api/namespaces/mini_jit_ir.html#_CPPv4N8mini_jit2ir8mini_jit2ir9Dimension10stride_outE">mini_jit::ir::mini_jit::ir::Dimension::stride_out (C++ member)</a>
+</li>
+      <li><a href="api/namespaces/mini_jit_ir.html#_CPPv4N8mini_jit2ir8mini_jit2ir9Dimension4typeE">mini_jit::ir::mini_jit::ir::Dimension::type (C++ member)</a>
+</li>
+      <li><a href="api/namespaces/mini_jit_ir.html#_CPPv4N8mini_jit2ir8mini_jit2ir11IRConverterE">mini_jit::ir::mini_jit::ir::IRConverter (C++ class)</a>
+</li>
+      <li><a href="api/namespaces/mini_jit_ir.html#_CPPv4N8mini_jit2ir8mini_jit2ir11IRConverter25convertConfigToDimensionsENSt4spanIK5dim_tEENSt4spanIK6exec_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEERNSt6vectorI9DimensionEE">mini_jit::ir::mini_jit::ir::IRConverter::convertConfigToDimensions (C++ function)</a>
+</li>
+      <li><a href="api/namespaces/mini_jit_ir.html#_CPPv4N8mini_jit2ir8mini_jit2ir11IRConverter25convertDimensionsToConfigERKNSt6vectorI9DimensionEERNSt6vectorI5dim_tEERNSt6vectorI6exec_tEERNSt6vectorI7int64_tEERNSt6vectorI7int64_tEERNSt6vectorI7int64_tEERNSt6vectorI7int64_tEE">mini_jit::ir::mini_jit::ir::IRConverter::convertDimensionsToConfig (C++ function)</a>
+</li>
+      <li><a href="api/namespaces/mini_jit_ir.html#_CPPv4N8mini_jit2ir8mini_jit2ir11IRConverter11IRConverterEv">mini_jit::ir::mini_jit::ir::IRConverter::IRConverter (C++ function)</a>
+</li>
+      <li><a href="api/namespaces/mini_jit_ir.html#_CPPv4N8mini_jit2ir8mini_jit2ir9OptimizerE">mini_jit::ir::mini_jit::ir::Optimizer (C++ class)</a>
+</li>
+      <li><a href="api/namespaces/mini_jit_ir.html#_CPPv4N8mini_jit2ir8mini_jit2ir9Optimizer17createSharedLoopsERNSt6vectorI9DimensionEE7int64_t">mini_jit::ir::mini_jit::ir::Optimizer::createSharedLoops (C++ function)</a>
+</li>
+      <li><a href="api/namespaces/mini_jit_ir.html#_CPPv4N8mini_jit2ir8mini_jit2ir9Optimizer18identifyPrimitivesERNSt6vectorI9DimensionEE">mini_jit::ir::mini_jit::ir::Optimizer::identifyPrimitives (C++ function)</a>
+</li>
+      <li><a href="api/namespaces/mini_jit_ir.html#_CPPv4N8mini_jit2ir8mini_jit2ir9Optimizer8optimizeERNSt6vectorI9DimensionEE7int64_t7int64_t">mini_jit::ir::mini_jit::ir::Optimizer::optimize (C++ function)</a>
+</li>
+      <li><a href="api/namespaces/mini_jit_ir.html#_CPPv4N8mini_jit2ir8mini_jit2ir9Optimizer9OptimizerEv">mini_jit::ir::mini_jit::ir::Optimizer::Optimizer (C++ function)</a>
+</li>
+      <li><a href="api/namespaces/mini_jit_ir.html#_CPPv4N8mini_jit2ir8mini_jit2ir9Optimizer15splitDimensionsERNSt6vectorI9DimensionEE7int64_t">mini_jit::ir::mini_jit::ir::Optimizer::splitDimensions (C++ function)</a>
+</li>
       <li><a href="api/namespaces/mini_jit_kernels.html#_CPPv4N8mini_jit7kernels6matmul15matmul_br_m_n_kERN8mini_jit6KernelEiiii">mini_jit::kernels::matmul::matmul_br_m_n_k (C++ function)</a>
 </li>
       <li><a href="api/namespaces/mini_jit_kernels.html#_CPPv4N8mini_jit7kernels6matmul12matmul_m_n_kERN8mini_jit6KernelEiii">mini_jit::kernels::matmul::matmul_m_n_k (C++ function)</a>
@@ -353,6 +392,8 @@
 </li>
       <li><a href="api/namespaces/mini_jit.html#_CPPv4N8mini_jit8mini_jit9Benchmark3runEv">mini_jit::mini_jit::Benchmark::run (C++ function)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/namespaces/mini_jit.html#_CPPv4N8mini_jit8mini_jit9BenchmarkD0Ev">mini_jit::mini_jit::Benchmark::~Benchmark (C++ function)</a>
 </li>
       <li><a href="api/namespaces/mini_jit.html#_CPPv4N8mini_jit8mini_jit6BrgemmE">mini_jit::mini_jit::Brgemm (C++ class)</a>
@@ -371,8 +412,6 @@
 </li>
       <li><a href="api/namespaces/mini_jit.html#_CPPv4N8mini_jit8mini_jit6Kernel9add_labelERKNSt6stringE">mini_jit::mini_jit::Kernel::add_label (C++ function)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/namespaces/mini_jit.html#_CPPv4NK8mini_jit8mini_jit6Kernel10get_kernelEv">mini_jit::mini_jit::Kernel::get_kernel (C++ function)</a>
 </li>
       <li><a href="api/namespaces/mini_jit.html#_CPPv4NK8mini_jit8mini_jit6Kernel8get_sizeEv">mini_jit::mini_jit::Kernel::get_size (C++ function)</a>
@@ -642,6 +681,8 @@
       <li><a href="api/namespaces/mini_jit_registers.html#_CPPv4N8mini_jit9registers9simd_fp_t2v8E">mini_jit::registers::simd_fp_t::v8 (C++ enumerator)</a>
 </li>
       <li><a href="api/namespaces/mini_jit_registers.html#_CPPv4N8mini_jit9registers9simd_fp_t2v9E">mini_jit::registers::simd_fp_t::v9 (C++ enumerator)</a>
+</li>
+      <li><a href="api/namespaces/mini_jit.html#_CPPv4N8mini_jit9to_stringE5dim_t">mini_jit::to_string (C++ function)</a>, <a href="api/namespaces/mini_jit.html#_CPPv4N8mini_jit9to_stringE6exec_t">[1]</a>, <a href="api/namespaces/mini_jit.html#_CPPv4N8mini_jit9to_stringE7dtype_t">[2]</a>, <a href="api/namespaces/mini_jit.html#_CPPv4N8mini_jit9to_stringE7error_t">[3]</a>, <a href="api/namespaces/mini_jit.html#_CPPv4N8mini_jit9to_stringE7ptype_t">[4]</a>
 </li>
   </ul></td>
 </tr></table>
