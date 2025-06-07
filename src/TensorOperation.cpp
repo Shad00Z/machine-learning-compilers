@@ -280,8 +280,8 @@ void mini_jit::TensorOperation::execute_iter(int64_t id_loop,
                                              bool first_access,
                                              bool last_access)
 {
-    // if the first dimension is a prim, we should only loop once
-    int64_t l_size = m_id_first_primitive_loop != 0 ? m_dim_sizes[id_loop] : 1;
+    // there is only one iteration if the dimension is the first primitive
+    int64_t l_size = m_id_first_primitive_loop != id_loop ? m_dim_sizes[id_loop] : 1;
     int64_t l_stride_in0 = m_strides_in0[id_loop];
     int64_t l_stride_in1 = m_strides_in1[id_loop];
     int64_t l_stride_out = m_strides_out[id_loop];
@@ -290,7 +290,8 @@ void mini_jit::TensorOperation::execute_iter(int64_t id_loop,
     {
         bool is_first = first_access;
         bool is_last = last_access;
-        if (m_dim_types[id_loop] == dim_t::k)
+        // if the size is 1, it is always the first and last access
+        if (m_dim_types[id_loop] == dim_t::k && l_size > 1)
         {
             is_first = first_access && (l_iter == 0);
             is_last = last_access && (l_iter == m_dim_sizes[id_loop] - 1);
