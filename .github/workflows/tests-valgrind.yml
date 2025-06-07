@@ -22,7 +22,7 @@ jobs:
             make tests
       - name: Run Valgrind
         run: |
-            valgrind ./build/linux/tests
+            valgrind ./build/linux/tests/unit/tests
       - name: Run Tests
         run: |
-            ./build/linux/tests
+            ./build/linux/tests/unit/tests
