@@ -11,7 +11,7 @@ namespace mini_jit
         {
         public:
             /**
-             * @brief Constructor for the benchmark for identity primitive.
+             * @brief Constructor for the benchmark for tensor operations.
              * @param run_time The time to run the benchmark in seconds.
              * @param dtype             Datatype of all tensor elements.
              * @param prim_first_touch  Type of the first touch primitive.
@@ -43,6 +43,7 @@ namespace mini_jit
         private:
             double m_run_time;
             mini_jit::TensorOperation m_tensor_op;
+            std::vector<dim_t> m_dim_types;
             std::vector<int64_t> m_dim_sizes;
         };
     }

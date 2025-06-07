@@ -28,21 +28,30 @@ mini_jit::benchmarks::TensorOperationBench::TensorOperationBench(double run_time
                       strides_in1,
                       strides_out);
 
+    m_dim_types.assign(dim_types.begin(), dim_types.end());
     m_dim_sizes.assign(dim_sizes.begin(), dim_sizes.end());
 }
 
 void mini_jit::benchmarks::TensorOperationBench::run()
 {
-    const int R = m_dim_sizes[0];
-    const int P = m_dim_sizes[1];
-    const int T = m_dim_sizes[2];
-    const int S = m_dim_sizes[3];
-    const int Q = m_dim_sizes[4];
-    const int U = m_dim_sizes[5];
+    int64_t l_size_M = 1;
+    int64_t l_size_N = 1;
+    int64_t l_size_K = 1;
+    for (size_t i = 0; i < m_dim_types.size(); ++i) {
+        if (m_dim_types[i] == dim_t::m) {
+            l_size_M *= m_dim_sizes[i];
+        }
+        else if (m_dim_types[i] == dim_t::n) {
+            l_size_N *= m_dim_sizes[i];
+        }
+        else if (m_dim_types[i] == dim_t::k) {
+            l_size_K *= m_dim_sizes[i];
+        }
+    }
 
-    const int SIZE_A = (R * S) * (T * U);
-    const int SIZE_B = (T * U) * (P * Q);
-    const int SIZE_C = (R * S) * (P * Q);
+    const int64_t SIZE_A = l_size_M * l_size_K;
+    const int64_t SIZE_B = l_size_K * l_size_N;
+    const int64_t SIZE_C = l_size_M * l_size_N;
 
     float *A = new float[SIZE_A];
     float *B = new float[SIZE_B];
@@ -53,17 +62,17 @@ void mini_jit::benchmarks::TensorOperationBench::run()
     std::mt19937 gen(rd());
     std::uniform_real_distribution<float> dist(-10.0f, 10.0f);
 
-    for (int i = 0; i < SIZE_A; ++i)
+    for (int64_t i = 0; i < SIZE_A; ++i)
     {
         A[i] = dist(gen);
     }
 
-    for (int i = 0; i < SIZE_B; ++i)
+    for (int64_t i = 0; i < SIZE_B; ++i)
     {
         B[i] = dist(gen);
     }
 
-    for (int i = 0; i < SIZE_C; ++i)
+    for (int64_t i = 0; i < SIZE_C; ++i)
     {
         C[i] = dist(gen);
     }
@@ -84,13 +93,13 @@ void mini_jit::benchmarks::TensorOperationBench::run()
     // END RUN
 
     // Calculate metrics
-    long l_totalOperations = 2.0 * l_num_reps * (R * S) * (T * U) * (P * Q);
+    long l_totalOperations = 2.0 * l_num_reps * (l_size_M * l_size_N * l_size_K);
     double l_gflops = ((double)l_totalOperations) / (l_elapsed * 1e9);
 
     // Store the results
     m_benchmarkResult.numReps = l_num_reps;
     m_benchmarkResult.elapsedSeconds = l_elapsed;
-    m_benchmarkResult.totalNumberElements = (R * S) * (T * U) * (P * Q) * l_num_reps;
+    m_benchmarkResult.totalNumberElements = (l_size_M * l_size_N * l_size_K) * l_num_reps;
     m_benchmarkResult.totalOperations = l_totalOperations;
     m_benchmarkResult.gflops = l_gflops;
 

@@ -1,4 +1,5 @@
 #include "Optimizer.h"
+#include "IRConverter.h"
 #include <algorithm>
 #include <limits.h>
 
@@ -26,6 +27,36 @@ void mini_jit::ir::Optimizer::optimize(std::vector<mini_jit::ir::Dimension> &dim
                       thread_target);
 
     // TODO: Dimension Fusion, Reorder?
+}
+
+void mini_jit::ir::Optimizer::optimize(std::vector<mini_jit::dim_t> &dim_types,
+                                       std::vector<mini_jit::exec_t> &exec_types,
+                                       std::vector<int64_t> &dim_sizes,
+                                       std::vector<int64_t> &strides_in0,
+                                       std::vector<int64_t> &strides_in1,
+                                       std::vector<int64_t> &strides_out,
+                                       int64_t thread_target,
+                                       int64_t max_kernel_size)
+{
+    // Convert input vectors to a vector of Dimensions
+    std::vector<mini_jit::ir::Dimension> dimensions;
+    IRConverter::convertConfigToDimensions(dim_types,
+                                           exec_types,
+                                           dim_sizes,
+                                           strides_in0,
+                                           strides_in1,
+                                           strides_out,
+                                           dimensions);
+    // Optimize the dimensions
+    optimize(dimensions, thread_target, max_kernel_size);
+    // Convert the optimized dimensions back to the original format
+    IRConverter::convertDimensionsToConfig(dimensions,
+                                           dim_types,
+                                           exec_types,
+                                           dim_sizes,
+                                           strides_in0,
+                                           strides_in1,
+                                           strides_out);
 }
 
 void mini_jit::ir::Optimizer::identifyPrimitives(std::vector<mini_jit::ir::Dimension> &dimensions)

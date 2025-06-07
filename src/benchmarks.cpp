@@ -1,9 +1,11 @@
 #include "benchmarks/all_benchmarks.h"
 
 #include "Brgemm.h"
+#include "ir/Optimizer.h"
 #include <iostream>
 #include <cstring>
 #include <fstream>
+#include <limits>
 
 void gemm_benchmark()
 {
@@ -96,6 +98,58 @@ void unary_benchmark(mini_jit::Benchmark &bench, std::ofstream &unary_bm, std::s
     unary_bm << "Total amount of processed data (GiB): " << result.totalDataProcessed << std::endl;
     unary_bm << "Bandwidth (GiB/s)                     " << result.gibps << std::endl;
     unary_bm << "--------------------------------------------------" << std::endl;
+}
+
+void optimized_tensor_benchmark(std::ofstream &top_opt_bm, int64_t thread_target, int64_t max_kernel_size)
+{
+    const double RUN_TIME = 3.0;
+
+    std::vector<mini_jit::dim_t> l_dims = {mini_jit::dim_t::m, mini_jit::dim_t::n, mini_jit::dim_t::k};
+    std::vector<mini_jit::exec_t> l_execs = {mini_jit::exec_t::seq, mini_jit::exec_t::seq, mini_jit::exec_t::seq};
+    std::vector<int64_t> l_sizes = {1600, 1600, 1600};
+    std::vector<int64_t> l_strides_in0 = {1, 0, 1600};
+    std::vector<int64_t> l_strides_in1 = {0, 1600, 1};
+    std::vector<int64_t> l_strides_out = {1, 1600, 0};
+
+    mini_jit::ir::Optimizer::optimize(l_dims,
+                                      l_execs,
+                                      l_sizes,
+                                      l_strides_in0,
+                                      l_strides_in1,
+                                      l_strides_out,
+                                      thread_target,
+                                      max_kernel_size);
+
+    int l_prim_count = 0;
+    for (const auto &exec : l_execs)
+    {
+        if (exec == mini_jit::exec_t::prim)
+        {
+            l_prim_count++;
+        }
+    }
+
+    mini_jit::benchmarks::TensorOperationBench tensor_bench(RUN_TIME,
+                                                            mini_jit::dtype_t::fp32,
+                                                            mini_jit::ptype_t::none,
+                                                            l_prim_count == 4 ? mini_jit::ptype_t::brgemm : mini_jit::ptype_t::gemm,
+                                                            mini_jit::ptype_t::none,
+                                                            l_dims,
+                                                            l_execs,
+                                                            l_sizes,
+                                                            l_strides_in0,
+                                                            l_strides_in1,
+                                                            l_strides_out);
+
+    top_opt_bm << "Running SharedTensorOperationBench benchmark (thread_target: " << thread_target << ", max_kernel_size: " << max_kernel_size << ")" << std::endl;
+    std::cout << "Running SharedTensorOperationBench benchmark (thread_target: " << thread_target << ", max_kernel_size: " << max_kernel_size << ")" << std::endl;
+    tensor_bench.run();
+    mini_jit::Benchmark::benchmark_result result = tensor_bench.getResult();
+    top_opt_bm << "Total time (s):                  " << result.elapsedSeconds << std::endl;
+    top_opt_bm << "Total reps:                      " << result.numReps << std::endl;
+    top_opt_bm << "Total floating point operations: " << result.totalOperations << std::endl;
+    top_opt_bm << "Estimated GFLOPS/sec:            " << result.gflops << std::endl;
+    top_opt_bm << "--------------------------------------------------" << std::endl;
 }
 
 int main(int argc, char *argv[])
@@ -393,17 +447,35 @@ int main(int argc, char *argv[])
         const double RUN_TIME = 3.0;
         std::ofstream top_bm("benchmarks/optimized_tensor_operation_benchmarks.txt");
 
-        std::vector<mini_jit::dim_t> l_dims_1 = {mini_jit::dim_t::m, mini_jit::dim_t::n, mini_jit::dim_t::k, mini_jit::dim_t::m, mini_jit::dim_t::n, mini_jit::dim_t::k};
-        std::vector<mini_jit::exec_t> l_execs_1 = {mini_jit::exec_t::shared, mini_jit::exec_t::shared, mini_jit::exec_t::seq, mini_jit::exec_t::prim, mini_jit::exec_t::prim, mini_jit::exec_t::prim};
-        std::vector<int64_t> l_sizes_1 = {64, 64, 64, 25, 25, 25};
-        std::vector<int64_t> l_strides_in0_1 = {25, 0, 40000, 1, 0, 1600};
-        std::vector<int64_t> l_strides_in1_1 = {0, 40000, 25, 0, 1600, 1};
-        std::vector<int64_t> l_strides_out_1 = {25, 40000, 0, 1, 1600, 0};
+        std::vector<mini_jit::dim_t> l_dims_1 = {mini_jit::dim_t::m, mini_jit::dim_t::m, mini_jit::dim_t::n, mini_jit::dim_t::n, mini_jit::dim_t::k, mini_jit::dim_t::k};
+        std::vector<mini_jit::exec_t> l_execs_1 = {mini_jit::exec_t::seq, mini_jit::exec_t::seq, mini_jit::exec_t::seq, mini_jit::exec_t::seq, mini_jit::exec_t::seq, mini_jit::exec_t::seq};
+        std::vector<int64_t> l_sizes_1 = {64, 25, 64, 25, 64, 25};
+        std::vector<int64_t> l_strides_in0_1 = {25, 1, 0, 0, 40000, 1600};
+        std::vector<int64_t> l_strides_in1_1 = {0, 0, 40000, 1600, 25, 1};
+        std::vector<int64_t> l_strides_out_1 = {25, 1, 40000, 1600, 0, 0};
+
+        mini_jit::ir::Optimizer::optimize(l_dims_1,
+                                          l_execs_1,
+                                          l_sizes_1,
+                                          l_strides_in0_1,
+                                          l_strides_in1_1,
+                                          l_strides_out_1,
+                                          INT_MAX,
+                                          512);
+
+        int l_prim_count_1 = 0;
+        for (const auto &exec : l_execs_1)
+        {
+            if (exec == mini_jit::exec_t::prim)
+            {
+                l_prim_count_1++;
+            }
+        }
 
         mini_jit::benchmarks::TensorOperationBench tensor_bench_1(RUN_TIME,
                                                                   mini_jit::dtype_t::fp32,
                                                                   mini_jit::ptype_t::none,
-                                                                  mini_jit::ptype_t::gemm,
+                                                                  l_prim_count_1 == 4 ? mini_jit::ptype_t::brgemm : mini_jit::ptype_t::gemm,
                                                                   mini_jit::ptype_t::none,
                                                                   l_dims_1,
                                                                   l_execs_1,
@@ -411,24 +483,6 @@ int main(int argc, char *argv[])
                                                                   l_strides_in0_1,
                                                                   l_strides_in1_1,
                                                                   l_strides_out_1);
-
-        std::vector<mini_jit::dim_t> l_dims_2 = {mini_jit::dim_t::n, mini_jit::dim_t::m, mini_jit::dim_t::k, mini_jit::dim_t::m, mini_jit::dim_t::n, mini_jit::dim_t::k};
-        std::vector<mini_jit::exec_t> l_execs_2 = {mini_jit::exec_t::shared, mini_jit::exec_t::shared, mini_jit::exec_t::seq, mini_jit::exec_t::prim, mini_jit::exec_t::prim, mini_jit::exec_t::prim};
-        std::vector<int64_t> l_sizes_2 = {4, 4, 4, 400, 400, 400};
-        std::vector<int64_t> l_strides_in0_2 = {0, 400, 640000, 1, 0, 1600};
-        std::vector<int64_t> l_strides_in1_2 = {640000, 0, 400, 0, 1600, 1};
-        std::vector<int64_t> l_strides_out_2 = {640000, 400, 0, 1, 1600, 0};
-        mini_jit::benchmarks::TensorOperationBench tensor_bench_2(RUN_TIME,
-                                                                  mini_jit::dtype_t::fp32,
-                                                                  mini_jit::ptype_t::none,
-                                                                  mini_jit::ptype_t::gemm,
-                                                                  mini_jit::ptype_t::none,
-                                                                  l_dims_2,
-                                                                  l_execs_2,
-                                                                  l_sizes_2,
-                                                                  l_strides_in0_2,
-                                                                  l_strides_in1_2,
-                                                                  l_strides_out_2);
 
         top_bm << "Running SharedTensorOperationBench benchmark #1" << std::endl;
         std::cout << "Running SharedTensorOperationBench benchmark #1" << std::endl;
@@ -440,15 +494,14 @@ int main(int argc, char *argv[])
         top_bm << "Estimated GFLOPS/sec:            " << result.gflops << std::endl;
         top_bm << "--------------------------------------------------" << std::endl;
 
-        top_bm << "Running SharedTensorOperationBench benchmark #2" << std::endl;
-        std::cout << "Running SharedTensorOperationBench benchmark #2" << std::endl;
-        tensor_bench_2.run();
-        result = tensor_bench_2.getResult();
-        top_bm << "Total time (s):                  " << result.elapsedSeconds << std::endl;
-        top_bm << "Total reps:                      " << result.numReps << std::endl;
-        top_bm << "Total floating point operations: " << result.totalOperations << std::endl;
-        top_bm << "Estimated GFLOPS/sec:            " << result.gflops << std::endl;
-        top_bm << "--------------------------------------------------" << std::endl;
+        top_bm << "#####################################################" << std::endl;
+        top_bm << "Testing different kernel sizes" << std::endl;
+        top_bm << "#####################################################" << std::endl;
+            for (int64_t max_kernel_size : {1024, 512, 256, 125, 64, 32, 16})
+            {
+                optimized_tensor_benchmark(top_bm, 64, max_kernel_size);
+                optimized_tensor_benchmark(top_bm, 256, max_kernel_size);
+            }
     }
 
     return 0;

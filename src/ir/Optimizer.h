@@ -38,6 +38,27 @@ public:
                          int64_t max_kernel_size);
 
     /**
+     * @brief Optimize the dimensions of a tensor operation.
+     *
+     * @param dim_types A vector of dimension types (M, N, K).
+     * @param exec_types A vector of execution types (Prim, Seq, Shared).
+     * @param dim_sizes A vector of dimension sizes.
+     * @param strides_in0 A vector of strides for the first input tensor.
+     * @param strides_in1 A vector of strides for the second input tensor.
+     * @param strides_out A vector of strides for the output tensor.
+     * @param thread_target The target number of threads for optimization.
+     * @param max_kernel_size The maximum size of a kernel dimension
+     */
+    static void optimize(std::vector<dim_t> &dim_types,
+                         std::vector<exec_t> &exec_types,
+                         std::vector<int64_t> &dim_sizes,
+                         std::vector<int64_t> &strides_in0,
+                         std::vector<int64_t> &strides_in1,
+                         std::vector<int64_t> &strides_out,
+                         int64_t thread_target,
+                         int64_t max_kernel_size);
+
+    /**
      * @brief Identify primitive dimensions in the tensor operation and adjust their order.
      *
      * @param dimensions A vector of dimensions to be processed.
