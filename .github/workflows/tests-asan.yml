@@ -15,7 +15,10 @@ jobs:
         uses: actions/checkout@v1
       - name: Compile Tests
         run: |
-            make san
-      - name: Run Tests
+            make tests-san
+      - name: Run Unit Tests
         run: |
-            ./build/linux/tests_san
+            ./build/linux/tests/unit-tests-san
+      - name: Run Integration Tests
+        run: |
+            ./build/linux/tests/int-tests-san

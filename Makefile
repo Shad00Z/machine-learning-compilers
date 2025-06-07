@@ -14,6 +14,8 @@ LIBS =
 # DIRECTORIES
 SRC_DIR = src
 TEST_DIR = tests
+UNIT_TESTS_DIR = $(TEST_DIR)/unit
+INT_TESTS_DIR = $(TEST_DIR)/integration
 BIN_DIR_ROOT = build
 LIB_DIR = 
 INC_DIR = include
@@ -107,12 +109,19 @@ LDFLAGS += -fopenmp
 # INCLUDES
 # INCFLAGS = -I$(LIB_DIR)
 INCFLAGS = -I$(INC_DIR)
-INCFLAGS += -I$(SRC_DIR)
-INCFLAGS += $(shell find $(SRC_DIR) -type d -exec echo -I{} \;)
 INCFLAGS += -I$(TEST_DIR)
 INCFLAGS += -I/usr/local/include
-ifeq ($(ARCH),arm64)
-	INCFLAGS += -I/opt/homebrew/include
+ifeq ($(OS),windows)
+	INCFLAGS += $(shell C:\\msys64\\usr\\bin\\find.exe -L $(SRC_DIR) -type d -path "$(SUB_DIR)" -prune -o -type d -exec echo -I{} \;)
+else ifeq ($(OS),macOS)
+	INCFLAGS += $(shell find $(SRC_DIR) -path "$(SUB_DIR)" -prune -o -type d -exec echo -I{} \;)
+	ifeq ($(ARCH),arm64)
+		INCFLAGS += -I/opt/homebrew/include
+	else ifeq ($(ARCH),x86_64)
+		INCFLAGS += -I/usr/local/include
+	endif
+else ifeq ($(OS),linux)
+	INCFLAGS += $(shell find $(SRC_DIR) -path "$(SUB_DIR)" -prune -o -type d -exec echo -I{} \;)
 endif
 
 # LINKER LIBRARIES
@@ -124,62 +133,54 @@ ifeq ($(OS),macOS)
 	endif
 endif
 
-# DIRECTORY COPY COMMAND
-ifeq ($(OS),windows)
-	COPY_DIRS_CMD = cmd /c 'robocopy $(SRC_DIR) $(BIN_DIR)/$(SRC_DIR) /e /xd submissions /xf * /mt /NFL /NDL /NJH /NJS /nc /ns /np & exit 0'
-else ifeq ($(OS),macOS)
-	COPY_DIRS_CMD = rsync -a --exclude 'submissions/' --include '*/' --exclude '*' "$(SRC_DIR)" "$(BIN_DIR)" && mkdir -p $(BIN_DIR)/$(TEST_DIR)/unit $(BIN_DIR)/$(TEST_DIR)/integration
-else ifeq ($(OS),linux)
-	COPY_DIRS_CMD = rsync -a --exclude 'submissions/' --include '*/' --exclude '*' "$(SRC_DIR)" "$(BIN_DIR)" && mkdir -p $(BIN_DIR)/$(TEST_DIR)/unit $(BIN_DIR)/$(TEST_DIR)/integration
-endif
-
 # GATHER ALL SOURCES
 ifeq ($(OS),macOS)
-	SRC = $(shell find src -name "*.cpp" ! -name "*.test.cpp" ! -name "*.bench.cpp")
-	TESTS_MAIN_SRC = tests/unit/tests.cpp
-	TEST_SRC = $(shell find tests/unit -name "*.cpp" ! -name "tests.cpp")
-	BENCH_SRC = $(shell find src -name "*.bench.cpp")
+	SRC = $(shell find $(SRC_DIR) -name "*.cpp" ! -name "*.bench.cpp")
+	UNIT_TEST_SRC = $(shell find $(UNIT_TESTS_DIR) -name "*.cpp")
+#	INT_TEST_SRC = $(shell find $(INT_TESTS_DIR) -name "*.cpp")
+	BENCH_SRC = $(shell find $(SRC_DIR) -name "*.bench.cpp")
 	SUBMISSIONS = $(shell find $(SUB_DIR) -type f)
 else ifeq ($(OS),linux)
-	SRC = $(shell find src -name "*.cpp" ! -name "*.test.cpp" ! -name "*.bench.cpp")
-	TESTS_MAIN_SRC = tests/unit/tests.cpp
-	TEST_SRC = $(shell find tests/unit -name "*.cpp" ! -name "tests.cpp")
-	BENCH_SRC = $(shell find src -name "*.bench.cpp")
+	SRC = $(shell find $(SRC_DIR) -name "*.cpp" ! -name "*.bench.cpp")
+	UNIT_TEST_SRC = $(shell find $(UNIT_TESTS_DIR) -name "*.cpp")
+#	INT_TEST_SRC = $(shell find $(INT_TESTS_DIR) -name "*.cpp")
+	BENCH_SRC = $(shell find $(SRC_DIR) -name "*.bench.cpp")
 	SUBMISSIONS = $(shell find $(SUB_DIR) -type f)
 else ifeq ($(OS),windows)
 	find_files = $(foreach n,$1,$(shell C:\\\msys64\\\usr\\\bin\\\find.exe -L $2 -name "$n"))
-	SRC = $(call find_files,*.cpp,src)
-	TESTS_MAIN_SRC = tests/unit/tests.cpp
-	TEST_SRC = $(filter-out tests/unit/tests.cpp,$(call find_files,*.cpp,tests/unit))
-	BENCH_SRC = $(call find_files,*.bench.cpp,src)
-	SUBMISSIONS = $(call find_files,*,src/submissions)
+	SRC = $(call find_files,*.cpp,$(SRC_DIR))
+	UNIT_TEST_SRC = $(call find_files,*.cpp,$(UNIT_TESTS_DIR))
+#	INT_TEST_SRC = $(call find_files,*.cpp,$(INT_TESTS_DIR))
+	BENCH_SRC = $(call find_files,*.bench.cpp,$(SRC_DIR))
+	SUBMISSIONS = $(call find_files,*,$(SUB_DIR))
 endif
 
 # MAIN FILES FOR ENTRY POINTS
-TESTS_MAIN_SRC = $(TEST_DIR)/unit/tests.cpp
-TEST_SRC = $(shell find tests/unit -name "*.cpp" ! -name "tests.cpp")
+TESTS_MAIN_SRC = $(TEST_DIR)/tests.cpp
 BENCH_MAIN_SRC = $(SRC_DIR)/benchmarks.cpp
 
 # COMMON SOURCES (EXCEPT MAIN FILES)
-COMMON_SRC = $(filter-out $(TESTS_MAIN_SRC) $(SUBMISSIONS) $(TEST_SRC) $(BENCH_MAIN_SRC) $(BENCH_SRC), $(SRC))
-NOSUB_TEST_SRC = $(filter-out $(SUBMISSIONS), $(TEST_SRC))
+COMMON_SRC = $(filter-out $(SUBMISSIONS) $(BENCH_MAIN_SRC) $(BENCH_SRC), $(SRC))
 
 # DEP
 COMMON_DEP = $(COMMON_SRC:%.cpp=$(BIN_DIR)/%.d)
 TESTS_MAIN_DEP = $(TESTS_MAIN_SRC:%.cpp=$(BIN_DIR)/%.d)
+UNIT_TEST_DEP = $(UNIT_TEST_SRC:%.cpp=$(BIN_DIR)/%.d)
+INT_TEST_DEP = $(INT_TEST_SRC:%.cpp=$(BIN_DIR)/%.d)
 BENCH_MAIN_DEP = $(BENCH_MAIN_SRC:%.cpp=$(BIN_DIR)/%.d)
-NOSUB_TEST_DEP = $(NOSUB_TEST_SRC:%.cpp=$(BIN_DIR)/%.d)
 BENCH_DEP = $(BENCH_SRC:%.cpp=$(BIN_DIR)/%.d)
 -include $(COMMON_DEP)
 -include $(TESTS_MAIN_DEP)
+-include $(UNIT_TEST_DEP)
+-include $(INT_TEST_DEP)
 -include $(BENCH_MAIN_DEP)
--include $(NOSUB_TEST_DEP)
 -include $(BENCH_DEP)
 
 # Convert sources to object files
 COMMON_OBJ = $(COMMON_SRC:%.cpp=$(BIN_DIR)/%.o)
 TESTS_MAIN_OBJ = $(TESTS_MAIN_SRC:%.cpp=$(BIN_DIR)/%.o)
-TEST_OBJ = $(TEST_SRC:%.cpp=$(BIN_DIR)/%.o)
+UNIT_TEST_OBJ = $(UNIT_TEST_SRC:%.cpp=$(BIN_DIR)/%.o)
+INT_TEST_OBJ = $(INT_TEST_SRC:%.cpp=$(BIN_DIR)/%.o)
 BENCH_MAIN_OBJ = $(BENCH_MAIN_SRC:%.cpp=$(BIN_DIR)/%.o)
 BENCH_OBJ = $(BENCH_SRC:%.cpp=$(BIN_DIR)/%.o)
 
@@ -190,36 +191,35 @@ $(BIN_DIR):
 	mkdir -p $@
 
 createdirs: $(BIN_DIR)
-	$(COPY_DIRS_CMD)
 
 $(BIN_DIR)/%.o: %.cpp
 	@mkdir -p $(dir $@)
 	$(CXX) -o $@ -MMD -c $< $(CXXFLAGS) $(INCFLAGS)
 
-# Rule for test files to prevent duplicate symbols
-$(BIN_DIR)/$(TEST_DIR)/%.o: $(TEST_DIR)/%.cpp
-	@mkdir -p $(dir $@)
-	$(CXX) -o $@ -MMD -c $< $(CXXFLAGS) $(INCFLAGS)
-
-tests: createdirs $(COMMON_OBJ) $(TESTS_MAIN_OBJ) $(TEST_OBJ)
-	@mkdir -p $(dir $(BIN_DIR)/tests/unit/tests)
-	$(LD) -o $(BIN_DIR)/tests/unit/tests $(COMMON_OBJ) $(TESTS_MAIN_OBJ) $(TEST_OBJ) $(LDFLAGS) $(LIBS)
-
 benchmarks: createdirs $(COMMON_OBJ) $(BENCH_MAIN_OBJ) $(BENCH_OBJ)
 	$(LD) -o $(BIN_DIR)/benchmarks $(COMMON_OBJ) $(BENCH_MAIN_OBJ) $(BENCH_OBJ) $(LDFLAGS) $(LIBS)
 
-san: CXXFLAGS := $(SAN_CXX_FLAGS) $(CXXFLAGS)
-san: LDFLAGS := $(SAN_LD_FLAGS) $(LDFLAGS)
+unit-tests: createdirs $(COMMON_OBJ) $(TESTS_MAIN_OBJ) $(UNIT_TEST_OBJ)
+	$(LD) -o $(BIN_DIR)/$(TEST_DIR)/unit-tests $(COMMON_OBJ) $(TESTS_MAIN_OBJ) $(UNIT_TEST_OBJ) $(LDFLAGS) $(LIBS)
 
-san: createdirs $(COMMON_OBJ) $(TESTS_MAIN_OBJ) $(TEST_OBJ)
-	@mkdir -p $(dir $(BIN_DIR)/tests_san)
-	$(LD) -o $(BIN_DIR)/tests_san $(COMMON_OBJ) $(TESTS_MAIN_OBJ) $(TEST_OBJ) $(LDFLAGS) $(LIBS)
+int-tests: createdirs $(COMMON_OBJ) $(TESTS_MAIN_OBJ) $(INT_TEST_OBJ)
+	$(LD) -o $(BIN_DIR)/$(TEST_DIR)/int-tests $(COMMON_OBJ) $(TESTS_MAIN_OBJ) $(INT_TEST_OBJ) $(LDFLAGS) $(LIBS)
+
+tests: unit-tests int-tests
+
+unit-tests-san: CXXFLAGS := $(SAN_CXX_FLAGS) $(CXXFLAGS)
+unit-tests-san: LDFLAGS := $(SAN_LD_FLAGS) $(LDFLAGS)
+unit-tests-san: createdirs $(COMMON_OBJ) $(TESTS_MAIN_OBJ) $(UNIT_TEST_OBJ)
+	$(LD) -o $(BIN_DIR)/$(TEST_DIR)/unit-tests-san $(COMMON_OBJ) $(TESTS_MAIN_OBJ) $(UNIT_TEST_OBJ) $(LDFLAGS) $(LIBS)
+
+int-tests-san: CXXFLAGS := $(SAN_CXX_FLAGS) $(CXXFLAGS)
+int-tests-san: LDFLAGS := $(SAN_LD_FLAGS) $(LDFLAGS)
+int-tests-san: createdirs $(COMMON_OBJ) $(TESTS_MAIN_OBJ) $(INT_TEST_OBJ)
+	$(LD) -o $(BIN_DIR)/$(TEST_DIR)/int-tests-san $(COMMON_OBJ) $(TESTS_MAIN_OBJ) $(INT_TEST_OBJ) $(LDFLAGS) $(LIBS)
+
+tests-san: unit-tests-san int-tests-san
 
 .PHONY: clean
-
-run_tests: tests
-	$(BIN_DIR)/tests
-	rm -rf *.bin
 
 clean:
 	rm -rf $(BIN_DIR)

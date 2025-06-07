@@ -20,9 +20,9 @@ jobs:
       - name: Compile Tests
         run: |
             make tests
-      - name: Run Valgrind
+      - name: Run Unit Tests
         run: |
-            valgrind ./build/linux/tests/unit/tests
-      - name: Run Tests
+            valgrind ./build/linux/tests/unit-tests
+      - name: Run Integration Tests
         run: |
-            ./build/linux/tests/unit/tests
+            valgrind ./build/linux/tests/int-tests
