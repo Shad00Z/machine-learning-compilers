@@ -3,7 +3,7 @@
 # @section DESCRIPTION
 # Execute tests on GitHub Actions
 ##
-name: Run Tests (+ Valgrind)
+name: Run Tests
 
 on: [push, workflow_dispatch]
 jobs:
