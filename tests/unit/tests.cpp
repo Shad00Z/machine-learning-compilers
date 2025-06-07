@@ -1,6 +1,6 @@
-#define CATCH_CONFIG_MAIN
+#define CATCH_CONFIG_RUNNER
 #include <catch2/catch.hpp>
-#undef CATCH_CONFIG_MAIN
+#undef CATCH_CONFIG_RUNNER
 
 int main(int i_argc,
          char *i_argv[])
