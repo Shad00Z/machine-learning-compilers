@@ -1,9 +1,9 @@
 #include <catch2/catch.hpp>
 #include <iostream>
 #include "types.h"
-#include "ir/Optimizer.h"
-#include "ir/Dimension.h"
-#include "ir/IRConverter.h"
+#include "Optimizer.h"
+#include "Dimension.h"
+#include "IRConverter.h"
 #include <limits.h>
 
 using mini_jit::dim_t;
