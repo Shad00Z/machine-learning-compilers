@@ -281,25 +281,26 @@ void mini_jit::TensorOperation::execute_iter(int64_t id_loop,
                                              bool last_access)
 {
     // there is only one iteration if the dimension is the first primitive
-    int64_t l_size = m_id_first_primitive_loop != id_loop ? m_dim_sizes[id_loop] : 1;
-    int64_t l_stride_in0 = m_strides_in0[id_loop];
-    int64_t l_stride_in1 = m_strides_in1[id_loop];
-    int64_t l_stride_out = m_strides_out[id_loop];
+    const int64_t l_size = id_loop != m_id_first_primitive_loop ? m_dim_sizes[id_loop] : 1;
+    const int64_t dtype_sz = dtype_size();
+    const int64_t l_stride_in0 = m_strides_in0[id_loop] * dtype_sz;
+    const int64_t l_stride_in1 = m_strides_in1[id_loop] * dtype_sz;
+    const int64_t l_stride_out = m_strides_out[id_loop] * dtype_sz;
 
     for (int64_t l_iter = 0; l_iter < l_size; l_iter++)
     {
         bool is_first = first_access;
         bool is_last = last_access;
         // if the size is 1, it is always the first and last access
-        if (m_dim_types[id_loop] == dim_t::k && l_size > 1)
+        if (l_size > 1 && m_dim_types[id_loop] == dim_t::k)
         {
             is_first = first_access && (l_iter == 0);
             is_last = last_access && (l_iter == m_dim_sizes[id_loop] - 1);
         }
 
-        char const *sub_ptr_in0 = ptr_in0 + l_iter * l_stride_in0 * dtype_size();
-        char const *sub_ptr_in1 = ptr_in1 + l_iter * l_stride_in1 * dtype_size();
-        char *sub_ptr_out = ptr_out + l_iter * l_stride_out * dtype_size();
+        char const *sub_ptr_in0 = ptr_in0 + l_iter * l_stride_in0;
+        char const *sub_ptr_in1 = ptr_in1 + l_iter * l_stride_in1;
+        char *sub_ptr_out = ptr_out + l_iter * l_stride_out;
 
         // Recursive Call
         if (id_loop + 1 < m_id_first_primitive_loop)
@@ -368,11 +369,11 @@ void mini_jit::TensorOperation::execute_iter_parallel(char const *ptr_in0,
         char const *sub_ptr_in1 = ptr_in1;
         char *sub_ptr_out = ptr_out;
 
-        int dtype_sz = dtype_size();
+        const int64_t dtype_sz = dtype_size();
         for (size_t i = 0; i < m_shared_loop_ids.size(); ++i)
         {
-            int64_t dim_id = m_shared_loop_ids[i];
-            int64_t idx = loop_indices[i];
+            const int64_t dim_id = m_shared_loop_ids[i];
+            const int64_t idx = loop_indices[i];
 
             sub_ptr_in0 += idx * m_strides_in0[dim_id] * dtype_sz;
             sub_ptr_in1 += idx * m_strides_in1[dim_id] * dtype_sz;
