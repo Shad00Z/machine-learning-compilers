@@ -226,9 +226,16 @@ void mini_jit::ir::Optimizer::createSharedLoops(std::vector<mini_jit::ir::Dimens
 
     if (l_num_threads >= thread_target)
     {
+        // make sure that the shared loops are at the front
+        std::stable_partition(dimensions.begin(), dimensions.end(),
+                              [](const mini_jit::ir::Dimension &dim)
+                              {
+                                  return dim.exec_type == exec_t::shared;
+                              });
         // no need to create more shared loops
         return;
     }
+    
     // Creation of new shared loops:
     for (size_t i = 0; i < dimensions.size(); i++)
     {
