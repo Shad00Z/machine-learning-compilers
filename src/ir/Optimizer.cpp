@@ -178,10 +178,10 @@ void mini_jit::ir::Optimizer::identifyPrimitives(std::vector<mini_jit::ir::Dimen
 void mini_jit::ir::Optimizer::splitDimensions(std::vector<mini_jit::ir::Dimension> &dimensions,
                                               int64_t max_kernel_size)
 {
-    // Primitive dimensions should be split if they are too large (> 1024)
+    // Primitive dimensions should be split if they are too large (> max_kernel_size)
     for (size_t i = 0; i < dimensions.size(); i++)
     {
-        if (dimensions[i].exec_type == exec_t::prim && dimensions[i].size > 1024)
+        if (dimensions[i].exec_type == exec_t::prim && dimensions[i].size > max_kernel_size)
         {
             int64_t l_size_seq = 0;
             int64_t l_size_prim = 0;
