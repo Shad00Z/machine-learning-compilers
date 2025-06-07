@@ -199,7 +199,7 @@ $(BIN_DIR)/%.o: %.cpp
 # Rule for test files to prevent duplicate symbols
 $(BIN_DIR)/$(TEST_DIR)/%.o: $(TEST_DIR)/%.cpp
 	@mkdir -p $(dir $@)
-	$(CXX) -o $@ -MMD -c $< $(CXXFLAGS) $(INCFLAGS) -DCATCH_CONFIG_MAIN
+	$(CXX) -o $@ -MMD -c $< $(CXXFLAGS) $(INCFLAGS)
 
 tests: createdirs $(COMMON_OBJ) $(TESTS_MAIN_OBJ) $(TEST_OBJ)
 	@mkdir -p $(dir $(BIN_DIR)/tests/unit/tests)
