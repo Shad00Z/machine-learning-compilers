@@ -1,7 +1,7 @@
 ##
 # @author Lucas Obitz, Luca-Philipp Grumbach
 # @section DESCRIPTION
-# Execute tests on GitHub Actions with Valgrind
+# Execute tests on GitHub Actions
 ##
 name: Run Tests (+ Valgrind)
 
@@ -26,3 +26,19 @@ jobs:
       - name: Run Integration Tests
         run: |
             valgrind ./build/linux/tests/int-tests
+
+  run-tests-asan:
+    name: Run Tests (+ ASan)
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v1
+      - name: Compile Tests
+        run: |
+            make tests-san
+      - name: Run Unit Tests
+        run: |
+            ./build/linux/tests/unit-tests-san
+      - name: Run Integration Tests
+        run: |
+            ./build/linux/tests/int-tests-san
