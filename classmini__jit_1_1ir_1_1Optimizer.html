@@ -95,9 +95,12 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a767d8333b2d14781978417d4d3663d6d" id="r_a767d8333b2d14781978417d4d3663d6d"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmini__jit_1_1ir_1_1Optimizer.html#a767d8333b2d14781978417d4d3663d6d">optimize</a> (std::vector&lt; <a class="el" href="structmini__jit_1_1ir_1_1Dimension.html">Dimension</a> &gt; &amp;dimensions, int64_t thread_target, int64_t max_kernel_size)</td></tr>
-<tr class="memdesc:a767d8333b2d14781978417d4d3663d6d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optimize the dimensions of a tensor operation.  <br /></td></tr>
-<tr class="separator:a767d8333b2d14781978417d4d3663d6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e1a1337409a69d4c731fdb92f2396f1" id="r_a9e1a1337409a69d4c731fdb92f2396f1"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmini__jit_1_1ir_1_1Optimizer.html#a9e1a1337409a69d4c731fdb92f2396f1">optimize</a> (std::vector&lt; <a class="el" href="structmini__jit_1_1ir_1_1Dimension.html">Dimension</a> &gt; &amp;dimensions, int64_t thread_target, int64_t max_kernel_size)</td></tr>
+<tr class="memdesc:a9e1a1337409a69d4c731fdb92f2396f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optimize the dimensions of a tensor operation.  <br /></td></tr>
+<tr class="separator:a9e1a1337409a69d4c731fdb92f2396f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac201345b76838c6d1f19b77635233b47" id="r_ac201345b76838c6d1f19b77635233b47"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmini__jit_1_1ir_1_1Optimizer.html#ac201345b76838c6d1f19b77635233b47">optimize</a> (std::vector&lt; dim_t &gt; &amp;dim_types, std::vector&lt; exec_t &gt; &amp;exec_types, std::vector&lt; int64_t &gt; &amp;dim_sizes, std::vector&lt; int64_t &gt; &amp;strides_in0, std::vector&lt; int64_t &gt; &amp;strides_in1, std::vector&lt; int64_t &gt; &amp;strides_out, int64_t thread_target, int64_t max_kernel_size)</td></tr>
+<tr class="memdesc:ac201345b76838c6d1f19b77635233b47"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optimize the dimensions of a tensor operation.  <br /></td></tr>
+<tr class="separator:ac201345b76838c6d1f19b77635233b47"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a44b95cb1c150be201373d92bbbe4fe08" id="r_a44b95cb1c150be201373d92bbbe4fe08"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmini__jit_1_1ir_1_1Optimizer.html#a44b95cb1c150be201373d92bbbe4fe08">identifyPrimitives</a> (std::vector&lt; <a class="el" href="structmini__jit_1_1ir_1_1Dimension.html">Dimension</a> &gt; &amp;dimensions)</td></tr>
 <tr class="memdesc:a44b95cb1c150be201373d92bbbe4fe08"><td class="mdescLeft">&#160;</td><td class="mdescRight">Identify primitive dimensions in the tensor operation and adjust their order.  <br /></td></tr>
 <tr class="separator:a44b95cb1c150be201373d92bbbe4fe08"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -191,8 +194,8 @@ Static Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a767d8333b2d14781978417d4d3663d6d" name="a767d8333b2d14781978417d4d3663d6d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a767d8333b2d14781978417d4d3663d6d">&#9670;&#160;</a></span>optimize()</h2>
+<a id="ac201345b76838c6d1f19b77635233b47" name="ac201345b76838c6d1f19b77635233b47"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac201345b76838c6d1f19b77635233b47">&#9670;&#160;</a></span>optimize() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -201,7 +204,94 @@ Static Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void mini_jit::ir::Optimizer::optimize </td>
+          <td class="memname">static void mini_jit::ir::Optimizer::optimize </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; dim_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>dim_types</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; exec_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>exec_types</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; int64_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>dim_sizes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; int64_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>strides_in0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; int64_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>strides_in1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; int64_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>strides_out</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>thread_target</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>max_kernel_size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Optimize the dimensions of a tensor operation. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">dim_types</td><td>A vector of dimension types (M, N, K). </td></tr>
+    <tr><td class="paramname">exec_types</td><td>A vector of execution types (Prim, Seq, Shared). </td></tr>
+    <tr><td class="paramname">dim_sizes</td><td>A vector of dimension sizes. </td></tr>
+    <tr><td class="paramname">strides_in0</td><td>A vector of strides for the first input tensor. </td></tr>
+    <tr><td class="paramname">strides_in1</td><td>A vector of strides for the second input tensor. </td></tr>
+    <tr><td class="paramname">strides_out</td><td>A vector of strides for the output tensor. </td></tr>
+    <tr><td class="paramname">thread_target</td><td>The target number of threads for optimization. </td></tr>
+    <tr><td class="paramname">max_kernel_size</td><td>The maximum size of a kernel dimension </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a9e1a1337409a69d4c731fdb92f2396f1" name="a9e1a1337409a69d4c731fdb92f2396f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e1a1337409a69d4c731fdb92f2396f1">&#9670;&#160;</a></span>optimize() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void mini_jit::ir::Optimizer::optimize </td>
           <td>(</td>
           <td class="paramtype">std::vector&lt; <a class="el" href="structmini__jit_1_1ir_1_1Dimension.html">Dimension</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>dimensions</em>, </td>
