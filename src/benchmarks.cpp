@@ -5,7 +5,7 @@
 #include <iostream>
 #include <cstring>
 #include <fstream>
-#include <limits>
+#include <climits>
 
 void gemm_benchmark()
 {
@@ -497,11 +497,11 @@ int main(int argc, char *argv[])
         top_bm << "#####################################################" << std::endl;
         top_bm << "Testing different kernel sizes" << std::endl;
         top_bm << "#####################################################" << std::endl;
-            for (int64_t max_kernel_size : {1024, 512, 256, 125, 64, 32, 16})
-            {
-                optimized_tensor_benchmark(top_bm, 64, max_kernel_size);
-                optimized_tensor_benchmark(top_bm, 256, max_kernel_size);
-            }
+        for (int64_t max_kernel_size : {1024, 512, 256, 125, 64, 32, 16})
+        {
+            optimized_tensor_benchmark(top_bm, 64, max_kernel_size);
+            optimized_tensor_benchmark(top_bm, 256, max_kernel_size);
+        }
     }
 
     return 0;
