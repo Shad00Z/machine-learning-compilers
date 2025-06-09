@@ -209,6 +209,21 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
         }
     }
 
+    /////////////////////////////////////////////////////////////////////
+    // Check for Transposal
+    /////////////////////////////////////////////////////////////////////
+    if (m_dim_id_prim_M != -1)
+    {
+        int64_t l_stride_in0 = m_strides_in0[m_dim_id_prim_M];
+        int64_t l_stride_out = m_strides_out[m_dim_id_prim_M];
+        // set transpose flag to true if the strides are different
+        m_transpose_output = l_stride_in0 != l_stride_out;
+    }
+    else
+    {
+        // idk if we can check for transposal without M
+        m_transpose_output = false;
+    }
     
     /////////////////////////////////////////////////////////////////////
     // Generate kernels
@@ -217,13 +232,14 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
     {
         m_unary_first_touch.generate(m_dim_sizes[m_dim_id_prim_M],
                                      m_dim_sizes[m_dim_id_prim_N],
-                                     0,
+                                     m_transpose_output,
                                      dtype,
                                      prim_first_touch);
         m_kernel_first_touch = m_unary_first_touch.get_kernel();
     }
     if (prim_main == ptype_t::gemm)
     {
+        // does not support transposal
         m_brgemm_main.generate(m_dim_sizes[m_dim_id_prim_M],
                                m_dim_sizes[m_dim_id_prim_N],
                                m_dim_sizes[m_dim_id_prim_K],
@@ -236,6 +252,7 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
     }
     else if (prim_main == ptype_t::brgemm)
     {
+        // does not support transposal
         m_brgemm_main.generate(m_dim_sizes[m_dim_id_prim_M],
                                m_dim_sizes[m_dim_id_prim_N],
                                m_dim_sizes[m_dim_id_prim_K],
@@ -248,10 +265,9 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
     }
     else if (prim_main == ptype_t::identity)
     {
-        // TODO: check if transpose or not
         m_unary_main.generate(m_dim_sizes[m_dim_id_prim_M],
                               m_dim_sizes[m_dim_id_prim_N],
-                              0,
+                              m_transpose_output,
                               dtype,
                               prim_main);
         m_kernel_unary_main = m_unary_main.get_kernel();
@@ -260,7 +276,7 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
     {
         m_unary_last_touch.generate(m_dim_sizes[m_dim_id_prim_M],
                                     m_dim_sizes[m_dim_id_prim_N],
-                                    0,
+                                    m_transpose_output,
                                     dtype,
                                     prim_last_touch);
         m_kernel_last_touch = m_unary_last_touch.get_kernel();

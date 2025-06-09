@@ -107,6 +107,9 @@ private:
     /// number of parallel loops
     int64_t m_num_parallel_loops;
 
+    /// whether the output should be transposed
+    bool m_transpose_output = false;
+
     /**
      * Executes the first touch kernel.
      *
