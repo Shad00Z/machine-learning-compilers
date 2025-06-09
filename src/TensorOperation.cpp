@@ -353,7 +353,7 @@ void mini_jit::TensorOperation::execute_iter(int64_t id_loop,
                                 sub_ptr_in1,
                                 sub_ptr_out,
                                 m_kernel_main_type == ptype_t::identity ? m_strides_in0[m_dim_id_prim_N] : m_strides_in0[m_dim_id_prim_K],
-                                m_strides_in1[m_dim_id_prim_N],
+                                m_strides_in1[m_dim_id_prim_N], // ldB is ignored for identity
                                 m_kernel_main_type == ptype_t::identity ? m_strides_out[m_dim_id_prim_N] : m_strides_out[m_dim_id_prim_N],
                                 m_dim_id_prim_BR != -1 ? m_strides_in0[m_dim_id_prim_BR] : 1,
                                 m_dim_id_prim_BR != -1 ? m_strides_in1[m_dim_id_prim_BR] : 1);
