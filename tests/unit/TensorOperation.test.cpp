@@ -898,6 +898,11 @@ TEST_CASE("Reference test for IDENTITY + RELU layout transformation trus → tur
 //         A[i] = dist(gen);
 //     }
 
+//     // Initialize input tensor C
+//     for (int i = 0; i < SIZE_C; ++i) {
+//         C[i] = dist(gen);
+//     }
+
 //     // Initialize expected output (transposed)
 //     for (int r = 0; r < R; ++r) {
 //         for (int s = 0; s < S; ++s) {
@@ -911,9 +916,9 @@ TEST_CASE("Reference test for IDENTITY + RELU layout transformation trus → tur
 //         mini_jit::dim_t::c
 //     };
 
-//     // Define execution types (sequential and primitive)
+//     // Define execution types
 //     std::vector<mini_jit::exec_t> exec_types = {
-//         mini_jit::exec_t::seq,
+//         mini_jit::exec_t::prim,
 //         mini_jit::exec_t::prim
 //     };
 
@@ -933,8 +938,8 @@ TEST_CASE("Reference test for IDENTITY + RELU layout transformation trus → tur
 //         0
 //     };
 //     std::vector<int64_t> strides_out = {
-//         R,
-//         1
+//         1,
+//         R
 //     };
 
 //     mini_jit::TensorOperation l_top;
@@ -998,9 +1003,9 @@ TEST_CASE("Reference test for IDENTITY + RELU layout transformation trus → tur
 //         mini_jit::dim_t::c
 //     };
 
-//     // Define execution types (sequential and primitive)
+//     // Define execution types
 //     std::vector<mini_jit::exec_t> exec_types = {
-//         mini_jit::exec_t::seq,
+//         mini_jit::exec_t::prim,
 //         mini_jit::exec_t::prim
 //     };
 
@@ -1020,8 +1025,8 @@ TEST_CASE("Reference test for IDENTITY + RELU layout transformation trus → tur
 //         0
 //     };
 //     std::vector<int64_t> strides_out = {
-//         S,
-//         1
+//         1,
+//         R
 //     };
 
 //     mini_jit::TensorOperation l_top;

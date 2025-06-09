@@ -34,7 +34,7 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
     {
         return error_t::wrong_exec_type;
     }
-    else if (prim_main == ptype_t::identity && ( prim_count != 2 && prim_count != 0 ))
+    else if (prim_main == ptype_t::identity && prim_count != 2)
     {
         return error_t::wrong_exec_type;
     }
@@ -232,7 +232,7 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
     {
         m_unary_first_touch.generate(m_dim_sizes[m_dim_id_prim_M],
                                      m_dim_sizes[m_dim_id_prim_N],
-                                     m_transpose_output,
+                                     0,
                                      dtype,
                                      prim_first_touch);
         m_kernel_first_touch = m_unary_first_touch.get_kernel();
@@ -276,7 +276,7 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
     {
         m_unary_last_touch.generate(m_dim_sizes[m_dim_id_prim_M],
                                     m_dim_sizes[m_dim_id_prim_N],
-                                    m_transpose_output,
+                                    0,
                                     dtype,
                                     prim_last_touch);
         m_kernel_last_touch = m_unary_last_touch.get_kernel();
@@ -359,25 +359,45 @@ void mini_jit::TensorOperation::execute_iter(int64_t id_loop,
         }
         else
         {
+            int64_t l_final_stride_in0 = m_strides_in0[m_dim_id_prim_K];
+            int64_t l_final_stride_in1 = m_strides_in1[m_dim_id_prim_N];
+            int64_t l_final_stride_out = m_strides_out[m_dim_id_prim_N];
+
+            if (m_kernel_main_type == ptype_t::identity)
+            {
+                if (!m_transpose_output)
+                {
+                    l_final_stride_in0 = m_strides_in0[m_dim_id_prim_N];
+                    l_final_stride_in1 = 0;
+                    l_final_stride_out = m_strides_out[m_dim_id_prim_N];
+                }
+                else
+                {
+                    l_final_stride_in0 = m_strides_in0[m_dim_id_prim_N];
+                    l_final_stride_in1 = 0;
+                    l_final_stride_out = m_strides_out[m_dim_id_prim_M];
+                }
+            }
+
             if (is_first)
             {
                 execute_kernel_first_touch(sub_ptr_out,
-                                           m_strides_out[m_dim_id_prim_N]);
+                                           l_final_stride_out);
             }
 
             execute_kernel_main(sub_ptr_in0,
                                 sub_ptr_in1,
                                 sub_ptr_out,
-                                m_kernel_main_type == ptype_t::identity ? m_strides_in0[m_dim_id_prim_N] : m_strides_in0[m_dim_id_prim_K],
-                                m_strides_in1[m_dim_id_prim_N], // ldB is ignored for identity
-                                m_kernel_main_type == ptype_t::identity ? m_strides_out[m_dim_id_prim_N] : m_strides_out[m_dim_id_prim_N],
+                                l_final_stride_in0,
+                                l_final_stride_in1,
+                                l_final_stride_out,
                                 m_dim_id_prim_BR != -1 ? m_strides_in0[m_dim_id_prim_BR] : 1,
                                 m_dim_id_prim_BR != -1 ? m_strides_in1[m_dim_id_prim_BR] : 1);
 
             if (is_last)
             {
                 execute_kernel_last_touch(sub_ptr_out,
-                                          m_strides_out[m_dim_id_prim_N]);
+                                          l_final_stride_out);
             }
         }
     }
