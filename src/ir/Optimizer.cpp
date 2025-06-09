@@ -2,6 +2,7 @@
 #include "IRConverter.h"
 #include <algorithm>
 #include <limits.h>
+#include <iostream>
 
 void mini_jit::ir::Optimizer::optimize(std::vector<mini_jit::ir::Dimension> &dimensions,
                                        int64_t thread_target,
@@ -9,15 +10,15 @@ void mini_jit::ir::Optimizer::optimize(std::vector<mini_jit::ir::Dimension> &dim
 {
     identifyPrimitives(dimensions);
 
-    // Verify that there are 3 or 4 primitive dimensions
+    // Verify that there are 2, 3 or 4 primitive dimensions
     int prim_count = std::count_if(dimensions.begin(), dimensions.end(),
                                    [](const mini_jit::ir::Dimension &dim)
                                    {
                                        return dim.exec_type == exec_t::prim;
                                    });
-    if (prim_count < 3 || prim_count > 4)
+    if (prim_count < 2 || prim_count > 4)
     {
-        throw std::invalid_argument("Optimizer: Expected 3 or 4 primitive dimensions, found " + std::to_string(prim_count) + ". Try setting all dimensions to seq or undefined.");
+        throw std::invalid_argument("Optimizer: Expected 2, 3 or 4 primitive dimensions, found " + std::to_string(prim_count) + ". Try setting all dimensions to seq or undefined.");
     }
 
     splitDimensions(dimensions,
@@ -61,117 +62,262 @@ void mini_jit::ir::Optimizer::optimize(std::vector<mini_jit::dim_t> &dim_types,
 
 void mini_jit::ir::Optimizer::identifyPrimitives(std::vector<mini_jit::ir::Dimension> &dimensions)
 {
-    /////////////////////////////////////////////////////////////////
-    // FIND PRIM BR (second K)
-    /////////////////////////////////////////////////////////////////
-    // req: no unit stride in in1, stride_out has to be 0
-    auto l_dim_BR_it = std::find_if(dimensions.begin(), dimensions.end(),
-                                    [](const mini_jit::ir::Dimension &dim)
-                                    {
-                                        return (dim.type == dim_t::k || dim.type == dim_t::undefined) &&
-                                               dim.stride_in1 != 1 &&
-                                               dim.stride_out == 0;
-                                    });
-
-    if (l_dim_BR_it != dimensions.end())
-    {
-        // set dimension data
-        l_dim_BR_it->type = dim_t::k;
-        l_dim_BR_it->exec_type = exec_t::prim;
-        if (l_dim_BR_it != dimensions.end() - 1)
-        {
-            // move BR(K) to the back
-            std::rotate(l_dim_BR_it, l_dim_BR_it + 1, dimensions.end());
-        }
-    }
-    /////////////////////////////////////////////////////////////////
-    // FIND PRIM M
-    /////////////////////////////////////////////////////////////////
-    // req: unit stride in in0 and out
-    auto l_dim_m_it = std::find_if(dimensions.begin(), dimensions.end(),
+    // Handle unary case first
+    auto l_has_c_dim = std::any_of(dimensions.begin(), dimensions.end(),
                                    [](const mini_jit::ir::Dimension &dim)
                                    {
-                                       return (dim.type == dim_t::m || dim.type == dim_t::undefined) &&
-                                              dim.stride_in0 == 1 &&
-                                              dim.stride_in1 == 0 &&
-                                              dim.stride_out == 1;
+                                       return dim.type == dim_t::c;
                                    });
-
-    if (l_dim_m_it != dimensions.end())
+    if (l_has_c_dim)
     {
-        // set dimension data
-        l_dim_m_it->type = dim_t::m;
-        l_dim_m_it->exec_type = exec_t::prim;
-        if (l_dim_m_it != dimensions.end() - 1)
+        // check that all dimensions are c
+        if (!std::all_of(dimensions.begin(), dimensions.end(),
+                         [](const mini_jit::ir::Dimension &dim)
+                         {
+                             return dim.type == dim_t::c;
+                         }))
         {
-            // move M to the back
-            std::rotate(l_dim_m_it, l_dim_m_it + 1, dimensions.end());
+            throw std::invalid_argument("Optimizer: All dimensions must be of type 'c' for unary operations.");
         }
-    }
-    else
-    {
-        throw std::invalid_argument("Optimizer: No suitable primary dimension M found.");
-    }
-
-    /////////////////////////////////////////////////////////////////
-    // FIND PRIM N
-    /////////////////////////////////////////////////////////////////
-    // req: choose the one with the smallest strides, stride_in0 has to be 0
-    int l_n_dim_strides = INT_MAX;
-    int l_n_dim_id = -1;
-    for (size_t i = 0; i < dimensions.size(); i++)
-    {
-        if ((dimensions[i].type == dim_t::n || dimensions[i].type == dim_t::undefined) &&
-            dimensions[i].stride_in0 == 0)
+        // check for existing primary dimensions
+        int prim_c_count = std::count_if(dimensions.begin(), dimensions.end(),
+                                         [](const mini_jit::ir::Dimension &dim)
+                                         {
+                                             return dim.type == dim_t::c && dim.exec_type == exec_t::prim;
+                                         });
+        if (prim_c_count == 2)
         {
-            int l_current_strides = dimensions[i].stride_in1 + dimensions[i].stride_out;
-            if (l_current_strides < l_n_dim_strides)
+            return; // primary dimensions already set
+        }
+        else if (prim_c_count != 0)
+        {
+            throw std::invalid_argument("Optimizer: Expected 0 or 2 primary dimensions of type 'c', found " + std::to_string(prim_c_count) + ". Try setting all dimensions to seq or undefined.");
+        }
+
+        /////////////////////////////////////////////////////////////////
+        // FIND UNARY PRIM M
+        /////////////////////////////////////////////////////////////////
+        // req: unit stride in in0. Out might not be 1 if operation transposes.
+        auto l_dim_m_it = std::find_if(dimensions.begin(), dimensions.end(),
+                                       [](const mini_jit::ir::Dimension &dim)
+                                       {
+                                           return (dim.type == dim_t::c) &&
+                                                  dim.stride_in0 == 1 &&
+                                                  dim.stride_in1 == 0;
+                                       });
+
+        bool l_transpose = false;
+        if (l_dim_m_it != dimensions.end())
+        {
+            // transpose if the output stride in M is not 1
+            l_transpose = l_dim_m_it->stride_out != 1;
+            // set dimension data
+            l_dim_m_it->exec_type = exec_t::prim;
+            if (l_dim_m_it != dimensions.end() - 1)
             {
-                l_n_dim_strides = l_current_strides;
-                l_n_dim_id = static_cast<int>(i);
+                // move M to the back
+                std::rotate(l_dim_m_it, l_dim_m_it + 1, dimensions.end());
             }
         }
-    }
-
-    if (l_n_dim_id == -1)
-    {
-        throw std::invalid_argument("Optimizer: No suitable primary dimension N found.");
-    }
-
-    // set dimension data
-    dimensions[l_n_dim_id].type = dim_t::n;
-    dimensions[l_n_dim_id].exec_type = exec_t::prim;
-    // move N to the back
-    if (l_n_dim_id != static_cast<int>(dimensions.size()) - 1)
-    {
-        std::rotate(dimensions.begin() + l_n_dim_id, dimensions.begin() + l_n_dim_id + 1, dimensions.end());
-    }
-    /////////////////////////////////////////////////////////////////
-    // FIND PRIM K
-    /////////////////////////////////////////////////////////////////
-    // req: unit stride in in1, stride_out has to be 0
-    auto l_dim_k_it = std::find_if(dimensions.begin(), dimensions.end(),
-                                   [](const mini_jit::ir::Dimension &dim)
-                                   {
-                                       return (dim.type == dim_t::k || dim.type == dim_t::undefined) &&
-                                              dim.stride_in1 == 1 &&
-                                              dim.stride_out == 0;
-                                   });
-
-    if (l_dim_k_it != dimensions.end())
-    {
-        // set dimension data
-        l_dim_k_it->type = dim_t::k;
-        l_dim_k_it->exec_type = exec_t::prim;
-        if (l_dim_k_it != dimensions.end() - 1)
+        else
         {
-            // move K to the back
-            std::rotate(l_dim_k_it, l_dim_k_it + 1, dimensions.end());
+            throw std::invalid_argument("Optimizer: No suitable primary dimension M found.");
         }
+
+        if (l_transpose)
+        {
+            /////////////////////////////////////////////////////////////////
+            // FIND UNARY PRIM N
+            /////////////////////////////////////////////////////////////////
+            // req: unit stride in out.
+            auto l_dim_n_it = std::find_if(dimensions.begin(), dimensions.end(),
+                                           [](const mini_jit::ir::Dimension &dim)
+                                           {
+                                               return (dim.type == dim_t::c) &&
+                                                      dim.stride_out == 1 &&
+                                                      dim.stride_in1 == 0;
+                                           });
+
+            if (l_dim_n_it != dimensions.end())
+            {
+                // set dimension data
+                l_dim_n_it->exec_type = exec_t::prim;
+                if (l_dim_n_it != dimensions.end() - 1)
+                {
+                    // move N to the back
+                    std::rotate(l_dim_n_it, l_dim_n_it + 1, dimensions.end());
+                }
+            }
+            else
+            {
+                throw std::invalid_argument("Optimizer: No suitable primary dimension N found.");
+            }
+        }
+        else
+        {
+            // TODO: check if this is ok
+
+            /////////////////////////////////////////////////////////////////
+            // FIND UNARY PRIM N
+            /////////////////////////////////////////////////////////////////
+            // req: choose the one with the smallest stride in in0
+            int l_n_dim_stride = INT_MAX;
+            int l_n_dim_id = -1;
+            for (size_t i = 0; i < dimensions.size(); i++)
+            {
+                if ((dimensions[i].type == dim_t::c) &&
+                    dimensions[i].stride_in1 == 0 &&
+                    (dimensions[i].exec_type == exec_t::undefined ||
+                     dimensions[i].exec_type == exec_t::seq))
+                {
+                    int l_current_stride = dimensions[i].stride_in0;
+                    if (l_current_stride < l_n_dim_stride)
+                    {
+                        l_n_dim_stride = l_current_stride;
+                        l_n_dim_id = static_cast<int>(i);
+                    }
+                }
+            }
+
+            if (l_n_dim_id == -1)
+            {
+                throw std::invalid_argument("Optimizer: No suitable primary dimension N found.");
+            }
+
+            // set dimension data
+            dimensions[l_n_dim_id].exec_type = exec_t::prim;
+            // move N to the back
+            if (l_n_dim_id != static_cast<int>(dimensions.size()) - 1)
+            {
+                std::rotate(dimensions.begin() + l_n_dim_id, dimensions.begin() + l_n_dim_id + 1, dimensions.end());
+            }
+        }
+
+        // lastly, set all remaining dimensions to seq
+        for (auto &dim : dimensions)
+        {
+            if (dim.exec_type == exec_t::undefined)
+            {
+                dim.exec_type = exec_t::seq;
+            }
+        }
+
+        return; // all primary dimensions set
     }
     else
     {
-        throw std::invalid_argument("Optimizer: No suitable primary dimension K found.");
+        /////////////////////////////////////////////////////////////////
+        // FIND PRIM BR (second K)
+        /////////////////////////////////////////////////////////////////
+        // req: no unit stride in in1, stride_out has to be 0
+        auto l_dim_BR_it = std::find_if(dimensions.begin(), dimensions.end(),
+                                        [](const mini_jit::ir::Dimension &dim)
+                                        {
+                                            return (dim.type == dim_t::k || dim.type == dim_t::undefined) &&
+                                                   dim.stride_in1 != 1 &&
+                                                   dim.stride_out == 0;
+                                        });
+
+        if (l_dim_BR_it != dimensions.end())
+        {
+            // set dimension data
+            l_dim_BR_it->type = dim_t::k;
+            l_dim_BR_it->exec_type = exec_t::prim;
+            if (l_dim_BR_it != dimensions.end() - 1)
+            {
+                // move BR(K) to the back
+                std::rotate(l_dim_BR_it, l_dim_BR_it + 1, dimensions.end());
+            }
+        }
+        /////////////////////////////////////////////////////////////////
+        // FIND PRIM M
+        /////////////////////////////////////////////////////////////////
+        // req: unit stride in in0 and out
+        auto l_dim_m_it = std::find_if(dimensions.begin(), dimensions.end(),
+                                       [](const mini_jit::ir::Dimension &dim)
+                                       {
+                                           return (dim.type == dim_t::m || dim.type == dim_t::undefined) &&
+                                                  dim.stride_in0 == 1 &&
+                                                  dim.stride_in1 == 0 &&
+                                                  dim.stride_out == 1;
+                                       });
+
+        if (l_dim_m_it != dimensions.end())
+        {
+            // set dimension data
+            l_dim_m_it->type = dim_t::m;
+            l_dim_m_it->exec_type = exec_t::prim;
+            if (l_dim_m_it != dimensions.end() - 1)
+            {
+                // move M to the back
+                std::rotate(l_dim_m_it, l_dim_m_it + 1, dimensions.end());
+            }
+        }
+        else
+        {
+            throw std::invalid_argument("Optimizer: No suitable primary dimension M found.");
+        }
+
+        /////////////////////////////////////////////////////////////////
+        // FIND PRIM N
+        /////////////////////////////////////////////////////////////////
+        // req: choose the one with the smallest strides, stride_in0 has to be 0
+        int l_n_dim_strides = INT_MAX;
+        int l_n_dim_id = -1;
+        for (size_t i = 0; i < dimensions.size(); i++)
+        {
+            if ((dimensions[i].type == dim_t::n || dimensions[i].type == dim_t::undefined) &&
+                dimensions[i].stride_in0 == 0)
+            {
+                int l_current_strides = dimensions[i].stride_in1 + dimensions[i].stride_out;
+                if (l_current_strides < l_n_dim_strides)
+                {
+                    l_n_dim_strides = l_current_strides;
+                    l_n_dim_id = static_cast<int>(i);
+                }
+            }
+        }
+
+        if (l_n_dim_id == -1)
+        {
+            throw std::invalid_argument("Optimizer: No suitable primary dimension N found.");
+        }
+
+        // set dimension data
+        dimensions[l_n_dim_id].type = dim_t::n;
+        dimensions[l_n_dim_id].exec_type = exec_t::prim;
+        // move N to the back
+        if (l_n_dim_id != static_cast<int>(dimensions.size()) - 1)
+        {
+            std::rotate(dimensions.begin() + l_n_dim_id, dimensions.begin() + l_n_dim_id + 1, dimensions.end());
+        }
+        /////////////////////////////////////////////////////////////////
+        // FIND PRIM K
+        /////////////////////////////////////////////////////////////////
+        // req: unit stride in in1, stride_out has to be 0
+        auto l_dim_k_it = std::find_if(dimensions.begin(), dimensions.end(),
+                                       [](const mini_jit::ir::Dimension &dim)
+                                       {
+                                           return (dim.type == dim_t::k || dim.type == dim_t::undefined) &&
+                                                  dim.stride_in1 == 1 &&
+                                                  dim.stride_out == 0;
+                                       });
+
+        if (l_dim_k_it != dimensions.end())
+        {
+            // set dimension data
+            l_dim_k_it->type = dim_t::k;
+            l_dim_k_it->exec_type = exec_t::prim;
+            if (l_dim_k_it != dimensions.end() - 1)
+            {
+                // move K to the back
+                std::rotate(l_dim_k_it, l_dim_k_it + 1, dimensions.end());
+            }
+        }
+        else
+        {
+            throw std::invalid_argument("Optimizer: No suitable primary dimension K found.");
+        }
     }
 }
 
@@ -310,6 +456,31 @@ void mini_jit::ir::Optimizer::findBestSplit(int64_t i_size,
     else if (i_type == dim_t::k)
     {
         // split by 2
+        findLargestMultipleOfDivisor(2, i_size, i_max_kernel_size, o_size_0, o_size_1);
+        if (o_size_0 > 1)
+        {
+            return;
+        }
+    }
+    else if (i_type == dim_t::c)
+    {
+        // identity uses M=8 and N=1
+
+        // split by 8
+        findLargestMultipleOfDivisor(8, i_size, i_max_kernel_size, o_size_0, o_size_1);
+        if (o_size_0 > 1)
+        {
+            return;
+        }
+
+        // split by 4
+        findLargestMultipleOfDivisor(4, i_size, i_max_kernel_size, o_size_0, o_size_1);
+        if (o_size_0 > 1)
+        {
+            return;
+        }
+
+        // if 8 and 4 did not work, we try 2
         findLargestMultipleOfDivisor(2, i_size, i_max_kernel_size, o_size_0, o_size_1);
         if (o_size_0 > 1)
         {
