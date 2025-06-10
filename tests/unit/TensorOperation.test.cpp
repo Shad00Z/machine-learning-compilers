@@ -7,6 +7,7 @@
 
 #include "Brgemm.h"
 #include "TensorOperation.h"
+#include "Optimizer.h"
 #include "constants.h"
 #include "types.h"
 
@@ -316,29 +317,20 @@ TEST_CASE("Reference test for IDENTITY layout transformation trus → turs", "[t
     std::mt19937 gen(rd());
     std::uniform_real_distribution<float> dist(-10.0f, 10.0f);
 
-    for (int i = 0; i < SIZE; ++i) {
+    for (int i = 0; i < SIZE; ++i)
+    {
         A[i] = dist(gen);
     }
 
-    std::cout << "Matrix A (t, u, r, s):" << std::endl;
-    for (int t = 0; t < T; ++t) {
-        for (int r = 0; r < R; ++r) {
-            for (int u = 0; u < U; ++u) {
-                for (int s = 0; s < S; ++s) {
-                    int idx = t * R * U * S + r * U * S + u * S + s;
-                    std::cout << std::setw(5) << A[idx] << " ";
-                }
-            }
-            std::cout << std::endl;
-        }
-    }
-    std::cout << std::endl;
-
     // Compute C_expected
-    for (int t = 0; t < T; ++t) {
-        for (int r = 0; r < R; ++r) {
-            for (int u = 0; u < U; ++u) {
-                for (int s = 0; s < S; ++s) {
+    for (int t = 0; t < T; ++t)
+    {
+        for (int r = 0; r < R; ++r)
+        {
+            for (int u = 0; u < U; ++u)
+            {
+                for (int s = 0; s < S; ++s)
+                {
                     // Calculate index in output format (t,r,u,s) using strides_out
                     int l_idx_c_exp = t * (U * R * S) + r * S + u * (R * S) + s;
                     // Calculate index in input format (t,u,r,s) using strides_in0
@@ -395,41 +387,10 @@ TEST_CASE("Reference test for IDENTITY layout transformation trus → turs", "[t
                 strides_in1,
                 strides_out);
 
-    // Print matrix C_expected in (t, r, u, s) order
-    std::cout << "Matrix C_expected (t, r, u, s):" << std::endl;
-    for (int t = 0; t < T; ++t) {
-        for (int r = 0; r < R; ++r) {
-            for (int u = 0; u < U; ++u) {
-                for (int s = 0; s < S; ++s) {
-
-                    int l_idx_c_exp = (t * R * U * S) + (r * S) + (u * R * S) + (s * 1);
-                    std::cout << std::setw(5) << C_expected[l_idx_c_exp] << " ";
-                }
-            }
-        std::cout << std::endl;
-        }
-    }
-    std::cout << std::endl;
-
     l_top.execute(A, nullptr, C);
 
-    // Print matrix C in (t, r, u, s) order
-    std::cout << "Matrix C (t, r, u, s):" << std::endl;
-    for (int t = 0; t < T; ++t) {
-        for (int r = 0; r < R; ++r) {
-            for (int u = 0; u < U; ++u) {
-                for (int s = 0; s < S; ++s) {
-
-                    int l_idx_c_exp = (t * R * U * S) + (r * S) + (u * R * S) + (s * 1);
-                    std::cout << std::setw(5) << C[l_idx_c_exp] << " ";
-                }
-            }
-        std::cout << std::endl;
-        }
-    }
-    std::cout << std::endl;
-
-    for (int i = 0; i < SIZE; ++i) {
+    for (int i = 0; i < SIZE; ++i)
+    {
         REQUIRE(C[i] == Approx(C_expected[i]).margin(FLOAT_ERROR_MARGIN));
     }
 
@@ -459,29 +420,20 @@ TEST_CASE("Reference test for SHARED IDENTITY layout transformation trus → tur
     std::mt19937 gen(rd());
     std::uniform_real_distribution<float> dist(-10.0f, 10.0f);
 
-    for (int i = 0; i < SIZE; ++i) {
+    for (int i = 0; i < SIZE; ++i)
+    {
         A[i] = dist(gen);
     }
 
-    std::cout << "Matrix A (t, u, r, s):" << std::endl;
-    for (int t = 0; t < T; ++t) {
-        for (int r = 0; r < R; ++r) {
-            for (int u = 0; u < U; ++u) {
-                for (int s = 0; s < S; ++s) {
-                    int idx = t * R * U * S + r * U * S + u * S + s;
-                    std::cout << std::setw(5) << A[idx] << " ";
-                }
-            }
-            std::cout << std::endl;
-        }
-    }
-    std::cout << std::endl;
-
     // Compute C_expected
-    for (int t = 0; t < T; ++t) {
-        for (int r = 0; r < R; ++r) {
-            for (int u = 0; u < U; ++u) {
-                for (int s = 0; s < S; ++s) {
+    for (int t = 0; t < T; ++t)
+    {
+        for (int r = 0; r < R; ++r)
+        {
+            for (int u = 0; u < U; ++u)
+            {
+                for (int s = 0; s < S; ++s)
+                {
                     // Calculate index in output format (t,r,u,s) using strides_out
                     int l_idx_c_exp = t * (U * R * S) + r * S + u * (R * S) + s;
                     // Calculate index in input format (t,u,r,s) using strides_in0
@@ -538,39 +490,7 @@ TEST_CASE("Reference test for SHARED IDENTITY layout transformation trus → tur
                 strides_in1,
                 strides_out);
 
-    // Print matrix C_expected in (t, r, u, s) order
-    std::cout << "Matrix C_expected (t, r, u, s):" << std::endl;
-    for (int t = 0; t < T; ++t) {
-        for (int r = 0; r < R; ++r) {
-            for (int u = 0; u < U; ++u) {
-                for (int s = 0; s < S; ++s) {
-
-                    int l_idx_c_exp = (t * R * U * S) + (r * S) + (u * R * S) + (s * 1);
-                    std::cout << std::setw(5) << C_expected[l_idx_c_exp] << " ";
-                }
-            }
-        std::cout << std::endl;
-        }
-    }
-    std::cout << std::endl;
-
     l_top.execute(A, nullptr, C);
-
-    // Print matrix C in (t, r, u, s) order
-    std::cout << "Matrix C (t, r, u, s):" << std::endl;
-    for (int t = 0; t < T; ++t) {
-        for (int r = 0; r < R; ++r) {
-            for (int u = 0; u < U; ++u) {
-                for (int s = 0; s < S; ++s) {
-
-                    int l_idx_c_exp = (t * R * U * S) + (r * S) + (u * R * S) + (s * 1);
-                    std::cout << std::setw(5) << C[l_idx_c_exp] << " ";
-                }
-            }
-        std::cout << std::endl;
-        }
-    }
-    std::cout << std::endl;
 
     for (int i = 0; i < SIZE; ++i) {
         REQUIRE(C[i] == Approx(C_expected[i]).margin(FLOAT_ERROR_MARGIN));
@@ -602,29 +522,20 @@ TEST_CASE("Reference test for ZERO + IDENTITY layout transformation trus → tur
     std::mt19937 gen(rd());
     std::uniform_real_distribution<float> dist(-10.0f, 10.0f);
 
-    for (int i = 0; i < SIZE; ++i) {
+    for (int i = 0; i < SIZE; ++i)
+    {
         A[i] = 0;
     }
 
-    std::cout << "Matrix A (t, u, r, s):" << std::endl;
-    for (int t = 0; t < T; ++t) {
-        for (int r = 0; r < R; ++r) {
-            for (int u = 0; u < U; ++u) {
-                for (int s = 0; s < S; ++s) {
-                    int idx = t * R * U * S + r * U * S + u * S + s;
-                    std::cout << std::setw(5) << A[idx] << " ";
-                }
-            }
-            std::cout << std::endl;
-        }
-    }
-    std::cout << std::endl;
-
     // Compute C_expected
-    for (int t = 0; t < T; ++t) {
-        for (int r = 0; r < R; ++r) {
-            for (int u = 0; u < U; ++u) {
-                for (int s = 0; s < S; ++s) {
+    for (int t = 0; t < T; ++t)
+    {
+        for (int r = 0; r < R; ++r)
+        {
+            for (int u = 0; u < U; ++u)
+            {
+                for (int s = 0; s < S; ++s)
+                {
                     // Calculate index in output format (t,r,u,s) using strides_out
                     int l_idx_c_exp = t * (U * R * S) + r * S + u * (R * S) + s;
                     // Calculate index in input format (t,u,r,s) using strides_in0
@@ -681,41 +592,10 @@ TEST_CASE("Reference test for ZERO + IDENTITY layout transformation trus → tur
                 strides_in1,
                 strides_out);
 
-    // Print matrix C_expected in (t, r, u, s) order
-    std::cout << "Matrix C_expected (t, r, u, s):" << std::endl;
-    for (int t = 0; t < T; ++t) {
-        for (int r = 0; r < R; ++r) {
-            for (int u = 0; u < U; ++u) {
-                for (int s = 0; s < S; ++s) {
-
-                    int l_idx_c_exp = (t * R * U * S) + (r * S) + (u * R * S) + (s * 1);
-                    std::cout << std::setw(5) << C_expected[l_idx_c_exp] << " ";
-                }
-            }
-        std::cout << std::endl;
-        }
-    }
-    std::cout << std::endl;
-
     l_top.execute(A, nullptr, C);
 
-    // Print matrix C in (t, r, u, s) order
-    std::cout << "Matrix C (t, r, u, s):" << std::endl;
-    for (int t = 0; t < T; ++t) {
-        for (int r = 0; r < R; ++r) {
-            for (int u = 0; u < U; ++u) {
-                for (int s = 0; s < S; ++s) {
-
-                    int l_idx_c_exp = (t * R * U * S) + (r * S) + (u * R * S) + (s * 1);
-                    std::cout << std::setw(5) << C[l_idx_c_exp] << " ";
-                }
-            }
-        std::cout << std::endl;
-        }
-    }
-    std::cout << std::endl;
-
-    for (int i = 0; i < SIZE; ++i) {
+    for (int i = 0; i < SIZE; ++i)
+    {
         REQUIRE(C[i] == Approx(C_expected[i]).margin(FLOAT_ERROR_MARGIN));
     }
 
@@ -745,29 +625,20 @@ TEST_CASE("Reference test for IDENTITY + RELU layout transformation trus → tur
     std::mt19937 gen(rd());
     std::uniform_real_distribution<float> dist(-10.0f, 10.0f);
 
-    for (int i = 0; i < SIZE; ++i) {
+    for (int i = 0; i < SIZE; ++i)
+    {
         A[i] = dist(gen);
     }
 
-    std::cout << "Matrix A (t, u, r, s):" << std::endl;
-    for (int t = 0; t < T; ++t) {
-        for (int r = 0; r < R; ++r) {
-            for (int u = 0; u < U; ++u) {
-                for (int s = 0; s < S; ++s) {
-                    int idx = t * R * U * S + r * U * S + u * S + s;
-                    std::cout << std::setw(5) << A[idx] << " ";
-                }
-            }
-            std::cout << std::endl;
-        }
-    }
-    std::cout << std::endl;
-
     // Compute C_expected
-    for (int t = 0; t < T; ++t) {
-        for (int r = 0; r < R; ++r) {
-            for (int u = 0; u < U; ++u) {
-                for (int s = 0; s < S; ++s) {
+    for (int t = 0; t < T; ++t)
+    {
+        for (int r = 0; r < R; ++r)
+        {
+            for (int u = 0; u < U; ++u)
+            {
+                for (int s = 0; s < S; ++s)
+                {
                     // Calculate index in output format (t,r,u,s) using strides_out
                     int l_idx_c_exp = t * (U * R * S) + r * S + u * (R * S) + s;
                     // Calculate index in input format (t,u,r,s) using strides_in0
@@ -830,41 +701,10 @@ TEST_CASE("Reference test for IDENTITY + RELU layout transformation trus → tur
                 strides_in1,
                 strides_out);
 
-    // Print matrix C_expected in (t, r, u, s) order
-    std::cout << "Matrix C_expected (t, r, u, s):" << std::endl;
-    for (int t = 0; t < T; ++t) {
-        for (int r = 0; r < R; ++r) {
-            for (int u = 0; u < U; ++u) {
-                for (int s = 0; s < S; ++s) {
-
-                    int l_idx_c_exp = (t * R * U * S) + (r * S) + (u * R * S) + (s * 1);
-                    std::cout << std::setw(5) << C_expected[l_idx_c_exp] << " ";
-                }
-            }
-        std::cout << std::endl;
-        }
-    }
-    std::cout << std::endl;
-
     l_top.execute(A, nullptr, C);
 
-    // Print matrix C in (t, r, u, s) order
-    std::cout << "Matrix C (t, r, u, s):" << std::endl;
-    for (int t = 0; t < T; ++t) {
-        for (int r = 0; r < R; ++r) {
-            for (int u = 0; u < U; ++u) {
-                for (int s = 0; s < S; ++s) {
-
-                    int l_idx_c_exp = (t * R * U * S) + (r * S) + (u * R * S) + (s * 1);
-                    std::cout << std::setw(5) << C[l_idx_c_exp] << " ";
-                }
-            }
-        std::cout << std::endl;
-        }
-    }
-    std::cout << std::endl;
-
-    for (int i = 0; i < SIZE; ++i) {
+    for (int i = 0; i < SIZE; ++i)
+    {
         REQUIRE(C[i] == Approx(C_expected[i]).margin(FLOAT_ERROR_MARGIN));
     }
 
@@ -894,18 +734,22 @@ TEST_CASE("Reference test for ZERO + IDENTITY_TRANS tensor operation kernel with
     std::uniform_real_distribution<float> dist(-10.0f, 10.0f);
 
     // Initialize input tensor A
-    for (int i = 0; i < SIZE_A; ++i) {
+    for (int i = 0; i < SIZE_A; ++i)
+    {
         A[i] = dist(gen);
     }
 
     // Initialize input tensor C
-    for (int i = 0; i < SIZE_C; ++i) {
+    for (int i = 0; i < SIZE_C; ++i)
+    {
         C[i] = dist(gen);
     }
 
     // Initialize expected output (transposed)
-    for (int r = 0; r < R; ++r) {
-        for (int s = 0; s < S; ++s) {
+    for (int r = 0; r < R; ++r)
+    {
+        for (int s = 0; s < S; ++s)
+        {
             C_expected[s * R + r] = A[r * S + s];
         }
     }
@@ -967,7 +811,7 @@ TEST_CASE("Reference test for ZERO + IDENTITY_TRANS tensor operation kernel with
     delete[] C_expected;
 }
 
-TEST_CASE("Reference test for ZERO + IDENTITY + RELU tensor operation kernel with variable R, S", "[tensor_operation][parameterized][zero][identity][relu]")
+TEST_CASE("Reference test for ZERO + IDENTITY_TRANS + RELU tensor operation kernel with variable R, S", "[tensor_operation][parameterized][zero][identity][relu]")
 {
     const mini_jit::ptype_t first_touch_type = mini_jit::ptype_t::zero;
     const mini_jit::ptype_t main_type = mini_jit::ptype_t::identity;
@@ -988,13 +832,18 @@ TEST_CASE("Reference test for ZERO + IDENTITY + RELU tensor operation kernel wit
     std::uniform_real_distribution<float> dist(-10.0f, 10.0f);
 
     // Initialize input tensor A
-    for (int i = 0; i < SIZE_A; ++i) {
+    for (int i = 0; i < SIZE_A; ++i)
+    {
         A[i] = dist(gen);
     }
 
-    // Initialize expected output (identity + ReLU operation)
-    for (int i = 0; i < SIZE_C; ++i) {
-        C_expected[i] = std::max(0.0f, A[i]);
+    // Initialize expected output (transposed  + ReLU)
+    for (int r = 0; r < R; ++r)
+    {
+        for (int s = 0; s < S; ++s)
+        {
+            C_expected[s * R + r] =  std::max(0.0f,A[r * S + s]);
+        }
     }
 
     // Define dimension types (all 'c' for unary operation)
@@ -1045,7 +894,108 @@ TEST_CASE("Reference test for ZERO + IDENTITY + RELU tensor operation kernel wit
     l_top.execute(A, nullptr, C);
 
     // Verify results
-    for (int i = 0; i < SIZE_C; ++i) {
+    for (int i = 0; i < SIZE_C; ++i)
+    {
+        REQUIRE(C[i] == Approx(C_expected[i]).margin(FLOAT_ERROR_MARGIN));
+    }
+
+    delete[] A;
+    delete[] C;
+    delete[] C_expected;
+}
+
+TEST_CASE("Reference test for ZERO + IDENTITY + RELU optimized tensor operation kernel with variable R, S", "[tensor_operation][parameterized][zero][identity][relu][optimized]")
+{
+    const mini_jit::ptype_t first_touch_type = mini_jit::ptype_t::zero;
+    const mini_jit::ptype_t main_type = mini_jit::ptype_t::identity;
+    const mini_jit::ptype_t last_touch_type = mini_jit::ptype_t::relu;
+
+    const int R = 8;
+    const int S = 8;
+
+    const int SIZE_A = R * S;
+    const int SIZE_C = R * S;
+
+    float *A = new float[SIZE_A];
+    float *C = new float[SIZE_C];
+    float *C_expected = new float[SIZE_C];
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<float> dist(-10.0f, 10.0f);
+
+    // Initialize input tensor A
+    for (int i = 0; i < SIZE_A; ++i)
+    {
+        A[i] = dist(gen);
+    }
+
+    // Initialize expected output (identity + ReLU operation)
+    for (int i = 0; i < SIZE_C; ++i)
+    {
+        C_expected[i] = std::max(0.0f, A[i]);
+    }
+
+    // Define dimension types (all 'c' for unary operation)
+    std::vector<mini_jit::dim_t> dim_types = {
+        mini_jit::dim_t::c,
+        mini_jit::dim_t::c
+    };
+
+    // Define execution types
+    std::vector<mini_jit::exec_t> exec_types = {
+        mini_jit::exec_t::seq,
+        mini_jit::exec_t::seq
+    };
+
+    // Define dimension sizes
+    std::vector<int64_t> dim_sizes = {
+        R,
+        S
+    };
+
+    // Define strides
+    std::vector<int64_t> strides_in0 = {
+        S,
+        1
+    };
+    std::vector<int64_t> strides_in1 = {
+        0,
+        0
+    };
+    std::vector<int64_t> strides_out = {
+        S,
+        1
+    };
+
+    // max kernel size of 4
+    mini_jit::ir::Optimizer::optimize(dim_types,
+                                      exec_types,
+                                      dim_sizes,
+                                      strides_in0,
+                                      strides_in1,
+                                      strides_out,
+                                      256,
+                                      4);
+
+    mini_jit::TensorOperation l_top;
+    l_top.setup(mini_jit::dtype_t::fp32,
+                first_touch_type,
+                main_type,
+                last_touch_type,
+                dim_types,
+                exec_types,
+                dim_sizes,
+                strides_in0,
+                strides_in1,
+                strides_out);
+
+    // Execute with nullptr for second input (unary operation)
+    l_top.execute(A, nullptr, C);
+
+    // Verify results
+    for (int i = 0; i < SIZE_C; ++i)
+    {
         REQUIRE(C[i] == Approx(C_expected[i]).margin(FLOAT_ERROR_MARGIN));
     }
 

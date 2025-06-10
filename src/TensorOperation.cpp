@@ -256,16 +256,17 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
     /////////////////////////////////////////////////////////////////////
     if (prim_first_touch != ptype_t::none)
     {
+        // no transposition
         m_unary_first_touch.generate(m_dim_sizes[m_dim_id_prim_M],
                                      m_dim_sizes[m_dim_id_prim_N],
-                                     m_transpose_output,
+                                     0,
                                      dtype,
                                      prim_first_touch);
         m_kernel_first_touch = m_unary_first_touch.get_kernel();
     }
     if (prim_main == ptype_t::gemm)
     {
-        // does not support transposition
+        // no transposition
         m_brgemm_main.generate(m_dim_sizes[m_dim_id_prim_M],
                                m_dim_sizes[m_dim_id_prim_N],
                                m_dim_sizes[m_dim_id_prim_K],
@@ -278,7 +279,7 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
     }
     else if (prim_main == ptype_t::brgemm)
     {
-        // does not support transposition
+        // no transposition
         m_brgemm_main.generate(m_dim_sizes[m_dim_id_prim_M],
                                m_dim_sizes[m_dim_id_prim_N],
                                m_dim_sizes[m_dim_id_prim_K],
@@ -300,9 +301,10 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
     }
     if (prim_last_touch != ptype_t::none)
     {
+        // no transposition
         m_unary_last_touch.generate(m_dim_sizes[m_dim_id_prim_M],
                                     m_dim_sizes[m_dim_id_prim_N],
-                                    m_transpose_output,
+                                    0,
                                     dtype,
                                     prim_last_touch);
         m_kernel_last_touch = m_unary_last_touch.get_kernel();
