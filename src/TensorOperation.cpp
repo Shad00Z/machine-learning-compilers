@@ -232,7 +232,7 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
     {
         m_unary_first_touch.generate(m_dim_sizes[m_dim_id_prim_M],
                                      m_dim_sizes[m_dim_id_prim_N],
-                                     0,
+                                     m_transpose_output,
                                      dtype,
                                      prim_first_touch);
         m_kernel_first_touch = m_unary_first_touch.get_kernel();
@@ -276,7 +276,7 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
     {
         m_unary_last_touch.generate(m_dim_sizes[m_dim_id_prim_M],
                                     m_dim_sizes[m_dim_id_prim_N],
-                                    0,
+                                    m_transpose_output,
                                     dtype,
                                     prim_last_touch);
         m_kernel_last_touch = m_unary_last_touch.get_kernel();
