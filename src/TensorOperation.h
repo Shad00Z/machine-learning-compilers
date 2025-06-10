@@ -110,6 +110,10 @@ private:
     /// whether the output should be transposed
     bool m_transpose_output = false;
 
+    int64_t m_adjusted_stride_in0 = 0;
+    int64_t m_adjusted_stride_in1 = 0;
+    int64_t m_adjusted_stride_out = 0;
+
     /**
      * Executes the first touch kernel.
      *

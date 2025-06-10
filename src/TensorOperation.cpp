@@ -210,7 +210,7 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
     }
 
     /////////////////////////////////////////////////////////////////////
-    // Check for Transposal
+    // Check for Transposition
     /////////////////////////////////////////////////////////////////////
     if (m_dim_id_prim_M != -1)
     {
@@ -221,10 +221,36 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
     }
     else
     {
-        // idk if we can check for transposal without M
+        // idk if we can check for transposition without M
         m_transpose_output = false;
     }
-    
+
+    /////////////////////////////////////////////////////////////////////
+    // Adjust strides based on primitive type and transposition
+    /////////////////////////////////////////////////////////////////////
+    if (prim_main == ptype_t::identity)
+    {
+        if (!m_transpose_output)
+        {
+            m_adjusted_stride_in0 = m_strides_in0[m_dim_id_prim_N];
+            m_adjusted_stride_in1 = 0;
+            m_adjusted_stride_out = m_strides_out[m_dim_id_prim_N];
+        }
+        else
+        {
+            m_adjusted_stride_in0 = m_strides_in0[m_dim_id_prim_N];
+            m_adjusted_stride_in1 = 0;
+            m_adjusted_stride_out = m_strides_out[m_dim_id_prim_M];
+        }
+    }
+    else
+    {
+        // GEMM & BRGEMM
+        m_adjusted_stride_in0 = m_strides_in0[m_dim_id_prim_K];
+        m_adjusted_stride_in1 = m_strides_in1[m_dim_id_prim_N];
+        m_adjusted_stride_out = m_strides_out[m_dim_id_prim_N];
+    }
+
     /////////////////////////////////////////////////////////////////////
     // Generate kernels
     /////////////////////////////////////////////////////////////////////
@@ -239,7 +265,7 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
     }
     if (prim_main == ptype_t::gemm)
     {
-        // does not support transposal
+        // does not support transposition
         m_brgemm_main.generate(m_dim_sizes[m_dim_id_prim_M],
                                m_dim_sizes[m_dim_id_prim_N],
                                m_dim_sizes[m_dim_id_prim_K],
@@ -252,7 +278,7 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
     }
     else if (prim_main == ptype_t::brgemm)
     {
-        // does not support transposal
+        // does not support transposition
         m_brgemm_main.generate(m_dim_sizes[m_dim_id_prim_M],
                                m_dim_sizes[m_dim_id_prim_N],
                                m_dim_sizes[m_dim_id_prim_K],
@@ -359,45 +385,25 @@ void mini_jit::TensorOperation::execute_iter(int64_t id_loop,
         }
         else
         {
-            int64_t l_final_stride_in0 = m_strides_in0[m_dim_id_prim_K];
-            int64_t l_final_stride_in1 = m_strides_in1[m_dim_id_prim_N];
-            int64_t l_final_stride_out = m_strides_out[m_dim_id_prim_N];
-
-            if (m_kernel_main_type == ptype_t::identity)
-            {
-                if (!m_transpose_output)
-                {
-                    l_final_stride_in0 = m_strides_in0[m_dim_id_prim_N];
-                    l_final_stride_in1 = 0;
-                    l_final_stride_out = m_strides_out[m_dim_id_prim_N];
-                }
-                else
-                {
-                    l_final_stride_in0 = m_strides_in0[m_dim_id_prim_N];
-                    l_final_stride_in1 = 0;
-                    l_final_stride_out = m_strides_out[m_dim_id_prim_M];
-                }
-            }
-
             if (is_first)
             {
                 execute_kernel_first_touch(sub_ptr_out,
-                                           l_final_stride_out);
+                                           m_adjusted_stride_out);
             }
 
             execute_kernel_main(sub_ptr_in0,
                                 sub_ptr_in1,
                                 sub_ptr_out,
-                                l_final_stride_in0,
-                                l_final_stride_in1,
-                                l_final_stride_out,
+                                m_adjusted_stride_in0,
+                                m_adjusted_stride_in1,
+                                m_adjusted_stride_out,
                                 m_dim_id_prim_BR != -1 ? m_strides_in0[m_dim_id_prim_BR] : 1,
                                 m_dim_id_prim_BR != -1 ? m_strides_in1[m_dim_id_prim_BR] : 1);
 
             if (is_last)
             {
                 execute_kernel_last_touch(sub_ptr_out,
-                                          l_final_stride_out);
+                                          m_adjusted_stride_out);
             }
         }
     }
