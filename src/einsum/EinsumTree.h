@@ -4,6 +4,7 @@
 #include "EinsumNode.h"
 #include <string>
 #include <vector>
+#include <ranges>
 
 namespace mini_jit
 {
