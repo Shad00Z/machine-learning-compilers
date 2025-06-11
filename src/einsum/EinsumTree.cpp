@@ -1,9 +1,7 @@
 #include "EinsumTree.h"
 #include "EinsumNode.h"
 #include "Optimizer.h"
-#include <ranges>
 #include <iostream>
-#include <algorithm>
 
 using mini_jit::dim_t;
 using mini_jit::exec_t;
