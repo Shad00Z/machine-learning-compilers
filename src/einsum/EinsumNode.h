@@ -34,6 +34,12 @@ namespace mini_jit
             {
             }
 
+            ~EinsumNode()
+            {
+                delete leftChild;
+                delete rightChild;
+            }
+
             int64_t get_number_of_children()
             {
                 int64_t result = 0;
