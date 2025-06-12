@@ -59,11 +59,11 @@ TEST_CASE("huhn")
     const float *tensor_out = static_cast<const float *>(node->tensor_out);
 
     // print output tensor
-    for (int64_t i = 0; i < SIZE_OUT; ++i)
-    {
-        std::cout << tensor_out[i] << " ";
-    }
-    std::cout << std::endl;
+    // for (int64_t i = 0; i < SIZE_OUT; ++i)
+    // {
+    //     std::cout << tensor_out[i] << " ";
+    // }
+    // std::cout << std::endl;
 
     delete node;
 }
