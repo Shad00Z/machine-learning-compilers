@@ -25,10 +25,10 @@ mini_jit::einsum::EinsumNode *mini_jit::einsum::EinsumTree::parse_einsum_express
 
     mini_jit::einsum::EinsumNode *root_node = parse_einsum_expression_recursive(einsum_expression);
 
-    initialize_einsum_nodes(root_node, 
-                            dimension_sizes, 
-                            dtype, 
-                            thread_target, 
+    initialize_einsum_nodes(root_node,
+                            dimension_sizes,
+                            dtype,
+                            thread_target,
                             max_kernel_size);
 
     return root_node;
@@ -136,7 +136,7 @@ void mini_jit::einsum::EinsumTree::initialize_einsum_nodes(EinsumNode *einsum_no
     einsum_node->computational_operations = 0.0;
 
     // no children? -> input node and no setup needed
-    if(einsum_node->get_number_of_children() == 0)
+    if (einsum_node->get_number_of_children() == 0)
     {
         return;
     }
@@ -225,8 +225,8 @@ void mini_jit::einsum::EinsumTree::initialize_einsum_nodes(EinsumNode *einsum_no
             // gehe von 1+1 bis ende und multipliziere
 
             int64_t stride = 1;
-            auto it = std::find(einsum_node->leftChild->dimension_ids.begin(), 
-                                einsum_node->leftChild->dimension_ids.end(), 
+            auto it = std::find(einsum_node->leftChild->dimension_ids.begin(),
+                                einsum_node->leftChild->dimension_ids.end(),
                                 dim_id);
             size_t index = std::distance(einsum_node->leftChild->dimension_ids.begin(), it);
             for (size_t j = index + 1; j < einsum_node->leftChild->dimension_ids.size(); ++j)
@@ -241,8 +241,8 @@ void mini_jit::einsum::EinsumTree::initialize_einsum_nodes(EinsumNode *einsum_no
             contains(einsum_node->rightChild->dimension_ids, dim_id))
         {
             int64_t stride = 1;
-            auto it = std::find(einsum_node->rightChild->dimension_ids.begin(), 
-                                einsum_node->rightChild->dimension_ids.end(), 
+            auto it = std::find(einsum_node->rightChild->dimension_ids.begin(),
+                                einsum_node->rightChild->dimension_ids.end(),
                                 dim_id);
             size_t index = std::distance(einsum_node->rightChild->dimension_ids.begin(), it);
             for (size_t j = index + 1; j < einsum_node->rightChild->dimension_ids.size(); ++j)
@@ -266,36 +266,36 @@ void mini_jit::einsum::EinsumTree::initialize_einsum_nodes(EinsumNode *einsum_no
         }
     }
 
-    mini_jit::ir::Optimizer::optimize(dim_types, 
-                                      exec_types, 
-                                      dim_sizes, 
-                                      strides_in0, 
-                                      strides_in1, 
-                                      strides_out, 
-                                      thread_target, 
+    mini_jit::ir::Optimizer::optimize(dim_types,
+                                      exec_types,
+                                      dim_sizes,
+                                      strides_in0,
+                                      strides_in1,
+                                      strides_out,
+                                      thread_target,
                                       max_kernel_size);
 
     int prim_count = std::count(exec_types.begin(), exec_types.end(), exec_t::prim);
     mini_jit::ptype_t main_ptype = mini_jit::ptype_t::none;
-    if(prim_count == 2)
+    if (prim_count == 2)
     {
         main_ptype = mini_jit::ptype_t::identity;
         einsum_node->computational_operations = 0.0; // no operations for identity
     }
-    else if(prim_count == 3)
+    else if (prim_count == 3)
     {
         main_ptype = mini_jit::ptype_t::gemm;
         einsum_node->computational_operations = 2.0f;
-        for(int64_t size : dim_sizes)
+        for (int64_t size : dim_sizes)
         {
             einsum_node->computational_operations *= size;
         }
     }
-    else if(prim_count == 4)
+    else if (prim_count == 4)
     {
         main_ptype = mini_jit::ptype_t::brgemm;
         einsum_node->computational_operations = 2.0f;
-        for(int64_t size : dim_sizes)
+        for (int64_t size : dim_sizes)
         {
             einsum_node->computational_operations *= size;
         }
@@ -337,96 +337,93 @@ void mini_jit::einsum::EinsumTree::execute(EinsumNode *root_node,
         return;
     }
 
-    // we are a leaf node! set tensor_out to the input tensor
-    if(root_node->get_number_of_children() == 0)
-    {
-        // leaf node, check if input tensor is given
-        if (tensor_inputs.find(root_node->tensor_expression) != tensor_inputs.end())
-        {
-            // delete old output tensor if it exists
-            if (root_node->tensor_out != nullptr)
-            {
-                if (root_node->dtype == mini_jit::dtype_t::fp32)
-                {
-                    delete[] static_cast<float *>(root_node->tensor_out);
-                }
-                else if (root_node->dtype == mini_jit::dtype_t::fp64)
-                {
-                    delete[] static_cast<double *>(root_node->tensor_out);
-                }
-                root_node->tensor_out = nullptr;
-            }
-            // copy input tensor to output tensor
-            int64_t output_tensor_size = 1;
-            for (auto dim_id : root_node->dimension_ids)
-            {
-                output_tensor_size *= dimension_sizes[dim_id];
-            }
-            if (dtype == mini_jit::dtype_t::fp32)
-            {
-                root_node->tensor_out = new float[output_tensor_size]{0.0f};
-            }
-            else if (dtype == mini_jit::dtype_t::fp64)
-            {
-                root_node->tensor_out = new double[output_tensor_size]{0.0};
-            }
-            int64_t dtype_size = dtype == mini_jit::dtype_t::fp32 ? sizeof(float) : sizeof(double);
-            std::memcpy(root_node->tensor_out,
-                        tensor_inputs.at(root_node->tensor_expression),
-                        output_tensor_size * dtype_size);
-        }
-        else
-        {
-            throw std::invalid_argument("Error: No input tensor found for leaf node with expression: " 
-                + root_node->tensor_expression);
-        }
-        return;
-    }
-
-    // compute left child
-    if (root_node->leftChild != nullptr)
-    {
-        execute(root_node->leftChild, dimension_sizes, tensor_inputs, dtype);
-    }
-
-    // compute right child
-    if (root_node->rightChild != nullptr)
-    {
-        execute(root_node->rightChild, dimension_sizes, tensor_inputs, dtype);
-    }
-
-    // delete old output tensor if it exists
-    if (root_node->tensor_out != nullptr)
-    {
-        if (root_node->dtype == mini_jit::dtype_t::fp32)
-        {
-            delete[] static_cast<float *>(root_node->tensor_out);
-        }
-        else if (root_node->dtype == mini_jit::dtype_t::fp64)
-        {
-            delete[] static_cast<double *>(root_node->tensor_out);
-        }
-        root_node->tensor_out = nullptr;
-    }
-    // create new output tensor
     int64_t output_tensor_size = 1;
     for (auto dim_id : root_node->dimension_ids)
     {
         output_tensor_size *= dimension_sizes[dim_id];
     }
-    if(dtype == mini_jit::dtype_t::fp32)
+
+    // Only reallocate if necessary
+    bool need_alloc = false;
+    if (root_node->tensor_out == nullptr)
     {
-        root_node->tensor_out = new float[output_tensor_size]{0.0f};
+        need_alloc = true;
+    }
+
+    if (dtype == mini_jit::dtype_t::fp32)
+    {
+        if (need_alloc)
+        {
+            root_node->tensor_out = new float[output_tensor_size]{0.0f};
+        }
+        else
+        {
+            std::fill(static_cast<float *>(root_node->tensor_out),
+                      static_cast<float *>(root_node->tensor_out) + output_tensor_size,
+                      0.0f);
+        }
     }
     else if (dtype == mini_jit::dtype_t::fp64)
     {
-        root_node->tensor_out = new double[output_tensor_size]{0.0};
+        if (need_alloc)
+        {
+            root_node->tensor_out = new double[output_tensor_size]{0.0};
+        }
+        else
+        {
+            std::fill(static_cast<double *>(root_node->tensor_out),
+                      static_cast<double *>(root_node->tensor_out) + output_tensor_size,
+                      0.0);
+        }
     }
-    
-    // execute operation
-    auto ptrLeft = root_node->leftChild ? root_node->leftChild->tensor_out : nullptr;
-    auto ptrRight = root_node->rightChild ? root_node->rightChild->tensor_out : nullptr;
-    root_node->operation.execute(ptrLeft, 
-                                 ptrRight, 
-                                 root_node->tensor_out);
+
+    // we are a leaf node! set tensor_out to the input tensor
+    if (root_node->get_number_of_children() == 0)
+    {
+        // check if input tensor is given
+        auto it = tensor_inputs.find(root_node->tensor_expression);
+        if (it != tensor_inputs.end())
+        {
+            if (dtype == mini_jit::dtype_t::fp32)
+            {
+                std::copy(
+                    static_cast<const float *>(it->second),
+                    static_cast<const float *>(it->second) + output_tensor_size,
+                    static_cast<float *>(root_node->tensor_out));
+            }
+            else if (dtype == mini_jit::dtype_t::fp64)
+            {
+                std::copy(
+                    static_cast<const double *>(it->second),
+                    static_cast<const double *>(it->second) + output_tensor_size,
+                    static_cast<double *>(root_node->tensor_out));
+            }
+        }
+        else
+        {
+            throw std::invalid_argument("Error: No input tensor found for leaf node with expression: " + root_node->tensor_expression);
+        }
+    }
+    // we are not a leaf node -> compute children and execute operation
+    else
+    {
+
+        // compute children
+        if (root_node->leftChild != nullptr)
+        {
+            execute(root_node->leftChild, dimension_sizes, tensor_inputs, dtype);
+        }
+
+        if (root_node->rightChild != nullptr)
+        {
+            execute(root_node->rightChild, dimension_sizes, tensor_inputs, dtype);
+        }
+
+        // execute operation
+        auto ptrLeft = root_node->leftChild ? root_node->leftChild->tensor_out : nullptr;
+        auto ptrRight = root_node->rightChild ? root_node->rightChild->tensor_out : nullptr;
+        root_node->operation.execute(ptrLeft,
+                                     ptrRight,
+                                     root_node->tensor_out);
+    }
 }
