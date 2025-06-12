@@ -135,6 +135,14 @@ void mini_jit::einsum::EinsumTree::initialize_einsum_nodes(EinsumNode *einsum_no
     einsum_node->dtype = dtype;
     einsum_node->computational_operations = 0.0;
 
+    // set tensor size
+    std::vector<int64_t> &out_dim_ids = einsum_node->dimension_ids;
+    einsum_node->tensor_size = 1;
+    for (auto dim_id : out_dim_ids)
+    {
+        einsum_node->tensor_size *= dimension_sizes[dim_id];
+    }
+
     // no children? -> input node and no setup needed
     if (einsum_node->get_number_of_children() == 0)
     {
@@ -182,8 +190,6 @@ void mini_jit::einsum::EinsumTree::initialize_einsum_nodes(EinsumNode *einsum_no
     std::vector<int64_t> strides_in0(dim_ids.size(), 0);
     std::vector<int64_t> strides_in1(dim_ids.size(), 0);
     std::vector<int64_t> strides_out(dim_ids.size(), 0);
-
-    std::vector<int64_t> &out_dim_ids = einsum_node->dimension_ids;
 
     for (size_t i = 0; i < dim_ids.size(); i++)
     {
@@ -337,42 +343,31 @@ void mini_jit::einsum::EinsumTree::execute(EinsumNode *root_node,
         return;
     }
 
-    int64_t output_tensor_size = 1;
-    for (auto dim_id : root_node->dimension_ids)
-    {
-        output_tensor_size *= dimension_sizes[dim_id];
-    }
-
-    // Only reallocate if necessary
-    bool need_alloc = false;
-    if (root_node->tensor_out == nullptr)
-    {
-        need_alloc = true;
-    }
+    const int64_t tensor_size = root_node->tensor_size;
 
     if (dtype == mini_jit::dtype_t::fp32)
     {
-        if (need_alloc)
+        if (root_node->tensor_out == nullptr)
         {
-            root_node->tensor_out = new float[output_tensor_size]{0.0f};
+            root_node->tensor_out = new float[tensor_size]{0.0f};
         }
         else
         {
             std::fill(static_cast<float *>(root_node->tensor_out),
-                      static_cast<float *>(root_node->tensor_out) + output_tensor_size,
+                      static_cast<float *>(root_node->tensor_out) + tensor_size,
                       0.0f);
         }
     }
     else if (dtype == mini_jit::dtype_t::fp64)
     {
-        if (need_alloc)
+        if (root_node->tensor_out == nullptr)
         {
-            root_node->tensor_out = new double[output_tensor_size]{0.0};
+            root_node->tensor_out = new double[tensor_size]{0.0};
         }
         else
         {
             std::fill(static_cast<double *>(root_node->tensor_out),
-                      static_cast<double *>(root_node->tensor_out) + output_tensor_size,
+                      static_cast<double *>(root_node->tensor_out) + tensor_size,
                       0.0);
         }
     }
@@ -388,14 +383,14 @@ void mini_jit::einsum::EinsumTree::execute(EinsumNode *root_node,
             {
                 std::copy(
                     static_cast<const float *>(it->second),
-                    static_cast<const float *>(it->second) + output_tensor_size,
+                    static_cast<const float *>(it->second) + tensor_size,
                     static_cast<float *>(root_node->tensor_out));
             }
             else if (dtype == mini_jit::dtype_t::fp64)
             {
                 std::copy(
                     static_cast<const double *>(it->second),
-                    static_cast<const double *>(it->second) + output_tensor_size,
+                    static_cast<const double *>(it->second) + tensor_size,
                     static_cast<double *>(root_node->tensor_out));
             }
         }
@@ -407,7 +402,6 @@ void mini_jit::einsum::EinsumTree::execute(EinsumNode *root_node,
     // we are not a leaf node -> compute children and execute operation
     else
     {
-
         // compute children
         if (root_node->leftChild != nullptr)
         {
@@ -420,9 +414,8 @@ void mini_jit::einsum::EinsumTree::execute(EinsumNode *root_node,
         }
 
         // execute operation
-        auto ptrLeft = root_node->leftChild ? root_node->leftChild->tensor_out : nullptr;
         auto ptrRight = root_node->rightChild ? root_node->rightChild->tensor_out : nullptr;
-        root_node->operation.execute(ptrLeft,
+        root_node->operation.execute(root_node->leftChild->tensor_out,
                                      ptrRight,
                                      root_node->tensor_out);
     }

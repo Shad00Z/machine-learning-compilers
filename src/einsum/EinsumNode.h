@@ -13,6 +13,9 @@ namespace mini_jit
             /// The IDs of the dimensions in the einsum expression
             std::vector<int64_t> dimension_ids;
 
+            /// Size of the tensor
+            int64_t tensor_size = 1;
+
             /// String representation of the einsum expression
             std::string tensor_expression = "";
 
@@ -38,7 +41,7 @@ namespace mini_jit
              *
              */
             EinsumNode(std::vector<int64_t> const &dimension_ids,
-                      std::string tensor_expression,
+                       std::string tensor_expression,
                        EinsumNode *left,
                        EinsumNode *right)
                 : dimension_ids(dimension_ids), tensor_expression(tensor_expression), leftChild(left), rightChild(right)
@@ -47,11 +50,11 @@ namespace mini_jit
 
             ~EinsumNode()
             {
-                if(leftChild != nullptr)
+                if (leftChild != nullptr)
                 {
                     delete leftChild;
                 }
-                if(rightChild != nullptr)
+                if (rightChild != nullptr)
                 {
                     delete rightChild;
                 }
@@ -66,7 +69,6 @@ namespace mini_jit
                         delete[] static_cast<double *>(tensor_out);
                     }
                 }
-
             }
 
             int64_t get_number_of_children()

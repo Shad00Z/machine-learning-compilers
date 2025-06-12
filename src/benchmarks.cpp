@@ -263,12 +263,6 @@ void einsum_benchmark_1(std::ofstream &einsum_bm, double RUN_TIME, int64_t threa
                                                        thread_target,
                                                        max_kernel_size,
                                                        tensor_inputs);
-                                      
-    delete[] tensor_A;
-    delete[] tensor_B;
-    delete[] tensor_C;
-    delete[] tensor_D;
-    delete[] tensor_E;
 
     einsum_bm << "Running EinsumTree benchmark #1" << std::endl;
     std::cout << "Running EinsumTree benchmark #1" << std::endl;
@@ -279,6 +273,12 @@ void einsum_benchmark_1(std::ofstream &einsum_bm, double RUN_TIME, int64_t threa
     einsum_bm << "Total floating point operations: " << result.totalOperations << std::endl;
     einsum_bm << "Estimated GFLOPS/sec:            " << result.gflops << std::endl;
     einsum_bm << "--------------------------------------------------" << std::endl;
+
+    delete[] tensor_A;
+    delete[] tensor_B;
+    delete[] tensor_C;
+    delete[] tensor_D;
+    delete[] tensor_E;
 }
 
 void einsum_benchmark_2(std::ofstream &einsum_bm, double RUN_TIME, int64_t thread_target, int64_t max_kernel_size)
@@ -343,6 +343,11 @@ void einsum_benchmark_2(std::ofstream &einsum_bm, double RUN_TIME, int64_t threa
     einsum_bm << "Total floating point operations: " << result.totalOperations << std::endl;
     einsum_bm << "Estimated GFLOPS/sec:            " << result.gflops << std::endl;
     einsum_bm << "--------------------------------------------------" << std::endl;
+
+    delete[] tensor_A;
+    delete[] tensor_B;
+    delete[] tensor_C;
+    delete[] tensor_D;
 }
 
 int main(int argc, char *argv[])
@@ -652,7 +657,7 @@ int main(int argc, char *argv[])
     if (opt_tensor_operations)
     {
         const double RUN_TIME = 3.0;
-        std::ofstream top_bm("benchmarks/optimized_tensor_operation_benchmarks.txt");
+        std::ofstream top_bm("benchmarks/optimized_tensor_and_einsum_operation_benchmarks.txt");
 
         std::vector<mini_jit::dim_t> l_dims_1 = {mini_jit::dim_t::m, mini_jit::dim_t::m, mini_jit::dim_t::n, mini_jit::dim_t::n, mini_jit::dim_t::k, mini_jit::dim_t::k};
         std::vector<mini_jit::exec_t> l_execs_1 = {mini_jit::exec_t::seq, mini_jit::exec_t::seq, mini_jit::exec_t::seq, mini_jit::exec_t::seq, mini_jit::exec_t::seq, mini_jit::exec_t::seq};
