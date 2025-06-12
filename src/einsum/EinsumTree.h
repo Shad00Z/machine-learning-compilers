@@ -30,7 +30,13 @@ public:
      * @return The root EinsumNode representing the start of the parsed expression.
      */
     static EinsumNode *parse_einsum_expression(std::string const &einsum_expression,
-                                               std::vector<int64_t> &dimension_sizes);
+                                               std::vector<int64_t> &dimension_sizes,
+                                               mini_jit::dtype_t dtype);
+
+    static void execute(EinsumNode *root_node,
+                        std::vector<int64_t> &dimension_sizes,
+                        std::map<std::string, void const *> &tensor_inputs,
+                        mini_jit::dtype_t dtype);
 
 private:
     /**
@@ -53,7 +59,8 @@ private:
      * @return A EinsumNode representing the parsed expression.
      */
     static void initialize_einsum_nodes(EinsumNode *einsum_node,
-                                        std::vector<int64_t> &dimension_sizes);
+                                        std::vector<int64_t> &dimension_sizes,
+                                        mini_jit::dtype_t dtype);
 
     template <typename T>
     static bool contains(const std::vector<T> &vec, const T &value)

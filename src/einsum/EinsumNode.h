@@ -2,8 +2,6 @@
 #define MINI_JIT_EINSUM_EINSUM_NODE_H
 
 #include <vector>
-
-#include "Dimension.h"
 #include "TensorOperation.h"
 
 namespace mini_jit
@@ -12,32 +10,60 @@ namespace mini_jit
     {
         struct EinsumNode
         {
-            // The node is the output for a contraction / permutation
-            std::vector<mini_jit::ir::Dimension> dimensions;
-
-            // The node is an input for a contraction / permutation
-            std::vector<mini_jit::ir::Dimension> dimensions_in;
-
+            /// The IDs of the dimensions in the einsum expression
             std::vector<int64_t> dimension_ids;
 
-            EinsumNode *leftChild, *rightChild;
+            /// String representation of the einsum expression
+            std::string tensor_expression = "";
 
+            /// The data type of the tensor
+            mini_jit::dtype_t dtype = mini_jit::dtype_t::fp32;
+
+            /// The left child node in the einsum tree
+            EinsumNode *leftChild = nullptr;
+
+            /// The right child node in the einsum tree
+            EinsumNode *rightChild = nullptr;
+
+            /// The tensor operation associated with this node
             mini_jit::TensorOperation operation;
+
+            /// The output tensor for this node
+            void *tensor_out = nullptr;
 
             /**
              *
              */
             EinsumNode(std::vector<int64_t> const &dimension_ids,
+                      std::string tensor_expression,
                        EinsumNode *left,
                        EinsumNode *right)
-                : dimension_ids(dimension_ids), leftChild(left), rightChild(right)
+                : dimension_ids(dimension_ids), tensor_expression(tensor_expression), leftChild(left), rightChild(right)
             {
             }
 
             ~EinsumNode()
             {
-                delete leftChild;
-                delete rightChild;
+                if(leftChild != nullptr)
+                {
+                    delete leftChild;
+                }
+                if(rightChild != nullptr)
+                {
+                    delete rightChild;
+                }
+                if (tensor_out != nullptr)
+                {
+                    if (dtype == mini_jit::dtype_t::fp32)
+                    {
+                        delete[] static_cast<float *>(tensor_out);
+                    }
+                    else if (dtype == mini_jit::dtype_t::fp64)
+                    {
+                        delete[] static_cast<double *>(tensor_out);
+                    }
+                }
+
             }
 
             int64_t get_number_of_children()
