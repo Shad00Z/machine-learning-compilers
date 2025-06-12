@@ -2,6 +2,7 @@
 #include "EinsumNode.h"
 #include "Optimizer.h"
 #include <iostream>
+#include <cstring>
 
 using mini_jit::dim_t;
 using mini_jit::exec_t;
