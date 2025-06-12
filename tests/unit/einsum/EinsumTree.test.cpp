@@ -66,4 +66,8 @@ TEST_CASE("huhn")
     // std::cout << std::endl;
 
     delete node;
+    delete[] tensor_A;
+    delete[] tensor_B;
+    delete[] tensor_C;
+    delete[] tensor_D;
 }
