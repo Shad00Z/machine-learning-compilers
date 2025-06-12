@@ -140,7 +140,7 @@ The full code is available in the file ``src/kernels/matmul_m_n_k.cpp``.
 This task requires us to verify the correctness of our ``matmul_m_n_k`` kernel by comparing to a reference implementation for 1≤M≤64, 1≤N≤64, K∈[1,16,32,64,128], and lda=M, ldb=K, ldc=M.
 We realized this verification using a ``Catch2`` unit test:
 
-.. literalinclude:: ../../src/kernels/matmul/matmul_m_n_k.test.cpp
+.. literalinclude:: ../../tests/unit/kernels/matmul/matmul_m_n_k.test.cpp
     :language: cpp
     :lines: 8-65
     :lineno-match:
@@ -153,7 +153,7 @@ The M and N dimensions are generated randomly, while the K dimension is fixed to
 
 This task is very similar to the previous one, but we need to verify the correctness of our ``matmul_m_n_k`` kernel for 1≤M≤64, 1≤N≤64, K∈[1,16,32,64,128], and lda>M, ldb>K or ldc>M. This means that we need to store the matrices in a way that they are not contiguous in memory. We can do this by first choosing strides that are larger than the M, N and K dimensions. Then we can use the strides to compute the addresses of the elements in the matrices. Next, we can use this strides to first allocate memory that is larger than the matrices and then only set the elements that are used in the computation. The other elements, which will be skipped due to the strides, will be set to 0. Lastly, we call our kernel and compare the result to the expected result:
 
-.. literalinclude:: ../../src/kernels/matmul/matmul_m_n_k.test.cpp
+.. literalinclude:: ../../tests/unit/kernels/matmul/matmul_m_n_k.test.cpp
     :language: cpp
     :lines: 66-150
     :lineno-match:
@@ -249,7 +249,7 @@ and jumping to the next matrices, we would loop over our :ref:`matmul_m_n_k kern
 Similar to the GEMM kernel, we also tested our implementation of the batch-reduce GEMM.
 We executed several initializations of our kernel, using a similar approach to the testing of the GEMM kernel.
 
-.. literalinclude:: ../../src/kernels/matmul/matmul_br_m_n_k.test.cpp
+.. literalinclude:: ../../tests/unit/kernels/matmul/matmul_br_m_n_k.test.cpp
     :language: cpp
     :lines: 8-69
     :lineno-match:

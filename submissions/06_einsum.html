@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Machine Learning Compilers &mdash; Machine Learning Compilers  documentation</title>
+  <title>6. Einsum Trees &mdash; Machine Learning Compilers  documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -25,8 +25,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Documentation Setup" href="02_docu_setup.html" />
-    <link rel="prev" title="Machine Learning Compilers" href="../index.html" /> 
+    <link rel="next" title="mini_jit" href="../api/namespaces/mini_jit.html" />
+    <link rel="prev" title="5. Tensor Operation Backend" href="05_tensor_op.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -49,18 +49,18 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Project Overview</span></p>
-<ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Machine Learning Compilers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="02_docu_setup.html">Documentation Setup</a></li>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../project_overview/01_project_information.html">Machine Learning Compilers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../project_overview/02_docu_setup.html">Documentation Setup</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Submissions</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../submissions/01_assembly.html">1. Assembly</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../submissions/02_base.html">2. Base</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../submissions/03_neon.html">3. Neon</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../submissions/04_code_gen.html">4. Code Generation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../submissions/05_tensor_op.html">5. Tensor Operation Backend</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../submissions/06_einsum.html">6. Einsum Trees</a></li>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="01_assembly.html">1. Assembly</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02_base.html">2. Base</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03_neon.html">3. Neon</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04_code_gen.html">4. Code Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05_tensor_op.html">5. Tensor Operation Backend</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">6. Einsum Trees</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API</span></p>
 <ul>
@@ -88,9 +88,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Machine Learning Compilers</li>
+      <li class="breadcrumb-item active">6. Einsum Trees</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/project_overview/01_project_information.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/submissions/06_einsum.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -98,18 +98,16 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="machine-learning-compilers">
-<h1>Machine Learning Compilers<a class="headerlink" href="#machine-learning-compilers" title="Link to this heading"></a></h1>
-<p>This project addresses the work of a primitive-based tensor compiler.
-All information about this topic can be found at <a class="reference external" href="https://scalable.uni-jena.de/opt/pbtc/index.html">this link</a>.</p>
+  <section id="einsum-trees">
+<h1>6. Einsum Trees<a class="headerlink" href="#einsum-trees" title="Link to this heading"></a></h1>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../index.html" class="btn btn-neutral float-left" title="Machine Learning Compilers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="02_docu_setup.html" class="btn btn-neutral float-right" title="Documentation Setup" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="05_tensor_op.html" class="btn btn-neutral float-left" title="5. Tensor Operation Backend" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../api/namespaces/mini_jit.html" class="btn btn-neutral float-right" title="mini_jit" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

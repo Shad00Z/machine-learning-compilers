@@ -19,28 +19,21 @@ In our setup function, we check several things:
 
 .. literalinclude:: ../../src/TensorOperation.cpp
     :language: cpp
-    :lines: 15-34
+    :lines: 17-68
     :lineno-match:
-    :caption: error handling for dimensions and execution types
+    :caption: error handling for dimensions, execution types and data type
     :dedent:
 
 .. literalinclude:: ../../src/TensorOperation.cpp
     :language: cpp
-    :lines: 36-45
+    :lines: 70-90
     :lineno-match:
     :caption: assigning configuration parameters to member variables
     :dedent:
 
 .. literalinclude:: ../../src/TensorOperation.cpp
     :language: cpp
-    :lines: 47-73
-    :lineno-match:
-    :caption: check data type and assign correct first and last touch, and main primitive
-    :dedent:
-
-.. literalinclude:: ../../src/TensorOperation.cpp
-    :language: cpp
-    :lines: 114-135
+    :lines: 92-113
     :lineno-match:
     :caption: find the first ``prim`` and ``seq`` position in ``exec_types``
     :dedent:
@@ -50,23 +43,23 @@ In other words, we traverse the first sequential loops and as soon as we reach t
 
 .. literalinclude:: ../../src/TensorOperation.cpp
     :language: cpp
-    :lines: 86-112
+    :lines: 127-153
     :lineno-match:
     :caption: assign the size of the ``prim`` dimensions according to the order in ``dim_types``
     :dedent:
 
 .. literalinclude:: ../../src/TensorOperation.cpp
     :language: cpp
-    :lines: 149-168
+    :lines: 155-188
     :lineno-match:
-    :caption: assign the size of the ``seq`` dimensions according to the order in ``dim_types``
+    :caption: assign the size of the ``seq`` and ``shared`` dimensions according to the order in ``dim_types``
     :dedent:
 
 After checking all these things, we were then able to create our kernels accordingly.
 
 .. literalinclude:: ../../src/TensorOperation.cpp
     :language: cpp
-    :lines: 184-238
+    :lines: 254-315
     :lineno-match:
     :caption: construct kernels based on assigned member variables
     :dedent:
@@ -83,7 +76,7 @@ them to our ``execute_iter`` function.
 
 .. literalinclude:: ../../src/TensorOperation.cpp
     :language: cpp
-    :lines: 247-274
+    :lines: 324-338
     :lineno-match:
     :caption: starting point: ``execute`` function
     :dedent:
@@ -93,7 +86,7 @@ Next, we update the pointers to the matrices accordingly.
 
 .. literalinclude:: ../../src/TensorOperation.cpp
     :language: cpp
-    :lines: 291-301
+    :lines: 365-376
     :lineno-match:
     :caption: calculate if it is the first or last access in our output matrix and update pointers
     :dedent:
@@ -102,7 +95,7 @@ In the following step, we use our ``execute_iter`` function to recursively call 
 
 .. literalinclude:: ../../src/TensorOperation.cpp
     :language: cpp
-    :lines: 303-312
+    :lines: 379-387
     :lineno-match:
     :caption: recursive call to ``execute_iter``
     :dedent:
@@ -111,7 +104,7 @@ If we have no further recursive call, we can execute the kernels.
 
 .. literalinclude:: ../../src/TensorOperation.cpp
     :language: cpp
-    :lines: 313-335
+    :lines: 390-409
     :lineno-match:
     :caption: execute the kernels
     :dedent:
@@ -236,14 +229,14 @@ To enable the execution of shared loops, we needed to make a few adjustments to 
 
 .. literalinclude:: ../../src/TensorOperation.cpp
     :language: cpp
-    :lines: 137-147
+    :lines: 338-346
     :lineno-match:
     :caption: gather shared loop id's and dimension sizes
     :dedent:
 
 .. literalinclude:: ../../src/TensorOperation.cpp
     :language: cpp
-    :lines: 169-181
+    :lines: 175-187
     :lineno-match:
     :caption: assign the size of the ``shared`` dimensions according to the order in ``dim_types``
     :dedent:
@@ -253,26 +246,19 @@ than zero. If this was the case we would execute our ``execute_iter_parallel`` f
 
 .. literalinclude:: ../../src/TensorOperation.cpp
     :language: cpp
-    :lines: 345-350
+    :lines: 420-425
     :lineno-match:
     :caption: multiply ``shared`` loop sizes to get total number of iterations
     :dedent:
 
 The idea is to get a flat iteration space that can be used to parallelize over.
 
-.. literalinclude:: ../../src/TensorOperation.cpp
-    :language: cpp
-    :lines: 352-363
-    :lineno-match:
-    :caption: multiply ``shared`` loop sizes to get total number of iterations
-    :dedent:
-
 We 'unflatten' the OpenMP iteration index ``l_it_all`` into a set of loop indices, one for each shared loop dimension. 
 These indices are then used to compute the offsets for the ``in0``, ``in1``, and ``out`` tensors: 
 
 .. literalinclude:: ../../src/TensorOperation.cpp
     :language: cpp
-    :lines: 365-379
+    :lines: 431-443
     :lineno-match:
     :caption: calculate the tensor ``offsets``
     :dedent:
@@ -285,7 +271,7 @@ Depending on whether we have a ``seq`` dimension, we need to be careful, which i
 
 .. literalinclude:: ../../src/TensorOperation.cpp
     :language: cpp
-    :lines: 381-387
+    :lines: 457-462
     :lineno-match:
     :caption: call remaining loops with ``execute_iter``
     :dedent:
@@ -327,7 +313,7 @@ Our approach to this optimization was the following:
 
 .. literalinclude:: ../../src/ir/Optimizer.cpp
     :language: cpp
-    :lines: 33-55
+    :lines: 209-231
     :lineno-match:
     :caption: finding the ``K2 prim`` dimension for the ``BRGEMM`` case
     :dedent:
@@ -346,7 +332,7 @@ For the ``N`` dimension, where we did not have any indication about which matrix
 
 .. literalinclude:: ../../src/ir/Optimizer.cpp
     :language: cpp
-    :lines: 85-108
+    :lines: 261-279
     :lineno-match:
     :caption: finding the ``N prim`` dimension with smallest stride
     :dedent:
@@ -363,7 +349,7 @@ That means for the case that a ``prim`` dimension would be larger than ``1024`` 
 
 .. literalinclude:: ../../src/ir/Optimizer.cpp
     :language: cpp
-    :lines: 150-178
+    :lines: 327-355
     :lineno-match:
     :caption: split large ``prim`` dimensions
     :dedent:
@@ -376,7 +362,7 @@ That means we start with the ``M`` dimension to find an appropriate match:
 
 .. literalinclude:: ../../src/ir/Optimizer.cpp
     :language: cpp
-    :lines: 230-254
+    :lines: 421-438
     :lineno-match:
     :caption: ``M`` dimension split
     :dedent:
@@ -391,9 +377,9 @@ For that we initially check how many loops are already of dimension-type ``share
 
 .. literalinclude:: ../../src/ir/Optimizer.cpp
     :language: cpp
-    :lines: 184-200
+    :lines: 364-371
     :lineno-match:
-    :caption: finding the ``N prim`` dimension with smallest stride
+    :caption: finding possible iterations for shared loops
     :dedent:
 
 For the case that we already have a high number of ``shared`` loops we do not create any more and simply return. 
@@ -401,7 +387,7 @@ Otherwise we check the ``seq`` dimensions for potential candidates:
 
 .. literalinclude:: ../../src/ir/Optimizer.cpp
     :language: cpp
-    :lines: 202-214
+    :lines: 386-398
     :lineno-match:
     :caption: select ``shared`` loop candidates
     :dedent:
@@ -410,7 +396,7 @@ As a last step we move all our ``shared`` loops to the front of the order:
 
 .. literalinclude:: ../../src/ir/Optimizer.cpp
     :language: cpp
-    :lines: 216-221
+    :lines: 401-405
     :lineno-match:
     :caption: move ``shared`` loops to the front
     :dedent:
@@ -418,7 +404,7 @@ As a last step we move all our ``shared`` loops to the front of the order:
 5.5.6 Performance Benchmarks
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-We also benchmarked the results for two given configurations:
+We also benchmarked the results for some configurations:
 
 .. literalinclude:: ../../benchmarks/optimized_tensor_operation_benchmarks.txt
     :language: text
@@ -426,4 +412,120 @@ We also benchmarked the results for two given configurations:
     :caption: ``GFLOP`` performance for sample configurations
     :dedent:
 
-For the execution of these configs we receive around ``250 - 260 GFLOPs``. 
+Depending on the selected dimensions our results varied massively. The highest performance we achieved was around ``350 GFLOPs``. 
+
+**********************************
+5.6 Unary Operations
+**********************************
+
+After supporting the standard primitives, with ``GEMM`` and ``BRGEMM`` we would now allow also primitives like 
+``copy`` / ``identity``, ``tranposition`` or ``permutation``.
+
+5.6.1 Backend Extension
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The distinction to the other primitves here is, that all dimensions are of type ``dim_t::c``. 
+To allow these kind of primtives, we would have to make some small adjustments to our ``TensorOperation``:
+
+.. literalinclude:: ../../src/TensorOperation.cpp
+    :language: cpp
+    :lines: 190-210
+    :lineno-match:
+    :caption: find ``M`` and ``N`` dimenions based on stride in the input
+    :dedent:
+
+.. literalinclude:: ../../src/TensorOperation.cpp
+    :language: cpp
+    :lines: 293-301
+    :lineno-match:
+    :caption: generate ``identity`` primtive
+    :dedent:
+
+5.6.2 Optimization Passes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To run our optimization passes on these primitives, we would again have to make some adjustment, this time in our ``Optimizer``.
+
+For our ``identifyPrimitives`` function we would first check if we have a ``dim_t::c`` as a dimension type.
+If this was the case, we would continue to find the ``prim`` dimensions:
+
+.. literalinclude:: ../../src/ir/Optimizer.cpp
+    :language: cpp
+    :lines: 73-81
+    :lineno-match:
+    :caption: error handling for correct dimension types
+    :dedent:
+
+.. literalinclude:: ../../src/ir/Optimizer.cpp
+    :language: cpp
+    :lines: 82-91
+    :lineno-match:
+    :caption: exit early, if all ``prim`` dimensions are already set
+    :dedent:
+
+.. literalinclude:: ../../src/ir/Optimizer.cpp
+    :language: cpp
+    :lines: 97-125
+    :lineno-match:
+    :caption: exit early, if all ``prim`` dimensions are already set
+    :dedent:
+
+.. literalinclude:: ../../src/ir/Optimizer.cpp
+    :language: cpp
+    :lines: 127-155
+    :lineno-match:
+    :caption: check for ``transposition`` and find dimensions accordingly
+    :dedent:
+
+If we do not have a ``transposition`` we would simply look for the smallest stride and set the dimensions accordingly:
+
+.. literalinclude:: ../../src/ir/Optimizer.cpp
+    :language: cpp
+    :lines: 160-180
+    :lineno-match:
+    :caption: set dimensions for ``identity`` primitive
+    :dedent:
+
+The last step would be to set the remaining undefined dimensions to ``seq``, as the next optimization would be to find ideal ``shared`` loops.
+
+However, in our ``createSharedLoops`` function, we did not have to make any asjustments.
+
+For our ``splitDimensions`` function, we would now also check if we had a ``dim_t::c`` as a dimension type:
+
+.. literalinclude:: ../../src/ir/Optimizer.cpp
+    :language: cpp
+    :lines: 465-489
+    :lineno-match:
+    :caption: split dimensions of type ``dim_t::c``
+    :dedent:
+
+5.6.3 Reference Implementation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+For our reference implementation, we were using an example with 4 dimensions ``trus``. 
+We would change this ``trus`` order to ``turs``.
+
+.. literalinclude:: ../../tests/unit/TensorOperation.test.cpp
+    :language: cpp
+    :lines: 301-318
+    :lineno-match:
+    :caption: initialize sizes for tensors
+    :dedent:
+
+.. literalinclude:: ../../tests/unit/TensorOperation.test.cpp
+    :language: cpp
+    :lines: 320-342
+    :lineno-match:
+    :caption: fill the tensors with values
+    :dedent:
+
+Then we would prepare the execution, by setting all arguments accordingly:
+
+.. literalinclude:: ../../tests/unit/TensorOperation.test.cpp
+    :language: cpp
+    :lines: 344-376
+    :lineno-match:
+    :caption: prepare arguments for execution
+    :dedent:
+
+Finally we would execute our implementation.
