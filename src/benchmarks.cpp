@@ -152,10 +152,210 @@ void optimized_tensor_benchmark(std::ofstream &top_opt_bm, int64_t thread_target
     top_opt_bm << "--------------------------------------------------" << std::endl;
 }
 
+void optimized_tensor_benchmark_einsum(std::ofstream &top_opt_bm, int64_t thread_target, int64_t max_kernel_size)
+{
+    const double RUN_TIME = 3.0;
+
+    std::string expression = "[2,0],[1,2]->[1,0]";
+    std::vector<int64_t> dimension_sizes = {1600, 1600, 1600};
+    mini_jit::dtype_t dtype = mini_jit::dtype_t::fp32;
+
+    // [2,0] -> A
+    // [1,2] -> B
+    std::map<std::string, void const *> tensor_inputs;
+
+    const int64_t SIZE_A = dimension_sizes[2] * dimension_sizes[0];
+    const int64_t SIZE_B = dimension_sizes[1] * dimension_sizes[2];
+
+    float *tensor_A = new float[SIZE_A];
+    float *tensor_B = new float[SIZE_B];
+
+    tensor_inputs["2,0"] = tensor_A;
+    tensor_inputs["1,2"] = tensor_B;
+
+    // init matrices
+    for (int64_t i = 0; i < SIZE_A; ++i)
+    {
+        tensor_A[i] = i % 100;
+    }
+    for (int64_t i = 0; i < SIZE_B; ++i)
+    {
+        tensor_B[i] = i % 100;
+    }
+
+    mini_jit::benchmarks::EinsumTreeBench tensor_bench(RUN_TIME,
+                                                       expression,
+                                                       dimension_sizes,
+                                                       dtype,
+                                                       thread_target,
+                                                       max_kernel_size,
+                                                       tensor_inputs);
+
+    delete[] tensor_A;
+    delete[] tensor_B;
+
+    top_opt_bm << "Running EinsumTensorOperationBench benchmark (thread_target: " << thread_target << ", max_kernel_size: " << max_kernel_size << ")" << std::endl;
+    std::cout << "Running EinsumTensorOperationBench benchmark (thread_target: " << thread_target << ", max_kernel_size: " << max_kernel_size << ")" << std::endl;
+    tensor_bench.run();
+    mini_jit::Benchmark::benchmark_result result = tensor_bench.getResult();
+    top_opt_bm << "Total time (s):                  " << result.elapsedSeconds << std::endl;
+    top_opt_bm << "Total reps:                      " << result.numReps << std::endl;
+    top_opt_bm << "Total floating point operations: " << result.totalOperations << std::endl;
+    top_opt_bm << "Estimated GFLOPS/sec:            " << result.gflops << std::endl;
+    top_opt_bm << "--------------------------------------------------" << std::endl;
+}
+
+void einsum_benchmark_1(std::ofstream &einsum_bm, double RUN_TIME, int64_t thread_target, int64_t max_kernel_size)
+{
+    std::string expression = "[[8,4],[7,3,8]->[7,3,4]],[[[2,6,7],[1,5,6]->[1,2,5,7]],[0,5]->[0,1,2,7]]->[0,1,2,3,4]";
+    std::vector<int64_t> dimension_sizes = {100, 72, 128, 128, 3, 71, 305, 32, 3};
+    mini_jit::dtype_t dtype = mini_jit::dtype_t::fp32;
+
+    // [8,4] -> A
+    // [7,3,8] -> B
+    // [2,6,7] -> C
+    // [1,5,6] -> D
+    // [0,5] -> E
+    std::map<std::string, void const *> tensor_inputs;
+    const int64_t SIZE_A = dimension_sizes[8] * dimension_sizes[4];
+    const int64_t SIZE_B = dimension_sizes[7] * dimension_sizes[3] * dimension_sizes[8];
+    const int64_t SIZE_C = dimension_sizes[2] * dimension_sizes[6] * dimension_sizes[7];
+    const int64_t SIZE_D = dimension_sizes[1] * dimension_sizes[5] * dimension_sizes[6];
+    const int64_t SIZE_E = dimension_sizes[0] * dimension_sizes[5];
+    float *tensor_A = new float[SIZE_A];
+    float *tensor_B = new float[SIZE_B];
+    float *tensor_C = new float[SIZE_C];
+    float *tensor_D = new float[SIZE_D];
+    float *tensor_E = new float[SIZE_E];
+
+    tensor_inputs["8,4"] = tensor_A;
+    tensor_inputs["7,3,8"] = tensor_B;
+    tensor_inputs["2,6,7"] = tensor_C;
+    tensor_inputs["1,5,6"] = tensor_D;
+    tensor_inputs["0,5"] = tensor_E;
+
+    // init matrices
+    for (int64_t i = 0; i < SIZE_A; ++i)
+    {
+        tensor_A[i] = i % 100;
+    }
+    for (int64_t i = 0; i < SIZE_B; ++i)
+    {
+        tensor_B[i] = i % 100;
+    }
+    for (int64_t i = 0; i < SIZE_C; ++i)
+    {
+        tensor_C[i] = i % 100;
+    }
+    for (int64_t i = 0; i < SIZE_D; ++i)
+    {
+        tensor_D[i] = i % 100;
+    }
+    for (int64_t i = 0; i < SIZE_E; ++i)
+    {
+        tensor_E[i] = i % 100;
+    }
+
+    mini_jit::benchmarks::EinsumTreeBench einsum_bench(RUN_TIME,
+                                                       expression,
+                                                       dimension_sizes,
+                                                       dtype,
+                                                       thread_target,
+                                                       max_kernel_size,
+                                                       tensor_inputs);
+                                      
+    delete[] tensor_A;
+    delete[] tensor_B;
+    delete[] tensor_C;
+    delete[] tensor_D;
+    delete[] tensor_E;
+
+    einsum_bm << "Running EinsumTree benchmark #1" << std::endl;
+    std::cout << "Running EinsumTree benchmark #1" << std::endl;
+    einsum_bench.run();
+    mini_jit::Benchmark::benchmark_result result = einsum_bench.getResult();
+    einsum_bm << "Total time (s):                  " << result.elapsedSeconds << std::endl;
+    einsum_bm << "Total reps:                      " << result.numReps << std::endl;
+    einsum_bm << "Total floating point operations: " << result.totalOperations << std::endl;
+    einsum_bm << "Estimated GFLOPS/sec:            " << result.gflops << std::endl;
+    einsum_bm << "--------------------------------------------------" << std::endl;
+}
+
+void einsum_benchmark_2(std::ofstream &einsum_bm, double RUN_TIME, int64_t thread_target, int64_t max_kernel_size)
+{
+    std::string expression = "[[[[3,6,8,9]->[8,6,9,3]],[[2,5,7,9]->[7,5,2,9]]->[7,8,5,6,2,3]],[0,4,5,6]->[0,4,7,8,2,3]],[1,4,7,8]->[0,1,2,3]";
+    std::vector<int64_t> dimension_sizes = {60, 60, 20, 20, 8, 8, 8, 8, 8, 8};
+    mini_jit::dtype_t dtype = mini_jit::dtype_t::fp32;
+
+    //     // [3,6,8,9] -> *A
+    //     // [2,5,7,9] -> *B
+    //     // [0,4,5,6] -> *C
+    //     // [1,4,7,8] -> *D
+    std::map<std::string, void const *> tensor_inputs;
+
+    const int64_t SIZE_A = dimension_sizes[3] * dimension_sizes[6] * dimension_sizes[8] * dimension_sizes[9];
+    const int64_t SIZE_B = dimension_sizes[2] * dimension_sizes[5] * dimension_sizes[7] * dimension_sizes[9];
+    const int64_t SIZE_C = dimension_sizes[0] * dimension_sizes[4] * dimension_sizes[5] * dimension_sizes[6];
+    const int64_t SIZE_D = dimension_sizes[1] * dimension_sizes[4] * dimension_sizes[7] * dimension_sizes[8];
+
+    float *tensor_A = new float[SIZE_A];
+    float *tensor_B = new float[SIZE_B];
+    float *tensor_C = new float[SIZE_C];
+    float *tensor_D = new float[SIZE_D];
+
+    tensor_inputs["3,6,8,9"] = tensor_A;
+    tensor_inputs["2,5,7,9"] = tensor_B;
+    tensor_inputs["0,4,5,6"] = tensor_C;
+    tensor_inputs["1,4,7,8"] = tensor_D;
+
+    // init matrices
+    for (int64_t i = 0; i < SIZE_A; ++i)
+    {
+        tensor_A[i] = i % 100;
+    }
+    for (int64_t i = 0; i < SIZE_B; ++i)
+    {
+        tensor_B[i] = i % 100;
+    }
+    for (int64_t i = 0; i < SIZE_C; ++i)
+    {
+        tensor_C[i] = i % 100;
+    }
+    for (int64_t i = 0; i < SIZE_D; ++i)
+    {
+        tensor_D[i] = i % 100;
+    }
+
+    mini_jit::benchmarks::EinsumTreeBench einsum_bench(RUN_TIME,
+                                                       expression,
+                                                       dimension_sizes,
+                                                       dtype,
+                                                       thread_target,
+                                                       max_kernel_size,
+                                                       tensor_inputs);
+
+    einsum_bm << "Running EinsumTree benchmark #2" << std::endl;
+    std::cout << "Running EinsumTree benchmark #2" << std::endl;
+    einsum_bench.run();
+    mini_jit::Benchmark::benchmark_result result = einsum_bench.getResult();
+    einsum_bm << "Total time (s):                  " << result.elapsedSeconds << std::endl;
+    einsum_bm << "Total reps:                      " << result.numReps << std::endl;
+    einsum_bm << "Total floating point operations: " << result.totalOperations << std::endl;
+    einsum_bm << "Estimated GFLOPS/sec:            " << result.gflops << std::endl;
+    einsum_bm << "--------------------------------------------------" << std::endl;
+}
+
 int main(int argc, char *argv[])
 {
     // check console arguments
-    bool has_gemm = false, has_brgemm = false, has_matmul = false, has_unary = false, tensor_operations = false, shared_tensor_operations = false, opt_tensor_operations = false;
+    bool has_gemm = false;
+    bool has_brgemm = false;
+    bool has_matmul = false;
+    bool has_unary = false;
+    bool tensor_operations = false;
+    bool shared_tensor_operations = false;
+    bool opt_tensor_operations = false;
+    bool einsum_benchmark = false;
     for (int i = 1; i < argc; ++i)
     {
         if (strcmp(argv[i], "gemm") == 0)
@@ -172,6 +372,13 @@ int main(int argc, char *argv[])
             shared_tensor_operations = true;
         else if (strcmp(argv[i], "top-opt") == 0)
             opt_tensor_operations = true;
+        else if (strcmp(argv[i], "einsum") == 0)
+            einsum_benchmark = true;
+        else
+        {
+            std::cerr << "Unknown argument: " << argv[i] << std::endl;
+            return 1;
+        }
     }
 
     if (has_gemm)
@@ -501,7 +708,16 @@ int main(int argc, char *argv[])
         {
             optimized_tensor_benchmark(top_bm, 64, max_kernel_size);
             optimized_tensor_benchmark(top_bm, 256, max_kernel_size);
+            optimized_tensor_benchmark_einsum(top_bm, 64, max_kernel_size);
+            optimized_tensor_benchmark_einsum(top_bm, 256, max_kernel_size);
         }
+    }
+
+    if (einsum_benchmark)
+    {
+        std::ofstream einsum_bm("benchmarks/einsum_benchmark.txt");
+        einsum_benchmark_1(einsum_bm, 10.0, 256, 512);
+        einsum_benchmark_2(einsum_bm, 10.0, 256, 512);
     }
 
     return 0;

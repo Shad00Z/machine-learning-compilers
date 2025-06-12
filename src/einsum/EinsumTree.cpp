@@ -9,7 +9,9 @@ using mini_jit::exec_t;
 
 mini_jit::einsum::EinsumNode *mini_jit::einsum::EinsumTree::parse_einsum_expression(std::string const &einsum_expression,
                                                                                     std::vector<int64_t> &dimension_sizes,
-                                                                                    mini_jit::dtype_t dtype)
+                                                                                    mini_jit::dtype_t dtype,
+                                                                                    int64_t thread_target,
+                                                                                    int64_t max_kernel_size)
 {
     // Check allowed characters
     for (char c : einsum_expression)
@@ -23,7 +25,11 @@ mini_jit::einsum::EinsumNode *mini_jit::einsum::EinsumTree::parse_einsum_express
 
     mini_jit::einsum::EinsumNode *root_node = parse_einsum_expression_recursive(einsum_expression);
 
-    initialize_einsum_nodes(root_node, dimension_sizes, dtype);
+    initialize_einsum_nodes(root_node, 
+                            dimension_sizes, 
+                            dtype, 
+                            thread_target, 
+                            max_kernel_size);
 
     return root_node;
 }
@@ -117,7 +123,9 @@ std::vector<int64_t> mini_jit::einsum::EinsumTree::get_dimensions_from_expressio
 
 void mini_jit::einsum::EinsumTree::initialize_einsum_nodes(EinsumNode *einsum_node,
                                                            std::vector<int64_t> &dimension_sizes,
-                                                           mini_jit::dtype_t dtype)
+                                                           mini_jit::dtype_t dtype,
+                                                           int64_t thread_target,
+                                                           int64_t max_kernel_size)
 {
     if (einsum_node == nullptr)
     {
@@ -125,6 +133,7 @@ void mini_jit::einsum::EinsumTree::initialize_einsum_nodes(EinsumNode *einsum_no
     }
 
     einsum_node->dtype = dtype;
+    einsum_node->computational_operations = 0.0;
 
     // no children? -> input node and no setup needed
     if(einsum_node->get_number_of_children() == 0)
@@ -263,23 +272,38 @@ void mini_jit::einsum::EinsumTree::initialize_einsum_nodes(EinsumNode *einsum_no
                                       strides_in0, 
                                       strides_in1, 
                                       strides_out, 
-                                      99999, 
-                                      1024);
+                                      thread_target, 
+                                      max_kernel_size);
 
     int prim_count = std::count(exec_types.begin(), exec_types.end(), exec_t::prim);
     mini_jit::ptype_t main_ptype = mini_jit::ptype_t::none;
     if(prim_count == 2)
     {
         main_ptype = mini_jit::ptype_t::identity;
+        einsum_node->computational_operations = 0.0; // no operations for identity
     }
     else if(prim_count == 3)
     {
         main_ptype = mini_jit::ptype_t::gemm;
+        einsum_node->computational_operations = 2.0f;
+        for(int64_t size : dim_sizes)
+        {
+            einsum_node->computational_operations *= size;
+        }
     }
     else if(prim_count == 4)
     {
         main_ptype = mini_jit::ptype_t::brgemm;
+        einsum_node->computational_operations = 2.0f;
+        for(int64_t size : dim_sizes)
+        {
+            einsum_node->computational_operations *= size;
+        }
     }
+
+    // add child ops
+    einsum_node->computational_operations += einsum_node->leftChild ? einsum_node->leftChild->computational_operations : 0.0;
+    einsum_node->computational_operations += einsum_node->rightChild ? einsum_node->rightChild->computational_operations : 0.0;
 
     einsum_node->operation.setup(dtype,
                                  ptype_t::none,
@@ -295,11 +319,11 @@ void mini_jit::einsum::EinsumTree::initialize_einsum_nodes(EinsumNode *einsum_no
     // set values for children
     if (einsum_node->leftChild)
     {
-        initialize_einsum_nodes(einsum_node->leftChild, dimension_sizes, dtype);
+        initialize_einsum_nodes(einsum_node->leftChild, dimension_sizes, dtype, thread_target, max_kernel_size);
     }
     if (einsum_node->rightChild)
     {
-        initialize_einsum_nodes(einsum_node->rightChild, dimension_sizes, dtype);
+        initialize_einsum_nodes(einsum_node->rightChild, dimension_sizes, dtype, thread_target, max_kernel_size);
     }
 }
 

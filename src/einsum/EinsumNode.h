@@ -31,6 +31,9 @@ namespace mini_jit
             /// The output tensor for this node
             void *tensor_out = nullptr;
 
+            /// The number of operations performed by this node
+            double computational_operations = 0.0;
+
             /**
              *
              */

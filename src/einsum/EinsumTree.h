@@ -31,7 +31,9 @@ public:
      */
     static EinsumNode *parse_einsum_expression(std::string const &einsum_expression,
                                                std::vector<int64_t> &dimension_sizes,
-                                               mini_jit::dtype_t dtype);
+                                               mini_jit::dtype_t dtype,
+                                               int64_t thread_target,
+                                               int64_t max_kernel_size);
 
     static void execute(EinsumNode *root_node,
                         std::vector<int64_t> &dimension_sizes,
@@ -60,7 +62,9 @@ private:
      */
     static void initialize_einsum_nodes(EinsumNode *einsum_node,
                                         std::vector<int64_t> &dimension_sizes,
-                                        mini_jit::dtype_t dtype);
+                                        mini_jit::dtype_t dtype,
+                                        int64_t thread_target,
+                                        int64_t max_kernel_size);
 
     template <typename T>
     static bool contains(const std::vector<T> &vec, const T &value)

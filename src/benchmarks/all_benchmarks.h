@@ -11,6 +11,7 @@
 #include "unary/zero_eor_primitive.bench.h"
 #include "unary/zero_xzr_primitive.bench.h"
 
+#include "EinsumTree.bench.h"
 #include "TensorOperation.bench.h"
 
 #endif // ALL_BENCHMARKS_H
