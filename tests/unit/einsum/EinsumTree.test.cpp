@@ -292,9 +292,10 @@ TEST_CASE("EinsumTree Complex Permutation + GEMM Test")
     {
         for (int j = 0; j < K; ++j)
         {
-            tensor_A_intermediate[j + i * K] = tensor_A[i + j * M];
+            tensor_A_intermediate[i + j * M] = tensor_A[j + i * K];
         }
     }
+
     // perform GEMM with transposed A
     for (int col = 0; col < N; ++col)
     {
@@ -312,7 +313,7 @@ TEST_CASE("EinsumTree Complex Permutation + GEMM Test")
     mini_jit::einsum::EinsumTree::execute(node, dimension_sizes, tensor_inputs, dtype);
 
     const float *tensor_out = static_cast<const float *>(node->tensor_out);
-
+    
     // compare output tensor with expected output
     for (int64_t i = 0; i < SIZE_OUT; ++i)
     {
