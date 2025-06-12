@@ -5,5 +5,5 @@ digraph "Graphical Class Hierarchy"
   edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
   node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
   rankdir="LR";
-  Node0 [id="Node000000",label="mini_jit::ir::IRConverter",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classmini__jit_1_1ir_1_1IRConverter.html",tooltip="The IRConverter class provides methods to convert between configuration parameters and IR Dimension r..."];
+  Node0 [id="Node000000",label="mini_jit::einsum::EinsumTree",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classmini__jit_1_1einsum_1_1EinsumTree.html",tooltip="The EinsumTree class provides methods to transform a string einsum expression into a tree structure b..."];
 }

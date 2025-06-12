@@ -5,5 +5,5 @@ digraph "Graphical Class Hierarchy"
   edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
   node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
   rankdir="LR";
-  Node0 [id="Node000000",label="mini_jit::ir::Optimizer",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classmini__jit_1_1ir_1_1Optimizer.html",tooltip="The Optimizer class provides methods to optimize tensor operations by adjusting dimensions,..."];
+  Node0 [id="Node000000",label="mini_jit::ir::Dimension",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$structmini__jit_1_1ir_1_1Dimension.html",tooltip="The Dimension struct represents a dimension in a tensor operation. It contains information about the ..."];
 }

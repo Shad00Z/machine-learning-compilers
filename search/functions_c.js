@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['write_0',['write',['../classmini__jit_1_1Kernel.html#a18596ddec37836c2b304d740cb798841',1,'mini_jit::Kernel']]]
+  ['tensoroperationbench_0',['TensorOperationBench',['../classmini__jit_1_1benchmarks_1_1TensorOperationBench.html#ab31d715af778486422ac980a274a0934',1,'mini_jit::benchmarks::TensorOperationBench']]]
 ];

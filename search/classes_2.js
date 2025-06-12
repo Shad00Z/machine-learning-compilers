@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['identity_5fprimitive_5fbench_0',['Identity_primitive_bench',['../classmini__jit_1_1benchmarks_1_1Identity__primitive__bench.html',1,'mini_jit::benchmarks']]],
-  ['identity_5ftrans_5fprimitive_5fbench_1',['Identity_trans_primitive_bench',['../classmini__jit_1_1benchmarks_1_1Identity__trans__primitive__bench.html',1,'mini_jit::benchmarks']]],
-  ['irconverter_2',['IRConverter',['../classmini__jit_1_1ir_1_1IRConverter.html',1,'mini_jit::ir']]]
+  ['einsumnode_0',['EinsumNode',['../structmini__jit_1_1einsum_1_1EinsumNode.html',1,'mini_jit::einsum']]],
+  ['einsumtree_1',['EinsumTree',['../classmini__jit_1_1einsum_1_1EinsumTree.html',1,'mini_jit::einsum']]],
+  ['einsumtreebench_2',['EinsumTreeBench',['../classmini__jit_1_1benchmarks_1_1EinsumTreeBench.html',1,'mini_jit::benchmarks']]]
 ];

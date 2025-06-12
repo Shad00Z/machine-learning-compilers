@@ -1,0 +1,277 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mini_jit::einsum &mdash; Machine Learning Compilers  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="mini_jit::instructions" href="mini_jit_instructions.html" />
+    <link rel="prev" title="mini_jit::converters" href="mini_jit_converters.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Machine Learning Compilers
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Project Overview</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../project_overview/01_project_information.html">Machine Learning Compilers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../project_overview/02_docu_setup.html">Documentation Setup</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Submissions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../submissions/01_assembly.html">1. Assembly</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../submissions/02_base.html">2. Base</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../submissions/03_neon.html">3. Neon</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../submissions/04_code_gen.html">4. Code Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../submissions/05_tensor_op.html">5. Tensor Operation Backend</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="mini_jit.html">mini_jit</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mini_jit_benchmarks.html">mini_jit::benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mini_jit_converters.html">mini_jit::converters</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">mini_jit::einsum</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumNodeE"><code class="docutils literal notranslate"><span class="pre">mini_jit::einsum::EinsumNode</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumNode10EinsumNodeERKNSt6vectorI7int64_tEENSt6stringEP10EinsumNodeP10EinsumNode"><code class="docutils literal notranslate"><span class="pre">EinsumNode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumNodeD0Ev"><code class="docutils literal notranslate"><span class="pre">~EinsumNode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumNode22get_number_of_childrenEv"><code class="docutils literal notranslate"><span class="pre">get_number_of_children()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumNode13dimension_idsE"><code class="docutils literal notranslate"><span class="pre">dimension_ids</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumNode11tensor_sizeE"><code class="docutils literal notranslate"><span class="pre">tensor_size</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumNode17tensor_expressionE"><code class="docutils literal notranslate"><span class="pre">tensor_expression</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumNode5dtypeE"><code class="docutils literal notranslate"><span class="pre">dtype</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumNode9leftChildE"><code class="docutils literal notranslate"><span class="pre">leftChild</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumNode10rightChildE"><code class="docutils literal notranslate"><span class="pre">rightChild</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumNode9operationE"><code class="docutils literal notranslate"><span class="pre">operation</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumNode10tensor_outE"><code class="docutils literal notranslate"><span class="pre">tensor_out</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumNode24computational_operationsE"><code class="docutils literal notranslate"><span class="pre">computational_operations</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumTreeE"><code class="docutils literal notranslate"><span class="pre">mini_jit::einsum::EinsumTree</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumTree10EinsumTreeEv"><code class="docutils literal notranslate"><span class="pre">EinsumTree()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumTree23parse_einsum_expressionERKNSt6stringERNSt6vectorI7int64_tEEN8mini_jit7dtype_tE7int64_t7int64_t"><code class="docutils literal notranslate"><span class="pre">parse_einsum_expression()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumTree7executeEP10EinsumNodeRNSt6vectorI7int64_tEERNSt3mapINSt6stringEPKvEEN8mini_jit7dtype_tE"><code class="docutils literal notranslate"><span class="pre">execute()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="mini_jit_instructions.html">mini_jit::instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mini_jit_ir.html">mini_jit::ir</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mini_jit_kernels.html">mini_jit::kernels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mini_jit_registers.html">mini_jit::registers</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Machine Learning Compilers</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">mini_jit::einsum</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/api/namespaces/mini_jit_einsum.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="mini-jit-einsum">
+<span id="api-mini-jit-einsum"></span><h1>mini_jit::einsum<a class="headerlink" href="#mini-jit-einsum" title="Link to this heading"></a></h1>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumNodeE">
+<span id="_CPPv3N8mini_jit6einsum8mini_jit6einsum10EinsumNodeE"></span><span id="_CPPv2N8mini_jit6einsum8mini_jit6einsum10EinsumNodeE"></span><span id="mini_jit::einsum::mini_jit::einsum::EinsumNode"></span><span class="target" id="structmini__jit_1_1einsum_1_1EinsumNode"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EinsumNode</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumNodeE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumNode10EinsumNodeERKNSt6vectorI7int64_tEENSt6stringEP10EinsumNodeP10EinsumNode">
+<span id="_CPPv3N8mini_jit6einsum8mini_jit6einsum10EinsumNode10EinsumNodeERKNSt6vectorI7int64_tEENSt6stringEP10EinsumNodeP10EinsumNode"></span><span id="_CPPv2N8mini_jit6einsum8mini_jit6einsum10EinsumNode10EinsumNodeERKNSt6vectorI7int64_tEENSt6stringEP10EinsumNodeP10EinsumNode"></span><span id="mini_jit::einsum::mini_jit::einsum::EinsumNode::EinsumNode__std::vector:int64_t:CR.ss.EinsumNodeP.EinsumNodeP"></span><span class="target" id="structmini__jit_1_1einsum_1_1EinsumNode_1ac90fe39c63abdaf8c84f21425466faa7"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EinsumNode</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">int64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">dimension_ids</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">tensor_expression</span></span>, <a class="reference internal" href="#_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumNode10EinsumNodeERKNSt6vectorI7int64_tEENSt6stringEP10EinsumNodeP10EinsumNode" title="mini_jit::einsum::mini_jit::einsum::EinsumNode::EinsumNode"><span class="n"><span class="pre">EinsumNode</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">left</span></span>, <a class="reference internal" href="#_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumNode10EinsumNodeERKNSt6vectorI7int64_tEENSt6stringEP10EinsumNodeP10EinsumNode" title="mini_jit::einsum::mini_jit::einsum::EinsumNode::EinsumNode"><span class="n"><span class="pre">EinsumNode</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">right</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumNode10EinsumNodeERKNSt6vectorI7int64_tEENSt6stringEP10EinsumNodeP10EinsumNode" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumNodeD0Ev">
+<span id="_CPPv3N8mini_jit6einsum8mini_jit6einsum10EinsumNodeD0Ev"></span><span id="_CPPv2N8mini_jit6einsum8mini_jit6einsum10EinsumNodeD0Ev"></span><span id="mini_jit::einsum::mini_jit::einsum::EinsumNode::~EinsumNode"></span><span class="target" id="structmini__jit_1_1einsum_1_1EinsumNode_1aa76310b4a5d310928c78368e41b0d216"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~EinsumNode</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumNodeD0Ev" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumNode22get_number_of_childrenEv">
+<span id="_CPPv3N8mini_jit6einsum8mini_jit6einsum10EinsumNode22get_number_of_childrenEv"></span><span id="_CPPv2N8mini_jit6einsum8mini_jit6einsum10EinsumNode22get_number_of_childrenEv"></span><span id="mini_jit::einsum::mini_jit::einsum::EinsumNode::get_number_of_children"></span><span class="target" id="structmini__jit_1_1einsum_1_1EinsumNode_1ad5171754dc86551618f20fbd331498ca"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get_number_of_children</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumNode22get_number_of_childrenEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumNode13dimension_idsE">
+<span id="_CPPv3N8mini_jit6einsum8mini_jit6einsum10EinsumNode13dimension_idsE"></span><span id="_CPPv2N8mini_jit6einsum8mini_jit6einsum10EinsumNode13dimension_idsE"></span><span id="mini_jit::einsum::mini_jit::einsum::EinsumNode::dimension_ids__std::vector:int64_t:"></span><span class="target" id="structmini__jit_1_1einsum_1_1EinsumNode_1a2d3442b8127eeb90802bc2bd8446300b"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">int64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dimension_ids</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumNode13dimension_idsE" title="Link to this definition"></a><br /></dt>
+<dd><p>The IDs of the dimensions in the einsum expression. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumNode11tensor_sizeE">
+<span id="_CPPv3N8mini_jit6einsum8mini_jit6einsum10EinsumNode11tensor_sizeE"></span><span id="_CPPv2N8mini_jit6einsum8mini_jit6einsum10EinsumNode11tensor_sizeE"></span><span id="mini_jit::einsum::mini_jit::einsum::EinsumNode::tensor_size__int64_t"></span><span class="target" id="structmini__jit_1_1einsum_1_1EinsumNode_1ad1217903ef107434b9263fde76a54947"></span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">tensor_size</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><a class="headerlink" href="#_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumNode11tensor_sizeE" title="Link to this definition"></a><br /></dt>
+<dd><p>Size of the tensor. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumNode17tensor_expressionE">
+<span id="_CPPv3N8mini_jit6einsum8mini_jit6einsum10EinsumNode17tensor_expressionE"></span><span id="_CPPv2N8mini_jit6einsum8mini_jit6einsum10EinsumNode17tensor_expressionE"></span><span id="mini_jit::einsum::mini_jit::einsum::EinsumNode::tensor_expression__ss"></span><span class="target" id="structmini__jit_1_1einsum_1_1EinsumNode_1acf2a46c27a768db6ff7a6c32388dbcbc"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">tensor_expression</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;&quot;</span></span><a class="headerlink" href="#_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumNode17tensor_expressionE" title="Link to this definition"></a><br /></dt>
+<dd><p>String representation of the einsum expression. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumNode5dtypeE">
+<span id="_CPPv3N8mini_jit6einsum8mini_jit6einsum10EinsumNode5dtypeE"></span><span id="_CPPv2N8mini_jit6einsum8mini_jit6einsum10EinsumNode5dtypeE"></span><span id="mini_jit::einsum::mini_jit::einsum::EinsumNode::dtype__mini_jit::dtype_t"></span><span class="target" id="structmini__jit_1_1einsum_1_1EinsumNode_1ab4dbdd92110d32479fb0d69a227bba7b"></span><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">dtype_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dtype</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">dtype_t</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">fp32</span></span><a class="headerlink" href="#_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumNode5dtypeE" title="Link to this definition"></a><br /></dt>
+<dd><p>The data type of the tensor. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumNode9leftChildE">
+<span id="_CPPv3N8mini_jit6einsum8mini_jit6einsum10EinsumNode9leftChildE"></span><span id="_CPPv2N8mini_jit6einsum8mini_jit6einsum10EinsumNode9leftChildE"></span><span id="mini_jit::einsum::mini_jit::einsum::EinsumNode::leftChild__EinsumNodeP"></span><span class="target" id="structmini__jit_1_1einsum_1_1EinsumNode_1a0036d7128935fdfaf043169b2e7ed59c"></span><a class="reference internal" href="#_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumNodeE" title="mini_jit::einsum::mini_jit::einsum::EinsumNode"><span class="n"><span class="pre">EinsumNode</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">leftChild</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><a class="headerlink" href="#_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumNode9leftChildE" title="Link to this definition"></a><br /></dt>
+<dd><p>The left child node in the einsum tree. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumNode10rightChildE">
+<span id="_CPPv3N8mini_jit6einsum8mini_jit6einsum10EinsumNode10rightChildE"></span><span id="_CPPv2N8mini_jit6einsum8mini_jit6einsum10EinsumNode10rightChildE"></span><span id="mini_jit::einsum::mini_jit::einsum::EinsumNode::rightChild__EinsumNodeP"></span><span class="target" id="structmini__jit_1_1einsum_1_1EinsumNode_1a71f2a27310ec0f80f7b47f9988c8027f"></span><a class="reference internal" href="#_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumNodeE" title="mini_jit::einsum::mini_jit::einsum::EinsumNode"><span class="n"><span class="pre">EinsumNode</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">rightChild</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><a class="headerlink" href="#_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumNode10rightChildE" title="Link to this definition"></a><br /></dt>
+<dd><p>The right child node in the einsum tree. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumNode9operationE">
+<span id="_CPPv3N8mini_jit6einsum8mini_jit6einsum10EinsumNode9operationE"></span><span id="_CPPv2N8mini_jit6einsum8mini_jit6einsum10EinsumNode9operationE"></span><span id="mini_jit::einsum::mini_jit::einsum::EinsumNode::operation__mini_jit::TensorOperation"></span><span class="target" id="structmini__jit_1_1einsum_1_1EinsumNode_1ae055e9c50592ae92759ea317c596d28e"></span><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">TensorOperation</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">operation</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumNode9operationE" title="Link to this definition"></a><br /></dt>
+<dd><p>The tensor operation associated with this node. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumNode10tensor_outE">
+<span id="_CPPv3N8mini_jit6einsum8mini_jit6einsum10EinsumNode10tensor_outE"></span><span id="_CPPv2N8mini_jit6einsum8mini_jit6einsum10EinsumNode10tensor_outE"></span><span id="mini_jit::einsum::mini_jit::einsum::EinsumNode::tensor_out__voidP"></span><span class="target" id="structmini__jit_1_1einsum_1_1EinsumNode_1a627431d1fc4249cb1e7056c825b92251"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">tensor_out</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><a class="headerlink" href="#_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumNode10tensor_outE" title="Link to this definition"></a><br /></dt>
+<dd><p>The output tensor for this node. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumNode24computational_operationsE">
+<span id="_CPPv3N8mini_jit6einsum8mini_jit6einsum10EinsumNode24computational_operationsE"></span><span id="_CPPv2N8mini_jit6einsum8mini_jit6einsum10EinsumNode24computational_operationsE"></span><span id="mini_jit::einsum::mini_jit::einsum::EinsumNode::computational_operations__double"></span><span class="target" id="structmini__jit_1_1einsum_1_1EinsumNode_1a6fd05b50ce75317729760a22f84bd7a3"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">computational_operations</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.0</span></span><a class="headerlink" href="#_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumNode24computational_operationsE" title="Link to this definition"></a><br /></dt>
+<dd><p>The number of operations performed by this node. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumTreeE">
+<span id="_CPPv3N8mini_jit6einsum8mini_jit6einsum10EinsumTreeE"></span><span id="_CPPv2N8mini_jit6einsum8mini_jit6einsum10EinsumTreeE"></span><span id="mini_jit::einsum::mini_jit::einsum::EinsumTree"></span><span class="target" id="classmini__jit_1_1einsum_1_1EinsumTree"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EinsumTree</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumTreeE" title="Link to this definition"></a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;EinsumTree.h&gt;</em></div>
+<p>The <a class="reference internal" href="#classmini__jit_1_1einsum_1_1EinsumTree"><span class="std std-ref">EinsumTree</span></a> class provides methods to transform a string einsum expression into a tree structure based on nodes and tensor operations. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumTree10EinsumTreeEv">
+<span id="_CPPv3N8mini_jit6einsum8mini_jit6einsum10EinsumTree10EinsumTreeEv"></span><span id="_CPPv2N8mini_jit6einsum8mini_jit6einsum10EinsumTree10EinsumTreeEv"></span><span id="mini_jit::einsum::mini_jit::einsum::EinsumTree::EinsumTree"></span><span class="target" id="classmini__jit_1_1einsum_1_1EinsumTree_1a05cd25e0dd99bf47e5897cda30544132"></span><span class="sig-name descname"><span class="n"><span class="pre">EinsumTree</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumTree10EinsumTreeEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Deleted constructor to prevent instantiation of the static <a class="reference internal" href="#classmini__jit_1_1einsum_1_1EinsumTree"><span class="std std-ref">EinsumTree</span></a> class. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumTree23parse_einsum_expressionERKNSt6stringERNSt6vectorI7int64_tEEN8mini_jit7dtype_tE7int64_t7int64_t">
+<span id="_CPPv3N8mini_jit6einsum8mini_jit6einsum10EinsumTree23parse_einsum_expressionERKNSt6stringERNSt6vectorI7int64_tEEN8mini_jit7dtype_tE7int64_t7int64_t"></span><span id="_CPPv2N8mini_jit6einsum8mini_jit6einsum10EinsumTree23parse_einsum_expressionERKNSt6stringERNSt6vectorI7int64_tEEN8mini_jit7dtype_tE7int64_t7int64_t"></span><span id="mini_jit::einsum::mini_jit::einsum::EinsumTree::parse_einsum_expression__ssCR.std::vector:int64_t:R.mini_jit::dtype_t.int64_t.int64_t"></span><span class="target" id="classmini__jit_1_1einsum_1_1EinsumTree_1a2e905fa4a09fe02a92ebb78a2ce9bb74"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumNodeE" title="mini_jit::einsum::mini_jit::einsum::EinsumNode"><span class="n"><span class="pre">EinsumNode</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">parse_einsum_expression</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">einsum_expression</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">int64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">dimension_sizes</span></span>, <span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">dtype_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dtype</span></span>, <span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">thread_target</span></span>, <span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">max_kernel_size</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumTree23parse_einsum_expressionERKNSt6stringERNSt6vectorI7int64_tEEN8mini_jit7dtype_tE7int64_t7int64_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Helper function to parse the einsum expression and create nodes. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>einsum_expression</strong> – The string representation of the einsum operation. </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The root <a class="reference internal" href="#structmini__jit_1_1einsum_1_1EinsumNode"><span class="std std-ref">EinsumNode</span></a> representing the start of the parsed expression. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumTree7executeEP10EinsumNodeRNSt6vectorI7int64_tEERNSt3mapINSt6stringEPKvEEN8mini_jit7dtype_tE">
+<span id="_CPPv3N8mini_jit6einsum8mini_jit6einsum10EinsumTree7executeEP10EinsumNodeRNSt6vectorI7int64_tEERNSt3mapINSt6stringEPKvEEN8mini_jit7dtype_tE"></span><span id="_CPPv2N8mini_jit6einsum8mini_jit6einsum10EinsumTree7executeEP10EinsumNodeRNSt6vectorI7int64_tEERNSt3mapINSt6stringEPKvEEN8mini_jit7dtype_tE"></span><span id="mini_jit::einsum::mini_jit::einsum::EinsumTree::execute__EinsumNodeP.std::vector:int64_t:R.std::map:ss.voidCP:R.mini_jit::dtype_t"></span><span class="target" id="classmini__jit_1_1einsum_1_1EinsumTree_1a7b7c0691a8f1a5f1fc0fe449602c0ae0"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">execute</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumNodeE" title="mini_jit::einsum::mini_jit::einsum::EinsumNode"><span class="n"><span class="pre">EinsumNode</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">root_node</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">int64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">dimension_sizes</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">map</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">tensor_inputs</span></span>, <span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">dtype_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dtype</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumTree7executeEP10EinsumNodeRNSt6vectorI7int64_tEERNSt3mapINSt6stringEPKvEEN8mini_jit7dtype_tE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="mini_jit_converters.html" class="btn btn-neutral float-left" title="mini_jit::converters" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="mini_jit_instructions.html" class="btn btn-neutral float-right" title="mini_jit::instructions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Lucas Obitz, Luca-Philipp Grumbach.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
