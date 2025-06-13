@@ -14,7 +14,6 @@ mini_jit::benchmarks::EinsumTreeBench::EinsumTreeBench(double run_time,
 {
     m_run_time = run_time;
     m_dimension_sizes = dimension_sizes;
-    m_dtype = dtype;
     m_tensor_inputs = tensor_inputs;
     m_root_node = mini_jit::einsum::EinsumTree::parse_einsum_expression(einsum_expression,
                                                                         dimension_sizes,
@@ -34,8 +33,7 @@ void mini_jit::benchmarks::EinsumTreeBench::run()
     {
         mini_jit::einsum::EinsumTree::execute(m_root_node,
                                               m_dimension_sizes,
-                                              m_tensor_inputs,
-                                              m_dtype);
+                                              m_tensor_inputs);
         ++l_num_reps;
         auto l_now = std::chrono::high_resolution_clock::now();
         l_elapsed = std::chrono::duration_cast<std::chrono::microseconds>(l_now - l_start_time).count();

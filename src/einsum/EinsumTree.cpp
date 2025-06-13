@@ -335,8 +335,7 @@ void mini_jit::einsum::EinsumTree::initialize_einsum_nodes(EinsumNode *einsum_no
 
 void mini_jit::einsum::EinsumTree::execute(EinsumNode *root_node,
                                            std::vector<int64_t> &dimension_sizes,
-                                           std::map<std::string, void const *> &tensor_inputs,
-                                           mini_jit::dtype_t dtype)
+                                           std::map<std::string, void const *> &tensor_inputs)
 {
     if (root_node == nullptr)
     {
@@ -345,7 +344,7 @@ void mini_jit::einsum::EinsumTree::execute(EinsumNode *root_node,
 
     const int64_t tensor_size = root_node->tensor_size;
 
-    if (dtype == mini_jit::dtype_t::fp32)
+    if (root_node->dtype == mini_jit::dtype_t::fp32)
     {
         if (root_node->tensor_out == nullptr)
         {
@@ -358,7 +357,7 @@ void mini_jit::einsum::EinsumTree::execute(EinsumNode *root_node,
                       0.0f);
         }
     }
-    else if (dtype == mini_jit::dtype_t::fp64)
+    else if (root_node->dtype == mini_jit::dtype_t::fp64)
     {
         if (root_node->tensor_out == nullptr)
         {
@@ -379,14 +378,14 @@ void mini_jit::einsum::EinsumTree::execute(EinsumNode *root_node,
         auto it = tensor_inputs.find(root_node->tensor_expression);
         if (it != tensor_inputs.end())
         {
-            if (dtype == mini_jit::dtype_t::fp32)
+            if (root_node->dtype == mini_jit::dtype_t::fp32)
             {
                 std::copy(
                     static_cast<const float *>(it->second),
                     static_cast<const float *>(it->second) + tensor_size,
                     static_cast<float *>(root_node->tensor_out));
             }
-            else if (dtype == mini_jit::dtype_t::fp64)
+            else if (root_node->dtype == mini_jit::dtype_t::fp64)
             {
                 std::copy(
                     static_cast<const double *>(it->second),
@@ -405,12 +404,12 @@ void mini_jit::einsum::EinsumTree::execute(EinsumNode *root_node,
         // compute children
         if (root_node->leftChild != nullptr)
         {
-            execute(root_node->leftChild, dimension_sizes, tensor_inputs, dtype);
+            execute(root_node->leftChild, dimension_sizes, tensor_inputs);
         }
 
         if (root_node->rightChild != nullptr)
         {
-            execute(root_node->rightChild, dimension_sizes, tensor_inputs, dtype);
+            execute(root_node->rightChild, dimension_sizes, tensor_inputs);
         }
 
         // execute operation

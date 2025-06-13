@@ -37,8 +37,7 @@ public:
 
     static void execute(EinsumNode *root_node,
                         std::vector<int64_t> &dimension_sizes,
-                        std::map<std::string, void const *> &tensor_inputs,
-                        mini_jit::dtype_t dtype);
+                        std::map<std::string, void const *> &tensor_inputs);
 
 private:
     /**

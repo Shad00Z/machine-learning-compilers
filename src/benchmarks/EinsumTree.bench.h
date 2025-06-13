@@ -33,7 +33,6 @@ namespace mini_jit
         private:
             double m_run_time;
             std::vector<int64_t> m_dimension_sizes;
-            mini_jit::dtype_t m_dtype = mini_jit::dtype_t::fp32;
             std::map<std::string, void const *> m_tensor_inputs;
             mini_jit::einsum::EinsumNode *m_root_node = nullptr;
         };
