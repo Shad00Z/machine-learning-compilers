@@ -116,6 +116,10 @@ private:
     int64_t m_adjusted_stride_in1 = 0;
     /// stride in output tensor adjusted for transposition
     int64_t m_adjusted_stride_out = 0;
+    /// br size A adjusted to the input dimensions
+    int64_t m_adjusted_br_size_A = 0;
+    // /// br size B adjusted to the input dimensions
+    int64_t m_adjusted_br_size_B = 0;
 
     /**
      * Executes the first touch kernel.

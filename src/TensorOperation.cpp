@@ -250,6 +250,8 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
         m_adjusted_stride_in1 = m_strides_in1[m_dim_id_prim_N];
         m_adjusted_stride_out = m_strides_out[m_dim_id_prim_N];
     }
+    m_adjusted_br_size_A = m_dim_id_prim_BR != -1 ? m_strides_in0[m_dim_id_prim_BR] : 1;
+    m_adjusted_br_size_B = m_dim_id_prim_BR != -1 ? m_strides_in1[m_dim_id_prim_BR] : 1;
 
     /////////////////////////////////////////////////////////////////////
     // Generate kernels
@@ -399,8 +401,8 @@ void mini_jit::TensorOperation::execute_iter(int64_t id_loop,
                                 m_adjusted_stride_in0,
                                 m_adjusted_stride_in1,
                                 m_adjusted_stride_out,
-                                m_dim_id_prim_BR != -1 ? m_strides_in0[m_dim_id_prim_BR] : 1,
-                                m_dim_id_prim_BR != -1 ? m_strides_in1[m_dim_id_prim_BR] : 1);
+                                m_adjusted_br_size_A,
+                                m_adjusted_br_size_B);
 
             if (is_last)
             {
@@ -423,6 +425,8 @@ void mini_jit::TensorOperation::execute_iter_parallel(char const *ptr_in0,
     {
         l_size_parallel_loops *= current_loop_size;
     }
+    
+    int64_t l_first_id_loop = (m_id_first_seq_loop != -1) ? m_id_first_seq_loop : m_id_first_primitive_loop;
 
 #pragma omp parallel for
     for (int64_t l_it_all = 0; l_it_all < l_size_parallel_loops; ++l_it_all)
@@ -454,7 +458,7 @@ void mini_jit::TensorOperation::execute_iter_parallel(char const *ptr_in0,
         }
 
         // Call remaining loops
-        execute_iter((m_id_first_seq_loop != -1) ? m_id_first_seq_loop : m_id_first_primitive_loop,
+        execute_iter(l_first_id_loop,
                      sub_ptr_in0,
                      sub_ptr_in1,
                      sub_ptr_out,

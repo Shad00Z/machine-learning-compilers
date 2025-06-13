@@ -68,8 +68,7 @@ TEST_CASE("EinsumTree Simple GEMM Test")
 
     mini_jit::einsum::EinsumTree::execute(node,
                                           dimension_sizes, 
-                                          tensor_inputs, 
-                                          dtype);
+                                          tensor_inputs);
 
     const float *tensor_out = static_cast<const float *>(node->tensor_out);
 
@@ -153,8 +152,7 @@ TEST_CASE("EinsumTree Simple BRGEMM Test")
     
     mini_jit::einsum::EinsumTree::execute(node,
                                           dimension_sizes, 
-                                          tensor_inputs, 
-                                          dtype);
+                                          tensor_inputs);
 
     const float *tensor_out = static_cast<const float *>(node->tensor_out);
 
@@ -225,7 +223,9 @@ TEST_CASE("EinsumTree Simple Permutation Test")
         }
     }
 
-    mini_jit::einsum::EinsumTree::execute(node, dimension_sizes, tensor_inputs, dtype);
+    mini_jit::einsum::EinsumTree::execute(node,
+                                          dimension_sizes, 
+                                          tensor_inputs);
 
     const float *tensor_out = static_cast<const float *>(node->tensor_out);
 
@@ -310,7 +310,9 @@ TEST_CASE("EinsumTree Complex Permutation + GEMM Test")
         }
     }
 
-    mini_jit::einsum::EinsumTree::execute(node, dimension_sizes, tensor_inputs, dtype);
+    mini_jit::einsum::EinsumTree::execute(node,
+                                          dimension_sizes, 
+                                          tensor_inputs);
 
     const float *tensor_out = static_cast<const float *>(node->tensor_out);
     
@@ -376,7 +378,7 @@ TEST_CASE("EinsumTree Complex Permutation + GEMM Test")
 //         tensor_D[i] = i;
 //     }
 
-//     mini_jit::einsum::EinsumTree::execute(node, dimension_sizes, tensor_inputs, dtype);
+//     mini_jit::einsum::EinsumTree::execute(node, dimension_sizes, tensor_inputs);
 
 //     const float *tensor_out = static_cast<const float *>(node->tensor_out);
 
