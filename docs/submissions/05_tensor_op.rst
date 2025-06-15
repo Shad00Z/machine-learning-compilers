@@ -3,7 +3,7 @@
 ##############################
 
 After experimenting with different neon implementations and developing kernels 
-for our gemm and brgemm, and most recently for the unary primitives, it is now time 
+for our GEMM and BRGEMM, and most recently for the unary primitives, it is now time 
 to combine all of these kernels together in a backend.
 
 *********************
@@ -59,7 +59,7 @@ After checking all these things, we were then able to create our kernels accordi
 
 .. literalinclude:: ../../src/TensorOperation.cpp
     :language: cpp
-    :lines: 254-315
+    :lines: 256-317
     :lineno-match:
     :caption: construct kernels based on assigned member variables
     :dedent:
@@ -76,7 +76,7 @@ them to our ``execute_iter`` function.
 
 .. literalinclude:: ../../src/TensorOperation.cpp
     :language: cpp
-    :lines: 324-338
+    :lines: 326-340
     :lineno-match:
     :caption: starting point: ``execute`` function
     :dedent:
@@ -86,7 +86,7 @@ Next, we update the pointers to the matrices accordingly.
 
 .. literalinclude:: ../../src/TensorOperation.cpp
     :language: cpp
-    :lines: 365-376
+    :lines: 367-378
     :lineno-match:
     :caption: calculate if it is the first or last access in our output matrix and update pointers
     :dedent:
@@ -95,7 +95,7 @@ In the following step, we use our ``execute_iter`` function to recursively call 
 
 .. literalinclude:: ../../src/TensorOperation.cpp
     :language: cpp
-    :lines: 379-387
+    :lines: 381-389
     :lineno-match:
     :caption: recursive call to ``execute_iter``
     :dedent:
@@ -104,7 +104,7 @@ If we have no further recursive call, we can execute the kernels.
 
 .. literalinclude:: ../../src/TensorOperation.cpp
     :language: cpp
-    :lines: 390-409
+    :lines: 392-411
     :lineno-match:
     :caption: execute the kernels
     :dedent:
@@ -229,7 +229,7 @@ To enable the execution of shared loops, we needed to make a few adjustments to 
 
 .. literalinclude:: ../../src/TensorOperation.cpp
     :language: cpp
-    :lines: 338-346
+    :lines: 340-348
     :lineno-match:
     :caption: gather shared loop id's and dimension sizes
     :dedent:
@@ -246,7 +246,7 @@ than zero. If this was the case we would execute our ``execute_iter_parallel`` f
 
 .. literalinclude:: ../../src/TensorOperation.cpp
     :language: cpp
-    :lines: 420-425
+    :lines: 422-427
     :lineno-match:
     :caption: multiply ``shared`` loop sizes to get total number of iterations
     :dedent:
@@ -258,7 +258,7 @@ These indices are then used to compute the offsets for the ``in0``, ``in1``, and
 
 .. literalinclude:: ../../src/TensorOperation.cpp
     :language: cpp
-    :lines: 431-443
+    :lines: 434-447
     :lineno-match:
     :caption: calculate the tensor ``offsets``
     :dedent:
@@ -271,7 +271,7 @@ Depending on whether we have a ``seq`` dimension, we need to be careful, which i
 
 .. literalinclude:: ../../src/TensorOperation.cpp
     :language: cpp
-    :lines: 457-462
+    :lines: 461-466
     :lineno-match:
     :caption: call remaining loops with ``execute_iter``
     :dedent:
@@ -427,20 +427,20 @@ After supporting the standard primitives, with ``GEMM`` and ``BRGEMM`` we would 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The distinction to the other primitves here is, that all dimensions are of type ``dim_t::c``. 
-To allow these kind of primtives, we would have to make some small adjustments to our ``TensorOperation``:
+To allow this kind of primitives, we would have to make some small adjustments to our ``TensorOperation``:
 
 .. literalinclude:: ../../src/TensorOperation.cpp
     :language: cpp
     :lines: 190-210
     :lineno-match:
-    :caption: find ``M`` and ``N`` dimenions based on stride in the input
+    :caption: find ``M`` and ``N`` dimensions based on stride in the input
     :dedent:
 
 .. literalinclude:: ../../src/TensorOperation.cpp
     :language: cpp
-    :lines: 293-301
+    :lines: 295-303
     :lineno-match:
-    :caption: generate ``identity`` primtive
+    :caption: generate ``identity`` primitive
     :dedent:
 
 5.6.2 Optimization Passes
@@ -490,7 +490,7 @@ If we do not have a ``transposition`` we would simply look for the smallest stri
 
 The last step would be to set the remaining undefined dimensions to ``seq``, as the next optimization would be to find ideal ``shared`` loops.
 
-However, in our ``createSharedLoops`` function, we did not have to make any asjustments.
+However, in our ``createSharedLoops`` function, we did not have to make any adjustments.
 
 For our ``splitDimensions`` function, we would now also check if we had a ``dim_t::c`` as a dimension type:
 
@@ -530,4 +530,4 @@ Then we would prepare the execution, by setting all arguments accordingly:
     :caption: prepare arguments for execution
     :dedent:
 
-Finally we would execute our implementation.
+Finally, we would execute our implementation.
