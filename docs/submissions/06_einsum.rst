@@ -27,7 +27,7 @@ An ``EinsumNode`` holds information about a single node from the expression e.g.
 
 To disassemble our einsum expression, we perform a number of steps.
 
-We initially check all allowed characters and then begin the connection of our single ``EinsumNode``s using 
+We initially check all allowed characters and then begin the connection of our ``EinsumNode`` objects using 
 the ``parse_einsum_expression_recursive`` function. The first split we perform on our expression, is when we 
 find the rightmost arrow ``->``. 
 
@@ -41,7 +41,7 @@ If we find such an arrow, we split the expression into two pieces, where the lef
     :caption: splitting the expression into ``input`` and ``output``
     :dedent:
 
-The second step we take, is to again split our ``input``, but this time at a ``,``. That means, we 
+The second step we take, is to split our ``input`` again, but this time at a ``,``. That means, we 
 look for the ``,`` that is between two brackets ``],[`` and where the number of open and closed brackets, is the same.
 
 If there is such a ``,``, we have more than one input:
@@ -68,7 +68,7 @@ For the current node, we are now calculating all information (size, strides, etc
 6.1.2 Lowering to Tensor Backend
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-For all nodes, we start by setting the dimension ids of our current node:
+For all nodes, we start by setting the dimension IDs of our current node:
 
 .. literalinclude:: ../../src/einsum/EinsumTree.cpp
     :language: cpp
@@ -87,16 +87,16 @@ The next step is to calculate all other information, based on the amount of chil
     :dedent:
 
 This means for the case, where we have no children, we return early. 
-Otherwise we now gather and sort all ids, that are needed to execute a contraction or a unary operation:
+Otherwise we now gather and sort all IDs, that are needed to execute a contraction or a unary operation:
 
 .. literalinclude:: ../../src/einsum/EinsumTree.cpp
     :language: cpp
     :lines: 152-183
     :lineno-match:
-    :caption: gather all unique ``ids`` from tensors for respective operation
+    :caption: gather all unique ``IDs`` from tensors for respective operation
     :dedent:
 
-After gathering all ``ids``, we iterate over them and calculate all other information:
+After gathering all ``IDs``, we iterate over them and calculate all other information:
 
 .. literalinclude:: ../../src/einsum/EinsumTree.cpp
     :language: cpp
@@ -147,7 +147,7 @@ Finally, we would be able to call the ``setup`` function to initialize the opera
 6.1.4 Einsum Tree Execution
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-To execute a whole einums tree expression, we have an ``execute`` function as a common entry point. 
+To execute a whole einsum tree expression, we use an ``execute`` function as a common entry point. 
 We initially provide the function with the ``root`` node and initialize the tensor output for this node with zero:
 
 .. literalinclude:: ../../src/einsum/EinsumTree.cpp
@@ -157,7 +157,7 @@ We initially provide the function with the ``root`` node and initialize the tens
     :caption: fill the ``tensor_out``
     :dedent:
 
-After again recursively calling the function, we check, if we are a leaf node: 
+After each recursive call of the function, we check if we are a leaf node: 
 
 .. literalinclude:: ../../src/einsum/EinsumTree.cpp
     :language: cpp
@@ -166,7 +166,7 @@ After again recursively calling the function, we check, if we are a leaf node:
     :caption: copy ``input_tensor`` for leaf node
     :dedent:
 
-If we are no leaf node, we again call the ``execute`` function for the children of the node:
+If we are not a leaf node, we call the ``execute`` function for the children of the node:
 
 .. literalinclude:: ../../src/einsum/EinsumTree.cpp
     :language: cpp
