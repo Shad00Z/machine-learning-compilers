@@ -401,6 +401,8 @@ As a last step we move all our ``shared`` loops to the front of the order:
     :caption: move ``shared`` loops to the front
     :dedent:
 
+.. _5.5.6 Performance Benchmarks:
+
 5.5.6 Performance Benchmarks
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
