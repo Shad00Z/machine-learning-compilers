@@ -152,7 +152,7 @@ We initially provide the function with the ``root`` node and initialize the tens
 
 .. literalinclude:: ../../src/einsum/EinsumTree.cpp
     :language: cpp
-    :lines: 348-360
+    :lines: 347-359
     :lineno-match:
     :caption: fill the ``tensor_out``
     :dedent:
@@ -161,7 +161,7 @@ After each recursive call of the function, we check if we are a leaf node:
 
 .. literalinclude:: ../../src/einsum/EinsumTree.cpp
     :language: cpp
-    :lines: 375-401
+    :lines: 374-400
     :lineno-match:
     :caption: copy ``input_tensor`` for leaf node
     :dedent:
@@ -170,7 +170,7 @@ If we are not a leaf node, we call the ``execute`` function for the children of 
 
 .. literalinclude:: ../../src/einsum/EinsumTree.cpp
     :language: cpp
-    :lines: 405-420
+    :lines: 404-419
     :lineno-match:
     :caption: execute the ``children`` and execute the ``operation``
     :dedent:
