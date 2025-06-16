@@ -721,8 +721,8 @@ int main(int argc, char *argv[])
     if (einsum_benchmark)
     {
         std::ofstream einsum_bm("benchmarks/einsum_benchmark.txt");
-        einsum_benchmark_1(einsum_bm, 10.0, 256, 64);
-        einsum_benchmark_2(einsum_bm, 10.0, 256, 64);
+        einsum_benchmark_1(einsum_bm, 3.0, 256, 64);
+        einsum_benchmark_2(einsum_bm, 3.0, 256, 64);
     }
 
     return 0;

@@ -10,23 +10,44 @@ namespace mini_jit
     {
         struct EinsumNode
         {
-            /// The IDs of the dimensions in the einsum expression
+            /// The IDs of the dimensions in the output tensor
+            std::vector<int64_t> output_dimension_ids;
+
+            /// The IDs of the dimensions in the operation
             std::vector<int64_t> dimension_ids;
-
-            /// Size of the tensor
-            int64_t tensor_size = 1;
-
-            /// String representation of the einsum expression
-            std::string tensor_expression = "";
 
             /// The data type of the tensor
             mini_jit::dtype_t dtype = mini_jit::dtype_t::fp32;
 
-            /// The left child node in the einsum tree
-            EinsumNode *leftChild = nullptr;
+            /// Primititve type for the first touch kernel
+            mini_jit::ptype_t prim_first_touch = mini_jit::ptype_t::none;
 
-            /// The right child node in the einsum tree
-            EinsumNode *rightChild = nullptr;
+            /// Primitive type for the main kernel
+            mini_jit::ptype_t prim_main = mini_jit::ptype_t::none;
+
+            /// Primitive type for the last touch kernel
+            mini_jit::ptype_t prim_last_touch = mini_jit::ptype_t::none;
+
+            /// Dimension types of the loops (m, n, k, c)
+            std::vector<mini_jit::dim_t> dim_types;
+
+            /// Execution types of the loops (seq, shared, prim)
+            std::vector<mini_jit::exec_t> exec_types;
+
+            /// Sizes of the dimensions (loops)
+            std::vector<int64_t> dim_sizes;
+
+            /// Strides of the first input tensor
+            std::vector<int64_t> strides_in0;
+
+            /// Strides of the second input tensor
+            std::vector<int64_t> strides_in1;
+
+            /// Strides of the output tensor
+            std::vector<int64_t> strides_out;
+
+            /// Size of the output tensor
+            int64_t tensor_size = 1;
 
             /// The tensor operation associated with this node
             mini_jit::TensorOperation operation;
@@ -34,17 +55,26 @@ namespace mini_jit
             /// The output tensor for this node
             void *tensor_out = nullptr;
 
+            /// String representation of the einsum expression
+            std::string tensor_expression = "";
+
+            /// The left child node in the einsum tree
+            EinsumNode *leftChild = nullptr;
+
+            /// The right child node in the einsum tree
+            EinsumNode *rightChild = nullptr;
+
             /// The number of operations performed by this node
             double computational_operations = 0.0;
 
             /**
              *
              */
-            EinsumNode(std::vector<int64_t> const &dimension_ids,
+            EinsumNode(std::vector<int64_t> const &output_dimension_ids,
                        std::string tensor_expression,
                        EinsumNode *left,
                        EinsumNode *right)
-                : dimension_ids(dimension_ids), tensor_expression(tensor_expression), leftChild(left), rightChild(right)
+                : output_dimension_ids(output_dimension_ids), tensor_expression(tensor_expression), leftChild(left), rightChild(right)
             {
             }
 
@@ -71,7 +101,7 @@ namespace mini_jit
                 }
             }
 
-            int64_t get_number_of_children()
+            int64_t get_number_of_children() const
             {
                 int64_t result = 0;
 

@@ -16,10 +16,15 @@ mini_jit::benchmarks::EinsumTreeBench::EinsumTreeBench(double run_time,
     m_dimension_sizes = dimension_sizes;
     m_tensor_inputs = tensor_inputs;
     m_root_node = mini_jit::einsum::EinsumTree::parse_einsum_expression(einsum_expression,
-                                                                        dimension_sizes,
-                                                                        dtype,
-                                                                        thread_target,
-                                                                        max_kernel_size);
+                                                                        dimension_sizes);
+
+    mini_jit::einsum::EinsumTree::optimize_einsum_nodes(m_root_node, 
+                                                        thread_target, 
+                                                        max_kernel_size);
+    
+    mini_jit::einsum::EinsumTree::lower_einsum_nodes_to_tensor_operations(m_root_node, 
+                                                                          dimension_sizes, 
+                                                                          dtype);
 }
 
 void mini_jit::benchmarks::EinsumTreeBench::run()

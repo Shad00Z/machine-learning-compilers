@@ -316,6 +316,8 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
     m_kernel_main_type = prim_main;
     m_kernel_last_touch_type = prim_last_touch;
 
+    m_has_been_setup = true;
+
     return error_t::success;
 }
 
@@ -323,6 +325,12 @@ void mini_jit::TensorOperation::execute(void const *tensor_in0,
                                         void const *tensor_in1,
                                         void *tensor_out)
 {
+    if (!m_has_been_setup)
+    {
+        std::cerr << "TensorOperation has not been setup. Call setup() before execute()." << std::endl;
+        return;
+    }
+
     auto ptr_in0 = static_cast<char const *>(tensor_in0);
     auto ptr_in1 = static_cast<char const *>(tensor_in1);
     auto ptr_out = static_cast<char *>(tensor_out);

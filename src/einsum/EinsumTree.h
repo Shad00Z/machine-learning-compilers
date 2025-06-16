@@ -27,14 +27,19 @@ public:
      * @brief Helper function to parse the einsum expression and create nodes.
      *
      * @param einsum_expression The string representation of the einsum operation.
+     * @param dimension_sizes A vector to store the sizes of the dimensions used in the expression.
      * @return The root EinsumNode representing the start of the parsed expression.
      */
     static EinsumNode *parse_einsum_expression(std::string const &einsum_expression,
-                                               std::vector<int64_t> &dimension_sizes,
-                                               mini_jit::dtype_t dtype,
-                                               int64_t thread_target,
-                                               int64_t max_kernel_size);
+                                               std::vector<int64_t> &dimension_sizes);
 
+    /**
+     * @brief Execute the einsum tree.
+     *
+     * @param root_node The root EinsumNode of the einsum tree.
+     * @param dimension_sizes A vector containing the sizes of the dimensions used in the expression.
+     * @param tensor_inputs A map containing the input tensors for the einsum operation.
+     */
     static void execute(EinsumNode *root_node,
                         std::vector<int64_t> &dimension_sizes,
                         std::map<std::string, void const *> &tensor_inputs);
@@ -44,12 +49,16 @@ private:
      * @brief Helper function to parse the einsum expression and create nodes recursively.
      *
      * @param einsum_expression The string representation of the einsum operation.
-     * @param dimension_sizes The array with the dimension sizes sorted by id.
-     * @param parentNode The current parent node for potential children nodes.
      * @return A EinsumNode representing the parsed expression.
      */
     static EinsumNode *parse_einsum_expression_recursive(std::string const &einsum_expression);
 
+    /**
+     * @brief Helper function to extract dimension IDs from the einsum expression.
+     *
+     * @param einsum_expression The string representation of the einsum operation.
+     * @return A vector of dimension IDs extracted from the expression.
+     */
     static std::vector<int64_t> get_dimensions_from_expression(std::string const &einsum_expression);
 
     /**
@@ -60,11 +69,16 @@ private:
      * @return A EinsumNode representing the parsed expression.
      */
     static void initialize_einsum_nodes(EinsumNode *einsum_node,
-                                        std::vector<int64_t> &dimension_sizes,
-                                        mini_jit::dtype_t dtype,
-                                        int64_t thread_target,
-                                        int64_t max_kernel_size);
+                                        std::vector<int64_t> &dimension_sizes);
 
+    /**
+     * @brief Helper function to check if a value is contained in a vector.
+     *
+     * @tparam T The type of the elements in the vector.
+     * @param vec The vector to search in.
+     * @param value The value to search for.
+     * @return True if the value is found in the vector, false otherwise.
+     */
     template <typename T>
     static bool contains(const std::vector<T> &vec, const T &value)
     {
@@ -74,6 +88,35 @@ private:
 public:
     //! Deleted constructor to prevent instantiation of the static EinsumTree class.
     EinsumTree() = delete;
+
+     /**
+     * @brief Optimize the einsum nodes by applying transformations to the execution types and dimensions.
+     *
+     * @param einsum_node The root node of the einsum tree.
+     * @param thread_target The target number of threads for parallel execution.
+     * @param max_kernel_size The maximum size of the kernel to be used.
+     */
+    static void optimize_einsum_nodes(EinsumNode *einsum_node,
+                                       int64_t thread_target,
+                                       int64_t max_kernel_size);
+
+    /**
+     * @brief Lower the einsum nodes to tensor operations by setting up the operation and dimensions.
+     *
+     * @param einsum_node The root node of the einsum tree.
+     * @param dimension_sizes The array with the dimension sizes sorted by id.
+     * @param dtype The data type of the tensor.
+     */
+    static void lower_einsum_nodes_to_tensor_operations(EinsumNode *einsum_node,
+                                                        std::vector<int64_t> &dimension_sizes,
+                                                        mini_jit::dtype_t dtype);
+
+    /**
+     * @brief Optimize the einsum tree by reordering, swapping and permuting nodes.
+     *
+     * @param root_node The root node of the einsum tree.
+     */
+    static void optimize_einsum_tree(EinsumNode *root_node);
 };
 
 #endif // MINI_JIT_EINSUM_EINSUM_TREE_H

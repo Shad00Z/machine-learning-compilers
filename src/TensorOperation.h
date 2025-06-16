@@ -118,8 +118,11 @@ private:
     int64_t m_adjusted_stride_out = 0;
     /// br size A adjusted to the input dimensions
     int64_t m_adjusted_br_size_A = 0;
-    // /// br size B adjusted to the input dimensions
+    /// br size B adjusted to the input dimensions
     int64_t m_adjusted_br_size_B = 0;
+
+    /// Whether the operation has been setup
+    bool m_has_been_setup = false;
 
     /**
      * Executes the first touch kernel.

@@ -9,17 +9,20 @@
 TEST_CASE("EinsumTree Simple GEMM Test")
 {
     std::string input = "[2,0],[1,2]->[1,0]";
-    std::vector<int64_t> dimension_sizes{GENERATE(3,7,19),
-                                         GENERATE(3,7,19),
-                                         GENERATE(3,7,19)};
+    std::vector<int64_t> dimension_sizes{GENERATE(3, 7, 19),
+                                         GENERATE(3, 7, 19),
+                                         GENERATE(3, 7, 19)};
     mini_jit::dtype_t dtype = mini_jit::dtype_t::fp32;
 
     mini_jit::einsum::EinsumNode *node = mini_jit::einsum::EinsumTree::parse_einsum_expression(input,
-                                                                                               dimension_sizes,
-                                                                                               dtype,
-                                                                                               256,
-                                                                                               512);
-
+                                                                                               dimension_sizes);
+                                                                                               
+    mini_jit::einsum::EinsumTree::optimize_einsum_nodes(node,
+                                                        256,
+                                                        512);
+    mini_jit::einsum::EinsumTree::lower_einsum_nodes_to_tensor_operations(node,
+                                                                          dimension_sizes,
+                                                                          dtype);
     // [0,1] -> *A
     // [1,2] -> *B
     std::map<std::string, void const *> tensor_inputs;
@@ -67,7 +70,7 @@ TEST_CASE("EinsumTree Simple GEMM Test")
     }
 
     mini_jit::einsum::EinsumTree::execute(node,
-                                          dimension_sizes, 
+                                          dimension_sizes,
                                           tensor_inputs);
 
     const float *tensor_out = static_cast<const float *>(node->tensor_out);
@@ -87,17 +90,22 @@ TEST_CASE("EinsumTree Simple GEMM Test")
 TEST_CASE("EinsumTree Simple BRGEMM Test")
 {
     std::string input = "[3,2,0],[3,1,2]->[1,0]";
-    std::vector<int64_t> dimension_sizes{GENERATE(3,7,19),
-                                         GENERATE(3,7,19),
-                                         GENERATE(3,7,19),
-                                         GENERATE(3,7,19)};
+    std::vector<int64_t> dimension_sizes{GENERATE(3, 7, 19),
+                                         GENERATE(3, 7, 19),
+                                         GENERATE(3, 7, 19),
+                                         GENERATE(3, 7, 19)};
     mini_jit::dtype_t dtype = mini_jit::dtype_t::fp32;
 
     mini_jit::einsum::EinsumNode *node = mini_jit::einsum::EinsumTree::parse_einsum_expression(input,
-                                                                                               dimension_sizes,
-                                                                                               dtype, 
-                                                                                               256,
-                                                                                               512);
+                                                                                               dimension_sizes);
+
+    mini_jit::einsum::EinsumTree::optimize_einsum_nodes(node,
+                                                        256,
+                                                        512);
+
+    mini_jit::einsum::EinsumTree::lower_einsum_nodes_to_tensor_operations(node,
+                                                                          dimension_sizes,
+                                                                          dtype);
 
     // [3,2,0] -> *A
     // [3,1,2] -> *B
@@ -149,10 +157,18 @@ TEST_CASE("EinsumTree Simple BRGEMM Test")
             tensor_out_expected[row + col * M] += sum;
         }
     }
-    
+
     mini_jit::einsum::EinsumTree::execute(node,
-                                          dimension_sizes, 
+                                          dimension_sizes,
                                           tensor_inputs);
+
+    mini_jit::einsum::EinsumTree::optimize_einsum_nodes(node,
+                                                        256,
+                                                        512);
+
+    mini_jit::einsum::EinsumTree::lower_einsum_nodes_to_tensor_operations(node,
+                                                                          dimension_sizes,
+                                                                          dtype);
 
     const float *tensor_out = static_cast<const float *>(node->tensor_out);
 
@@ -171,17 +187,22 @@ TEST_CASE("EinsumTree Simple BRGEMM Test")
 TEST_CASE("EinsumTree Simple Permutation Test")
 {
     std::string input = "[3,2,1,0]->[3,1,2,0]";
-    std::vector<int64_t> dimension_sizes{GENERATE(3,7,19),
-                                         GENERATE(3,7,19),
-                                         GENERATE(3,7,19),
-                                         GENERATE(3,7,19)};
+    std::vector<int64_t> dimension_sizes{GENERATE(3, 7, 19),
+                                         GENERATE(3, 7, 19),
+                                         GENERATE(3, 7, 19),
+                                         GENERATE(3, 7, 19)};
     mini_jit::dtype_t dtype = mini_jit::dtype_t::fp32;
 
     mini_jit::einsum::EinsumNode *node = mini_jit::einsum::EinsumTree::parse_einsum_expression(input,
-                                                                                               dimension_sizes,
-                                                                                               dtype,
-                                                                                               256,
-                                                                                               512);
+                                                                                               dimension_sizes);
+
+    mini_jit::einsum::EinsumTree::optimize_einsum_nodes(node,
+                                                        256,
+                                                        512);
+
+    mini_jit::einsum::EinsumTree::lower_einsum_nodes_to_tensor_operations(node,
+                                                                          dimension_sizes,
+                                                                          dtype);
 
     std::map<std::string, void const *> tensor_inputs;
 
@@ -224,7 +245,7 @@ TEST_CASE("EinsumTree Simple Permutation Test")
     }
 
     mini_jit::einsum::EinsumTree::execute(node,
-                                          dimension_sizes, 
+                                          dimension_sizes,
                                           tensor_inputs);
 
     const float *tensor_out = static_cast<const float *>(node->tensor_out);
@@ -243,16 +264,21 @@ TEST_CASE("EinsumTree Simple Permutation Test")
 TEST_CASE("EinsumTree Complex Permutation + GEMM Test")
 {
     std::string input = "[[0,2]->[2,0]],[1,2]->[1,0]";
-    std::vector<int64_t> dimension_sizes{GENERATE(3,7,19),
-                                         GENERATE(3,7,19),
-                                         GENERATE(3,7,19)};
+    std::vector<int64_t> dimension_sizes{GENERATE(3, 7, 19),
+                                         GENERATE(3, 7, 19),
+                                         GENERATE(3, 7, 19)};
     mini_jit::dtype_t dtype = mini_jit::dtype_t::fp32;
 
     mini_jit::einsum::EinsumNode *node = mini_jit::einsum::EinsumTree::parse_einsum_expression(input,
-                                                                                               dimension_sizes,
-                                                                                               dtype,
-                                                                                               256,
-                                                                                               512);
+                                                                                               dimension_sizes);
+
+    mini_jit::einsum::EinsumTree::optimize_einsum_nodes(node,
+                                                        256,
+                                                        512);
+
+    mini_jit::einsum::EinsumTree::lower_einsum_nodes_to_tensor_operations(node,
+                                                                          dimension_sizes,
+                                                                          dtype);
 
     std::map<std::string, void const *> tensor_inputs;
 
@@ -311,11 +337,11 @@ TEST_CASE("EinsumTree Complex Permutation + GEMM Test")
     }
 
     mini_jit::einsum::EinsumTree::execute(node,
-                                          dimension_sizes, 
+                                          dimension_sizes,
                                           tensor_inputs);
 
     const float *tensor_out = static_cast<const float *>(node->tensor_out);
-    
+
     // compare output tensor with expected output
     for (int64_t i = 0; i < SIZE_OUT; ++i)
     {
@@ -341,7 +367,7 @@ TEST_CASE("EinsumTree Complex Permutation + GEMM Test")
 //     // [2,5,7,9] -> *B
 //     // [0,4,5,6] -> *C
 //     // [1,4,7,8] -> *D
-//     std::map<std::string, void const *> tensor_inputs; 
+//     std::map<std::string, void const *> tensor_inputs;
 
 //     const int64_t SIZE_A = dimension_sizes[3] * dimension_sizes[6] * dimension_sizes[8] * dimension_sizes[9];
 //     const int64_t SIZE_B = dimension_sizes[2] * dimension_sizes[5] * dimension_sizes[7] * dimension_sizes[9];
