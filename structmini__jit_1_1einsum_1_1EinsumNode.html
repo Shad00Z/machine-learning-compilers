@@ -88,39 +88,67 @@ Collaboration diagram for mini_jit::einsum::EinsumNode:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ac90fe39c63abdaf8c84f21425466faa7" id="r_ac90fe39c63abdaf8c84f21425466faa7"><td class="memItemLeft" align="right" valign="top"><a id="ac90fe39c63abdaf8c84f21425466faa7" name="ac90fe39c63abdaf8c84f21425466faa7"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>EinsumNode</b> (std::vector&lt; int64_t &gt; const &amp;<a class="el" href="structmini__jit_1_1einsum_1_1EinsumNode.html#a2d3442b8127eeb90802bc2bd8446300b">dimension_ids</a>, std::string <a class="el" href="structmini__jit_1_1einsum_1_1EinsumNode.html#acf2a46c27a768db6ff7a6c32388dbcbc">tensor_expression</a>, <a class="el" href="structmini__jit_1_1einsum_1_1EinsumNode.html">EinsumNode</a> *left, <a class="el" href="structmini__jit_1_1einsum_1_1EinsumNode.html">EinsumNode</a> *right)</td></tr>
-<tr class="separator:ac90fe39c63abdaf8c84f21425466faa7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad5171754dc86551618f20fbd331498ca" id="r_ad5171754dc86551618f20fbd331498ca"><td class="memItemLeft" align="right" valign="top"><a id="ad5171754dc86551618f20fbd331498ca" name="ad5171754dc86551618f20fbd331498ca"></a>
-int64_t&#160;</td><td class="memItemRight" valign="bottom"><b>get_number_of_children</b> ()</td></tr>
-<tr class="separator:ad5171754dc86551618f20fbd331498ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5727588d502715fed89d69e10a4a1b9" id="r_ab5727588d502715fed89d69e10a4a1b9"><td class="memItemLeft" align="right" valign="top"><a id="ab5727588d502715fed89d69e10a4a1b9" name="ab5727588d502715fed89d69e10a4a1b9"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>EinsumNode</b> (std::vector&lt; int64_t &gt; const &amp;<a class="el" href="structmini__jit_1_1einsum_1_1EinsumNode.html#af6b1f8235def1dea463f07e62f5c0b58">output_dimension_ids</a>, std::string <a class="el" href="structmini__jit_1_1einsum_1_1EinsumNode.html#acf2a46c27a768db6ff7a6c32388dbcbc">tensor_expression</a>, <a class="el" href="structmini__jit_1_1einsum_1_1EinsumNode.html">EinsumNode</a> *left, <a class="el" href="structmini__jit_1_1einsum_1_1EinsumNode.html">EinsumNode</a> *right)</td></tr>
+<tr class="separator:ab5727588d502715fed89d69e10a4a1b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a101e68a3674efa2ee280ffa2c3c6193f" id="r_a101e68a3674efa2ee280ffa2c3c6193f"><td class="memItemLeft" align="right" valign="top"><a id="a101e68a3674efa2ee280ffa2c3c6193f" name="a101e68a3674efa2ee280ffa2c3c6193f"></a>
+int64_t&#160;</td><td class="memItemRight" valign="bottom"><b>get_number_of_children</b> () const</td></tr>
+<tr class="separator:a101e68a3674efa2ee280ffa2c3c6193f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
+<tr class="memitem:af6b1f8235def1dea463f07e62f5c0b58" id="r_af6b1f8235def1dea463f07e62f5c0b58"><td class="memItemLeft" align="right" valign="top"><a id="af6b1f8235def1dea463f07e62f5c0b58" name="af6b1f8235def1dea463f07e62f5c0b58"></a>
+std::vector&lt; int64_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>output_dimension_ids</b></td></tr>
+<tr class="memdesc:af6b1f8235def1dea463f07e62f5c0b58"><td class="mdescLeft">&#160;</td><td class="mdescRight">The IDs of the dimensions in the output tensor. <br /></td></tr>
+<tr class="separator:af6b1f8235def1dea463f07e62f5c0b58"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2d3442b8127eeb90802bc2bd8446300b" id="r_a2d3442b8127eeb90802bc2bd8446300b"><td class="memItemLeft" align="right" valign="top"><a id="a2d3442b8127eeb90802bc2bd8446300b" name="a2d3442b8127eeb90802bc2bd8446300b"></a>
 std::vector&lt; int64_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>dimension_ids</b></td></tr>
-<tr class="memdesc:a2d3442b8127eeb90802bc2bd8446300b"><td class="mdescLeft">&#160;</td><td class="mdescRight">The IDs of the dimensions in the einsum expression. <br /></td></tr>
+<tr class="memdesc:a2d3442b8127eeb90802bc2bd8446300b"><td class="mdescLeft">&#160;</td><td class="mdescRight">The IDs of the dimensions in the operation. <br /></td></tr>
 <tr class="separator:a2d3442b8127eeb90802bc2bd8446300b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad1217903ef107434b9263fde76a54947" id="r_ad1217903ef107434b9263fde76a54947"><td class="memItemLeft" align="right" valign="top"><a id="ad1217903ef107434b9263fde76a54947" name="ad1217903ef107434b9263fde76a54947"></a>
-int64_t&#160;</td><td class="memItemRight" valign="bottom"><b>tensor_size</b> = 1</td></tr>
-<tr class="memdesc:ad1217903ef107434b9263fde76a54947"><td class="mdescLeft">&#160;</td><td class="mdescRight">Size of the tensor. <br /></td></tr>
-<tr class="separator:ad1217903ef107434b9263fde76a54947"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acf2a46c27a768db6ff7a6c32388dbcbc" id="r_acf2a46c27a768db6ff7a6c32388dbcbc"><td class="memItemLeft" align="right" valign="top"><a id="acf2a46c27a768db6ff7a6c32388dbcbc" name="acf2a46c27a768db6ff7a6c32388dbcbc"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>tensor_expression</b> = &quot;&quot;</td></tr>
-<tr class="memdesc:acf2a46c27a768db6ff7a6c32388dbcbc"><td class="mdescLeft">&#160;</td><td class="mdescRight">String representation of the einsum expression. <br /></td></tr>
-<tr class="separator:acf2a46c27a768db6ff7a6c32388dbcbc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab4dbdd92110d32479fb0d69a227bba7b" id="r_ab4dbdd92110d32479fb0d69a227bba7b"><td class="memItemLeft" align="right" valign="top"><a id="ab4dbdd92110d32479fb0d69a227bba7b" name="ab4dbdd92110d32479fb0d69a227bba7b"></a>
 mini_jit::dtype_t&#160;</td><td class="memItemRight" valign="bottom"><b>dtype</b> = mini_jit::dtype_t::fp32</td></tr>
 <tr class="memdesc:ab4dbdd92110d32479fb0d69a227bba7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">The data type of the tensor. <br /></td></tr>
 <tr class="separator:ab4dbdd92110d32479fb0d69a227bba7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0036d7128935fdfaf043169b2e7ed59c" id="r_a0036d7128935fdfaf043169b2e7ed59c"><td class="memItemLeft" align="right" valign="top"><a id="a0036d7128935fdfaf043169b2e7ed59c" name="a0036d7128935fdfaf043169b2e7ed59c"></a>
-<a class="el" href="structmini__jit_1_1einsum_1_1EinsumNode.html">EinsumNode</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>leftChild</b> = nullptr</td></tr>
-<tr class="memdesc:a0036d7128935fdfaf043169b2e7ed59c"><td class="mdescLeft">&#160;</td><td class="mdescRight">The left child node in the einsum tree. <br /></td></tr>
-<tr class="separator:a0036d7128935fdfaf043169b2e7ed59c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a71f2a27310ec0f80f7b47f9988c8027f" id="r_a71f2a27310ec0f80f7b47f9988c8027f"><td class="memItemLeft" align="right" valign="top"><a id="a71f2a27310ec0f80f7b47f9988c8027f" name="a71f2a27310ec0f80f7b47f9988c8027f"></a>
-<a class="el" href="structmini__jit_1_1einsum_1_1EinsumNode.html">EinsumNode</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>rightChild</b> = nullptr</td></tr>
-<tr class="memdesc:a71f2a27310ec0f80f7b47f9988c8027f"><td class="mdescLeft">&#160;</td><td class="mdescRight">The right child node in the einsum tree. <br /></td></tr>
-<tr class="separator:a71f2a27310ec0f80f7b47f9988c8027f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acdadcde20ed47875e6b55da4e3f76706" id="r_acdadcde20ed47875e6b55da4e3f76706"><td class="memItemLeft" align="right" valign="top"><a id="acdadcde20ed47875e6b55da4e3f76706" name="acdadcde20ed47875e6b55da4e3f76706"></a>
+mini_jit::ptype_t&#160;</td><td class="memItemRight" valign="bottom"><b>prim_first_touch</b> = mini_jit::ptype_t::none</td></tr>
+<tr class="memdesc:acdadcde20ed47875e6b55da4e3f76706"><td class="mdescLeft">&#160;</td><td class="mdescRight">Primititve type for the first touch kernel. <br /></td></tr>
+<tr class="separator:acdadcde20ed47875e6b55da4e3f76706"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15a78182594192be5a97582d9d19855e" id="r_a15a78182594192be5a97582d9d19855e"><td class="memItemLeft" align="right" valign="top"><a id="a15a78182594192be5a97582d9d19855e" name="a15a78182594192be5a97582d9d19855e"></a>
+mini_jit::ptype_t&#160;</td><td class="memItemRight" valign="bottom"><b>prim_main</b> = mini_jit::ptype_t::none</td></tr>
+<tr class="memdesc:a15a78182594192be5a97582d9d19855e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Primitive type for the main kernel. <br /></td></tr>
+<tr class="separator:a15a78182594192be5a97582d9d19855e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96e97dbef85550e8dc2f75148717af98" id="r_a96e97dbef85550e8dc2f75148717af98"><td class="memItemLeft" align="right" valign="top"><a id="a96e97dbef85550e8dc2f75148717af98" name="a96e97dbef85550e8dc2f75148717af98"></a>
+mini_jit::ptype_t&#160;</td><td class="memItemRight" valign="bottom"><b>prim_last_touch</b> = mini_jit::ptype_t::none</td></tr>
+<tr class="memdesc:a96e97dbef85550e8dc2f75148717af98"><td class="mdescLeft">&#160;</td><td class="mdescRight">Primitive type for the last touch kernel. <br /></td></tr>
+<tr class="separator:a96e97dbef85550e8dc2f75148717af98"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afd25191bbec2f7885cb25c31195d008a" id="r_afd25191bbec2f7885cb25c31195d008a"><td class="memItemLeft" align="right" valign="top"><a id="afd25191bbec2f7885cb25c31195d008a" name="afd25191bbec2f7885cb25c31195d008a"></a>
+std::vector&lt; mini_jit::dim_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>dim_types</b></td></tr>
+<tr class="memdesc:afd25191bbec2f7885cb25c31195d008a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dimension types of the loops (m, n, k, c) <br /></td></tr>
+<tr class="separator:afd25191bbec2f7885cb25c31195d008a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a33520ef4797ec21d9f16f98d28a9b0" id="r_a2a33520ef4797ec21d9f16f98d28a9b0"><td class="memItemLeft" align="right" valign="top"><a id="a2a33520ef4797ec21d9f16f98d28a9b0" name="a2a33520ef4797ec21d9f16f98d28a9b0"></a>
+std::vector&lt; mini_jit::exec_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>exec_types</b></td></tr>
+<tr class="memdesc:a2a33520ef4797ec21d9f16f98d28a9b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Execution types of the loops (seq, shared, prim) <br /></td></tr>
+<tr class="separator:a2a33520ef4797ec21d9f16f98d28a9b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a282a5796f32709a12a0396eff778fc81" id="r_a282a5796f32709a12a0396eff778fc81"><td class="memItemLeft" align="right" valign="top"><a id="a282a5796f32709a12a0396eff778fc81" name="a282a5796f32709a12a0396eff778fc81"></a>
+std::vector&lt; int64_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>dim_sizes</b></td></tr>
+<tr class="memdesc:a282a5796f32709a12a0396eff778fc81"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sizes of the dimensions (loops) <br /></td></tr>
+<tr class="separator:a282a5796f32709a12a0396eff778fc81"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad0c3373d9a08cad77ac7a5e59d197660" id="r_ad0c3373d9a08cad77ac7a5e59d197660"><td class="memItemLeft" align="right" valign="top"><a id="ad0c3373d9a08cad77ac7a5e59d197660" name="ad0c3373d9a08cad77ac7a5e59d197660"></a>
+std::vector&lt; int64_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>strides_in0</b></td></tr>
+<tr class="memdesc:ad0c3373d9a08cad77ac7a5e59d197660"><td class="mdescLeft">&#160;</td><td class="mdescRight">Strides of the first input tensor. <br /></td></tr>
+<tr class="separator:ad0c3373d9a08cad77ac7a5e59d197660"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e2696adf90841c007496d4e3ffbb32b" id="r_a2e2696adf90841c007496d4e3ffbb32b"><td class="memItemLeft" align="right" valign="top"><a id="a2e2696adf90841c007496d4e3ffbb32b" name="a2e2696adf90841c007496d4e3ffbb32b"></a>
+std::vector&lt; int64_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>strides_in1</b></td></tr>
+<tr class="memdesc:a2e2696adf90841c007496d4e3ffbb32b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Strides of the second input tensor. <br /></td></tr>
+<tr class="separator:a2e2696adf90841c007496d4e3ffbb32b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acec6119e13ec1aa9de1cd2c7f178e564" id="r_acec6119e13ec1aa9de1cd2c7f178e564"><td class="memItemLeft" align="right" valign="top"><a id="acec6119e13ec1aa9de1cd2c7f178e564" name="acec6119e13ec1aa9de1cd2c7f178e564"></a>
+std::vector&lt; int64_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>strides_out</b></td></tr>
+<tr class="memdesc:acec6119e13ec1aa9de1cd2c7f178e564"><td class="mdescLeft">&#160;</td><td class="mdescRight">Strides of the output tensor. <br /></td></tr>
+<tr class="separator:acec6119e13ec1aa9de1cd2c7f178e564"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1217903ef107434b9263fde76a54947" id="r_ad1217903ef107434b9263fde76a54947"><td class="memItemLeft" align="right" valign="top"><a id="ad1217903ef107434b9263fde76a54947" name="ad1217903ef107434b9263fde76a54947"></a>
+int64_t&#160;</td><td class="memItemRight" valign="bottom"><b>tensor_size</b> = 1</td></tr>
+<tr class="memdesc:ad1217903ef107434b9263fde76a54947"><td class="mdescLeft">&#160;</td><td class="mdescRight">Size of the output tensor. <br /></td></tr>
+<tr class="separator:ad1217903ef107434b9263fde76a54947"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae055e9c50592ae92759ea317c596d28e" id="r_ae055e9c50592ae92759ea317c596d28e"><td class="memItemLeft" align="right" valign="top"><a id="ae055e9c50592ae92759ea317c596d28e" name="ae055e9c50592ae92759ea317c596d28e"></a>
 <a class="el" href="classmini__jit_1_1TensorOperation.html">mini_jit::TensorOperation</a>&#160;</td><td class="memItemRight" valign="bottom"><b>operation</b></td></tr>
 <tr class="memdesc:ae055e9c50592ae92759ea317c596d28e"><td class="mdescLeft">&#160;</td><td class="mdescRight">The tensor operation associated with this node. <br /></td></tr>
@@ -129,6 +157,18 @@ mini_jit::dtype_t&#160;</td><td class="memItemRight" valign="bottom"><b>dtype</b
 void *&#160;</td><td class="memItemRight" valign="bottom"><b>tensor_out</b> = nullptr</td></tr>
 <tr class="memdesc:a627431d1fc4249cb1e7056c825b92251"><td class="mdescLeft">&#160;</td><td class="mdescRight">The output tensor for this node. <br /></td></tr>
 <tr class="separator:a627431d1fc4249cb1e7056c825b92251"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf2a46c27a768db6ff7a6c32388dbcbc" id="r_acf2a46c27a768db6ff7a6c32388dbcbc"><td class="memItemLeft" align="right" valign="top"><a id="acf2a46c27a768db6ff7a6c32388dbcbc" name="acf2a46c27a768db6ff7a6c32388dbcbc"></a>
+std::string&#160;</td><td class="memItemRight" valign="bottom"><b>tensor_expression</b> = &quot;&quot;</td></tr>
+<tr class="memdesc:acf2a46c27a768db6ff7a6c32388dbcbc"><td class="mdescLeft">&#160;</td><td class="mdescRight">String representation of the einsum expression. <br /></td></tr>
+<tr class="separator:acf2a46c27a768db6ff7a6c32388dbcbc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0036d7128935fdfaf043169b2e7ed59c" id="r_a0036d7128935fdfaf043169b2e7ed59c"><td class="memItemLeft" align="right" valign="top"><a id="a0036d7128935fdfaf043169b2e7ed59c" name="a0036d7128935fdfaf043169b2e7ed59c"></a>
+<a class="el" href="structmini__jit_1_1einsum_1_1EinsumNode.html">EinsumNode</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>leftChild</b> = nullptr</td></tr>
+<tr class="memdesc:a0036d7128935fdfaf043169b2e7ed59c"><td class="mdescLeft">&#160;</td><td class="mdescRight">The left child node in the einsum tree. <br /></td></tr>
+<tr class="separator:a0036d7128935fdfaf043169b2e7ed59c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71f2a27310ec0f80f7b47f9988c8027f" id="r_a71f2a27310ec0f80f7b47f9988c8027f"><td class="memItemLeft" align="right" valign="top"><a id="a71f2a27310ec0f80f7b47f9988c8027f" name="a71f2a27310ec0f80f7b47f9988c8027f"></a>
+<a class="el" href="structmini__jit_1_1einsum_1_1EinsumNode.html">EinsumNode</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>rightChild</b> = nullptr</td></tr>
+<tr class="memdesc:a71f2a27310ec0f80f7b47f9988c8027f"><td class="mdescLeft">&#160;</td><td class="mdescRight">The right child node in the einsum tree. <br /></td></tr>
+<tr class="separator:a71f2a27310ec0f80f7b47f9988c8027f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6fd05b50ce75317729760a22f84bd7a3" id="r_a6fd05b50ce75317729760a22f84bd7a3"><td class="memItemLeft" align="right" valign="top"><a id="a6fd05b50ce75317729760a22f84bd7a3" name="a6fd05b50ce75317729760a22f84bd7a3"></a>
 double&#160;</td><td class="memItemRight" valign="bottom"><b>computational_operations</b> = 0.0</td></tr>
 <tr class="memdesc:a6fd05b50ce75317729760a22f84bd7a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">The number of operations performed by this node. <br /></td></tr>

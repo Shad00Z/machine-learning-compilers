@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['optimize_0',['optimize',['../classmini__jit_1_1ir_1_1Optimizer.html#a9e1a1337409a69d4c731fdb92f2396f1',1,'mini_jit::ir::Optimizer::optimize(std::vector&lt; Dimension &gt; &amp;dimensions, int64_t thread_target, int64_t max_kernel_size)'],['../classmini__jit_1_1ir_1_1Optimizer.html#ac201345b76838c6d1f19b77635233b47',1,'mini_jit::ir::Optimizer::optimize(std::vector&lt; dim_t &gt; &amp;dim_types, std::vector&lt; exec_t &gt; &amp;exec_types, std::vector&lt; int64_t &gt; &amp;dim_sizes, std::vector&lt; int64_t &gt; &amp;strides_in0, std::vector&lt; int64_t &gt; &amp;strides_in1, std::vector&lt; int64_t &gt; &amp;strides_out, int64_t thread_target, int64_t max_kernel_size)']]],
-  ['optimizer_1',['Optimizer',['../classmini__jit_1_1ir_1_1Optimizer.html#af04059ad017da7366cf5ed392e70bf59',1,'mini_jit::ir::Optimizer']]]
+  ['matmul_5fbr_5fm_5fn_5fk_5fbench_0',['Matmul_br_m_n_k_bench',['../classmini__jit_1_1benchmarks_1_1Matmul__br__m__n__k__bench.html#a6a59ed66f25b491b701c5bef5fec6afc',1,'mini_jit::benchmarks::Matmul_br_m_n_k_bench']]],
+  ['matmul_5fm_5fn_5fk_5fbench_1',['Matmul_m_n_k_bench',['../classmini__jit_1_1benchmarks_1_1Matmul__m__n__k__bench.html#a3571fe77cb6649d26a17bd743d545356',1,'mini_jit::benchmarks::Matmul_m_n_k_bench']]]
 ];

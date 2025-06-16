@@ -95,18 +95,27 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a2e905fa4a09fe02a92ebb78a2ce9bb74" id="r_a2e905fa4a09fe02a92ebb78a2ce9bb74"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structmini__jit_1_1einsum_1_1EinsumNode.html">EinsumNode</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmini__jit_1_1einsum_1_1EinsumTree.html#a2e905fa4a09fe02a92ebb78a2ce9bb74">parse_einsum_expression</a> (std::string const &amp;einsum_expression, std::vector&lt; int64_t &gt; &amp;dimension_sizes, mini_jit::dtype_t dtype, int64_t thread_target, int64_t max_kernel_size)</td></tr>
-<tr class="memdesc:a2e905fa4a09fe02a92ebb78a2ce9bb74"><td class="mdescLeft">&#160;</td><td class="mdescRight">Helper function to parse the einsum expression and create nodes.  <br /></td></tr>
-<tr class="separator:a2e905fa4a09fe02a92ebb78a2ce9bb74"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1ba6510adfc9bb70c7472e6cb6cdf71b" id="r_a1ba6510adfc9bb70c7472e6cb6cdf71b"><td class="memItemLeft" align="right" valign="top"><a id="a1ba6510adfc9bb70c7472e6cb6cdf71b" name="a1ba6510adfc9bb70c7472e6cb6cdf71b"></a>
-static void&#160;</td><td class="memItemRight" valign="bottom"><b>execute</b> (<a class="el" href="structmini__jit_1_1einsum_1_1EinsumNode.html">EinsumNode</a> *root_node, std::vector&lt; int64_t &gt; &amp;dimension_sizes, std::map&lt; std::string, void const * &gt; &amp;tensor_inputs)</td></tr>
+<tr class="memitem:a5dd37d342ac87c0bd4dded53ab7432cd" id="r_a5dd37d342ac87c0bd4dded53ab7432cd"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structmini__jit_1_1einsum_1_1EinsumNode.html">EinsumNode</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmini__jit_1_1einsum_1_1EinsumTree.html#a5dd37d342ac87c0bd4dded53ab7432cd">parse_einsum_expression</a> (std::string const &amp;einsum_expression, std::vector&lt; int64_t &gt; &amp;dimension_sizes)</td></tr>
+<tr class="memdesc:a5dd37d342ac87c0bd4dded53ab7432cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Helper function to parse the einsum expression and create an Einsum Tree.  <br /></td></tr>
+<tr class="separator:a5dd37d342ac87c0bd4dded53ab7432cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ba6510adfc9bb70c7472e6cb6cdf71b" id="r_a1ba6510adfc9bb70c7472e6cb6cdf71b"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmini__jit_1_1einsum_1_1EinsumTree.html#a1ba6510adfc9bb70c7472e6cb6cdf71b">execute</a> (<a class="el" href="structmini__jit_1_1einsum_1_1EinsumNode.html">EinsumNode</a> *root_node, std::vector&lt; int64_t &gt; &amp;dimension_sizes, std::map&lt; std::string, void const * &gt; &amp;tensor_inputs)</td></tr>
+<tr class="memdesc:a1ba6510adfc9bb70c7472e6cb6cdf71b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Executes the einsum tree using tensor operations.  <br /></td></tr>
 <tr class="separator:a1ba6510adfc9bb70c7472e6cb6cdf71b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0e3de49294a90fe32daccd221b29b27" id="r_ac0e3de49294a90fe32daccd221b29b27"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmini__jit_1_1einsum_1_1EinsumTree.html#ac0e3de49294a90fe32daccd221b29b27">optimize_einsum_nodes</a> (<a class="el" href="structmini__jit_1_1einsum_1_1EinsumNode.html">EinsumNode</a> *einsum_node, int64_t thread_target, int64_t max_kernel_size)</td></tr>
+<tr class="memdesc:ac0e3de49294a90fe32daccd221b29b27"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optimize the given einsum node and its children by applying transformations to the dimensions, sizes and strides.  <br /></td></tr>
+<tr class="separator:ac0e3de49294a90fe32daccd221b29b27"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a40cc01f14f89eb4a06522e70a294a6" id="r_a2a40cc01f14f89eb4a06522e70a294a6"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmini__jit_1_1einsum_1_1EinsumTree.html#a2a40cc01f14f89eb4a06522e70a294a6">lower_einsum_nodes_to_tensor_operations</a> (<a class="el" href="structmini__jit_1_1einsum_1_1EinsumNode.html">EinsumNode</a> *einsum_node, std::vector&lt; int64_t &gt; &amp;dimension_sizes, mini_jit::dtype_t dtype)</td></tr>
+<tr class="memdesc:a2a40cc01f14f89eb4a06522e70a294a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lower the given einsum node and all of its children to executable tensor operations.  <br /></td></tr>
+<tr class="separator:a2a40cc01f14f89eb4a06522e70a294a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab4f8dfd85c8b28dcbd9493c1159d72e9" id="r_ab4f8dfd85c8b28dcbd9493c1159d72e9"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmini__jit_1_1einsum_1_1EinsumTree.html#ab4f8dfd85c8b28dcbd9493c1159d72e9">optimize_einsum_tree</a> (<a class="el" href="structmini__jit_1_1einsum_1_1EinsumNode.html">EinsumNode</a> *root_node)</td></tr>
+<tr class="memdesc:ab4f8dfd85c8b28dcbd9493c1159d72e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optimize the einsum tree by reordering, swapping and permuting nodes.  <br /></td></tr>
+<tr class="separator:ab4f8dfd85c8b28dcbd9493c1159d72e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>The <a class="el" href="classmini__jit_1_1einsum_1_1EinsumTree.html" title="The EinsumTree class provides methods to transform a string einsum expression into a tree structure b...">EinsumTree</a> class provides methods to transform a string einsum expression into a tree structure based on nodes and tensor operations. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="a2e905fa4a09fe02a92ebb78a2ce9bb74" name="a2e905fa4a09fe02a92ebb78a2ce9bb74"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2e905fa4a09fe02a92ebb78a2ce9bb74">&#9670;&#160;</a></span>parse_einsum_expression()</h2>
+<a id="a1ba6510adfc9bb70c7472e6cb6cdf71b" name="a1ba6510adfc9bb70c7472e6cb6cdf71b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ba6510adfc9bb70c7472e6cb6cdf71b">&#9670;&#160;</a></span>execute()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -115,10 +124,62 @@ static void&#160;</td><td class="memItemRight" valign="bottom"><b>execute</b> (<
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structmini__jit_1_1einsum_1_1EinsumNode.html">mini_jit::einsum::EinsumNode</a> * mini_jit::einsum::EinsumTree::parse_einsum_expression </td>
+          <td class="memname">void mini_jit::einsum::EinsumTree::execute </td>
           <td>(</td>
-          <td class="paramtype">std::string const &amp;&#160;</td>
-          <td class="paramname"><em>einsum_expression</em>, </td>
+          <td class="paramtype"><a class="el" href="structmini__jit_1_1einsum_1_1EinsumNode.html">EinsumNode</a> *&#160;</td>
+          <td class="paramname"><em>root_node</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; int64_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>dimension_sizes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::map&lt; std::string, void const * &gt; &amp;&#160;</td>
+          <td class="paramname"><em>tensor_inputs</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Executes the einsum tree using tensor operations. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">root_node</td><td>The root <a class="el" href="structmini__jit_1_1einsum_1_1EinsumNode.html">EinsumNode</a> of the einsum tree. </td></tr>
+    <tr><td class="paramname">dimension_sizes</td><td>A vector containing the sizes of the dimensions used in the expression. </td></tr>
+    <tr><td class="paramname">tensor_inputs</td><td>A map containing the input tensors for the einsum operation. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a2a40cc01f14f89eb4a06522e70a294a6" name="a2a40cc01f14f89eb4a06522e70a294a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a40cc01f14f89eb4a06522e70a294a6">&#9670;&#160;</a></span>lower_einsum_nodes_to_tensor_operations()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void mini_jit::einsum::EinsumTree::lower_einsum_nodes_to_tensor_operations </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structmini__jit_1_1einsum_1_1EinsumNode.html">EinsumNode</a> *&#160;</td>
+          <td class="paramname"><em>einsum_node</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -130,7 +191,47 @@ static void&#160;</td><td class="memItemRight" valign="bottom"><b>execute</b> (<
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">mini_jit::dtype_t&#160;</td>
-          <td class="paramname"><em>dtype</em>, </td>
+          <td class="paramname"><em>dtype</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Lower the given einsum node and all of its children to executable tensor operations. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">einsum_node</td><td>The root node of the einsum tree. </td></tr>
+    <tr><td class="paramname">dimension_sizes</td><td>The array with the dimension sizes sorted by id. </td></tr>
+    <tr><td class="paramname">dtype</td><td>The data type of the tensor. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ac0e3de49294a90fe32daccd221b29b27" name="ac0e3de49294a90fe32daccd221b29b27"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0e3de49294a90fe32daccd221b29b27">&#9670;&#160;</a></span>optimize_einsum_nodes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void mini_jit::einsum::EinsumTree::optimize_einsum_nodes </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structmini__jit_1_1einsum_1_1EinsumNode.html">EinsumNode</a> *&#160;</td>
+          <td class="paramname"><em>einsum_node</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -157,10 +258,91 @@ static void&#160;</td><td class="memItemRight" valign="bottom"><b>execute</b> (<
 </table>
 </div><div class="memdoc">
 
-<p>Helper function to parse the einsum expression and create nodes. </p>
+<p>Optimize the given einsum node and its children by applying transformations to the dimensions, sizes and strides. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">einsum_node</td><td>The root node of the einsum tree. </td></tr>
+    <tr><td class="paramname">thread_target</td><td>The target number of threads for parallel execution. </td></tr>
+    <tr><td class="paramname">max_kernel_size</td><td>The maximum size of the kernel to be used. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ab4f8dfd85c8b28dcbd9493c1159d72e9" name="ab4f8dfd85c8b28dcbd9493c1159d72e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab4f8dfd85c8b28dcbd9493c1159d72e9">&#9670;&#160;</a></span>optimize_einsum_tree()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void mini_jit::einsum::EinsumTree::optimize_einsum_tree </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structmini__jit_1_1einsum_1_1EinsumNode.html">EinsumNode</a> *&#160;</td>
+          <td class="paramname"><em>root_node</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Optimize the einsum tree by reordering, swapping and permuting nodes. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">root_node</td><td>The root node of the einsum tree. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a5dd37d342ac87c0bd4dded53ab7432cd" name="a5dd37d342ac87c0bd4dded53ab7432cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5dd37d342ac87c0bd4dded53ab7432cd">&#9670;&#160;</a></span>parse_einsum_expression()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structmini__jit_1_1einsum_1_1EinsumNode.html">mini_jit::einsum::EinsumNode</a> * mini_jit::einsum::EinsumTree::parse_einsum_expression </td>
+          <td>(</td>
+          <td class="paramtype">std::string const &amp;&#160;</td>
+          <td class="paramname"><em>einsum_expression</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; int64_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>dimension_sizes</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Helper function to parse the einsum expression and create an Einsum Tree. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">einsum_expression</td><td>The string representation of the einsum operation. </td></tr>
+    <tr><td class="paramname">dimension_sizes</td><td>A vector to store the sizes of the dimensions used in the expression. </td></tr>
   </table>
   </dd>
 </dl>
