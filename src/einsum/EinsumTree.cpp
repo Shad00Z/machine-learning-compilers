@@ -130,7 +130,7 @@ void mini_jit::einsum::EinsumTree::initialize_einsum_nodes(EinsumNode *einsum_no
     // this is already given
     std::vector<int64_t> *output_dimension_ids = &einsum_node->output_dimension_ids;
     // these should be initialized
-    std::vector<int64_t> *dim_ids = &einsum_node->dimension_ids;
+    std::vector<int64_t> *operation_dim_ids = &einsum_node->dimension_ids;
     std::vector<int64_t> *dim_sizes = &einsum_node->dim_sizes;
     // local vector of sizes of the output dimensions
     std::vector<int64_t> out_dim_sizes = einsum_node->dim_sizes;
@@ -138,28 +138,28 @@ void mini_jit::einsum::EinsumTree::initialize_einsum_nodes(EinsumNode *einsum_no
     // add ids from output
     for (auto dim_id : einsum_node->output_dimension_ids)
     {
-        dim_ids->push_back(dim_id);
+        operation_dim_ids->push_back(dim_id);
         dim_sizes->push_back(dimension_sizes[dim_id]);
         out_dim_sizes.push_back(dimension_sizes[dim_id]);
     }
     // add ids from children (for 1 child, the ids are the same as the output ids)
     if (einsum_node->get_number_of_children() == 2)
     {
-        for (auto dim_id : einsum_node->leftChild->dimension_ids)
+        for (auto dim_id : einsum_node->leftChild->output_dimension_ids)
         {
             // check if the dimension id is already in the list
-            if (std::find(dim_ids->begin(), dim_ids->end(), dim_id) == dim_ids->end())
+            if (std::find(operation_dim_ids->begin(), operation_dim_ids->end(), dim_id) == operation_dim_ids->end())
             {
-                dim_ids->push_back(dim_id);
+                operation_dim_ids->push_back(dim_id);
                 dim_sizes->push_back(dimension_sizes[dim_id]);
             }
         }
-        for (auto dim_id : einsum_node->rightChild->dimension_ids)
+        for (auto dim_id : einsum_node->rightChild->output_dimension_ids)
         {
             // check if the dimension id is already in the list
-            if (std::find(dim_ids->begin(), dim_ids->end(), dim_id) == dim_ids->end())
+            if (std::find(operation_dim_ids->begin(), operation_dim_ids->end(), dim_id) == operation_dim_ids->end())
             {
-                dim_ids->push_back(dim_id);
+                operation_dim_ids->push_back(dim_id);
                 dim_sizes->push_back(dimension_sizes[dim_id]);
             }
         }
@@ -177,17 +177,17 @@ void mini_jit::einsum::EinsumTree::initialize_einsum_nodes(EinsumNode *einsum_no
     //////////////////////////////////////////////////////////////////
 
     std::vector<dim_t> *dim_types = &einsum_node->dim_types;
-    dim_types->resize(dim_ids->size(), dim_t::k);
+    dim_types->resize(operation_dim_ids->size(), dim_t::k);
     std::vector<exec_t> *exec_types = &einsum_node->exec_types;
-    exec_types->resize(dim_ids->size(), exec_t::seq);
+    exec_types->resize(operation_dim_ids->size(), exec_t::seq);
     std::vector<int64_t> *strides_in0 = &einsum_node->strides_in0;
-    strides_in0->resize(dim_ids->size(), 0);
+    strides_in0->resize(operation_dim_ids->size(), 0);
     std::vector<int64_t> *strides_in1 = &einsum_node->strides_in1;
-    strides_in1->resize(dim_ids->size(), 0);
+    strides_in1->resize(operation_dim_ids->size(), 0);
     std::vector<int64_t> *strides_out = &einsum_node->strides_out;
-    strides_out->resize(dim_ids->size(), 0);
+    strides_out->resize(operation_dim_ids->size(), 0);
 
-    for (size_t i = 0; i < dim_ids->size(); i++)
+    for (size_t i = 0; i < operation_dim_ids->size(); i++)
     {
         //////////////////////////////////////////////////////////////////
         // SET TYPE
@@ -195,7 +195,7 @@ void mini_jit::einsum::EinsumTree::initialize_einsum_nodes(EinsumNode *einsum_no
         // output + left = M
         // output + right = N
 
-        int64_t dim_id = (*dim_ids)[i];
+        int64_t dim_id = (*operation_dim_ids)[i];
 
         if (einsum_node->get_number_of_children() == 2)
         {
