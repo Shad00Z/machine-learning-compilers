@@ -23,7 +23,7 @@ mini_jit::einsum::EinsumNode *mini_jit::einsum::EinsumTree::parse_einsum_express
     mini_jit::einsum::EinsumNode *l_root_node = parse_einsum_expression_recursive(einsum_expression);
 
     // SWAP NODES
-    swapNodes(l_root_node);
+    swap_nodes(l_root_node);
 
     initialize_einsum_nodes(l_root_node, dimension_sizes);
     return l_root_node;
@@ -284,14 +284,8 @@ void mini_jit::einsum::EinsumTree::optimize_einsum_nodes(EinsumNode *einsum_node
     }
 
     // optimize children
-    if (einsum_node->m_left_child)
-    {
-        optimize_einsum_nodes(einsum_node->m_left_child, thread_target, max_kernel_size);
-    }
-    if (einsum_node->m_right_child)
-    {
-        optimize_einsum_nodes(einsum_node->m_right_child, thread_target, max_kernel_size);
-    }
+    optimize_einsum_nodes(einsum_node->m_left_child, thread_target, max_kernel_size);
+    optimize_einsum_nodes(einsum_node->m_right_child, thread_target, max_kernel_size);
 
     // optimize current node
     mini_jit::ir::Optimizer::optimize(einsum_node->m_dim_types,
@@ -439,15 +433,8 @@ void mini_jit::einsum::EinsumTree::execute(EinsumNode *root_node,
     else
     {
         // compute children
-        if (root_node->m_left_child != nullptr)
-        {
-            execute(root_node->m_left_child, dimension_sizes, tensor_inputs);
-        }
-
-        if (root_node->m_right_child != nullptr)
-        {
-            execute(root_node->m_right_child, dimension_sizes, tensor_inputs);
-        }
+        execute(root_node->m_left_child, dimension_sizes, tensor_inputs);
+        execute(root_node->m_right_child, dimension_sizes, tensor_inputs);
 
         // execute operation
         auto l_ptr_right_child = root_node->m_right_child ? root_node->m_right_child->m_tensor_out : nullptr;
@@ -466,7 +453,7 @@ void mini_jit::einsum::EinsumTree::optimize_einsum_tree(EinsumNode *root_node)
     // permutation nodes
 }
 
-void mini_jit::einsum::EinsumTree::swapNodes(EinsumNode *einsum_node)
+void mini_jit::einsum::EinsumTree::swap_nodes(EinsumNode *einsum_node)
 {
     if (einsum_node == nullptr || einsum_node->get_number_of_children() == 0)
     {
@@ -475,28 +462,28 @@ void mini_jit::einsum::EinsumTree::swapNodes(EinsumNode *einsum_node)
 
     if (einsum_node->get_number_of_children() == 1)
     {
-        swapNodes(einsum_node->leftChild);
+        swap_nodes(einsum_node->m_left_child);
         return;
     }
 
-    int64_t l_unit_stride_root_node = einsum_node->output_dimension_ids.size() - 1;
-    int64_t l_unit_stride_left_child = einsum_node->leftChild->output_dimension_ids.size() - 1;
-    int64_t l_unit_stride_right_child = einsum_node->rightChild->output_dimension_ids.size() - 1;
+    // recursively swap children
+    swap_nodes(einsum_node->m_left_child);
+    swap_nodes(einsum_node->m_right_child);
+
+    int64_t l_unit_stride_root_node = einsum_node->m_output_dimension_ids.size() - 1;
+    int64_t l_unit_stride_left_child = einsum_node->m_left_child->m_output_dimension_ids.size() - 1;
+    int64_t l_unit_stride_right_child = einsum_node->m_right_child->m_output_dimension_ids.size() - 1;
 
     // swap nodes if
     // (A) the right child and the root node have the same unit stride, AND
     // (B) if the right childs output dimension ids contain the left childs unit stride somewhere
-    if (einsum_node->output_dimension_ids[l_unit_stride_root_node] == einsum_node->rightChild->output_dimension_ids[l_unit_stride_right_child] &&
-        contains(einsum_node->rightChild->output_dimension_ids, einsum_node->leftChild->output_dimension_ids[l_unit_stride_left_child]))
+    if (einsum_node->m_output_dimension_ids[l_unit_stride_root_node] == einsum_node->m_right_child->m_output_dimension_ids[l_unit_stride_right_child] &&
+        contains(einsum_node->m_right_child->m_output_dimension_ids, einsum_node->m_left_child->m_output_dimension_ids[l_unit_stride_left_child]))
     {
         std::cout << "Swapping nodes: " << std::endl;
-        EinsumNode *l_temp_node = einsum_node->leftChild;
+        EinsumNode *l_temp_node = einsum_node->m_left_child;
 
-        einsum_node->leftChild = einsum_node->rightChild;
-        einsum_node->rightChild = l_temp_node;
+        einsum_node->m_left_child = einsum_node->m_right_child;
+        einsum_node->m_right_child = l_temp_node;
     }
-
-    // recursively swap children
-    swapNodes(einsum_node->leftChild);
-    swapNodes(einsum_node->rightChild);
 }
