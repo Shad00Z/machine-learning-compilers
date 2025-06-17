@@ -47,7 +47,7 @@ void mini_jit::benchmarks::EinsumTreeBench::run()
     // END RUN
 
     // Calculate metrics
-    double l_totalOperations = m_root_node->computational_operations * l_num_reps;
+    double l_totalOperations = m_root_node->m_computational_operations * l_num_reps;
     double l_gflops = ((double)l_totalOperations) / (l_elapsed * 1e9);
 
     // Store the results

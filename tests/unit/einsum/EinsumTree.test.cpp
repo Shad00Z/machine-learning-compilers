@@ -73,7 +73,7 @@ TEST_CASE("EinsumTree Simple GEMM Test")
                                           dimension_sizes,
                                           tensor_inputs);
 
-    const float *tensor_out = static_cast<const float *>(node->tensor_out);
+    const float *tensor_out = static_cast<const float *>(node->m_tensor_out);
 
     // compare output tensor with expected output
     for (int64_t i = 0; i < SIZE_OUT; ++i)
@@ -170,7 +170,7 @@ TEST_CASE("EinsumTree Simple BRGEMM Test")
                                                                           dimension_sizes,
                                                                           dtype);
 
-    const float *tensor_out = static_cast<const float *>(node->tensor_out);
+    const float *tensor_out = static_cast<const float *>(node->m_tensor_out);
 
     // compare output tensor with expected output
     for (int64_t i = 0; i < SIZE_OUT; ++i)
@@ -248,7 +248,7 @@ TEST_CASE("EinsumTree Simple Permutation Test")
                                           dimension_sizes,
                                           tensor_inputs);
 
-    const float *tensor_out = static_cast<const float *>(node->tensor_out);
+    const float *tensor_out = static_cast<const float *>(node->m_tensor_out);
 
     // compare output tensor with expected output
     for (int64_t i = 0; i < SIZE_OUT; ++i)
@@ -340,7 +340,7 @@ TEST_CASE("EinsumTree Complex Permutation + GEMM Test")
                                           dimension_sizes,
                                           tensor_inputs);
 
-    const float *tensor_out = static_cast<const float *>(node->tensor_out);
+    const float *tensor_out = static_cast<const float *>(node->m_tensor_out);
 
     // compare output tensor with expected output
     for (int64_t i = 0; i < SIZE_OUT; ++i)
