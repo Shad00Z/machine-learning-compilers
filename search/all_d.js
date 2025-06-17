@@ -6,8 +6,5 @@ var searchData=
   ['splitdimensions_3',['splitDimensions',['../classmini__jit_1_1ir_1_1Optimizer.html#ab764c879c576dcd3e80033cead0a5d9c',1,'mini_jit::ir::Optimizer']]],
   ['stride_5fin0_4',['stride_in0',['../structmini__jit_1_1ir_1_1Dimension.html#a962ad111915d0bb5bfe849a47472b492',1,'mini_jit::ir::Dimension']]],
   ['stride_5fin1_5',['stride_in1',['../structmini__jit_1_1ir_1_1Dimension.html#a59fed57e0e57b7f9f59eab8ce1d7369b',1,'mini_jit::ir::Dimension']]],
-  ['stride_5fout_6',['stride_out',['../structmini__jit_1_1ir_1_1Dimension.html#a61d82026288362a3a68603ae11e64a0d',1,'mini_jit::ir::Dimension']]],
-  ['strides_5fin0_7',['strides_in0',['../structmini__jit_1_1einsum_1_1EinsumNode.html#ad0c3373d9a08cad77ac7a5e59d197660',1,'mini_jit::einsum::EinsumNode']]],
-  ['strides_5fin1_8',['strides_in1',['../structmini__jit_1_1einsum_1_1EinsumNode.html#a2e2696adf90841c007496d4e3ffbb32b',1,'mini_jit::einsum::EinsumNode']]],
-  ['strides_5fout_9',['strides_out',['../structmini__jit_1_1einsum_1_1EinsumNode.html#acec6119e13ec1aa9de1cd2c7f178e564',1,'mini_jit::einsum::EinsumNode']]]
+  ['stride_5fout_6',['stride_out',['../structmini__jit_1_1ir_1_1Dimension.html#a61d82026288362a3a68603ae11e64a0d',1,'mini_jit::ir::Dimension']]]
 ];

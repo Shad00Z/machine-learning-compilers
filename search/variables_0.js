@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['computational_5foperations_0',['computational_operations',['../structmini__jit_1_1einsum_1_1EinsumNode.html#a6fd05b50ce75317729760a22f84bd7a3',1,'mini_jit::einsum::EinsumNode']]]
+  ['exec_5ftype_0',['exec_type',['../structmini__jit_1_1ir_1_1Dimension.html#ae2a891b22af5a20a6a3b93703772f969',1,'mini_jit::ir::Dimension']]]
 ];

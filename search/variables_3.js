@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['leftchild_0',['leftChild',['../structmini__jit_1_1einsum_1_1EinsumNode.html#a0036d7128935fdfaf043169b2e7ed59c',1,'mini_jit::einsum::EinsumNode']]]
+  ['type_0',['type',['../structmini__jit_1_1ir_1_1Dimension.html#add70526b340466589e3a142f9cda467b',1,'mini_jit::ir::Dimension']]]
 ];
