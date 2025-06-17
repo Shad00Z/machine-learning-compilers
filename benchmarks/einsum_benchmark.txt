@@ -1,12 +1,12 @@
 Running EinsumTree benchmark #1
-Total time (s):                  3.06635
-Total reps:                      17
-Total floating point operations: 673364975616
-Estimated GFLOPS/sec:            219.598
+Total time (s):                  3.2727
+Total reps:                      11
+Total floating point operations: 435706748928
+Estimated GFLOPS/sec:            133.134
 --------------------------------------------------
 Running EinsumTree benchmark #2
-Total time (s):                  3.00347
-Total reps:                      375
-Total floating point operations: 1152614400000
-Estimated GFLOPS/sec:            383.761
+Total time (s):                  3.01023
+Total reps:                      230
+Total floating point operations: 706936832000
+Estimated GFLOPS/sec:            234.845
 --------------------------------------------------

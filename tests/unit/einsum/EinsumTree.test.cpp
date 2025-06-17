@@ -16,7 +16,7 @@ TEST_CASE("EinsumTree Simple GEMM Test")
 
     mini_jit::einsum::EinsumNode *node = mini_jit::einsum::EinsumTree::parse_einsum_expression(input,
                                                                                                dimension_sizes);
-                                                                                               
+
     mini_jit::einsum::EinsumTree::optimize_einsum_nodes(node,
                                                         256,
                                                         512);
@@ -354,6 +354,103 @@ TEST_CASE("EinsumTree Complex Permutation + GEMM Test")
     delete[] tensor_B;
     delete[] tensor_out_expected;
 }
+
+// TEST_CASE("EinsumTree Simple Swap Test")
+// {
+//     std::string input = "[2,0,3],[3,1]->[2,0,1]";
+//     std::vector<int64_t> dimension_sizes{GENERATE(3, 7, 19),
+//                                          GENERATE(3, 7, 19),
+//                                          GENERATE(3, 7, 19),
+//                                          GENERATE(3, 7, 19)};
+//     mini_jit::dtype_t dtype = mini_jit::dtype_t::fp32;
+
+//     mini_jit::einsum::EinsumNode *node = mini_jit::einsum::EinsumTree::parse_einsum_expression(input,
+//                                                                                                dimension_sizes);
+
+//     mini_jit::einsum::EinsumTree::optimize_einsum_nodes(node,
+//                                                         256,
+//                                                         512);
+
+//     mini_jit::einsum::EinsumTree::lower_einsum_nodes_to_tensor_operations(node,
+//                                                                           dimension_sizes,
+//                                                                           dtype);
+
+//     // [3,1] -> *A
+//     // [2,0,3] -> *B
+//     std::map<std::string, void const *> tensor_inputs;
+
+//     const int64_t M = dimension_sizes[1];
+//     const int64_t N = dimension_sizes[0];
+//     const int64_t K = dimension_sizes[3];
+//     const int64_t br_size = dimension_sizes[2];
+
+//     const int64_t SIZE_A = M * K;
+//     const int64_t SIZE_B = K * N * br_size;
+//     const int64_t SIZE_OUT = M * N * br_size;
+
+//     float *tensor_A = new float[SIZE_A];
+//     float *tensor_B = new float[SIZE_B];
+//     float *tensor_out_expected = new float[SIZE_OUT];
+
+//     tensor_inputs["3,1"] = tensor_A;
+//     tensor_inputs["2,0,3"] = tensor_B;
+
+//     // init matrices
+//     for (int64_t i = 0; i < SIZE_A; ++i)
+//     {
+//         tensor_A[i] = i;
+//     }
+//     for (int64_t i = 0; i < SIZE_B; ++i)
+//     {
+//         tensor_B[i] = i;
+//     }
+//     for (int64_t i = 0; i < SIZE_OUT; ++i)
+//     {
+//         tensor_out_expected[i] = 0.0f;
+//     }
+
+//     // calculate expected output
+//     for (int col = 0; col < N; ++col)
+//     {
+//         for (int row = 0; row < M; ++row)
+//         {
+//             float sum = 0.0f;
+//             for (int br = 0; br < br_size; ++br)
+//             {
+//                 for (int k = 0; k < K; ++k)
+//                 {
+//                     sum += tensor_A[br * M * K + row + k * M] * tensor_B[br * K * N + k + col * K];
+//                 }
+//             }
+//             tensor_out_expected[row + col * M] += sum;
+//         }
+//     }
+
+//     mini_jit::einsum::EinsumTree::execute(node,
+//                                           dimension_sizes,
+//                                           tensor_inputs);
+
+//     mini_jit::einsum::EinsumTree::optimize_einsum_nodes(node,
+//                                                         256,
+//                                                         512);
+
+//     mini_jit::einsum::EinsumTree::lower_einsum_nodes_to_tensor_operations(node,
+//                                                                           dimension_sizes,
+//                                                                           dtype);
+
+//     const float *tensor_out = static_cast<const float *>(node->tensor_out);
+
+//     // compare output tensor with expected output
+//     for (int64_t i = 0; i < SIZE_OUT; ++i)
+//     {
+//         REQUIRE(tensor_out[i] == Approx(tensor_out_expected[i]).margin(FLOAT_ERROR_MARGIN));
+//     }
+
+//     delete node;
+//     delete[] tensor_A;
+//     delete[] tensor_B;
+//     delete[] tensor_out_expected;
+// }
 
 // TEST_CASE("huhn")
 // {

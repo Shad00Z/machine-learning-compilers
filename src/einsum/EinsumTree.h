@@ -119,6 +119,13 @@ public:
      * @param root_node The root node of the einsum tree.
      */
     static void optimize_einsum_tree(EinsumNode *root_node);
+
+    /**
+     * @brief Optimize the einsum tree by swapping nodes.
+     *
+     * @param root_node The root node of the einsum tree.
+     */
+    static void swapNodes(EinsumNode *einsum_node);
 };
 
 #endif // MINI_JIT_EINSUM_EINSUM_TREE_H

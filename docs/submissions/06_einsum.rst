@@ -181,7 +181,7 @@ If we are not a leaf node, we call the ``execute`` function for the children of 
 To validate the correctness and effectiveness of our implementation we performed benchmarks. 
 Our first benchmark was to compare our new einsum implementation to the performance of the :ref:`tensor optimization<5.5.6 Performance Benchmarks>` benchmark.
 
-.. literalinclude:: ../../benchmarks/optimized_tensor_and_einsum_operation_benchmarks.txt
+.. literalinclude:: ../../benchmarks/optimized_tensor_and_einsum_operation_benchmarks_old.txt
     :language: text
     :lines: 81-105
     :lineno-match:
@@ -193,7 +193,7 @@ Secondly we compared our implementation with two reference einsum expressions:
 1. ``[[8,4],[7,3,8]->[7,3,4]],[[[2,6,7],[1,5,6]->[1,2,5,7]],[0,5]->[0,1,2,7]]->[0,1,2,3,4]``
 2. ``[[[[3,6,8,9]->[8,6,9,3]],[[2,5,7,9]->[7,5,2,9]]->[7,8,5,6,2,3]],[0,4,5,6]->[0,4,7,8,2,3]],[1,4,7,8]->[0,1,2,3]``
 
-.. literalinclude:: ../../benchmarks/einsum_benchmark.txt
+.. literalinclude:: ../../benchmarks/einsum_benchmark_old.txt
     :language: text
     :lineno-match:
     :caption: benchmark for reference einsum expressions

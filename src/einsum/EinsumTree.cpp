@@ -21,6 +21,10 @@ mini_jit::einsum::EinsumNode *mini_jit::einsum::EinsumTree::parse_einsum_express
     }
 
     mini_jit::einsum::EinsumNode *root_node = parse_einsum_expression_recursive(einsum_expression);
+
+    // SWAP NODES
+    swapNodes(root_node);
+
     initialize_einsum_nodes(root_node, dimension_sizes);
     return root_node;
 }
@@ -451,4 +455,48 @@ void mini_jit::einsum::EinsumTree::execute(EinsumNode *root_node,
                                      ptrRight,
                                      root_node->tensor_out);
     }
+}
+
+void mini_jit::einsum::EinsumTree::optimize_einsum_tree(EinsumNode *root_node)
+{
+    // swap
+
+    // reorder
+
+    // permutation nodes
+}
+
+void mini_jit::einsum::EinsumTree::swapNodes(EinsumNode *einsum_node)
+{
+    if (einsum_node == nullptr || einsum_node->get_number_of_children() == 0)
+    {
+        return;
+    }
+
+    if (einsum_node->get_number_of_children() == 1)
+    {
+        swapNodes(einsum_node->leftChild);
+        return;
+    }
+
+    int64_t l_unit_stride_root_node = einsum_node->output_dimension_ids.size() - 1;
+    int64_t l_unit_stride_left_child = einsum_node->leftChild->output_dimension_ids.size() - 1;
+    int64_t l_unit_stride_right_child = einsum_node->rightChild->output_dimension_ids.size() - 1;
+
+    // swap nodes if
+    // (A) the right child and the root node have the same unit stride, AND
+    // (B) if the right childs output dimension ids contain the left childs unit stride somewhere
+    if (einsum_node->output_dimension_ids[l_unit_stride_root_node] == einsum_node->rightChild->output_dimension_ids[l_unit_stride_right_child] &&
+        contains(einsum_node->rightChild->output_dimension_ids, einsum_node->leftChild->output_dimension_ids[l_unit_stride_left_child]))
+    {
+        std::cout << "Swapping nodes: " << std::endl;
+        EinsumNode *l_temp_node = einsum_node->leftChild;
+
+        einsum_node->leftChild = einsum_node->rightChild;
+        einsum_node->rightChild = l_temp_node;
+    }
+
+    // recursively swap children
+    swapNodes(einsum_node->leftChild);
+    swapNodes(einsum_node->rightChild);
 }

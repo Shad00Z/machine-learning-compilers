@@ -1,177 +1,177 @@
 Running SharedTensorOperationBench benchmark #1
-Total time (s):                  3.02252
-Total reps:                      101
-Total floating point operations: 827392000000
-Estimated GFLOPS/sec:            273.742
+Total time (s):                  3.02372
+Total reps:                      97
+Total floating point operations: 794624000000
+Estimated GFLOPS/sec:            262.797
 --------------------------------------------------
 #####################################################
 Testing different kernel sizes
 #####################################################
 Running SharedTensorOperationBench benchmark (thread_target: 64, max_kernel_size: 1024)
-Total time (s):                  3.00529
-Total reps:                      102
-Total floating point operations: 835584000000
-Estimated GFLOPS/sec:            278.038
+Total time (s):                  3.00234
+Total reps:                      106
+Total floating point operations: 868352000000
+Estimated GFLOPS/sec:            289.225
 --------------------------------------------------
 Running SharedTensorOperationBench benchmark (thread_target: 256, max_kernel_size: 1024)
-Total time (s):                  3.02515
-Total reps:                      106
-Total floating point operations: 868352000000
-Estimated GFLOPS/sec:            287.044
---------------------------------------------------
-Running EinsumTensorOperationBench benchmark (thread_target: 64, max_kernel_size: 1024)
-Total time (s):                  3.01205
-Total reps:                      72
-Total floating point operations: 589824000000
-Estimated GFLOPS/sec:            195.821
---------------------------------------------------
-Running EinsumTensorOperationBench benchmark (thread_target: 256, max_kernel_size: 1024)
-Total time (s):                  3.03013
-Total reps:                      75
-Total floating point operations: 614400000000
-Estimated GFLOPS/sec:            202.763
---------------------------------------------------
-Running SharedTensorOperationBench benchmark (thread_target: 64, max_kernel_size: 512)
-Total time (s):                  3.02345
-Total reps:                      96
-Total floating point operations: 786432000000
-Estimated GFLOPS/sec:            260.111
---------------------------------------------------
-Running SharedTensorOperationBench benchmark (thread_target: 256, max_kernel_size: 512)
-Total time (s):                  3.03204
-Total reps:                      95
-Total floating point operations: 778240000000
-Estimated GFLOPS/sec:            256.672
---------------------------------------------------
-Running EinsumTensorOperationBench benchmark (thread_target: 64, max_kernel_size: 512)
-Total time (s):                  3.01485
-Total reps:                      90
-Total floating point operations: 737280000000
-Estimated GFLOPS/sec:            244.55
---------------------------------------------------
-Running EinsumTensorOperationBench benchmark (thread_target: 256, max_kernel_size: 512)
-Total time (s):                  3.02782
-Total reps:                      89
-Total floating point operations: 729088000000
-Estimated GFLOPS/sec:            240.796
---------------------------------------------------
-Running SharedTensorOperationBench benchmark (thread_target: 64, max_kernel_size: 256)
-Total time (s):                  3.02464
-Total reps:                      112
-Total floating point operations: 917504000000
-Estimated GFLOPS/sec:            303.343
---------------------------------------------------
-Running SharedTensorOperationBench benchmark (thread_target: 256, max_kernel_size: 256)
-Total time (s):                  3.01103
-Total reps:                      110
-Total floating point operations: 901120000000
-Estimated GFLOPS/sec:            299.273
---------------------------------------------------
-Running EinsumTensorOperationBench benchmark (thread_target: 64, max_kernel_size: 256)
-Total time (s):                  3.01728
+Total time (s):                  3.01847
 Total reps:                      105
 Total floating point operations: 860160000000
-Estimated GFLOPS/sec:            285.078
+Estimated GFLOPS/sec:            284.966
 --------------------------------------------------
-Running EinsumTensorOperationBench benchmark (thread_target: 256, max_kernel_size: 256)
-Total time (s):                  3.00084
-Total reps:                      106
-Total floating point operations: 868352000000
-Estimated GFLOPS/sec:            289.369
+Running EinsumTensorOperationBench benchmark (thread_target: 64, max_kernel_size: 1024)
+Total time (s):                  3.0177
+Total reps:                      74
+Total floating point operations: 606208000000
+Estimated GFLOPS/sec:            200.884
 --------------------------------------------------
-Running SharedTensorOperationBench benchmark (thread_target: 64, max_kernel_size: 125)
-Total time (s):                  3.00821
-Total reps:                      126
-Total floating point operations: 1032192000000
-Estimated GFLOPS/sec:            343.124
+Running EinsumTensorOperationBench benchmark (thread_target: 256, max_kernel_size: 1024)
+Total time (s):                  3.03682
+Total reps:                      75
+Total floating point operations: 614400000000
+Estimated GFLOPS/sec:            202.317
 --------------------------------------------------
-Running SharedTensorOperationBench benchmark (thread_target: 256, max_kernel_size: 125)
-Total time (s):                  3.00248
-Total reps:                      126
-Total floating point operations: 1032192000000
-Estimated GFLOPS/sec:            343.78
+Running SharedTensorOperationBench benchmark (thread_target: 64, max_kernel_size: 512)
+Total time (s):                  3.02953
+Total reps:                      96
+Total floating point operations: 786432000000
+Estimated GFLOPS/sec:            259.589
 --------------------------------------------------
-Running EinsumTensorOperationBench benchmark (thread_target: 64, max_kernel_size: 125)
-Total time (s):                  3.01072
-Total reps:                      125
-Total floating point operations: 1024000000000
-Estimated GFLOPS/sec:            340.118
+Running SharedTensorOperationBench benchmark (thread_target: 256, max_kernel_size: 512)
+Total time (s):                  3.00508
+Total reps:                      96
+Total floating point operations: 786432000000
+Estimated GFLOPS/sec:            261.701
 --------------------------------------------------
-Running EinsumTensorOperationBench benchmark (thread_target: 256, max_kernel_size: 125)
-Total time (s):                  3.01527
-Total reps:                      123
-Total floating point operations: 1007616000000
-Estimated GFLOPS/sec:            334.171
+Running EinsumTensorOperationBench benchmark (thread_target: 64, max_kernel_size: 512)
+Total time (s):                  3.00917
+Total reps:                      90
+Total floating point operations: 737280000000
+Estimated GFLOPS/sec:            245.011
 --------------------------------------------------
-Running SharedTensorOperationBench benchmark (thread_target: 64, max_kernel_size: 64)
-Total time (s):                  3.00354
-Total reps:                      119
-Total floating point operations: 974848000000
-Estimated GFLOPS/sec:            324.566
+Running EinsumTensorOperationBench benchmark (thread_target: 256, max_kernel_size: 512)
+Total time (s):                  3.00973
+Total reps:                      91
+Total floating point operations: 745472000000
+Estimated GFLOPS/sec:            247.687
 --------------------------------------------------
-Running SharedTensorOperationBench benchmark (thread_target: 256, max_kernel_size: 64)
-Total time (s):                  3.00626
-Total reps:                      116
-Total floating point operations: 950272000000
-Estimated GFLOPS/sec:            316.098
---------------------------------------------------
-Running EinsumTensorOperationBench benchmark (thread_target: 64, max_kernel_size: 64)
-Total time (s):                  3.02046
-Total reps:                      115
-Total floating point operations: 942080000000
-Estimated GFLOPS/sec:            311.9
---------------------------------------------------
-Running EinsumTensorOperationBench benchmark (thread_target: 256, max_kernel_size: 64)
-Total time (s):                  3.02417
-Total reps:                      115
-Total floating point operations: 942080000000
-Estimated GFLOPS/sec:            311.516
---------------------------------------------------
-Running SharedTensorOperationBench benchmark (thread_target: 64, max_kernel_size: 32)
-Total time (s):                  3.01277
-Total reps:                      123
-Total floating point operations: 1007616000000
-Estimated GFLOPS/sec:            334.448
---------------------------------------------------
-Running SharedTensorOperationBench benchmark (thread_target: 256, max_kernel_size: 32)
-Total time (s):                  3.00289
-Total reps:                      126
-Total floating point operations: 1032192000000
-Estimated GFLOPS/sec:            343.733
---------------------------------------------------
-Running EinsumTensorOperationBench benchmark (thread_target: 64, max_kernel_size: 32)
-Total time (s):                  3.01806
-Total reps:                      120
-Total floating point operations: 983040000000
-Estimated GFLOPS/sec:            325.719
---------------------------------------------------
-Running EinsumTensorOperationBench benchmark (thread_target: 256, max_kernel_size: 32)
-Total time (s):                  3.00724
-Total reps:                      122
-Total floating point operations: 999424000000
-Estimated GFLOPS/sec:            332.34
---------------------------------------------------
-Running SharedTensorOperationBench benchmark (thread_target: 64, max_kernel_size: 16)
-Total time (s):                  3.00721
-Total reps:                      40
-Total floating point operations: 327680000000
-Estimated GFLOPS/sec:            108.965
---------------------------------------------------
-Running SharedTensorOperationBench benchmark (thread_target: 256, max_kernel_size: 16)
-Total time (s):                  3.00621
-Total reps:                      116
-Total floating point operations: 950272000000
-Estimated GFLOPS/sec:            316.103
---------------------------------------------------
-Running EinsumTensorOperationBench benchmark (thread_target: 64, max_kernel_size: 16)
-Total time (s):                  3.03494
-Total reps:                      39
-Total floating point operations: 319488000000
-Estimated GFLOPS/sec:            105.27
---------------------------------------------------
-Running EinsumTensorOperationBench benchmark (thread_target: 256, max_kernel_size: 16)
-Total time (s):                  3.0095
+Running SharedTensorOperationBench benchmark (thread_target: 64, max_kernel_size: 256)
+Total time (s):                  3.00113
 Total reps:                      112
 Total floating point operations: 917504000000
-Estimated GFLOPS/sec:            304.869
+Estimated GFLOPS/sec:            305.719
+--------------------------------------------------
+Running SharedTensorOperationBench benchmark (thread_target: 256, max_kernel_size: 256)
+Total time (s):                  3.00658
+Total reps:                      111
+Total floating point operations: 909312000000
+Estimated GFLOPS/sec:            302.441
+--------------------------------------------------
+Running EinsumTensorOperationBench benchmark (thread_target: 64, max_kernel_size: 256)
+Total time (s):                  3.00938
+Total reps:                      109
+Total floating point operations: 892928000000
+Estimated GFLOPS/sec:            296.715
+--------------------------------------------------
+Running EinsumTensorOperationBench benchmark (thread_target: 256, max_kernel_size: 256)
+Total time (s):                  3.02365
+Total reps:                      105
+Total floating point operations: 860160000000
+Estimated GFLOPS/sec:            284.478
+--------------------------------------------------
+Running SharedTensorOperationBench benchmark (thread_target: 64, max_kernel_size: 125)
+Total time (s):                  3.0038
+Total reps:                      127
+Total floating point operations: 1040384000000
+Estimated GFLOPS/sec:            346.356
+--------------------------------------------------
+Running SharedTensorOperationBench benchmark (thread_target: 256, max_kernel_size: 125)
+Total time (s):                  3.0175
+Total reps:                      128
+Total floating point operations: 1048576000000
+Estimated GFLOPS/sec:            347.499
+--------------------------------------------------
+Running EinsumTensorOperationBench benchmark (thread_target: 64, max_kernel_size: 125)
+Total time (s):                  3.01127
+Total reps:                      122
+Total floating point operations: 999424000000
+Estimated GFLOPS/sec:            331.895
+--------------------------------------------------
+Running EinsumTensorOperationBench benchmark (thread_target: 256, max_kernel_size: 125)
+Total time (s):                  3.00229
+Total reps:                      124
+Total floating point operations: 1015808000000
+Estimated GFLOPS/sec:            338.345
+--------------------------------------------------
+Running SharedTensorOperationBench benchmark (thread_target: 64, max_kernel_size: 64)
+Total time (s):                  3.00495
+Total reps:                      115
+Total floating point operations: 942080000000
+Estimated GFLOPS/sec:            313.509
+--------------------------------------------------
+Running SharedTensorOperationBench benchmark (thread_target: 256, max_kernel_size: 64)
+Total time (s):                  3.02008
+Total reps:                      119
+Total floating point operations: 974848000000
+Estimated GFLOPS/sec:            322.789
+--------------------------------------------------
+Running EinsumTensorOperationBench benchmark (thread_target: 64, max_kernel_size: 64)
+Total time (s):                  3.01404
+Total reps:                      114
+Total floating point operations: 933888000000
+Estimated GFLOPS/sec:            309.846
+--------------------------------------------------
+Running EinsumTensorOperationBench benchmark (thread_target: 256, max_kernel_size: 64)
+Total time (s):                  3.01907
+Total reps:                      114
+Total floating point operations: 933888000000
+Estimated GFLOPS/sec:            309.329
+--------------------------------------------------
+Running SharedTensorOperationBench benchmark (thread_target: 64, max_kernel_size: 32)
+Total time (s):                  3.02321
+Total reps:                      125
+Total floating point operations: 1024000000000
+Estimated GFLOPS/sec:            338.712
+--------------------------------------------------
+Running SharedTensorOperationBench benchmark (thread_target: 256, max_kernel_size: 32)
+Total time (s):                  3.01428
+Total reps:                      123
+Total floating point operations: 1007616000000
+Estimated GFLOPS/sec:            334.281
+--------------------------------------------------
+Running EinsumTensorOperationBench benchmark (thread_target: 64, max_kernel_size: 32)
+Total time (s):                  3.01499
+Total reps:                      123
+Total floating point operations: 1007616000000
+Estimated GFLOPS/sec:            334.202
+--------------------------------------------------
+Running EinsumTensorOperationBench benchmark (thread_target: 256, max_kernel_size: 32)
+Total time (s):                  3.01452
+Total reps:                      121
+Total floating point operations: 991232000000
+Estimated GFLOPS/sec:            328.819
+--------------------------------------------------
+Running SharedTensorOperationBench benchmark (thread_target: 64, max_kernel_size: 16)
+Total time (s):                  3.0129
+Total reps:                      40
+Total floating point operations: 327680000000
+Estimated GFLOPS/sec:            108.759
+--------------------------------------------------
+Running SharedTensorOperationBench benchmark (thread_target: 256, max_kernel_size: 16)
+Total time (s):                  3.0071
+Total reps:                      119
+Total floating point operations: 974848000000
+Estimated GFLOPS/sec:            324.182
+--------------------------------------------------
+Running EinsumTensorOperationBench benchmark (thread_target: 64, max_kernel_size: 16)
+Total time (s):                  3.03425
+Total reps:                      39
+Total floating point operations: 319488000000
+Estimated GFLOPS/sec:            105.294
+--------------------------------------------------
+Running EinsumTensorOperationBench benchmark (thread_target: 256, max_kernel_size: 16)
+Total time (s):                  3.02516
+Total reps:                      115
+Total floating point operations: 942080000000
+Estimated GFLOPS/sec:            311.415
 --------------------------------------------------

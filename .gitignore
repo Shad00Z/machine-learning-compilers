@@ -5,6 +5,9 @@ _build/
 *.d
 *.bin
 
+# Valgrind files
+*vgcore.*
+
 .vscode
 .DS_STORE
 python_env
