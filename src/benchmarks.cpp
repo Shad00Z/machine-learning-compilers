@@ -425,6 +425,7 @@ void einsum_benchmark_3(std::ofstream &einsum_bm, double RUN_TIME, int64_t threa
     delete[] tensor_B;
     delete[] tensor_C;
     delete[] tensor_D;
+    delete[] tensor_E;
 }
 
 int main(int argc, char *argv[])

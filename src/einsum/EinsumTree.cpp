@@ -25,6 +25,8 @@ mini_jit::einsum::EinsumNode *mini_jit::einsum::EinsumTree::parse_einsum_express
     // SWAP NODES
     swap_nodes(l_root_node);
 
+    optimize_einsum_tree(l_root_node);
+
     initialize_einsum_nodes(l_root_node, dimension_sizes);
     return l_root_node;
 }
@@ -444,6 +446,7 @@ void mini_jit::einsum::EinsumTree::execute(EinsumNode *root_node,
     }
 }
 
+// Optimization pass for the einsum tree
 void mini_jit::einsum::EinsumTree::optimize_einsum_tree(EinsumNode *root_node)
 {
     // swap
@@ -451,6 +454,121 @@ void mini_jit::einsum::EinsumTree::optimize_einsum_tree(EinsumNode *root_node)
     // reorder
 
     // permutation nodes
+
+    if (root_node == nullptr)
+    {
+        return;
+    }
+
+    if (root_node->get_number_of_children() == 1)
+    {
+        optimize_einsum_tree(root_node->m_left_child);
+        return;
+    }
+
+    int64_t l_unit_stride_root_node = root_node->m_output_dimension_ids.size() - 1;
+    int64_t l_unit_stride_left_child = root_node->m_left_child->m_output_dimension_ids.size() - 1;
+    int64_t l_unit_stride_right_child = root_node->m_right_child->m_output_dimension_ids.size() - 1;
+
+    //  [[4,8],[7,8,3]->[7,3,4]]
+    // M Case
+    //  [[4,8],[7,8,3]->[7,3,4]]
+    //  [[4,8]->[8,4]],[7,8,3]->[7,3,4]]
+
+    //  [[4,8]->[8,4]],[[7,8,3]->[7,3,8]]->[...]->[7,3,4]]
+
+    //  [[4,8],[7,8,3]->[7,3,4]]
+    //  [[8,1],[7,8,3]->[7,3,4]]
+
+    // Probem: kann man beliebig Dimensionen reordern? -> identity kann nur M und N erkennen und vertauschen! Dabei hat M unit stride in left_child und falls transpose, dann hat N unit stride in root_node. Falls nicht transpose, dann kann N beliebig gewaehlt werden.
+
+    // Annahme: Die order des parents ist richtig (parent gibt die order vor)
+    int64_t l_parent_dim_id = root_node->m_output_dimension_ids[l_unit_stride_root_node];
+
+    // Find unit stride for M
+    if (contains(root_node->m_right_child->m_output_dimension_ids, root_node->m_output_dimension_ids[l_unit_stride_root_node]))
+    {
+        // swap children
+        EinsumNode *l_temp_node = root_node->m_left_child;
+
+        root_node->m_left_child = root_node->m_right_child;
+        root_node->m_right_child = l_temp_node;
+
+        l_unit_stride_left_child = root_node->m_left_child->m_output_dimension_ids.size() - 1;
+        l_unit_stride_right_child = root_node->m_right_child->m_output_dimension_ids.size() - 1;
+    }
+
+    auto l_dim_child_m_it = std::find_if(root_node->m_left_child->m_output_dimension_ids.begin(), root_node->m_left_child->m_output_dimension_ids.end(),
+                                         [l_parent_dim_id](const int64_t dim_id)
+                                         {
+                                             return (dim_id == l_parent_dim_id);
+                                         });
+
+    // no M found
+    if (l_dim_child_m_it == root_node->m_left_child->m_output_dimension_ids.end())
+    {
+        throw std::invalid_argument("EinsumTree: No M dimension found for child " +
+                                    root_node->m_left_child->m_tensor_expression +
+                                    " and parent " +
+                                    root_node->m_tensor_expression);
+    }
+    // M is in output dims but not the right-most element
+    else if (l_dim_child_m_it < root_node->m_left_child->m_output_dimension_ids.end() - 1)
+    {
+        EinsumNode *l_left_child_permute = new EinsumNode(root_node->m_left_child->m_output_dimension_ids,
+                                                          root_node->m_left_child->m_tensor_expression,
+                                                          root_node->m_left_child,
+                                                          nullptr);
+
+        // move M dimension to the right-most position
+        std::rotate(l_dim_child_m_it, l_dim_child_m_it + 1, l_left_child_permute->m_output_dimension_ids.end());
+
+        root_node->m_left_child = l_left_child_permute;
+    }
+
+    // Find unit stride K in right child
+    int64_t l_k_dim_index = l_unit_stride_left_child;
+    for (int i = l_unit_stride_left_child; i >= 0; i--)
+    {
+        if (contains(root_node->m_right_child->m_output_dimension_ids, root_node->m_left_child->m_output_dimension_ids[i]))
+        {
+            l_k_dim_index = i;
+            break;
+        }
+    }
+
+    int64_t l_k_dim_id = root_node->m_left_child->m_output_dimension_ids[l_k_dim_index];
+    auto l_dim_child_k_it = std::find_if(root_node->m_right_child->m_output_dimension_ids.begin(), root_node->m_right_child->m_output_dimension_ids.end(),
+                                         [l_k_dim_id](const int64_t dim_id)
+                                         {
+                                             return (dim_id == l_k_dim_id);
+                                         });
+
+    // no K found
+    if (l_dim_child_k_it == root_node->m_right_child->m_output_dimension_ids.end())
+    {
+        throw std::invalid_argument("EinsumTree: No K dimension found for child " +
+                                    root_node->m_right_child->m_tensor_expression +
+                                    " and parent " +
+                                    root_node->m_tensor_expression);
+    }
+    // K is in output dims but not the right-most element
+    else if (l_dim_child_k_it < root_node->m_right_child->m_output_dimension_ids.end() - 1)
+    {
+        EinsumNode *l_right_child_permute = new EinsumNode(root_node->m_right_child->m_output_dimension_ids,
+                                                           root_node->m_right_child->m_tensor_expression,
+                                                           root_node->m_right_child,
+                                                           nullptr);
+
+        // move K dimension to the right-most position
+        std::rotate(l_dim_child_k_it, l_dim_child_k_it + 1, l_right_child_permute->m_output_dimension_ids.end());
+
+        root_node->m_right_child = l_right_child_permute;
+    }
+
+    // recursively call children
+    optimize_einsum_tree(root_node->m_left_child);
+    optimize_einsum_tree(root_node->m_right_child);
 }
 
 void mini_jit::einsum::EinsumTree::swap_nodes(EinsumNode *einsum_node)

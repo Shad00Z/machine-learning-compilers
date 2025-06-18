@@ -115,6 +115,8 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
     /////////////////////////////////////////////////////////////////////
     // Find SHARED dimensions in exec types
     /////////////////////////////////////////////////////////////////////
+    m_shared_loop_ids.clear();
+    m_shared_loop_sizes.clear();
     for (size_t i = 0; i < m_exec_types.size(); ++i)
     {
         if (m_exec_types[i] == exec_t::shared)
@@ -433,7 +435,7 @@ void mini_jit::TensorOperation::execute_iter_parallel(char const *ptr_in0,
     {
         l_size_parallel_loops *= current_loop_size;
     }
-    
+
     int64_t l_first_id_loop = (m_id_first_seq_loop != -1) ? m_id_first_seq_loop : m_id_first_primitive_loop;
 
 #pragma omp parallel for
