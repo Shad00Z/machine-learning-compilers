@@ -198,3 +198,101 @@ Secondly we compared our implementation with two reference einsum expressions:
     :lineno-match:
     :caption: benchmark for reference einsum expressions
     :dedent:
+
+**********************************
+6.2 Optimization
+**********************************
+
+Being able to compute pre-optimized einsum trees is only the starting point for einsum tree execution. 
+The general case would be that an einsum tree can be optimized to enhance the execution time and therefore improve the throughput. 
+In the following, we will look at several of these problems and how to resolve them.
+
+
+6.2.2 Swapping Operands
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If the tree itself already has correctly ordered dimensions, we can skip the reordering optimization. 
+However, it can still be the case, that the operands for an operation in the einsum tree have to be swapped. 
+
+Consider the following einsum tree: ``[[7,3,8],[8,4]->[7,3,4]]``. 
+At first glance this tree expression seems fine, however, as our execution demands, that:
+
+1. the unit stride of our ``left_child`` and  the unit stride of our ``parent`` have to be the same (``dim_t::M``) and
+2. the unit stride of our ``right_child`` is a ``dim_t::K``,
+
+there seems to be a problem. For this example, the swapping of ``children`` / ``operands`` comes in handy. 
+The swap of the children would transform the einsum tree:
+
+1. from ``[[7,3,8],[8,4]->[7,3,4]]``
+2. to ``[[8,4],[7,3,8]->[7,3,4]]``
+
+In our implementation we look at possible swaps after parsing our einsum expression. 
+The reason for that is, if we do it at this position, we can exploit the given order of the einsum expression and, 
+more importantly, we did not initialize our einsum nodes yet:
+
+.. code:: cpp
+
+    mini_jit::einsum::EinsumNode *root_node = parse_einsum_expression_recursive(einsum_expression);
+
+    // SWAP NODES
+    swapNodes(root_node);
+
+    initialize_einsum_nodes(root_node, dimension_sizes);
+    return root_node;
+
+This positioning of the node swap is important, because by executing it before our node initialization, we safe us another 'initialization' later on.
+
+For example, considering our simple example ``[[7,3,8],[8,4]->[7,3,4]]`` the biggest problem would be, 
+that after the einsum nodes for this tree are initalizated the ``dimension`` with ``id=4`` would be initialized as ``dim_t::N``. 
+After swapping the children nodes, we would have to 'recompute' these dimensions, because the ``dimension`` with ``id=4`` would now have to be of type ``dim_t::M``.
+
+We perform a swap of the children nodes with a ``swapNodes`` function.
+A node swapping can only happen, if there are two children present. That means if we look at a leaf node, we simply return, 
+and if we look at a node with one child, we call our ``swapNodes`` function only on one child and return:
+
+.. code:: cpp
+
+    if (einsum_node == nullptr || einsum_node->get_number_of_children() == 0)
+    {
+        return;
+    }
+
+    if (einsum_node->get_number_of_children() == 1)
+    {
+        swapNodes(einsum_node->leftChild);
+        return;
+    }
+
+If a node has two children, we look at two things:
+
+1. the unit strides of the ``right_child`` and the current ``parent`` are of the same ``dim_t`` and
+2. the unit stride of the ``left_child`` exists somewhere in the ``right_child``.
+
+If these two conditions are met, we swap the two children nodes:
+
+.. code:: cpp
+
+    int64_t l_unit_stride_root_node = einsum_node->output_dimension_ids.size() - 1;
+    int64_t l_unit_stride_left_child = einsum_node->leftChild->output_dimension_ids.size() - 1;
+    int64_t l_unit_stride_right_child = einsum_node->rightChild->output_dimension_ids.size() - 1;
+
+    if (einsum_node->output_dimension_ids[l_unit_stride_root_node] == einsum_node->rightChild->output_dimension_ids[l_unit_stride_right_child] &&
+        contains(einsum_node->rightChild->output_dimension_ids, einsum_node->leftChild->output_dimension_ids[l_unit_stride_left_child]))
+    {
+        EinsumNode *l_temp_node = einsum_node->leftChild;
+
+        einsum_node->leftChild = einsum_node->rightChild;
+        einsum_node->rightChild = l_temp_node;
+    }
+
+For the cases, where these conditions are not met, we rely on our other optimization techniques 
+to find matching unit strides either by reordering or permuting single tree nodes.
+
+The last step is to recursively call our ``swapNodes`` function on the children nodes, to guarantee, 
+that all nodes of the tree are looked at:
+
+.. code:: cpp
+
+    // recursively swap children
+    swapNodes(einsum_node->leftChild);
+    swapNodes(einsum_node->rightChild);

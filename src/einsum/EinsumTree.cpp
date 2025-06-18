@@ -480,7 +480,6 @@ void mini_jit::einsum::EinsumTree::swap_nodes(EinsumNode *einsum_node)
     if (einsum_node->m_output_dimension_ids[l_unit_stride_root_node] == einsum_node->m_right_child->m_output_dimension_ids[l_unit_stride_right_child] &&
         contains(einsum_node->m_right_child->m_output_dimension_ids, einsum_node->m_left_child->m_output_dimension_ids[l_unit_stride_left_child]))
     {
-        std::cout << "Swapping nodes: " << std::endl;
         EinsumNode *l_temp_node = einsum_node->m_left_child;
 
         einsum_node->m_left_child = einsum_node->m_right_child;
