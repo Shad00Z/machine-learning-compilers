@@ -455,7 +455,7 @@ void mini_jit::einsum::EinsumTree::optimize_einsum_tree(EinsumNode *root_node)
 
     // permutation nodes
 
-    if (root_node == nullptr)
+    if (root_node == nullptr || root_node->get_number_of_children() == 0)
     {
         return;
     }
@@ -468,7 +468,6 @@ void mini_jit::einsum::EinsumTree::optimize_einsum_tree(EinsumNode *root_node)
 
     int64_t l_unit_stride_root_node = root_node->m_output_dimension_ids.size() - 1;
     int64_t l_unit_stride_left_child = root_node->m_left_child->m_output_dimension_ids.size() - 1;
-    int64_t l_unit_stride_right_child = root_node->m_right_child->m_output_dimension_ids.size() - 1;
 
     //  [[4,8],[7,8,3]->[7,3,4]]
     // M Case
@@ -495,7 +494,6 @@ void mini_jit::einsum::EinsumTree::optimize_einsum_tree(EinsumNode *root_node)
         root_node->m_right_child = l_temp_node;
 
         l_unit_stride_left_child = root_node->m_left_child->m_output_dimension_ids.size() - 1;
-        l_unit_stride_right_child = root_node->m_right_child->m_output_dimension_ids.size() - 1;
     }
 
     auto l_dim_child_m_it = std::find_if(root_node->m_left_child->m_output_dimension_ids.begin(), root_node->m_left_child->m_output_dimension_ids.end(),
@@ -520,8 +518,12 @@ void mini_jit::einsum::EinsumTree::optimize_einsum_tree(EinsumNode *root_node)
                                                           root_node->m_left_child,
                                                           nullptr);
 
-        // move M dimension to the right-most position
-        std::rotate(l_dim_child_m_it, l_dim_child_m_it + 1, l_left_child_permute->m_output_dimension_ids.end());
+        // // move M dimension to the right-most position
+        // std::rotate(l_dim_child_m_it, l_dim_child_m_it + 1, l_left_child_permute->m_output_dimension_ids.end());
+        // Calculate the position in the new vector and rotate
+        size_t l_m_position = std::distance(root_node->m_left_child->m_output_dimension_ids.begin(), l_dim_child_m_it);
+        auto l_new_m_it = l_left_child_permute->m_output_dimension_ids.begin() + l_m_position;
+        std::rotate(l_new_m_it, l_new_m_it + 1, l_left_child_permute->m_output_dimension_ids.end());
 
         root_node->m_left_child = l_left_child_permute;
     }
@@ -560,8 +562,13 @@ void mini_jit::einsum::EinsumTree::optimize_einsum_tree(EinsumNode *root_node)
                                                            root_node->m_right_child,
                                                            nullptr);
 
-        // move K dimension to the right-most position
-        std::rotate(l_dim_child_k_it, l_dim_child_k_it + 1, l_right_child_permute->m_output_dimension_ids.end());
+        // // move K dimension to the right-most position
+        // std::rotate(l_dim_child_k_it, l_dim_child_k_it + 1, l_right_child_permute->m_output_dimension_ids.end());
+
+        // Calculate the position in the new vector and rotate
+        size_t l_k_position = std::distance(root_node->m_right_child->m_output_dimension_ids.begin(), l_dim_child_k_it);
+        auto l_new_k_it = l_right_child_permute->m_output_dimension_ids.begin() + l_k_position;
+        std::rotate(l_new_k_it, l_new_k_it + 1, l_right_child_permute->m_output_dimension_ids.end());
 
         root_node->m_right_child = l_right_child_permute;
     }
