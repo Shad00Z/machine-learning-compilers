@@ -3,6 +3,7 @@
 #include <span>
 #include "EinsumTree.bench.h"
 #include "benchmarks/Benchmark.h"
+#include <iostream>
 
 mini_jit::benchmarks::EinsumTreeBench::EinsumTreeBench(double run_time,
                                                        std::string const &einsum_expression,

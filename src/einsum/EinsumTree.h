@@ -24,11 +24,12 @@ class mini_jit::einsum::EinsumTree
 {
 public:
     /**
-     * @brief Helper function to parse the einsum expression and create an Einsum Tree.
+     * @brief Parses the einsum expression and creates an einsum tree.
+     * In case the dimensions are not in an optimal order, permutation nodes will be inserted.
      *
      * @param einsum_expression The string representation of the einsum operation.
      * @param dimension_sizes A vector to store the sizes of the dimensions used in the expression.
-     * @return The root EinsumNode representing the start of the parsed expression.
+     * @return The root EinsumNode representing the output of the parsed expression.
      */
     static EinsumNode *parse_einsum_expression(std::string const &einsum_expression,
                                                std::vector<int64_t> &dimension_sizes);
@@ -46,7 +47,7 @@ public:
 
 private:
     /**
-     * @brief Helper function to parse the einsum expression and create an Einsum Tree recursively.
+     * @brief Helper function to parse the einsum expression and create an einsum tree recursively.
      *
      * @param einsum_expression The string representation of the einsum operation.
      * @return A EinsumNode representing the parsed expression.
@@ -63,14 +64,30 @@ private:
 
     /**
      * @brief Helper function to initialize the dimensions, sizes and strides of the given
-     * einsum node and all of its children.
+     * einsum tree.
      *
-     * @param einsum_node The root node of the einsum tree.
+     * @param root_node The root node of the einsum tree.
      * @param dimension_sizes The array with the dimension sizes sorted by id.
      * @return A EinsumNode representing the parsed expression.
      */
-    static void initialize_einsum_nodes(EinsumNode *einsum_node,
+    static void initialize_einsum_nodes(EinsumNode *root_node,
                                         std::vector<int64_t> &dimension_sizes);
+
+    /**
+     * @brief Reorders the dimensions inside the nodes of the given einsum tree 
+     * to ensure correct dimension positions for performant execution.
+     * If this function is applied, no swapping of nodes is necessary.
+     *
+     * @param root_node The root node of the einsum tree.
+     */
+    static void reorder_node_dimensions(EinsumNode *root_node);
+
+    /**
+     * @brief Optimize the einsum tree by swapping nodes.
+     *
+     * @param root_node The root node of the einsum tree.
+     */
+    static void swap_nodes(EinsumNode *root_node);
 
     /**
      * @brief Helper function to check if a value is contained in a vector.
@@ -91,41 +108,35 @@ public:
     EinsumTree() = delete;
 
     /**
-     * @brief Optimize the given einsum node and its children by applying transformations to the
+     * @brief Optimize the given einsum tree by applying transformations to the
      * dimensions, sizes and strides.
      *
-     * @param einsum_node The root node of the einsum tree.
+     * @param root_node The root node of the einsum tree.
      * @param thread_target The target number of threads for parallel execution.
      * @param max_kernel_size The maximum size of the kernel to be used.
      */
-    static void optimize_einsum_nodes(EinsumNode *einsum_node,
+    static void optimize_einsum_nodes(EinsumNode *root_node,
                                       int64_t thread_target,
                                       int64_t max_kernel_size);
 
     /**
-     * @brief Lower the given einsum node and all of its children to executable tensor operations.
+     * @brief Lower the given einsum tree to executable tensor operations.
      *
-     * @param einsum_node The root node of the einsum tree.
+     * @param root_node The root node of the einsum tree.
      * @param dimension_sizes The array with the dimension sizes sorted by id.
      * @param dtype The data type of the tensor.
      */
-    static void lower_einsum_nodes_to_tensor_operations(EinsumNode *einsum_node,
+    static void lower_einsum_nodes_to_tensor_operations(EinsumNode *root_node,
                                                         std::vector<int64_t> &dimension_sizes,
                                                         mini_jit::dtype_t dtype);
 
     /**
-     * @brief Optimize the einsum tree by reordering, swapping and permuting nodes.
-     *
+     * @brief Convert the einsum tree to a string representation.
      * @param root_node The root node of the einsum tree.
+     * @return A string representation of the einsum tree.
      */
-    static void optimize_einsum_tree(EinsumNode *root_node);
-
-    /**
-     * @brief Optimize the einsum tree by swapping nodes.
-     *
-     * @param root_node The root node of the einsum tree.
-     */
-    static void swap_nodes(EinsumNode *einsum_node);
+    static std::string to_string(EinsumNode *root_node);
+    
 };
 
 #endif // MINI_JIT_EINSUM_EINSUM_TREE_H

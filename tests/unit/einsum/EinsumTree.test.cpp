@@ -17,6 +17,9 @@ TEST_CASE("EinsumTree Simple GEMM Test")
     mini_jit::einsum::EinsumNode *node = mini_jit::einsum::EinsumTree::parse_einsum_expression(input,
                                                                                                dimension_sizes);
 
+    // verify that the tree was created correctly
+    REQUIRE(mini_jit::einsum::EinsumTree::to_string(node) == input);
+
     mini_jit::einsum::EinsumTree::optimize_einsum_nodes(node,
                                                         256,
                                                         512);
@@ -98,6 +101,9 @@ TEST_CASE("EinsumTree Simple BRGEMM Test")
 
     mini_jit::einsum::EinsumNode *node = mini_jit::einsum::EinsumTree::parse_einsum_expression(input,
                                                                                                dimension_sizes);
+
+    // verify that the tree was created correctly
+    REQUIRE(mini_jit::einsum::EinsumTree::to_string(node) == input);
 
     mini_jit::einsum::EinsumTree::optimize_einsum_nodes(node,
                                                         256,
@@ -196,6 +202,9 @@ TEST_CASE("EinsumTree Simple Permutation Test")
     mini_jit::einsum::EinsumNode *node = mini_jit::einsum::EinsumTree::parse_einsum_expression(input,
                                                                                                dimension_sizes);
 
+    // verify that the tree was created correctly
+    REQUIRE(mini_jit::einsum::EinsumTree::to_string(node) == input);
+
     mini_jit::einsum::EinsumTree::optimize_einsum_nodes(node,
                                                         256,
                                                         512);
@@ -271,6 +280,9 @@ TEST_CASE("EinsumTree Complex Permutation + GEMM Test")
 
     mini_jit::einsum::EinsumNode *node = mini_jit::einsum::EinsumTree::parse_einsum_expression(input,
                                                                                                dimension_sizes);
+
+    // verify that the tree was created correctly
+    REQUIRE(mini_jit::einsum::EinsumTree::to_string(node) == input);
 
     mini_jit::einsum::EinsumTree::optimize_einsum_nodes(node,
                                                         256,
