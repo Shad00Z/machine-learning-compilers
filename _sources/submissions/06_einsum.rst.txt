@@ -545,7 +545,7 @@ Secondly we compared our implementation with two reference einsum expressions:
 1. ``[[8,4],[7,3,8]->[7,3,4]],[[[2,6,7],[1,5,6]->[1,2,5,7]],[0,5]->[0,1,2,7]]->[0,1,2,3,4]``
 2. ``[[[[3,6,8,9]->[8,6,9,3]],[[2,5,7,9]->[7,5,2,9]]->[7,8,5,6,2,3]],[0,4,5,6]->[0,4,7,8,2,3]],[1,4,7,8]->[0,1,2,3]``
 
-.. literalinclude:: ../../benchmarks/einsum_benchmark_old.txt
+.. literalinclude:: ../../benchmarks/einsum_benchmark.txt
     :language: text
     :lineno-match:
     :caption: benchmark for reference einsum expressions
@@ -830,11 +830,11 @@ We can now say that the children are also ordered correctly, which is why we mak
 
 For this task, we were given three example einsum trees as string representations which we were supposed to benchmark. The examples were:
 
-#. [[7,3,8],[8,4]->[7,3,4]],[[0,5],[[5,1,6],[6,2,7]->[5,1,2,7]]->[0,1,2,7]]->[0,1,2,3,4]
+#. ``[[7,3,8],[8,4]->[7,3,4]],[[0,5],[[5,1,6],[6,2,7]->[5,1,2,7]]->[0,1,2,7]]->[0,1,2,3,4``
 
-#. [1,4,7,8],[[0,4,5,6],[[2,5,7,9],[3,6,8,9]->[2,5,7,3,6,8]]->[0,4,2,7,3,8]]->[0,1,2,3]
+#. ``[[1,4,7,8],[[0,4,5,6],[[2,5,7,9],[3,6,8,9]->[2,5,7,3,6,8]]->[0,4,2,7,3,8]]->[0,1,2,3]``
 
-#. [[2,7,3],[3,8,4]->[2,7,8,4]],[[4,9,0],[[0,5,1],[1,6,2]->[0,5,6,2]]->[4,9,5,6,2]]->[5,6,7,8,9]
+#. ``[[2,7,3],[3,8,4]->[2,7,8,4]],[[4,9,0],[[0,5,1],[1,6,2]->[0,5,6,2]]->[4,9,5,6,2]]->[5,6,7,8,9]``
 
 Our benchmarks returned the following results:
 

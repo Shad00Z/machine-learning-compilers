@@ -627,16 +627,16 @@ Our first benchmark was to compare our new einsum implementation to the performa
 <div class="literal-block-wrapper docutils container" id="id3">
 <div class="code-block-caption"><span class="caption-text">benchmark for reference einsum expressions</span><a class="headerlink" href="#id3" title="Link to this code"></a></div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span>Running EinsumTree benchmark #1
-<span class="linenos"> 2</span>Total time (s):                  10.1224
-<span class="linenos"> 3</span>Total reps:                      36
-<span class="linenos"> 4</span>Total floating point operations: 815372697600
-<span class="linenos"> 5</span>Estimated GFLOPS/sec:            80.5511
+<span class="linenos"> 2</span>Total time (s):                  3.2658
+<span class="linenos"> 3</span>Total reps:                      11
+<span class="linenos"> 4</span>Total floating point operations: 435706748928
+<span class="linenos"> 5</span>Estimated GFLOPS/sec:            133.415
 <span class="linenos"> 6</span>--------------------------------------------------
 <span class="linenos"> 7</span>Running EinsumTree benchmark #2
-<span class="linenos"> 8</span>Total time (s):                  10.0075
-<span class="linenos"> 9</span>Total reps:                      774
-<span class="linenos">10</span>Total floating point operations: 1141309440000
-<span class="linenos">11</span>Estimated GFLOPS/sec:            114.046
+<span class="linenos"> 8</span>Total time (s):                  3.00192
+<span class="linenos"> 9</span>Total reps:                      231
+<span class="linenos">10</span>Total floating point operations: 710010470400
+<span class="linenos">11</span>Estimated GFLOPS/sec:            236.519
 <span class="linenos">12</span>--------------------------------------------------
 </pre></div>
 </div>
@@ -887,9 +887,9 @@ With these assumptions, we now need to check where the primary <code class="docu
 <h3>6.2.3 Benchmarks<a class="headerlink" href="#benchmarks" title="Link to this heading"></a></h3>
 <p>For this task, we were given three example einsum trees as string representations which we were supposed to benchmark. The examples were:</p>
 <ol class="arabic simple">
-<li><p>[[7,3,8],[8,4]-&gt;[7,3,4]],[[0,5],[[5,1,6],[6,2,7]-&gt;[5,1,2,7]]-&gt;[0,1,2,7]]-&gt;[0,1,2,3,4]</p></li>
-<li><p>[1,4,7,8],[[0,4,5,6],[[2,5,7,9],[3,6,8,9]-&gt;[2,5,7,3,6,8]]-&gt;[0,4,2,7,3,8]]-&gt;[0,1,2,3]</p></li>
-<li><p>[[2,7,3],[3,8,4]-&gt;[2,7,8,4]],[[4,9,0],[[0,5,1],[1,6,2]-&gt;[0,5,6,2]]-&gt;[4,9,5,6,2]]-&gt;[5,6,7,8,9]</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[[7,3,8],[8,4]-&gt;[7,3,4]],[[0,5],[[5,1,6],[6,2,7]-&gt;[5,1,2,7]]-&gt;[0,1,2,7]]-&gt;[0,1,2,3,4</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[[1,4,7,8],[[0,4,5,6],[[2,5,7,9],[3,6,8,9]-&gt;[2,5,7,3,6,8]]-&gt;[0,4,2,7,3,8]]-&gt;[0,1,2,3]</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[[2,7,3],[3,8,4]-&gt;[2,7,8,4]],[[4,9,0],[[0,5,1],[1,6,2]-&gt;[0,5,6,2]]-&gt;[4,9,5,6,2]]-&gt;[5,6,7,8,9]</span></code></p></li>
 </ol>
 <p>Our benchmarks returned the following results:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Running EinsumTree benchmark - Optimization Example #1
