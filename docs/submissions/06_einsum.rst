@@ -827,3 +827,34 @@ We can now say that the children are also ordered correctly, which is why we mak
 
 6.2.3 Benchmarks
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+For this task, we were given three example einsum trees as string representations which we were supposed to benchmark. The examples were:
+
+#. [[7,3,8],[8,4]->[7,3,4]],[[0,5],[[5,1,6],[6,2,7]->[5,1,2,7]]->[0,1,2,7]]->[0,1,2,3,4]
+
+#. [1,4,7,8],[[0,4,5,6],[[2,5,7,9],[3,6,8,9]->[2,5,7,3,6,8]]->[0,4,2,7,3,8]]->[0,1,2,3]
+
+#. [[2,7,3],[3,8,4]->[2,7,8,4]],[[4,9,0],[[0,5,1],[1,6,2]->[0,5,6,2]]->[4,9,5,6,2]]->[5,6,7,8,9]
+
+Our benchmarks returned the following results:
+
+.. code:: text
+
+    Running EinsumTree benchmark - Optimization Example #1
+    Total time (s):                  3.23636
+    Total reps:                      9
+    Total floating point operations: 356487340032
+    Estimated GFLOPS/sec:            110.151
+    --------------------------------------------------
+    Running EinsumTree benchmark - Optimization Example #2
+    Total time (s):                  3.01429
+    Total reps:                      195
+    Total floating point operations: 599359488000
+    Estimated GFLOPS/sec:            198.84
+    --------------------------------------------------
+    Running EinsumTree benchmark - Optimization Example #3
+    Total time (s):                  3.0549
+    Total reps:                      24
+    Total floating point operations: 801840000000
+    Estimated GFLOPS/sec:            262.477
+    --------------------------------------------------
