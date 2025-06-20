@@ -499,6 +499,10 @@ For the whole N loop, we use switch statements to call the specialized kernels. 
         }
     }
 
+.. note::
+
+    As seen in the code snippet above, we extended our kernel object by an ``add_label`` function and a ``getInstrCountFromLabel`` function. Internally, the kernel keeps track of the number of instructions that were added since the label was added. If we want to jump back to a label, we can use ``getInstrCountFromLabel`` to get the number of instructions we have to jump and multiply it by 4, because each instruction is 4 Bytes long.
+
 The full code is available in the file ``matmul_m_n_k.cpp``.
 
 4.1.2.2 Calling the GEMM kernel
@@ -669,8 +673,8 @@ This task is very similar to the previous one, but we need to verify the correct
         delete[] C_expected;
     }
 
-4.1.2.5 Benchmarking the GEMM kernel performance
--------------------------------------------------------------------
+4.1.2.5 Benchmarking the GEMM kernel
+---------------------------------------
 
 For the benchmarking we enhanced our ``benchmarking.cpp`` file that was used for the previous tasks.
 Our task was to benchmark the performance of our generated kernels and report the measured
@@ -721,6 +725,15 @@ The results that we obtained were saved under ``benchmarks/gemm_perf.csv``.
     1,1,32,1,0,0,0,0,0,0,0,0,30326543,1.5,1.29393
     1,1,64,1,0,0,0,0,0,0,0,0,19160608,1.5,1.63504
     1,1,128,1,0,0,0,0,0,0,0,0,10973115,1.5,1.87274
+    1,2,1,1,0,0,0,0,0,0,0,0,55889405,1.5,0.149038
+    1,2,16,1,0,0,0,0,0,0,0,0,43394974,1.5,1.85152
+    1,2,32,1,0,0,0,0,0,0,0,0,30144269,1.5,2.57231
+    1,2,64,1,0,0,0,0,0,0,0,0,18992617,1.5,3.24141
+    1,2,128,1,0,0,0,0,0,0,0,0,10804485,1.5,3.68793
+    1,3,1,1,0,0,0,0,0,0,0,0,55753919,1.5,0.223016
+    1,3,16,1,0,0,0,0,0,0,0,0,43017743,1.5,2.75314
+    1,3,32,1,0,0,0,0,0,0,0,0,30005166,1.5,3.84066
+    1,3,64,1,0,0,0,0,0,0,0,0,18859806,1.5,4.82811
 
 4.1.3 Batch-Reduce GEMM
 =========================
@@ -729,24 +742,8 @@ After generating our GEMM kernel for different values for the M, N, and K dimens
 a batched version of this kernel. This means we now had to implement kernels that support matrix multiplications 
 of the form: C+=∑AᵢBᵢ.
 
-4.1.3.1 Support Batch-Reduce GEMMs
-------------------------------------
-
-We started by altering our ``generate`` function, so that we would now accept a ``batch_size``.
-
-.. literalinclude:: ../../src/Brgemm.cpp
-    :language: cpp
-    :lines: 57-66
-    :lineno-match:
-    :caption: handling of invalid values for ``br_size`` in the ``generate`` function
-    :dedent:
-
-.. literalinclude:: ../../src/Brgemm.cpp
-    :language: cpp
-    :lines: 77-90
-    :lineno-match:
-    :caption: implementation of ``br_size`` in the ``generate`` function
-    :dedent:
+4.1.3.1 Support for Batch-Reduce GEMMs
+----------------------------------------
 
 We based our implementation for the ``matmul_br_m_n_k`` on our assembly implementation of the :ref:`batch-reduce GEMM <3.6 Batch-Reduce GEMM>`.
 As we now had the additional values ``br_stride_a`` and ``br_stride_a`` we needed to slightly adjust the use of our registers.
@@ -754,64 +751,167 @@ Apart from that, we were ready to start.
 
 The first step we took was to initialize the loop counter for the batch dimension.
 
-.. literalinclude:: ../../src/kernels/matmul/matmul_br_m_n_k.cpp
-    :language: cpp
-    :lines: 66-70
-    :lineno-match:
-    :caption: initialize loop counter for batch dimension
-    :dedent:
+**matmul_br_m_n_k: br counter initialization**
 
-Our second step was to make sure that after a GEMM has finished, we 
+.. code:: cpp
+
+    // batch counter
+    kernel.add_instr(base::mov(gpr_t::x25, br_size));
+    kernel.add_label("batch_loop");
+
+The second step was to make sure that after a GEMM has finished, we 
 would increment the pointers, to move to the next respective matrices.
 
-.. literalinclude:: ../../src/kernels/matmul/matmul_br_m_n_k.cpp
-    :language: cpp
-    :lines: 160-176
-    :lineno-match:
-    :caption: move to the next A and B matrix and restore the position for matrix C
-    :dedent:
+.. cpp:: code
+
+    // handle batching
+    // move to next A matrix
+    kernel.add_instr(base::add(gpr_t::x0, gpr_t::x0, gpr_t::x6, 0, 0));
+    kernel.add_instr(base::mov(gpr_t::x8, gpr_t::x0));
+    // move to next B matrix
+    kernel.add_instr(base::add(gpr_t::x1, gpr_t::x1, gpr_t::x7, 0, 0));
+    kernel.add_instr(base::mov(gpr_t::x20, gpr_t::x1));
+    // restore pointer to C matrix
+    kernel.add_instr(base::mov(gpr_t::x21, gpr_t::x2));
+    kernel.add_instr(base::mov(gpr_t::x10, gpr_t::x21));
+
+    // decrement batch loop counter
+    kernel.add_instr(base::sub(gpr_t::x25, gpr_t::x25, 1, 0));
+    // check if loop counter is zero
+    int l_batchLoopInstrCount = kernel.getInstrCountFromLabel("batch_loop");
+    kernel.add_instr(base::cbnz(gpr_t::x25, -l_batchLoopInstrCount * 4));
 
 These were the only changes we had to make. Between the initialization of the loop 
 and jumping to the next matrices, we would loop over our :ref:`matmul_m_n_k kernel <4.1.2 GEMM>`.
 
 4.1.3.2 Verification of the Batch-Reduce GEMM kernel
-----------------------------------------------------
+------------------------------------------------------
 
 Similar to the GEMM kernel, we also tested our implementation of the batch-reduce GEMM.
 We executed several initializations of our kernel, using a similar approach to the testing of the GEMM kernel.
 
-.. literalinclude:: ../../tests/unit/kernels/matmul/matmul_br_m_n_k.test.cpp
-    :language: cpp
-    :lines: 8-69
-    :lineno-match:
-    :caption: Unit test for the ``matmul_br_m_n_k`` kernel
-    :dedent:
+.. code:: cpp
 
-4.1.3.3 Benchmarking the Batch-Reduce GEMM kernel performance
---------------------------------------------------------------------------
-For the benchmarking we, again, enhanced our ``benchmarking.cpp`` file.
-We introduced a new function that should handle 1≤M≤64, 1≤N≤64, K∈[1,16,32,64,128], lda=M, ldb=K and ldc=M.
+    TEST_CASE("Reference test for batch reduce matmul kernel with variable M, N, K", "[br_matmul][parameterized]")
+    {
+        const int M = GENERATE(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
+        const int N = GENERATE(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
+        const int K = GENERATE(1, 16, 32, 64, 128);
+        const int br_size = 16;
 
-We reduced the time for our benchmarks to ``1.0s``.
+        float *A = new float[M * K * br_size];
+        float *B = new float[K * N * br_size];
+        float *C = new float[M * N];
+        float *C_expected = new float[M * N];
+
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_real_distribution<float> dist(-0.5f, 100.0f);
+
+        for (int i = 0; i < M * K * br_size; ++i)
+        {
+            A[i] = dist(gen);
+        }
+
+        for (int i = 0; i < K * N * br_size; ++i)
+        {
+            B[i] = dist(gen);
+        }
+
+        for (int i = 0; i < M * N; ++i)
+        {
+            C[i] = C_expected[i] = dist(gen);
+        }
+
+        // Reference batched GEMM calculation
+        for (int col = 0; col < N; ++col)
+        {
+            for (int row = 0; row < M; ++row)
+            {
+                float sum = 0.0f;
+                for (int br = 0; br < br_size; ++br)
+                {
+                    for (int k = 0; k < K; ++k)
+                    {
+                        sum += A[br * M * K + row + k * M] * B[br * K * N + k + col * K];
+                    }
+                }
+                C_expected[row + col * M] += sum;
+            }
+        }
+
+        mini_jit::Kernel l_kernel;
+        mini_jit::kernels::matmul::matmul_br_m_n_k(l_kernel, M, N, K, br_size);
+        mini_jit::Brgemm::kernel_t l_kernel_t = reinterpret_cast<mini_jit::Brgemm::kernel_t>(const_cast<void *>(l_kernel.get_kernel()));
+        l_kernel_t(A, B, C, M, K, M, M * K, K * N);
+
+        for (int i = 0; i < M * N; ++i)
+        {
+            REQUIRE(C[i] == Approx(C_expected[i]).margin(FLOAT_ERROR_MARGIN));
+        }
+
+        delete[] A;
+        delete[] B;
+        delete[] C;
+        delete[] C_expected;
+    }
+
+4.1.3.3 Benchmarking the Batch-Reduce GEMM kernel
+---------------------------------------------------
+
+For the benchmarks, we enhanced our ``benchmarking.cpp`` file again.
+We introduced a new function that should handle 1≤M≤64, 1≤N≤64, K∈[1,16,32,64,128], lda=M, ldb=K and ldc=M and reduced the time for our benchmarks to ``1.0s``.
 
 Beside the fact, that we would now consider 16 Matrices for A and B, the calculation 
 for the GFLOPs was than similar to the normal ``GEMM``.
 
-.. literalinclude:: ../../src/benchmarks/matmul/Matmul_br_m_n_k.bench.cpp
-    :language: cpp
-    :lines: 47-69
-    :lineno-match:
-    :caption: ``matmul_br_m_n_k`` benchmarking approach for a batch size of 16 and different M, N, and K values
-    :dedent:
+.. code:: cpp
 
-The results that we obtained were saved under ``src/benchmark/br_gemm_perf.csv``. 
+    // Generate and get the kernel function
+    mini_jit::Kernel l_kernel;
+    mini_jit::kernels::matmul::matmul_br_m_n_k(l_kernel, m_M, m_N, m_K, m_br_size);
+    mini_jit::Brgemm::kernel_t l_kernel_t = reinterpret_cast<mini_jit::Brgemm::kernel_t>(const_cast<void *>(l_kernel.get_kernel()));
 
-.. literalinclude:: ../../benchmarks/brgemm_perf.csv
-    :language: text
-    :lines: 1-15
-    :lineno-match:
-    :caption: Snippet of executed benchmarks for ``matmul_br_m_n_k``
-    :dedent:
+    // RUN
+    long l_num_reps = 0;
+    auto l_start_time = std::chrono::high_resolution_clock::now();
+    double l_elapsed = 0.0;
+    double l_runTimeMs = m_run_time * 1e6;
+    do
+    {
+        l_kernel_t(m_A, m_B, m_C, m_M, m_K, m_M, m_M * m_K, m_K * m_N);
+        ++l_num_reps;
+        auto l_now = std::chrono::high_resolution_clock::now();
+        l_elapsed = std::chrono::duration_cast<std::chrono::microseconds>(l_now - l_start_time).count();
+    } while (l_elapsed < l_runTimeMs);
+    l_elapsed /= 1e6; // Convert to seconds
+    // END RUN
+
+    // Calculate metrics
+    long l_totalOperations = 2.0 * m_M * m_N * m_K * l_num_reps * m_br_size;
+    double l_gflops = ((double)l_totalOperations) / (l_elapsed * 1e9);
+
+The results that we obtained were saved in ``benchmarks/br_gemm_perf.csv``. 
+
+**Snippet of executed benchmarks for matmul_br_m_n_k**
+
+.. code:: text
+
+    m,n,k,br_size,trans_a,trans_b,trans_c,ld_a,ld_b,ld_c,br_stride_a,br_stride_b,num_reps,time,gflops
+    1,1,1,16,0,0,0,1,1,1,1,1,14713094,1,0.470819
+    1,1,16,16,0,0,0,1,16,1,16,16,3412968,1,1.74744
+    1,1,32,16,0,0,0,1,32,1,32,32,1845891,1,1.89019
+    1,1,64,16,0,0,0,1,64,1,64,64,1007179,1,2.0627
+    1,1,128,16,0,0,0,1,128,1,128,128,516692,1,2.11637
+    1,2,1,16,0,0,0,1,1,1,1,2,15004415,1,0.960283
+    1,2,16,16,0,0,0,1,16,1,16,32,3483409,1,3.56701
+    1,2,32,16,0,0,0,1,32,1,32,64,1914029,1,3.91993
+    1,2,64,16,0,0,0,1,64,1,64,128,1005414,1,4.11817
+    1,2,128,16,0,0,0,1,128,1,128,256,515745,1,4.22498
+    1,3,1,16,0,0,0,1,1,1,1,3,14941217,1,1.43436
+    1,3,16,16,0,0,0,1,16,1,16,48,3458013,1,5.31151
+    1,3,32,16,0,0,0,1,32,1,32,96,1911851,1,5.87321
+    1,3,64,16,0,0,0,1,64,1,64,192,1004800,1,6.17349
 
 Evaluating our GFLOP performance, we can see that we achieve a similar performance as in our ``matmul_m_n_k`` benchmark.
 
@@ -820,7 +920,8 @@ Evaluating our GFLOP performance, we can see that we achieve a similar performan
 **********************
 
 .. note::
-    For this submission, we overhauled our benchmarking framework. After compilation, the main entry point can be called using ``./build/<OS_NAME>/benchmarks``, but that will not actually run any benchmarks. Which benchmark types should be run is specified using command like arguments, such as ``matmul`` or ``unary``. Multiple benchmarks can be run at once, for example by running: ``./build/OS_NAME/benchmarks matmul unary``. The results are saved in the ``benchmarks`` folder in text files.
+
+    For this submission, we overhauled our benchmarking framework once again. After compilation, the main entry point can be called using ``./build/<OS_NAME>/benchmarks``, but that will not actually run any benchmarks. Which benchmark types should be run is specified using command like arguments, such as ``matmul`` or ``unary``. Multiple benchmarks can be run at once, for example by running: ``./build/OS_NAME/benchmarks matmul unary``. The results are saved in the ``benchmarks`` folder in text files.
 
 4.2.1 Zero Primitive
 ===========================
