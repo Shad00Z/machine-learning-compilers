@@ -762,7 +762,7 @@ The first step we took was to initialize the loop counter for the batch dimensio
 The second step was to make sure that after a GEMM has finished, we 
 would increment the pointers, to move to the next respective matrices.
 
-.. cpp:: code
+.. code:: cpp
 
     // handle batching
     // move to next A matrix
@@ -931,34 +931,108 @@ Evaluating our GFLOP performance, we can see that we achieve a similar performan
 
 The first unary primitive we implemented was the zero primitive. This kernel is supposed to set all elements of the output matrix to zero, while ignoring the input matrix. This functionality can be implemented in many different ways, but we started with the arm instruction which we had already implemented: ``STR``. We called this version the ``XZR`` approach, because we are using the ``XZR`` (and sometimes ``WZR``) register to store zeroes in the output matrix. The limitation here is that the ``XZR`` is only 64 bits wide, which means that we can only set 2 FP32 values to zero at once. To improve this, we implemented a second version that uses ``Neon`` instructions. We first create a zero register using the ``EOR`` instruction (eg. ``eor v31.16b, v31.16b, v31.16b`` sets ``v31`` to zero) and then use ``STP`` to zero 8 FP32 values at once. This version is called the ``EOR`` approach.
 
-.. literalinclude:: ../../src/kernels/unary/zero_primitive_xzr.cpp
-    :language: cpp
-    :lines: 56-70
-    :lineno-match:
-    :caption: general case for the ``XZR zero primitive``
-    :dedent:
+**XZR Zero Primitive: main loop**
 
-.. literalinclude:: ../../src/kernels/unary/zero_primitive.cpp
-    :language: cpp
-    :lines: 61-70
-    :lineno-match:
-    :caption: general case for the ``EOR zero primitive``
-    :dedent:
+.. code:: cpp
+
+    kernel.add_label("m_8_loop");
+    // store 8 zeros
+    kernel.add_instr(base::mov(gpr_t::x8, gpr_t::x7));
+    kernel.add_instr(base::strPost(gpr_t::xzr, gpr_t::x8, 8));
+    kernel.add_instr(base::strPost(gpr_t::xzr, gpr_t::x8, 8));
+    kernel.add_instr(base::strPost(gpr_t::xzr, gpr_t::x8, 8));
+    kernel.add_instr(base::str(gpr_t::xzr, gpr_t::x8, 0));
+
+    // jump by 8 rows
+    kernel.add_instr(base::add(gpr_t::x7, gpr_t::x7, 8*4, 0));
+    // decrement m loop counter
+    kernel.add_instr(base::sub(gpr_t::x6, gpr_t::x6, 1, 0));
+    // check if loop counter is zero
+    int l_mLoopInstrCount = kernel.getInstrCountFromLabel("m_8_loop");
+    kernel.add_instr(base::cbnz(gpr_t::x6, -l_mLoopInstrCount * 4));
+
+**EOR Zero Primitive: main loop**
+
+.. code:: cpp
+
+    kernel.add_label("m_8_loop");
+    // store 8 zeros
+    kernel.add_instr(simd_fp::stp(simd_fp_t::v31, simd_fp_t::v31, gpr_t::x7, 0, neon_size_spec_t::q));
+    // jump by 8 rows
+    kernel.add_instr(base::add(gpr_t::x7, gpr_t::x7, 8*4, 0));
+    // decrement m loop counter
+    kernel.add_instr(base::sub(gpr_t::x6, gpr_t::x6, 1, 0));
+    // check if loop counter is zero
+    int l_mLoopInstrCount = kernel.getInstrCountFromLabel("m_8_loop");
+    kernel.add_instr(base::cbnz(gpr_t::x6, -l_mLoopInstrCount * 4));
 
 In this primitive, we handle one column at a time. For all matrices where the number of rows is not divisible by 8, we implemented edge cases that handle the remaining elements. This approach is the same as we used in the matrix multiplication kernels, with the only difference being that we do not need to handle the K dimension.
-
-Both versions also support transposition, by simply swapping the M and N dimensions.
 
 4.2.1.1 Zero Primitive Benchmarks
 ---------------------------------------
 
 We benchmarked the performance of our zero primitive for the given parameters (M=N=50, M=N=64, M=N=512 and M=N=2048) and obtained the following results:
 
-.. literalinclude:: ../../benchmarks/unary_benchmarks.txt
-    :language: text
-    :lines: 113-168
-    :lineno-match:
-    :caption: Benchmarking results for the zero Primitive
+**Benchmarking results for the zero primitives**
+
+.. code:: text
+
+    Running zero_eor_primitive 50x50 benchmark
+    Total time (s):                       3
+    Total reps:                           24095571
+    Total number of elements:             60238927500
+    Total amount of processed data (GiB): 448.815
+    Bandwidth (GiB/s)                     149.605
+    --------------------------------------------------
+    Running zero_eor_primitive 64x64 benchmark
+    Total time (s):                       3
+    Total reps:                           14348177
+    Total number of elements:             58770132992
+    Total amount of processed data (GiB): 437.872
+    Bandwidth (GiB/s)                     145.957
+    --------------------------------------------------
+    Running zero_eor_primitive 512x512 benchmark
+    Total time (s):                       3
+    Total reps:                           333722
+    Total number of elements:             87483219968
+    Total amount of processed data (GiB): 651.801
+    Bandwidth (GiB/s)                     217.267
+    --------------------------------------------------
+    Running zero_eor_primitive 2048x2048 benchmark
+    Total time (s):                       3.00013
+    Total reps:                           8570
+    Total number of elements:             35945185280
+    Total amount of processed data (GiB): 267.812
+    Bandwidth (GiB/s)                     89.2671
+    --------------------------------------------------
+    Running zero_xzr_primitive 50x50 benchmark
+    Total time (s):                       3
+    Total reps:                           18821607
+    Total number of elements:             47054017500
+    Total amount of processed data (GiB): 350.58
+    Bandwidth (GiB/s)                     116.86
+    --------------------------------------------------
+    Running zero_xzr_primitive 64x64 benchmark
+    Total time (s):                       3
+    Total reps:                           8987787
+    Total number of elements:             36813975552
+    Total amount of processed data (GiB): 274.285
+    Bandwidth (GiB/s)                     91.4285
+    --------------------------------------------------
+    Running zero_xzr_primitive 512x512 benchmark
+    Total time (s):                       3
+    Total reps:                           184240
+    Total number of elements:             48297410560
+    Total amount of processed data (GiB): 359.844
+    Bandwidth (GiB/s)                     119.948
+    --------------------------------------------------
+    Running zero_xzr_primitive 2048x2048 benchmark
+    Total time (s):                       3.0004
+    Total reps:                           8216
+    Total number of elements:             34460401664
+    Total amount of processed data (GiB): 256.75
+    Bandwidth (GiB/s)                     85.5719
+    --------------------------------------------------
 
 In all cases, we can see that the ``EOR`` approach is significantly faster than the ``XZR`` approach. Transposition was not benchmarked, since the swapping of the dimensions happens in the high level code and not in the assembly code.
 
@@ -967,45 +1041,89 @@ In all cases, we can see that the ``EOR`` approach is significantly faster than 
 
 4.2.2.1 Identity Implementation
 ---------------------------------
+
 Firstly we implemented the general identity for a matrix A.
 
-This approach was pretty straight forward as we simply copied our ``zero_primitive`` kernel and replaced 
+This approach was mostly straight forward, as we copied our ``zero_primitive`` kernel and replaced 
 every 'zero store' with:
 
-#. A load from matrix A at the specific address
-#. A store, that would store the element from A in matrix B
+#. A load from matrix ``A`` at the specific address
+#. A store, that would store the element from ``A`` in matrix ``B``
 
-.. literalinclude:: ../../src/kernels/unary/identity_primitive.cpp
-    :language: cpp
-    :lines: 57-69
-    :lineno-match:
-    :caption: ``8x8`` general case for the ``identity_primitive``
-    :dedent:
+**Identity Primitive: main loop**
 
-For the base cases, where there was a remainder for the ``m`` dimension, we did the same thing.
+.. code:: cpp
 
-.. literalinclude:: ../../src/kernels/unary/identity_primitive.cpp
-    :language: cpp
-    :lines: 95-101
-    :lineno-match:
-    :caption: ``m%8=5`` case for the ``identity_primitive``
-    :dedent:
+    kernel.add_label("m_8_loop");
+    // load and store 8 rows of A and B
+    kernel.add_instr(simd_fp::ldp(simd_fp_t::v0, simd_fp_t::v1, gpr_t::x8, 0, neon_size_spec_t::q));
+    kernel.add_instr(simd_fp::stp(simd_fp_t::v0, simd_fp_t::v1, gpr_t::x7, 0, neon_size_spec_t::q));
+    // jump by 8 rows
+    kernel.add_instr(base::add(gpr_t::x8, gpr_t::x8, 8*4, 0));
+    kernel.add_instr(base::add(gpr_t::x7, gpr_t::x7, 8*4, 0));
+    // decrement m loop counter
+    kernel.add_instr(base::sub(gpr_t::x6, gpr_t::x6, 1, 0));
+    // check if loop counter is zero
+    int l_mLoopInstrCount = kernel.getInstrCountFromLabel("m_8_loop");
+    kernel.add_instr(base::cbnz(gpr_t::x6, -l_mLoopInstrCount * 4));
+
+For the edge cases, where there was a remainder for the ``m`` dimension, we used the same procedure as before:
+
+**Identity Primitive: M = 5 edge case**
+
+.. code:: cpp
+
+    case 5:
+    kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v0, gpr_t::x8, 16, neon_size_spec_t::q));
+    kernel.add_instr(simd_fp::ldr(simd_fp_t::v1, gpr_t::x8, 0, neon_size_spec_t::s));
+
+    kernel.add_instr(simd_fp::strPost(simd_fp_t::v0, gpr_t::x7, 16, neon_size_spec_t::q));
+    kernel.add_instr(simd_fp::str(simd_fp_t::v1, gpr_t::x7, 0, neon_size_spec_t::s));
+    break;
 
 4.2.2.2 Identity Transposition Implementation
 -----------------------------------------------
 
 After implementing the general identity, we implemented a transposition version.
-Our intuition to transpose the identity was to again look at the :ref:`4x4 tranposition kernel <3.7 Transposition>`.
+Our intuition to transpose the identity was to look at the :ref:`4x4 tranposition kernel <3.7 Transposition>`.
 
 We decided to take the 4x4 matrix as our general case. 
-We would then first proceed, always in ``4x4`` blocks, in the ``m`` dimension.
 
-.. literalinclude:: ../../src/kernels/unary/identity_trans_primitive.cpp
-    :language: cpp
-    :lines: 223-253
-    :lineno-match:
-    :caption: ``4x4`` general case for the ``identity_trans_primitive``
-    :dedent:
+**Identity Transposition Primitive: main loop**
+
+.. code:: cpp
+
+    // Load 4x4 block of A (input matrix)
+    kernel.add_instr(simd_fp::ldr(simd_fp_t::v0, gpr_t::x7, 0, neon_size_spec_t::q));
+    kernel.add_instr(base::add(gpr_t::x7, gpr_t::x7, gpr_t::x2, 0, 0));
+    kernel.add_instr(simd_fp::ldr(simd_fp_t::v1, gpr_t::x7, 0, neon_size_spec_t::q));
+    kernel.add_instr(base::add(gpr_t::x7, gpr_t::x7, gpr_t::x2, 0, 0));
+    kernel.add_instr(simd_fp::ldr(simd_fp_t::v2, gpr_t::x7, 0, neon_size_spec_t::q));
+    kernel.add_instr(base::add(gpr_t::x7, gpr_t::x7, gpr_t::x2, 0, 0));
+    kernel.add_instr(simd_fp::ldr(simd_fp_t::v3, gpr_t::x7, 0, neon_size_spec_t::q));
+
+    // Transpose 4x4 block
+    // TRN
+    kernel.add_instr(simd_fp::trn1(simd_fp_t::v4, simd_fp_t::v0, simd_fp_t::v2, arr_spec_t::s4));
+    kernel.add_instr(simd_fp::trn1(simd_fp_t::v5, simd_fp_t::v1, simd_fp_t::v3, arr_spec_t::s4));
+    kernel.add_instr(simd_fp::trn2(simd_fp_t::v6, simd_fp_t::v0, simd_fp_t::v2, arr_spec_t::s4));
+    kernel.add_instr(simd_fp::trn2(simd_fp_t::v7, simd_fp_t::v1, simd_fp_t::v3, arr_spec_t::s4));
+
+    // ZIP
+    kernel.add_instr(simd_fp::zip1(simd_fp_t::v8, simd_fp_t::v4, simd_fp_t::v5, arr_spec_t::s4));
+    kernel.add_instr(simd_fp::zip1(simd_fp_t::v9, simd_fp_t::v6, simd_fp_t::v7, arr_spec_t::s4));
+
+    kernel.add_instr(simd_fp::zip2(simd_fp_t::v10, simd_fp_t::v4, simd_fp_t::v5, arr_spec_t::s4));
+    kernel.add_instr(simd_fp::zip2(simd_fp_t::v11, simd_fp_t::v6, simd_fp_t::v7, arr_spec_t::s4));
+
+    // Store 4x4 Block of B
+    kernel.add_instr(simd_fp::str(simd_fp_t::v8, gpr_t::x8, 0, neon_size_spec_t::q));
+    kernel.add_instr(base::add(gpr_t::x8, gpr_t::x8, gpr_t::x3, 0, 0));
+    kernel.add_instr(simd_fp::str(simd_fp_t::v9, gpr_t::x8, 0, neon_size_spec_t::q));
+    kernel.add_instr(base::add(gpr_t::x8, gpr_t::x8, gpr_t::x3, 0, 0));
+    kernel.add_instr(simd_fp::str(simd_fp_t::v10, gpr_t::x8, 0, neon_size_spec_t::q));
+    kernel.add_instr(base::add(gpr_t::x8, gpr_t::x8, gpr_t::x3, 0, 0));
+    kernel.add_instr(simd_fp::str(simd_fp_t::v11, gpr_t::x8, 0, neon_size_spec_t::q));
 
 To handle the different stores for ``4x4`` blocks that would not be on the matrix diagonal, we 
 would do the following:
@@ -1015,16 +1133,31 @@ After processing a ``4x4`` block on the diagonal:
 #. Jump by 4 rows in Matrix A
 #. Jump by 4 columns in Matrix B
 
-By using this approach, we would guarantee, that after processing a block in the matrix A, we could save it at the correct position in matrix B. For all cases, where the ``m`` dimension would not be divisible by 4, we would need to handle the remaining cases.
+By using this approach, we would guarantee that after processing a block in the matrix A, we could save it at the correct position in matrix B. For all cases, where the ``m`` dimension would not be divisible by 4, we would need to implement specific kernels.
 
-.. literalinclude:: ../../src/kernels/unary/identity_trans_primitive.cpp
-    :language: cpp
-    :lines: 339-356
-    :lineno-match:
-    :caption: ``2x4`` base case for the ``identity_trans_primitive``
-    :dedent:
+**Identity Transposition Primitive: 2x4 edge case**
 
-After implementing the base cases for remainders of ``m``, we would be able to process ``mx4`` blocks of our matrix.
+.. code:: cpp
+
+    kernel.add_instr(simd_fp::ldr(simd_fp_t::v3, gpr_t::x7, 0, neon_size_spec_t::d));
+
+    // Transpose 2x4 block
+    // TRN
+    kernel.add_instr(simd_fp::trn1(simd_fp_t::v4, simd_fp_t::v0, simd_fp_t::v2, arr_spec_t::s4));
+    kernel.add_instr(simd_fp::trn1(simd_fp_t::v5, simd_fp_t::v1, simd_fp_t::v3, arr_spec_t::s4));
+
+    kernel.add_instr(simd_fp::trn2(simd_fp_t::v6, simd_fp_t::v0, simd_fp_t::v2, arr_spec_t::s4));
+    kernel.add_instr(simd_fp::trn2(simd_fp_t::v7, simd_fp_t::v1, simd_fp_t::v3, arr_spec_t::s4));
+
+    // ZIP
+    kernel.add_instr(simd_fp::zip1(simd_fp_t::v8, simd_fp_t::v4, simd_fp_t::v5, arr_spec_t::s4));
+    kernel.add_instr(simd_fp::zip1(simd_fp_t::v9, simd_fp_t::v6, simd_fp_t::v7, arr_spec_t::s4));
+
+    // Store 2x4 Block of B
+    kernel.add_instr(simd_fp::str(simd_fp_t::v8, gpr_t::x8, 0, neon_size_spec_t::q));
+    kernel.add_instr(base::add(gpr_t::x8, gpr_t::x8, gpr_t::x3, 0, 0));
+
+After implementing the edge cases for remainders of ``m``, we would be able to process ``mx4`` blocks of our matrix.
 
 That meant, we needed to consider cases, where there was a remainder of ``n``.
 There were two things to consider:
@@ -1034,23 +1167,105 @@ There were two things to consider:
 
 For both of these cases we would consider a similar implementing approach as for the ``m`` remainder implementation.
 
-.. literalinclude:: ../../src/kernels/unary/identity_trans_primitive.cpp
-    :language: cpp
-    :lines: 529-546
-    :lineno-match:
-    :caption: ``4x2`` base case for the ``identity_trans_primitive``
-    :dedent:
+**Identity Transposition Primitive: 4x2 edge case**
+
+.. code:: cpp
+
+    // Load 4x2 block of A (input matrix)
+    kernel.add_instr(base::mov(gpr_t::x17, gpr_t::x7));
+    kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v0, gpr_t::x17, 8, neon_size_spec_t::d));
+    kernel.add_instr(simd_fp::ldr(simd_fp_t::v1, gpr_t::x17, 0, neon_size_spec_t::d));
+    kernel.add_instr(base::add(gpr_t::x7, gpr_t::x7, gpr_t::x2, 0, 0));
+    kernel.add_instr(base::mov(gpr_t::x17, gpr_t::x7));
+
+    kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v2, gpr_t::x17, 8, neon_size_spec_t::d));
+    kernel.add_instr(simd_fp::ldr(simd_fp_t::v3, gpr_t::x17, 0, neon_size_spec_t::d));
+
+    // Transpose 4x2 matrix
+    // TRN
+    kernel.add_instr(simd_fp::trn1(simd_fp_t::v4, simd_fp_t::v0, simd_fp_t::v2, arr_spec_t::s4));
+    kernel.add_instr(simd_fp::trn2(simd_fp_t::v5, simd_fp_t::v0, simd_fp_t::v2, arr_spec_t::s4));
+
+    kernel.add_instr(simd_fp::trn1(simd_fp_t::v6, simd_fp_t::v1, simd_fp_t::v3, arr_spec_t::s4));
+    kernel.add_instr(simd_fp::trn2(simd_fp_t::v7, simd_fp_t::v1, simd_fp_t::v3, arr_spec_t::s4));
+
+    // Store 4x2 Block of B
+    kernel.add_instr(simd_fp::str(simd_fp_t::v4, gpr_t::x8, 0, neon_size_spec_t::d));
+    kernel.add_instr(base::add(gpr_t::x8, gpr_t::x8, gpr_t::x3, 0, 0));
+
+    kernel.add_instr(simd_fp::str(simd_fp_t::v5, gpr_t::x8, 0, neon_size_spec_t::d));
+    kernel.add_instr(base::add(gpr_t::x8, gpr_t::x8, gpr_t::x3, 0, 0));
+
+    kernel.add_instr(simd_fp::str(simd_fp_t::v6, gpr_t::x8, 0, neon_size_spec_t::d));
+    kernel.add_instr(base::add(gpr_t::x8, gpr_t::x8, gpr_t::x3, 0, 0));
+
+    kernel.add_instr(simd_fp::str(simd_fp_t::v7, gpr_t::x8, 0, neon_size_spec_t::d));
 
 4.2.2.3 Benchmarks the Identity Kernel Performance
 ----------------------------------------------------
 
 We benchmarked the performance of our identity primitive for the given parameters (M=N=50, M=N=64, M=N=512 and M=N=2048) and obtained the following results:
 
-.. literalinclude:: ../../benchmarks/unary_benchmarks.txt
-    :language: text
-    :lines: 1-56
-    :lineno-match:
-    :caption: Benchmarking results for the identity primitives
+**Benchmarking results for the identity primitives**
+
+.. code:: text
+
+    Running identity_primitive 50x50 benchmark
+    Total time (s):                       3
+    Total reps:                           20635000
+    Total number of elements:             51587500000
+    Total amount of processed data (GiB): 384.357
+    Bandwidth (GiB/s)                     128.119
+    --------------------------------------------------
+    Running identity_primitive 64x64 benchmark
+    Total time (s):                       3
+    Total reps:                           14687433
+    Total number of elements:             60159725568
+    Total amount of processed data (GiB): 448.225
+    Bandwidth (GiB/s)                     149.408
+    --------------------------------------------------
+    Running identity_primitive 512x512 benchmark
+    Total time (s):                       3
+    Total reps:                           186337
+    Total number of elements:             48847126528
+    Total amount of processed data (GiB): 363.939
+    Bandwidth (GiB/s)                     121.313
+    --------------------------------------------------
+    Running identity_primitive 2048x2048 benchmark
+    Total time (s):                       3.00001
+    Total reps:                           9976
+    Total number of elements:             41842376704
+    Total amount of processed data (GiB): 311.75
+    Bandwidth (GiB/s)                     103.916
+    --------------------------------------------------
+    Running identity_trans_primitive 50x50 benchmark
+    Total time (s):                       3
+    Total reps:                           17759330
+    Total number of elements:             44398325000
+    Total amount of processed data (GiB): 330.793
+    Bandwidth (GiB/s)                     110.264
+    --------------------------------------------------
+    Running identity_trans_primitive 64x64 benchmark
+    Total time (s):                       3
+    Total reps:                           11603499
+    Total number of elements:             47527931904
+    Total amount of processed data (GiB): 354.111
+    Bandwidth (GiB/s)                     118.037
+    --------------------------------------------------
+    Running identity_trans_primitive 512x512 benchmark
+    Total time (s):                       3.00044
+    Total reps:                           6236
+    Total number of elements:             1634729984
+    Total amount of processed data (GiB): 12.1797
+    Bandwidth (GiB/s)                     4.0593
+    --------------------------------------------------
+    Running identity_trans_primitive 2048x2048 benchmark
+    Total time (s):                       3.00888
+    Total reps:                           347
+    Total number of elements:             1455423488
+    Total amount of processed data (GiB): 10.8438
+    Bandwidth (GiB/s)                     3.60391
+    --------------------------------------------------
 
 Most notably, we can see that the performance of the transposition kernel is significantly lower for larger matrices, such as 512x512 and 2048x2048. Here we only achieved a bandwidth of 3.6 to 4 GiB/s, while all other configurations achieved bandwidths greater than 100 GiB/s.
 
@@ -1064,38 +1279,154 @@ The last unary primitive we implemented was the ReLU primitive. The Rectified Li
 
 The first version does not transpose the output and is structurally the same as the zero primitive. However instead of always storing zero, we now store the maximum of the input value and zero.
 
-.. literalinclude:: ../../src/kernels/unary/relu_primitive.cpp
-    :language: cpp
-    :lines: 56-71
-    :lineno-match:
-    :caption: Performing the ReLU function on 8 values (``relu_primitive``)
-    :dedent:
+**ReLU Primitive: main loop**
+
+.. code:: cpp
+
+    kernel.add_label("m_8_loop");
+    kernel.add_instr({
+    // load 8 elements from A
+    simd_fp::ldp(simd_fp_t::v0, simd_fp_t::v1, gpr_t::x8, 0, neon_size_spec_t::q),
+    // compute f(x)=max(x,0)
+    simd_fp::fmax(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, arr_spec_t::s4),
+    simd_fp::fmax(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v31, arr_spec_t::s4),
+    // store 8 elements to B
+    simd_fp::stp(simd_fp_t::v0, simd_fp_t::v1, gpr_t::x9, 0, neon_size_spec_t::q),
+    // jump by 8 rows
+    base::add(gpr_t::x8, gpr_t::x8, 8*4, 0),
+    base::add(gpr_t::x9, gpr_t::x9, 8*4, 0),
+    // decrement m loop counter
+    base::sub(gpr_t::x7, gpr_t::x7, 1, 0),
+    });
+    // check if loop counter is zero
+    kernel.add_instr(base::cbnz(gpr_t::x7, -kernel.getInstrCountFromLabel("m_8_loop") * 4));
 
 To support transposition, we started with the identity transposition primitive. The only addition we had to make was to add the ``FMAX`` instruction between the load and store instructions. The rest of the implementation is structurally the same as the identity transposition primitive. The difference can be seen in the following code snippets:
 
-.. literalinclude:: ../../src/kernels/unary/identity_trans_primitive.cpp
-    :language: cpp
-    :lines: 223-244
-    :lineno-match:
-    :caption: Original transposition code (``identity_trans_primitive``)
-    :dedent:
+**Original transposition code (identity_trans_primitive)**
 
-.. literalinclude:: ../../src/kernels/unary/relu_trans_primitive.cpp
-    :language: cpp
-    :lines: 226-253
-    :lineno-match:
-    :caption: Code with the ``FMAX`` instruction (``relu_trans_primitive``)
-    :dedent:
+.. code:: cpp
+
+    // Load 4x4 block of A (input matrix)
+    kernel.add_instr(simd_fp::ldr(simd_fp_t::v0, gpr_t::x7, 0, neon_size_spec_t::q));
+    kernel.add_instr(base::add(gpr_t::x7, gpr_t::x7, gpr_t::x2, 0, 0));
+    kernel.add_instr(simd_fp::ldr(simd_fp_t::v1, gpr_t::x7, 0, neon_size_spec_t::q));
+    kernel.add_instr(base::add(gpr_t::x7, gpr_t::x7, gpr_t::x2, 0, 0));
+    kernel.add_instr(simd_fp::ldr(simd_fp_t::v2, gpr_t::x7, 0, neon_size_spec_t::q));
+    kernel.add_instr(base::add(gpr_t::x7, gpr_t::x7, gpr_t::x2, 0, 0));
+    kernel.add_instr(simd_fp::ldr(simd_fp_t::v3, gpr_t::x7, 0, neon_size_spec_t::q));
+
+    // Transpose 4x4 block
+    // TRN
+    kernel.add_instr(simd_fp::trn1(simd_fp_t::v4, simd_fp_t::v0, simd_fp_t::v2, arr_spec_t::s4));
+    kernel.add_instr(simd_fp::trn1(simd_fp_t::v5, simd_fp_t::v1, simd_fp_t::v3, arr_spec_t::s4));
+    kernel.add_instr(simd_fp::trn2(simd_fp_t::v6, simd_fp_t::v0, simd_fp_t::v2, arr_spec_t::s4));
+    kernel.add_instr(simd_fp::trn2(simd_fp_t::v7, simd_fp_t::v1, simd_fp_t::v3, arr_spec_t::s4));
+
+    // ZIP
+    kernel.add_instr(simd_fp::zip1(simd_fp_t::v8, simd_fp_t::v4, simd_fp_t::v5, arr_spec_t::s4));
+    kernel.add_instr(simd_fp::zip1(simd_fp_t::v9, simd_fp_t::v6, simd_fp_t::v7, arr_spec_t::s4));
+
+    kernel.add_instr(simd_fp::zip2(simd_fp_t::v10, simd_fp_t::v4, simd_fp_t::v5, arr_spec_t::s4));
+    kernel.add_instr(simd_fp::zip2(simd_fp_t::v11, simd_fp_t::v6, simd_fp_t::v7, arr_spec_t::s4));
+
+**Code with the FMAX instruction (relu_trans_primitive)**
+
+.. code:: cpp
+
+    // Load 4x4 block of A (input matrix)
+    kernel.add_instr(simd_fp::ldr(simd_fp_t::v0, gpr_t::x7, 0, neon_size_spec_t::q));
+    kernel.add_instr(base::add(gpr_t::x7, gpr_t::x7, gpr_t::x2, 0, 0));
+    kernel.add_instr(simd_fp::ldr(simd_fp_t::v1, gpr_t::x7, 0, neon_size_spec_t::q));
+    kernel.add_instr(base::add(gpr_t::x7, gpr_t::x7, gpr_t::x2, 0, 0));
+    kernel.add_instr(simd_fp::ldr(simd_fp_t::v2, gpr_t::x7, 0, neon_size_spec_t::q));
+    kernel.add_instr(base::add(gpr_t::x7, gpr_t::x7, gpr_t::x2, 0, 0));
+    kernel.add_instr(simd_fp::ldr(simd_fp_t::v3, gpr_t::x7, 0, neon_size_spec_t::q));
+
+    // Compute ReLU
+    kernel.add_instr(simd_fp::fmax(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, arr_spec_t::s4));
+    kernel.add_instr(simd_fp::fmax(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v31, arr_spec_t::s4));
+    kernel.add_instr(simd_fp::fmax(simd_fp_t::v2, simd_fp_t::v2, simd_fp_t::v31, arr_spec_t::s4));
+    kernel.add_instr(simd_fp::fmax(simd_fp_t::v3, simd_fp_t::v3, simd_fp_t::v31, arr_spec_t::s4));
+
+    // Transpose 4x4 block
+    // TRN
+    kernel.add_instr(simd_fp::trn1(simd_fp_t::v4, simd_fp_t::v0, simd_fp_t::v2, arr_spec_t::s4));
+    kernel.add_instr(simd_fp::trn1(simd_fp_t::v5, simd_fp_t::v1, simd_fp_t::v3, arr_spec_t::s4));
+    kernel.add_instr(simd_fp::trn2(simd_fp_t::v6, simd_fp_t::v0, simd_fp_t::v2, arr_spec_t::s4));
+    kernel.add_instr(simd_fp::trn2(simd_fp_t::v7, simd_fp_t::v1, simd_fp_t::v3, arr_spec_t::s4));
+
+    // ZIP
+    kernel.add_instr(simd_fp::zip1(simd_fp_t::v8, simd_fp_t::v4, simd_fp_t::v5, arr_spec_t::s4));
+    kernel.add_instr(simd_fp::zip1(simd_fp_t::v9, simd_fp_t::v6, simd_fp_t::v7, arr_spec_t::s4));
+
+    kernel.add_instr(simd_fp::zip2(simd_fp_t::v10, simd_fp_t::v4, simd_fp_t::v5, arr_spec_t::s4));
+    kernel.add_instr(simd_fp::zip2(simd_fp_t::v11, simd_fp_t::v6, simd_fp_t::v7, arr_spec_t::s4));
 
 4.2.3.2 ReLU Primitive Benchmarks
 ---------------------------------------
 
 We benchmarked the performance of our ReLU primitive for the given parameters (M=N=50, M=N=64, M=N=512 and M=N=2048) and obtained the following results:
 
-.. literalinclude:: ../../benchmarks/unary_benchmarks.txt
-    :language: text
-    :lines: 57-112
-    :lineno-match:
-    :caption: Benchmarking results for the ReLU primitives
+**Benchmarking results for the relu primitives**
+
+.. code:: text
+
+    Running relu_primitive 50x50 benchmark
+    Total time (s):                       3
+    Total reps:                           19774014
+    Total number of elements:             49435035000
+    Total amount of processed data (GiB): 368.32
+    Bandwidth (GiB/s)                     122.773
+    --------------------------------------------------
+    Running relu_primitive 64x64 benchmark
+    Total time (s):                       3
+    Total reps:                           12192431
+    Total number of elements:             49940197376
+    Total amount of processed data (GiB): 372.083
+    Bandwidth (GiB/s)                     124.028
+    --------------------------------------------------
+    Running relu_primitive 512x512 benchmark
+    Total time (s):                       3.00001
+    Total reps:                           179693
+    Total number of elements:             47105441792
+    Total amount of processed data (GiB): 350.963
+    Bandwidth (GiB/s)                     116.987
+    --------------------------------------------------
+    Running relu_primitive 2048x2048 benchmark
+    Total time (s):                       3.00018
+    Total reps:                           8874
+    Total number of elements:             37220253696
+    Total amount of processed data (GiB): 277.312
+    Bandwidth (GiB/s)                     92.4321
+    --------------------------------------------------
+    Running relu_trans_primitive 50x50 benchmark
+    Total time (s):                       3
+    Total reps:                           16995447
+    Total number of elements:             42488617500
+    Total amount of processed data (GiB): 316.565
+    Bandwidth (GiB/s)                     105.522
+    --------------------------------------------------
+    Running relu_trans_primitive 64x64 benchmark
+    Total time (s):                       3
+    Total reps:                           11039409
+    Total number of elements:             45217419264
+    Total amount of processed data (GiB): 336.896
+    Bandwidth (GiB/s)                     112.299
+    --------------------------------------------------
+    Running relu_trans_primitive 512x512 benchmark
+    Total time (s):                       3.00018
+    Total reps:                           6131
+    Total number of elements:             1607204864
+    Total amount of processed data (GiB): 11.9746
+    Bandwidth (GiB/s)                     3.9913
+    --------------------------------------------------
+    Running relu_trans_primitive 2048x2048 benchmark
+    Total time (s):                       3.00082
+    Total reps:                           347
+    Total number of elements:             1455423488
+    Total amount of processed data (GiB): 10.8438
+    Bandwidth (GiB/s)                     3.6136
+    --------------------------------------------------
 
 The results match the pattern we saw for the zero and identity primitives. The transposition version is significantly slower than the non-transposition version, especially for the larger matrices. Here too, the 2048x2048 benchmark achieved worse results than the smaller matrices, both with and without transposition.
