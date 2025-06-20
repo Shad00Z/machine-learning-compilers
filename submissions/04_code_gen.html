@@ -76,7 +76,8 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#batch-reduce-gemm">4.1.3 Batch-Reduce GEMM</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#support-for-batch-reduce-gemms">4.1.3.1 Support for Batch-Reduce GEMMs</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#verification-of-the-batch-reduce-gemm-kernel">4.1.3.2 Verification of the Batch-Reduce GEMM kernel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#calling-the-batch-reduce-gemm-kernel">4.1.3.2 Calling the Batch-Reduce GEMM kernel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#verification-of-the-batch-reduce-gemm-kernel">4.1.3.3 Verification of the Batch-Reduce GEMM kernel</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#benchmarking-the-batch-reduce-gemm-kernel">4.1.3.3 Benchmarking the Batch-Reduce GEMM kernel</a></li>
 </ul>
 </li>
@@ -150,15 +151,15 @@
 <p>In this section, we explain how we implemented the BRGEMM primitive for our machine learning compiler.</p>
 <section id="microkernel">
 <span id="id1"></span><h3>4.1.1 Microkernel<a class="headerlink" href="#microkernel" title="Link to this heading"></a></h3>
-<p>Before we began implementing the planned batch-reduce general matrix-matrix multiplication, we first needed to take a look at how we could multiply matrices using C++ code generator for assembly. To simplify things further, we first put our focus on generating the fixed size microkernels which we had already implemented in A64 ARM assembly (see: <a class="reference internal" href="03_neon.html#neon"><span class="std std-ref">3. Neon</span></a>).</p>
+<p>Before we began implementing the Batch-Reduce General Matrix-Matrix Multiplication kernel, we first needed to take a look at how we could multiply matrices using the JIT C++ code generator for assembly. To simplify things, we first put our focus on generating the fixed size microkernels which we had previously implemented in A64 ARM assembly (see: <a class="reference internal" href="03_neon.html#neon"><span class="std std-ref">3. Neon</span></a>).</p>
 <section id="instruction-generation">
 <h4>4.1.1.1 Instruction Generation<a class="headerlink" href="#instruction-generation" title="Link to this heading"></a></h4>
-<p>The first step to generating a kernel is to create C++ mappings to the A64 ARM assembly instructions we need. That is, for each instruction we use in our assembly kernel, we require a C++ function that can generate the instruction for us, with support for various input parameters. The output of such a function is a <code class="docutils literal notranslate"><span class="pre">uint32_t</span></code> value, representing the 32-bits of the assembly instruction.</p>
+<p>The first step to generating a kernel was to create C++ mappings to the A64 ARM assembly instructions we needed. That is, for each instruction we use in our assembly kernel, we require a C++ function that can generate the instruction for us, with support for various input parameters. The output of such a function is a <code class="docutils literal notranslate"><span class="pre">uint32_t</span></code> value, representing the 32-bits of the assembly instruction.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Instead of working with binary numbers directly, we decided to use hexadecimal representation.</p>
 </div>
-<p>While we won’t show all instructions that we had to implement, here are some examples:</p>
+<p>While we won’t show all instructions that implemented, here are some examples:</p>
 <p><strong>LDR instruction (unsigned offset)</strong></p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/**</span>
 <span class="cm">* @brief Generates a base LDR (12-bit immediate) instruction using unsigned offset encoding.</span>
@@ -246,7 +247,7 @@
 </section>
 <section id="microkernel-generation">
 <h4>4.1.1.2 Microkernel Generation<a class="headerlink" href="#microkernel-generation" title="Link to this heading"></a></h4>
-<p>Having implemented all necessary functions for generating the instructions, we then turned our attention to the microkernel generation. Here, the first kernel we tackled was the <code class="docutils literal notranslate"><span class="pre">matmul_16_6_1</span></code> kernel. The process here was to copy the assembly code line by line and replace all instructions with our C++ bindings. A part of the result can be seen in the following code snippet:</p>
+<p>Having implemented all necessary C++ functions for generating the assembly instructions, we then turned our attention to the microkernel generation. Here, the first kernel we tackled was the <code class="docutils literal notranslate"><span class="pre">matmul_16_6_1</span></code> kernel. The process was to copy the assembly code line by line and replace all instructions with our C++ bindings. A part of the result can be seen in the following code snippet:</p>
 <p><strong>Loading of inputs section of the matmul_16_6_1 kernel using C++ JIT code generation</strong></p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Load Matrix A</span>
 <span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">simd_fp</span><span class="o">::</span><span class="n">ldp</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">neon_size_spec_t</span><span class="o">::</span><span class="n">q</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
@@ -597,7 +598,7 @@ Estimated GFLOPS:   134.331 GFLOPS/sec
 </section>
 <section id="calling-the-gemm-kernel">
 <h4>4.1.2.2 Calling the GEMM kernel<a class="headerlink" href="#calling-the-gemm-kernel" title="Link to this heading"></a></h4>
-<p>Having implemented the code for the <code class="docutils literal notranslate"><span class="pre">matmul_m_n_k</span></code>, we now had to find a way to call it. For this, we use a <code class="docutils literal notranslate"><span class="pre">Brgemm</span></code> class that contains an <code class="docutils literal notranslate"><span class="pre">execute</span></code> function. Since we used the same function for calling our <code class="docutils literal notranslate"><span class="pre">matmul_br_m_n_k</span></code> BRGEMM kernel, which we will explain in the following chapter, please refer to X which will explain the <code class="docutils literal notranslate"><span class="pre">Brgemm</span></code> class in greater detail.</p>
+<p>Having implemented the code for the <code class="docutils literal notranslate"><span class="pre">matmul_m_n_k</span></code>, we now had to find a way to call it. For this, we use a <code class="docutils literal notranslate"><span class="pre">Brgemm</span></code> class that contains a <code class="docutils literal notranslate"><span class="pre">generate</span></code> function. Since we used the same function for calling our <code class="docutils literal notranslate"><span class="pre">matmul_br_m_n_k</span></code> BRGEMM kernel, which we will explain in the following chapter, please refer to <a class="reference internal" href="#id3"><span class="std std-ref">4.1.3.2 Calling the Batch-Reduce GEMM kernel</span></a> which will explain the <code class="docutils literal notranslate"><span class="pre">Brgemm</span></code> class in greater detail.</p>
 </section>
 <section id="verification-of-the-gemm-kernel-with-lda-m-ldb-k-ldc-m">
 <h4>4.1.2.3 Verification of the GEMM kernel with lda=M, ldb=K, ldc=M<a class="headerlink" href="#verification-of-the-gemm-kernel-with-lda-m-ldb-k-ldc-m" title="Link to this heading"></a></h4>
@@ -853,8 +854,120 @@ would increment the pointers, to move to the next respective matrices.</p>
 <p>These were the only changes we had to make. Between the initialization of the loop
 and jumping to the next matrices, we would loop over our <a class="reference internal" href="#gemm"><span class="std std-ref">matmul_m_n_k kernel</span></a>.</p>
 </section>
+<section id="calling-the-batch-reduce-gemm-kernel">
+<span id="id3"></span><h4>4.1.3.2 Calling the Batch-Reduce GEMM kernel<a class="headerlink" href="#calling-the-batch-reduce-gemm-kernel" title="Link to this heading"></a></h4>
+<p>In order to actually call our GEMM and BRGEMM kernels, we had to implement a common entry point. The <code class="docutils literal notranslate"><span class="pre">Brgemm</span></code> class is responsible for this task.
+It first checks all input parameters for their validity and then makes calls to the kernels based on the Batch-Reduce size.</p>
+<p><strong>Brgemm.cpp</strong></p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">mini_jit</span><span class="o">::</span><span class="n">error_t</span><span class="w"> </span><span class="nf">mini_jit::Brgemm::generate</span><span class="p">(</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">m</span><span class="p">,</span>
+<span class="w">                                            </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">n</span><span class="p">,</span>
+<span class="w">                                            </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">k</span><span class="p">,</span>
+<span class="w">                                            </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">br_size</span><span class="p">,</span>
+<span class="w">                                            </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">trans_a</span><span class="p">,</span>
+<span class="w">                                            </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">trans_b</span><span class="p">,</span>
+<span class="w">                                            </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">trans_c</span><span class="p">,</span>
+<span class="w">                                            </span><span class="n">dtype_t</span><span class="w"> </span><span class="n">dtype</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="cm">/**</span>
+<span class="cm">    * Currently supported:</span>
+<span class="cm">    * trans_a, trans_b, trans_c: Column-major</span>
+<span class="cm">    * dtype: fp32</span>
+<span class="cm">    */</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">m</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;M must be greater than 0&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">error_t</span><span class="o">::</span><span class="n">wrong_dimension</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">m</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">2048</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;M must not be greater than 2048&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">error_t</span><span class="o">::</span><span class="n">wrong_dimension</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;N must be greater than 0&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">error_t</span><span class="o">::</span><span class="n">wrong_dimension</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">2048</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;N must not be greater than 2048&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">error_t</span><span class="o">::</span><span class="n">wrong_dimension</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">k</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;K must be greater than 0&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">error_t</span><span class="o">::</span><span class="n">wrong_dimension</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">k</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">2048</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;K must not be greater than 2048&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">error_t</span><span class="o">::</span><span class="n">wrong_dimension</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">br_size</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;BR_SIZE must greater than 0&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">error_t</span><span class="o">::</span><span class="n">wrong_dimension</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">br_size</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">2048</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;BR_SIZE must not be greater than 2048&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">error_t</span><span class="o">::</span><span class="n">wrong_dimension</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">trans_a</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">trans_b</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">trans_c</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;Matrix ordering must be column-major&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">error_t</span><span class="o">::</span><span class="n">wrong_matrix_ordering_format</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">dtype</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">dtype_t</span><span class="o">::</span><span class="n">fp32</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;Matrix data type must be fp32&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">error_t</span><span class="o">::</span><span class="n">wrong_dtype</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">else</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">reset_kernel</span><span class="p">();</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">br_size</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="n">mini_jit</span><span class="o">::</span><span class="n">kernels</span><span class="o">::</span><span class="n">matmul</span><span class="o">::</span><span class="n">matmul_m_n_k</span><span class="p">(</span><span class="o">*</span><span class="n">m_kernel</span><span class="p">,</span><span class="w"> </span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="k">else</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="n">mini_jit</span><span class="o">::</span><span class="n">kernels</span><span class="o">::</span><span class="n">matmul</span><span class="o">::</span><span class="n">matmul_br_m_n_k</span><span class="p">(</span><span class="o">*</span><span class="n">m_kernel</span><span class="p">,</span><span class="w"> </span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="p">,</span><span class="w"> </span><span class="n">br_size</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+
+<span class="w">        </span><span class="c1">// Valid matrix kernel</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">error_t</span><span class="o">::</span><span class="n">success</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">mini_jit</span><span class="o">::</span><span class="n">Brgemm</span><span class="o">::</span><span class="n">kernel_t</span><span class="w"> </span><span class="nf">mini_jit::Brgemm::get_kernel</span><span class="p">()</span><span class="w"> </span><span class="k">const</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="n">kernel_t</span><span class="o">&gt;</span><span class="p">(</span><span class="k">const_cast</span><span class="o">&lt;</span><span class="kt">void</span><span class="w"> </span><span class="o">*&gt;</span><span class="p">(</span><span class="n">m_kernel</span><span class="o">-&gt;</span><span class="n">get_kernel</span><span class="p">()));</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">mini_jit::Brgemm::reset_kernel</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">m_kernel</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="k">delete</span><span class="w"> </span><span class="n">m_kernel</span><span class="p">;</span>
+<span class="w">        </span><span class="n">m_kernel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="n">m_kernel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">mini_jit</span><span class="o">::</span><span class="n">Kernel</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>An example of how this could be called is shown in the following code snippet:</p>
+<p><strong>Example code for generating and executing a kernel</strong></p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">mini_jit</span><span class="o">::</span><span class="n">Kernel</span><span class="w"> </span><span class="n">l_kernel</span><span class="p">;</span>
+<span class="n">mini_jit</span><span class="o">::</span><span class="n">kernels</span><span class="o">::</span><span class="n">matmul</span><span class="o">::</span><span class="n">matmul_m_n_k</span><span class="p">(</span><span class="n">l_kernel</span><span class="p">,</span><span class="w"> </span><span class="n">M</span><span class="p">,</span><span class="w"> </span><span class="n">N</span><span class="p">,</span><span class="w"> </span><span class="n">K</span><span class="p">);</span>
+<span class="n">mini_jit</span><span class="o">::</span><span class="n">Brgemm</span><span class="o">::</span><span class="n">kernel_t</span><span class="w"> </span><span class="n">l_kernel_t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="n">mini_jit</span><span class="o">::</span><span class="n">Brgemm</span><span class="o">::</span><span class="n">kernel_t</span><span class="o">&gt;</span><span class="p">(</span><span class="k">const_cast</span><span class="o">&lt;</span><span class="kt">void</span><span class="w"> </span><span class="o">*&gt;</span><span class="p">(</span><span class="n">l_kernel</span><span class="p">.</span><span class="n">get_kernel</span><span class="p">()));</span>
+<span class="n">l_kernel_t</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">B</span><span class="p">,</span><span class="w"> </span><span class="n">C</span><span class="p">,</span><span class="w"> </span><span class="n">M</span><span class="p">,</span><span class="w"> </span><span class="n">K</span><span class="p">,</span><span class="w"> </span><span class="n">M</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
 <section id="verification-of-the-batch-reduce-gemm-kernel">
-<h4>4.1.3.2 Verification of the Batch-Reduce GEMM kernel<a class="headerlink" href="#verification-of-the-batch-reduce-gemm-kernel" title="Link to this heading"></a></h4>
+<h4>4.1.3.3 Verification of the Batch-Reduce GEMM kernel<a class="headerlink" href="#verification-of-the-batch-reduce-gemm-kernel" title="Link to this heading"></a></h4>
 <p>Similar to the GEMM kernel, we also tested our implementation of the batch-reduce GEMM.
 We executed several initializations of our kernel, using a similar approach to the testing of the GEMM kernel.</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">TEST_CASE</span><span class="p">(</span><span class="s">&quot;Reference test for batch reduce matmul kernel with variable M, N, K&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;[br_matmul][parameterized]&quot;</span><span class="p">)</span>

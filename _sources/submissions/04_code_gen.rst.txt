@@ -13,18 +13,18 @@ In this section, we explain how we implemented the BRGEMM primitive for our mach
 4.1.1 Microkernel
 ===================
 
-Before we began implementing the planned batch-reduce general matrix-matrix multiplication, we first needed to take a look at how we could multiply matrices using C++ code generator for assembly. To simplify things further, we first put our focus on generating the fixed size microkernels which we had already implemented in A64 ARM assembly (see: :ref:`3-neon`).
+Before we began implementing the Batch-Reduce General Matrix-Matrix Multiplication kernel, we first needed to take a look at how we could multiply matrices using the JIT C++ code generator for assembly. To simplify things, we first put our focus on generating the fixed size microkernels which we had previously implemented in A64 ARM assembly (see: :ref:`3-neon`).
 
 4.1.1.1 Instruction Generation
 ----------------------------------
 
-The first step to generating a kernel is to create C++ mappings to the A64 ARM assembly instructions we need. That is, for each instruction we use in our assembly kernel, we require a C++ function that can generate the instruction for us, with support for various input parameters. The output of such a function is a ``uint32_t`` value, representing the 32-bits of the assembly instruction.
+The first step to generating a kernel was to create C++ mappings to the A64 ARM assembly instructions we needed. That is, for each instruction we use in our assembly kernel, we require a C++ function that can generate the instruction for us, with support for various input parameters. The output of such a function is a ``uint32_t`` value, representing the 32-bits of the assembly instruction.
 
 .. note::
 
     Instead of working with binary numbers directly, we decided to use hexadecimal representation.
 
-While we won't show all instructions that we had to implement, here are some examples:
+While we won't show all instructions that implemented, here are some examples:
 
 **LDR instruction (unsigned offset)**
 
@@ -118,7 +118,7 @@ For more information on the instructions, please refer to :ref:`API: mini_jit:in
 4.1.1.2 Microkernel Generation
 ------------------------------------
 
-Having implemented all necessary functions for generating the instructions, we then turned our attention to the microkernel generation. Here, the first kernel we tackled was the ``matmul_16_6_1`` kernel. The process here was to copy the assembly code line by line and replace all instructions with our C++ bindings. A part of the result can be seen in the following code snippet:
+Having implemented all necessary C++ functions for generating the assembly instructions, we then turned our attention to the microkernel generation. Here, the first kernel we tackled was the ``matmul_16_6_1`` kernel. The process was to copy the assembly code line by line and replace all instructions with our C++ bindings. A part of the result can be seen in the following code snippet:
 
 **Loading of inputs section of the matmul_16_6_1 kernel using C++ JIT code generation**
 
@@ -508,7 +508,7 @@ The full code is available in the file ``matmul_m_n_k.cpp``.
 4.1.2.2 Calling the GEMM kernel
 ----------------------------------------
 
-Having implemented the code for the ``matmul_m_n_k``, we now had to find a way to call it. For this, we use a ``Brgemm`` class that contains an ``execute`` function. Since we used the same function for calling our ``matmul_br_m_n_k`` BRGEMM kernel, which we will explain in the following chapter, please refer to X which will explain the ``Brgemm`` class in greater detail.
+Having implemented the code for the ``matmul_m_n_k``, we now had to find a way to call it. For this, we use a ``Brgemm`` class that contains a ``generate`` function. Since we used the same function for calling our ``matmul_br_m_n_k`` BRGEMM kernel, which we will explain in the following chapter, please refer to :ref:`4-1-3-2` which will explain the ``Brgemm`` class in greater detail.
 
 4.1.2.3 Verification of the GEMM kernel with lda=M, ldb=K, ldc=M
 -------------------------------------------------------------------
@@ -784,7 +784,127 @@ would increment the pointers, to move to the next respective matrices.
 These were the only changes we had to make. Between the initialization of the loop 
 and jumping to the next matrices, we would loop over our :ref:`matmul_m_n_k kernel <4.1.2 GEMM>`.
 
-4.1.3.2 Verification of the Batch-Reduce GEMM kernel
+.. _4-1-3-2:
+
+4.1.3.2 Calling the Batch-Reduce GEMM kernel
+----------------------------------------------
+
+In order to actually call our GEMM and BRGEMM kernels, we had to implement a common entry point. The ``Brgemm`` class is responsible for this task.
+It first checks all input parameters for their validity and then makes calls to the kernels based on the Batch-Reduce size.
+
+**Brgemm.cpp**
+
+.. code:: cpp
+
+    mini_jit::error_t mini_jit::Brgemm::generate(uint32_t m,
+                                                uint32_t n,
+                                                uint32_t k,
+                                                uint32_t br_size,
+                                                uint32_t trans_a,
+                                                uint32_t trans_b,
+                                                uint32_t trans_c,
+                                                dtype_t dtype)
+    {
+        /**
+        * Currently supported:
+        * trans_a, trans_b, trans_c: Column-major
+        * dtype: fp32
+        */
+        if (m <= 0)
+        {
+            std::cout << ("M must be greater than 0") << std::endl;
+            return error_t::wrong_dimension;
+        }
+        else if (m > 2048)
+        {
+            std::cout << ("M must not be greater than 2048") << std::endl;
+            return error_t::wrong_dimension;
+        }
+        else if (n <= 0)
+        {
+            std::cout << ("N must be greater than 0") << std::endl;
+            return error_t::wrong_dimension;
+        }
+        else if (n > 2048)
+        {
+            std::cout << ("N must not be greater than 2048") << std::endl;
+            return error_t::wrong_dimension;
+        }
+        else if (k <= 0)
+        {
+            std::cout << ("K must be greater than 0") << std::endl;
+            return error_t::wrong_dimension;
+        }
+        else if (k > 2048)
+        {
+            std::cout << ("K must not be greater than 2048") << std::endl;
+            return error_t::wrong_dimension;
+        }
+        else if (br_size <= 0)
+        {
+            std::cout << ("BR_SIZE must greater than 0") << std::endl;
+            return error_t::wrong_dimension;
+        }
+        else if (br_size > 2048)
+        {
+            std::cout << ("BR_SIZE must not be greater than 2048") << std::endl;
+            return error_t::wrong_dimension;
+        }
+        else if (trans_a != 0 || trans_b != 0 || trans_c != 0)
+        {
+            std::cout << ("Matrix ordering must be column-major") << std::endl;
+            return error_t::wrong_matrix_ordering_format;
+        }
+        else if (dtype != dtype_t::fp32)
+        {
+            std::cout << ("Matrix data type must be fp32") << std::endl;
+            return error_t::wrong_dtype;
+        }
+        else
+        {
+            reset_kernel();
+
+            if (br_size == 1)
+            {
+                mini_jit::kernels::matmul::matmul_m_n_k(*m_kernel, m, n, k);
+            }
+            else
+            {
+                mini_jit::kernels::matmul::matmul_br_m_n_k(*m_kernel, m, n, k, br_size);
+            }
+
+            // Valid matrix kernel
+            return error_t::success;
+        }
+    }
+
+    mini_jit::Brgemm::kernel_t mini_jit::Brgemm::get_kernel() const
+    {
+        return reinterpret_cast<kernel_t>(const_cast<void *>(m_kernel->get_kernel()));
+    }
+
+    void mini_jit::Brgemm::reset_kernel()
+    {
+        if (m_kernel)
+        {
+            delete m_kernel;
+            m_kernel = nullptr;
+        }
+        m_kernel = new mini_jit::Kernel();
+    }
+
+An example of how this could be called is shown in the following code snippet:
+
+**Example code for generating and executing a kernel**
+
+.. code:: cpp
+
+    mini_jit::Kernel l_kernel;
+    mini_jit::kernels::matmul::matmul_m_n_k(l_kernel, M, N, K);
+    mini_jit::Brgemm::kernel_t l_kernel_t = reinterpret_cast<mini_jit::Brgemm::kernel_t>(const_cast<void *>(l_kernel.get_kernel()));
+    l_kernel_t(A, B, C, M, K, M, 0, 0);
+
+4.1.3.3 Verification of the Batch-Reduce GEMM kernel
 ------------------------------------------------------
 
 Similar to the GEMM kernel, we also tested our implementation of the batch-reduce GEMM.
