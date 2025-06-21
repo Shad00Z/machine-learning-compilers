@@ -10,7 +10,7 @@ TEST_CASE("Reference test for batch reduce matmul kernel with variable M, N, K",
 {
     const int M = GENERATE(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
     const int N = GENERATE(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
-    const int K = GENERATE(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
+    const int K = GENERATE(1, 16, 32, 64, 128);
     const int br_size = 16;
 
     float *A = new float[M * K * br_size];

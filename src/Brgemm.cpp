@@ -15,7 +15,6 @@ mini_jit::error_t mini_jit::Brgemm::generate(uint32_t m,
 {
     /**
      * Currently supported:
-     * BR_SIZE: Not defined
      * trans_a, trans_b, trans_c: Column-major
      * dtype: fp32
      */
