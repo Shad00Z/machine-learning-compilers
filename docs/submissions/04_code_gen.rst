@@ -2,6 +2,10 @@
 4. Code Generation
 #####################
 
+After developing Neon kernels for the first few weeks, we gained valuable insights into implementing different operations. 
+In this phase of the project, our goal was to leverage that knowledge to build the backbone of a JIT C++ code generator. 
+This code generator is designed to produce assembly code for arbitrary matrix dimensions and execute the generated code on our machine.
+
 **********************
 4.1 BRGEMM Primitive
 **********************
@@ -118,7 +122,7 @@ For more information on the instructions, please refer to :ref:`API: mini_jit:in
 4.1.1.2 Microkernel Generation
 ------------------------------------
 
-Having implemented all necessary C++ functions for generating the assembly instructions, we then turned our attention to the microkernel generation. Here, the first kernel we tackled was the ``matmul_16_6_1`` kernel. The process was to copy the assembly code line by line and replace all instructions with our C++ bindings. A part of the result can be seen in the following code snippet:
+Having implemented all necessary C++ functions for generating the assembly instructions, we then turned our attention to the microkernel generation. Here, the first kernel we approached was the ``matmul_16_6_1`` kernel. The process was to copy the assembly code line by line and replace all instructions with our C++ bindings. A part of the result can be seen in the following code snippet:
 
 **Loading of inputs section of the matmul_16_6_1 kernel using C++ JIT code generation**
 
@@ -245,16 +249,18 @@ The last step of the task was to run benchmarks. We obtained the following resul
 4.1.2 GEMM
 ==================
 
+After setting the foundation for the execution of a specific ``GEMM`` kernel, our plan was now to extend the in :ref:`4-1-1-microkernel` implemented kernel to a more general ``GEMM`` kernel.
+
 4.1.2.1 Implementation of a GEMM kernel
 ----------------------------------------
 
-This section extends the in :ref:`4-1-1-microkernel` implemented kernel to a more general GEMM kernel. It should be able to compute C+=AB for arbitrary A, B and C matrices in the range of 1≤M≤1024, 1≤N≤1024, and 1≤K≤2048.
+The general ``GEMM`` kernel should be able to compute C+=AB for arbitrary A, B and C matrices in the range of 1≤M≤1024, 1≤N≤1024, and 1≤K≤2048.
 
-At first, we had to decide on how to block the matrices. In the M dimension, we decided to use a block size of 16 and in the N dimension we decided to use a block size of 4. The larger we keep the block size, the more efficiently we can use loads, stores and FMLA instructions. However, the issue with large block sizes is that we need to write a lot of specialized kernels for all M and N dimensions smaller or equal to the block size. If the input parameters are not multiples of the block size, we need to write additional code to handle the remaining elements. 
+At first, we had to decide on how to block the matrices. In the M dimension, we decided to use a block size of 16 and in the ``n`` dimension we decided to use a block size of 4. The larger we keep the block size, the more efficiently we can use loads, stores and FMLA instructions. However, the issue with large block sizes is that we need to write a lot of specialized kernels for all M and N dimensions smaller or equal to the block size. If the input parameters are not multiples of the block size, we need to write additional code to handle the remaining elements. 
 
-For a block size of M = 8, we already wrote a kernel in pure assembly, see :ref:`generic-kernel`. Using this generic kernel as a starting point, we reduced the N dimension from 6 to 4. Our reasoning was that we wanted to reduce the number of specialized kernels we need to write. Additionally, we assumed that most numbers commonly used in practice are multiples of 4 instead of 6, thus not depending on the specialized kernels. Nevertheless, we made the decision to increase M from 8 to 16 to increase performance. With this change, we implemented the ``matmul_m_4_k`` kernel, which can compute C+=AB for any matrices where M and K can be chosen freely, but N is fixed to 4.
+For a block size of M = 8 we already wrote a kernel in neon assembly, see :ref:`generic-kernel`. Using this generic kernel as a starting point, we have reduced the ``n`` dimension from 6 to 4. Our reasoning was that we wanted to reduce the number of specialized kernels we would need to write. Additionally, we assumed that in practice more numbers would be multiples of 4 instead of 6, thus not depending on such specialized kernels. Nevertheless, we made the decision to increase M from 8 to 16 to increase our overall performance. With this change, we introduced the ``matmul_m_4_k`` kernel, which computes C+=AB for matrices where M and K are freely configurable, and N is fixed at size 4.
 
-The kernel first computes the number of blocks in the M dimension and the remaining elements. 
+The kernel first computes the number of blocks along the M dimension, as well as any remaining elements. 
 
 **matmul_m_4_k: Computing the number of blocks in the M dimension**
 
@@ -335,7 +341,7 @@ Using these numbers, we can call the specialized kernels:
         }
     }
 
-But what does such a specialized kernel look like? For the most part, they are similar to the microkernels we implemented before. The only difference is that we need to adjust the loads, stores and FMLA instructions for fixed M dimensions. For example in the case of M = 3:
+But what does such a specialized kernel look like? For the most part, they are similar to the microkernels we implemented before. The only difference is that we need to adjust the loads, stores and FMLA instructions for a fixed M dimension. For example in the case of M = 3:
 
 **matmul_m_4_k: Loading a column of C with M = 3**
 
@@ -357,7 +363,7 @@ While we can simply load a double word when M = 2 or even a quad word when M = 4
     kernel.add_instr(simd_fp::strPost(simd_fp_t::v0, gpr_t::x24, 8, neon_size_spec_t::d));
     kernel.add_instr(simd_fp::str(simd_fp_t::v1, gpr_t::x24, 0, neon_size_spec_t::s));
 
-The FMLA instructions are also adjusted to the M dimension. For example, when M = 3, we need to use two FMLA instructions to compute the result:
+The FMLA instructions are also adjusted based on M dimension. For example, when M = 3, we need to use two FMLA instructions to compute the result:
 
 **matmul_m_4_k: FMLA instructions with M = 3**
 
@@ -368,9 +374,9 @@ The FMLA instructions are also adjusted to the M dimension. For example, when M 
     kernel.add_instr(simd_fp::fmlaElem(simd_fp_t::v0, simd_fp_t::v24, simd_fp_t::v29, arr_spec_t::s2));
     kernel.add_instr(simd_fp::fmadd(simd_fp_t::v1, simd_fp_t::v25, simd_fp_t::v29, simd_fp_t::v1, neon_size_spec_t::s));
 
-While one could use an ``fmla`` instruction and zero padding, we decided to use one ``fmla`` instruction for the first two elements and one ``fmadd`` instruction for the last element. We did not evaluate any performance differences between the two approaches, but chose the second one because to us it seemed more readable and easier to understand. The other specialized kernels for M = 1, 2, 4, 5, 6 and 7 are implemented similarly.
+While one could use an ``fmla`` instruction and zero padding, we decided to use one ``fmla`` instruction for the first two elements and one ``fmadd`` instruction for the last element. We did not observe any performance differences between the two approaches, but chose the second one because to us it seemed more readable and easier to understand. The other specialized kernels for M = 1, 2, 4, 5, 6 and 7 are implemented similarly.
 
-Having implemented the ``matmul_m_4_k`` kernel, we can now turn our attention towards the ``matmul_m_n_k`` kernel. Since we decided to block N by 4, we can use the same approach as before. We first compute the number of blocks in the N dimension and the remaining elements.
+Having implemented the ``matmul_m_4_k`` kernel, we can now turn our attention towards the ``matmul_m_n_k`` kernel. Since we decided to block N by 4, we can use the same approach as before. We first compute the number of blocks along the ``n`` dimension and the remaining elements.
 
 **matmul_m_n_k: Computing the number of blocks in the N dimension**
 
@@ -501,19 +507,19 @@ For the whole N loop, we use switch statements to call the specialized kernels. 
 
 .. note::
 
-    As seen in the code snippet above, we extended our kernel object by an ``add_label`` function and a ``getInstrCountFromLabel`` function. Internally, the kernel keeps track of the number of instructions that were added since the label was added. If we want to jump back to a label, we can use ``getInstrCountFromLabel`` to get the number of instructions we have to jump and multiply it by 4, because each instruction is 4 Bytes long.
+    As seen in the code snippet above, we extended our kernel object by an ``add_label`` function and a ``getInstrCountFromLabel`` function. Internally, the kernel keeps track of the number of instructions that were added since the label was added. If we want to jump back to a label, we can use ``getInstrCountFromLabel`` to get the number of instructions we have to jump and multiply it by 4, because each instruction is 4 bytes long.
 
-The full code is available in the file ``matmul_m_n_k.cpp``.
+The full code is available in the file `matmul_m_n_k.cpp <https://github.com/Shad00Z/machine-learning-compilers/blob/main/src/kernels/matmul/matmul_m_n_k.cpp>`_.
 
 4.1.2.2 Calling the GEMM kernel
 ----------------------------------------
 
-Having implemented the code for the ``matmul_m_n_k``, we now had to find a way to call it. For this, we use a ``Brgemm`` class that contains a ``generate`` function. Since we used the same function for calling our ``matmul_br_m_n_k`` BRGEMM kernel, which we will explain in the following chapter, please refer to :ref:`4-1-3-2` which will explain the ``Brgemm`` class in greater detail.
+Having implemented the code for the ``matmul_m_n_k``, we now had to find a way to call it. For this, we use a ``Brgemm`` class that contains a ``generate`` function. We use the same function to call our ``matmul_br_m_n_k`` BRGEMM kernel, which is explained in the next chapter. For more details on the ``Brgemm`` class, please refer to :ref:`4-1-3-2`.
 
 4.1.2.3 Verification of the GEMM kernel with lda=M, ldb=K, ldc=M
 -------------------------------------------------------------------
 
-This task requires us to verify the correctness of our ``matmul_m_n_k`` kernel by comparing to a reference implementation for 1≤M≤64, 1≤N≤64, K∈[1,16,32,64,128], and lda=M, ldb=K, ldc=M.
+This task requires us to verify the correctness of our ``matmul_m_n_k`` kernel by comparing it to a reference implementation for 1≤M≤64, 1≤N≤64, K∈[1,16,32,64,128], with lda=M, ldb=K, and ldc=M.
 We realized this verification using a ``Catch2`` unit test:
 
 .. code:: cpp
@@ -578,12 +584,12 @@ We realized this verification using a ``Catch2`` unit test:
         delete[] C_expected;
     }
 
-The M and N dimensions are generated randomly, while the K dimension is fixed to multiple given values. We compute the expected result using high level C++ code and compare it to the result of our kernel.
+The M and N dimensions are generated randomly, while the ``k`` dimension is fixed to multiple given values. We compute the expected result using high level C++ code and compare it to the result of our kernel.
 
 4.1.2.4 Verification of the GEMM kernel with lda>M, ldb>K or ldc>M
 -------------------------------------------------------------------
 
-This task is very similar to the previous one, but we need to verify the correctness of our ``matmul_m_n_k`` kernel for 1≤M≤64, 1≤N≤64, K∈[1,16,32,64,128], and lda>M, ldb>K or ldc>M. This means that we need to store the matrices in a way that they are not contiguous in memory. We can do this by first choosing strides that are larger than the M, N and K dimensions. Then we can use the strides to compute the addresses of the elements in the matrices. Next, we can use this strides to first allocate memory that is larger than the matrices and then only set the elements that are used in the computation. The other elements, which will be skipped due to the strides, will be set to 0. Lastly, we call our kernel and compare the result to the expected result:
+This task is very similar to the previous one, but we need to verify the correctness of our ``matmul_m_n_k`` kernel for 1≤M≤64, 1≤N≤64, K∈[1,16,32,64,128], and lda>M, ldb>K or ldc>M. This means that we need to store the matrices in a way that they are not contiguous in memory. We can do this by first choosing strides that are larger than the M, N and K dimensions. The next step is to use these strides to compute the addresses of the elements in the matrices. We can then use the strides to allocate memory larger larger than the matrices and set the elements used in the computation. The other elements, which will be skipped due to the strides, will be set to 0. Lastly, we call our kernel and compare the result to the expected result:
 
 .. code:: cpp
 
@@ -673,6 +679,8 @@ This task is very similar to the previous one, but we need to verify the correct
         delete[] C_expected;
     }
 
+.. _4.1.2.5 GEMM_bench:
+
 4.1.2.5 Benchmarking the GEMM kernel
 ---------------------------------------
 
@@ -713,7 +721,7 @@ Using this metrics we could then calculate the performance in GFLOPs for the res
     long l_totalOperations = 2.0 * m_M * m_N * m_K * l_num_reps;
     double l_gflops = ((double)l_totalOperations) / (l_elapsed * 1e9);
 
-The results that we obtained were saved under ``benchmarks/gemm_perf.csv``. 
+The results that we obtained were saved under `benchmarks/gemm_perf.csv <https://github.com/Shad00Z/machine-learning-compilers/blob/main/benchmarks/gemm_perf.csv>`_. 
 
 **Snippet of executed benchmarks for matmul_m_n_k**
 
@@ -738,14 +746,13 @@ The results that we obtained were saved under ``benchmarks/gemm_perf.csv``.
 4.1.3 Batch-Reduce GEMM
 =========================
 
-After generating our GEMM kernel for different values for the M, N, and K dimensions, we then implemented
-a batched version of this kernel. This means we now had to implement kernels that support matrix multiplications 
-of the form: C+=∑AᵢBᵢ.
+After generating our GEMM kernel for different values of the M, N, and K dimensions, we implemented a batched version of this kernel. 
+This means we now had to implement kernels that support matrix multiplications of the form: C+=∑AᵢBᵢ.
 
 4.1.3.1 Support for Batch-Reduce GEMMs
 ----------------------------------------
 
-We based our implementation for the ``matmul_br_m_n_k`` on our assembly implementation of the :ref:`batch-reduce GEMM <3.6 Batch-Reduce GEMM>`.
+We based our ``matmul_br_m_n_k`` implementation on our assembly version of the :ref:`batch-reduce GEMM <3.6 Batch-Reduce GEMM>`.
 As we now had the additional values ``br_stride_a`` and ``br_stride_a`` we needed to slightly adjust the use of our registers.
 Apart from that, we were ready to start. 
 
@@ -759,8 +766,7 @@ The first step we took was to initialize the loop counter for the batch dimensio
     kernel.add_instr(base::mov(gpr_t::x25, br_size));
     kernel.add_label("batch_loop");
 
-The second step was to make sure that after a GEMM has finished, we 
-would increment the pointers, to move to the next respective matrices.
+The second step was to make sure that after a GEMM has finished, we would increment the pointers, to move to the next respective matrices.
 
 .. code:: cpp
 
@@ -781,16 +787,15 @@ would increment the pointers, to move to the next respective matrices.
     int l_batchLoopInstrCount = kernel.getInstrCountFromLabel("batch_loop");
     kernel.add_instr(base::cbnz(gpr_t::x25, -l_batchLoopInstrCount * 4));
 
-These were the only changes we had to make. Between the initialization of the loop 
-and jumping to the next matrices, we would loop over our :ref:`matmul_m_n_k kernel <4.1.2 GEMM>`.
+These were the only changes we had to make. Between initializing the loop and jumping to the next blocks in our matrices, we would loop over our :ref:`matmul_m_n_k kernel <4.1.2 GEMM>`.
 
 .. _4-1-3-2:
 
 4.1.3.2 Calling the Batch-Reduce GEMM kernel
 ----------------------------------------------
 
-In order to actually call our GEMM and BRGEMM kernels, we had to implement a common entry point. The ``Brgemm`` class is responsible for this task.
-It first checks all input parameters for their validity and then makes calls to the kernels based on the Batch-Reduce size.
+In order to actually call our ``GEMM`` and ``BRGEMM`` kernels, we had to implement a common entry point. The ``Brgemm`` class is responsible for this task.
+It first checks all input parameters for their validity and then makes calls to the kernels based on the batch-reduce size.
 
 **Brgemm.cpp**
 
@@ -893,7 +898,7 @@ It first checks all input parameters for their validity and then makes calls to 
         m_kernel = new mini_jit::Kernel();
     }
 
-An example of how this could be called is shown in the following code snippet:
+The example below demonstrates how this function can be called:
 
 **Example code for generating and executing a kernel**
 
@@ -907,8 +912,8 @@ An example of how this could be called is shown in the following code snippet:
 4.1.3.3 Verification of the Batch-Reduce GEMM kernel
 ------------------------------------------------------
 
-Similar to the GEMM kernel, we also tested our implementation of the batch-reduce GEMM.
-We executed several initializations of our kernel, using a similar approach to the testing of the GEMM kernel.
+Similar to the ``GEMM`` kernel, we also tested our implementation of the batch-reduce GEMM.
+We executed several initializations of our kernel, using a similar approach to the testing of the ``GEMM`` kernel:
 
 .. code:: cpp
 
@@ -976,14 +981,15 @@ We executed several initializations of our kernel, using a similar approach to t
         delete[] C_expected;
     }
 
-4.1.3.3 Benchmarking the Batch-Reduce GEMM kernel
+.. _4.1.3.4 BRGEMM_bench:
+
+4.1.3.4 Benchmarking the Batch-Reduce GEMM kernel
 ---------------------------------------------------
 
 For the benchmarks, we enhanced our ``benchmarking.cpp`` file again.
 We introduced a new function that should handle 1≤M≤64, 1≤N≤64, K∈[1,16,32,64,128], lda=M, ldb=K and ldc=M and reduced the time for our benchmarks to ``1.0s``.
 
-Beside the fact, that we would now consider 16 Matrices for A and B, the calculation 
-for the GFLOPs was than similar to the normal ``GEMM``.
+Beside the fact, that we would now consider 16 different matrix sizes for A and B, the calculation for the GFLOPs was than similar to the normal ``GEMM`` kernel.
 
 .. code:: cpp
 
@@ -1011,7 +1017,7 @@ for the GFLOPs was than similar to the normal ``GEMM``.
     long l_totalOperations = 2.0 * m_M * m_N * m_K * l_num_reps * m_br_size;
     double l_gflops = ((double)l_totalOperations) / (l_elapsed * 1e9);
 
-The results that we obtained were saved in ``benchmarks/br_gemm_perf.csv``. 
+The results that we obtained were saved in `br_gemm_perf.csv <https://github.com/Shad00Z/machine-learning-compilers/blob/main/benchmarks/brgemm_perf.csv>`_. 
 
 **Snippet of executed benchmarks for matmul_br_m_n_k**
 
@@ -1035,21 +1041,42 @@ The results that we obtained were saved in ``benchmarks/br_gemm_perf.csv``.
 
 Evaluating our GFLOP performance, we can see that we achieve a similar performance as in our ``matmul_m_n_k`` benchmark.
 
+.. note::
+
+    Both the :ref:`gemm <4.1.2.5 GEMM_bench>` and :ref:`brgemm <4.1.3.4 BRGEMM_bench>` benchmarks were executed using our initial kernel configurations of M=8 and N=4.
+    Therefore, the results should be viewed carefully, as the new configuration M=16 and N=4 should drastically enhance the throughput, especially for large matrices.
+
 **********************
 4.2 Unary Primitives
 **********************
 
+After implementing our main primitives using the ``GEMM`` and ``BRGEMM`` kernels, the next step was to implement unary primitives. 
+These can be called before an operation is executed (first touch) or after the final block of a matrix has been processed (last touch). 
+Specifically we are implementing three of those primitives:
+
+1. Zero Primitive
+2. Identity Primitive
+3. ReLU Primitive
+
 .. note::
 
-    For this submission, we overhauled our benchmarking framework once again. After compilation, the main entry point can be called using ``./build/<OS_NAME>/benchmarks``, but that will not actually run any benchmarks. Which benchmark types should be run is specified using command like arguments, such as ``matmul`` or ``unary``. Multiple benchmarks can be run at once, for example by running: ``./build/OS_NAME/benchmarks matmul unary``. The results are saved in the ``benchmarks`` folder in text files.
+    For this submission, we overhauled our benchmarking framework once again. 
+    After compilation, the main entry point can be called using ``./build/<OS_NAME>/benchmarks``, but this alone will not execute any benchmarks. 
+    The benchmark types to run are specified using command-line arguments, such as ``matmul`` or ``unary``. 
+    Multiple benchmarks can be run at once, for example by running: ``./build/OS_NAME/benchmarks matmul unary``. 
+    The results are saved as text files in the ``benchmarks`` folder.
 
 4.2.1 Zero Primitive
 ===========================
 
+The first unary primitive we implemented was the zero primitive. 
+This kernel is supposed to set all elements of the output matrix to zero, while ignoring the input matrix.
+For this reason, this primitive is exclusively executed as a first touch primitive.
+
 4.2.1.1 Zero Primitive Implementation
 ---------------------------------------
 
-The first unary primitive we implemented was the zero primitive. This kernel is supposed to set all elements of the output matrix to zero, while ignoring the input matrix. This functionality can be implemented in many different ways, but we started with the arm instruction which we had already implemented: ``STR``. We called this version the ``XZR`` approach, because we are using the ``XZR`` (and sometimes ``WZR``) register to store zeroes in the output matrix. The limitation here is that the ``XZR`` is only 64 bits wide, which means that we can only set 2 FP32 values to zero at once. To improve this, we implemented a second version that uses ``Neon`` instructions. We first create a zero register using the ``EOR`` instruction (eg. ``eor v31.16b, v31.16b, v31.16b`` sets ``v31`` to zero) and then use ``STP`` to zero 8 FP32 values at once. This version is called the ``EOR`` approach.
+The functionality of the zero primitive can be implemented in many different ways, but we started with using an ARM instruction which we had already implemented: ``STR``. We refer to this version as the ``XZR`` approach, because it uses the ``XZR`` (and sometimes ``WZR``) register to store zeroes in the output matrix. The limitation here is that the ``XZR`` is only 64 bits wide, which means we can only set 2 FP32 values to zero at once. To improve this, we implemented a second version that uses ``Neon`` instructions. We first created a zero register using the ``EOR`` instruction (eg. ``eor v31.16b, v31.16b, v31.16b`` sets ``v31`` to zero) and then use ``STP`` to zero 8 FP32 values at once. This version is called the ``EOR`` approach.
 
 **XZR Zero Primitive: main loop**
 
@@ -1086,7 +1113,7 @@ The first unary primitive we implemented was the zero primitive. This kernel is 
     int l_mLoopInstrCount = kernel.getInstrCountFromLabel("m_8_loop");
     kernel.add_instr(base::cbnz(gpr_t::x6, -l_mLoopInstrCount * 4));
 
-In this primitive, we handle one column at a time. For all matrices where the number of rows is not divisible by 8, we implemented edge cases that handle the remaining elements. This approach is the same as we used in the matrix multiplication kernels, with the only difference being that we do not need to handle the K dimension.
+In this primitive, we handle one column at a time. For all matrices where the number of rows is not divisible by 8, we implemented edge cases that handle the remaining elements. This approach is the same as the one we used in the matrix multiplication kernels, with the only difference being that we do not need to handle the K dimension.
 
 4.2.1.1 Zero Primitive Benchmarks
 ---------------------------------------
@@ -1154,10 +1181,14 @@ We benchmarked the performance of our zero primitive for the given parameters (M
     Bandwidth (GiB/s)                     85.5719
     --------------------------------------------------
 
-In all cases, we can see that the ``EOR`` approach is significantly faster than the ``XZR`` approach. Transposition was not benchmarked, since the swapping of the dimensions happens in the high level code and not in the assembly code.
+In all cases, we can see that the ``EOR`` approach is significantly faster than the ``XZR`` approach. Transposition was not benchmarked, since the dimension swapping happens in the high-level code and not in the assembly code.
 
 4.2.2 Identity Primitive
 ===========================
+
+This primitive differs slightly from the zero and ReLU primitives. 
+The identity (or copy) primitive is intended to copy values from the input matrix to the output matrix, while considering for potential transpositions. 
+Since this does not represent a true first or last touch, we implemented this primitive as an additional main primitive.
 
 4.2.2.1 Identity Implementation
 ---------------------------------
@@ -1167,8 +1198,8 @@ Firstly we implemented the general identity for a matrix A.
 This approach was mostly straight forward, as we copied our ``zero_primitive`` kernel and replaced 
 every 'zero store' with:
 
-#. A load from matrix ``A`` at the specific address
-#. A store, that would store the element from ``A`` in matrix ``B``
+#. a load from matrix ``A`` at the specific address, and
+#. a store, that would store the element from ``A`` in matrix ``B``.
 
 **Identity Primitive: main loop**
 
@@ -1187,7 +1218,7 @@ every 'zero store' with:
     int l_mLoopInstrCount = kernel.getInstrCountFromLabel("m_8_loop");
     kernel.add_instr(base::cbnz(gpr_t::x6, -l_mLoopInstrCount * 4));
 
-For the edge cases, where there was a remainder for the ``m`` dimension, we used the same procedure as before:
+For the edge cases where there was a remainder for the ``m`` dimension, we used the same procedure as before:
 
 **Identity Primitive: M = 5 edge case**
 
@@ -1245,7 +1276,7 @@ We decided to take the 4x4 matrix as our general case.
     kernel.add_instr(base::add(gpr_t::x8, gpr_t::x8, gpr_t::x3, 0, 0));
     kernel.add_instr(simd_fp::str(simd_fp_t::v11, gpr_t::x8, 0, neon_size_spec_t::q));
 
-To handle the different stores for ``4x4`` blocks that would not be on the matrix diagonal, we 
+To handle the different stores for ``4x4`` blocks that are not on the matrix diagonal, we 
 would do the following:
 
 After processing a ``4x4`` block on the diagonal:
@@ -1253,7 +1284,7 @@ After processing a ``4x4`` block on the diagonal:
 #. Jump by 4 rows in Matrix A
 #. Jump by 4 columns in Matrix B
 
-By using this approach, we would guarantee that after processing a block in the matrix A, we could save it at the correct position in matrix B. For all cases, where the ``m`` dimension would not be divisible by 4, we would need to implement specific kernels.
+By using this approach, we would guarantee that after processing a block in the matrix A, we could save it at the correct position in matrix B. For all cases where the ``m`` dimension is not be divisible by 4, we would need to implement specific kernels.
 
 **Identity Transposition Primitive: 2x4 edge case**
 
@@ -1279,7 +1310,7 @@ By using this approach, we would guarantee that after processing a block in the 
 
 After implementing the edge cases for remainders of ``m``, we would be able to process ``mx4`` blocks of our matrix.
 
-That meant, we needed to consider cases, where there was a remainder of ``n``.
+That meant we needed to consider cases where there was a remainder of ``n``.
 There were two things to consider:
 
 #. The rightmost column (remainder of ``n``), which could be: ``4x3``, ``4x2`` or ``4x1``
@@ -1387,15 +1418,18 @@ We benchmarked the performance of our identity primitive for the given parameter
     Bandwidth (GiB/s)                     3.60391
     --------------------------------------------------
 
-Most notably, we can see that the performance of the transposition kernel is significantly lower for larger matrices, such as 512x512 and 2048x2048. Here we only achieved a bandwidth of 3.6 to 4 GiB/s, while all other configurations achieved bandwidths greater than 100 GiB/s.
+Most notably, we can see that the performance of the transposition kernel is significantly lower for larger matrices, such as 512x512 and 2048x2048. Here, we achieved a bandwidth of only 3.6 to 4 GiB/s, while all other configurations achieved bandwidths greater than 100 GiB/s.
 
 4.2.3 ReLU Primitive
 ===========================
 
+The last unary primitive we implemented was the ReLU primitive, a commonly employed function machine learning models. 
+The Rectified Linear Unit activation function is defined as: ``f(x) = max(0, x)``, meaning that all negative values are set to zero and all positive values are kept as they are.
+
 4.2.3.1 ReLU Primitive Implementation
 ---------------------------------------
 
-The last unary primitive we implemented was the ReLU primitive. The Rectified Linear Unit activation function is defined as: ``f(x) = max(0, x)``, meaning that all negative values are set to zero and all positive values are kept as they are. To implement this, we first had to add support for the ``FMAX`` instruction, which computes the maximum of two values. Using the ``EOR`` instruction which we implemented for the zero primitive, we can create a zero register and then use the ``FMAX`` instruction to compute the maximum of the input value and zero. Since the primitive should also support transposition, we implemented two versions. 
+To implement this, we first had to add support for the ``FMAX`` instruction, which computes the maximum of two values. Using the ``EOR`` instruction which we implemented for the zero primitive, we can create a zero register and then use the ``FMAX`` instruction to compute the maximum of the input value and zero. Since the primitive should also support transposition, we implemented two versions. 
 
 The first version does not transpose the output and is structurally the same as the zero primitive. However instead of always storing zero, we now store the maximum of the input value and zero.
 
@@ -1421,7 +1455,7 @@ The first version does not transpose the output and is structurally the same as 
     // check if loop counter is zero
     kernel.add_instr(base::cbnz(gpr_t::x7, -kernel.getInstrCountFromLabel("m_8_loop") * 4));
 
-To support transposition, we started with the identity transposition primitive. The only addition we had to make was to add the ``FMAX`` instruction between the load and store instructions. The rest of the implementation is structurally the same as the identity transposition primitive. The difference can be seen in the following code snippets:
+To support transposition, we started with the identity transposition primitive. The only addition we had to make was to add the ``FMAX`` instruction between the load and store instructions. The rest of the implementation is structurally identical to the identity transposition primitive. The difference can be seen in the following code snippets:
 
 **Original transposition code (identity_trans_primitive)**
 
@@ -1486,7 +1520,7 @@ To support transposition, we started with the identity transposition primitive. 
 4.2.3.2 ReLU Primitive Benchmarks
 ---------------------------------------
 
-We benchmarked the performance of our ReLU primitive for the given parameters (M=N=50, M=N=64, M=N=512 and M=N=2048) and obtained the following results:
+We benchmarked the performance of our ReLU primitive for the given parameters (M=N=50, M=N=64, M=N=512 and M=N=2048), and obtained the following results:
 
 **Benchmarking results for the relu primitives**
 
@@ -1549,4 +1583,4 @@ We benchmarked the performance of our ReLU primitive for the given parameters (M
     Bandwidth (GiB/s)                     3.6136
     --------------------------------------------------
 
-The results match the pattern we saw for the zero and identity primitives. The transposition version is significantly slower than the non-transposition version, especially for the larger matrices. Here too, the 2048x2048 benchmark achieved worse results than the smaller matrices, both with and without transposition.
+The results match the pattern we saw for the zero and identity primitives. The transposition version is significantly slower than the non-transposition version, especially for larger matrices. Here as well, the 2048x2048 benchmark achieved worse results than the smaller matrices, both with and without transposition.
