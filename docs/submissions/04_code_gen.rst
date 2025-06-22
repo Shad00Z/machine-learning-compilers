@@ -987,9 +987,7 @@ We executed several initializations of our kernel, using a similar approach to t
 ---------------------------------------------------
 
 For the benchmarks, we enhanced our ``benchmarking.cpp`` file again.
-We introduced a new function that should handle 1≤M≤64, 1≤N≤64, K∈[1,16,32,64,128], lda=M, ldb=K and ldc=M and reduced the time for our benchmarks to ``1.0s``.
-
-Beside the fact, that we would now consider 16 different matrix sizes for A and B, the calculation for the GFLOPs was than similar to the normal ``GEMM`` kernel.
+We introduced a new function that should handle 1≤M≤64, 1≤N≤64, K∈[1,16,32,64,128], lda=M, ldb=K and ldc=M and reduced the time for our benchmarks to ``1.0s``. The calculation for the GFLOPs is almost the same as for the ``GEMM`` kernel, however now we also need to multiply the number of operations by the Batch-Reduce dimension size ``br_size``.
 
 .. code:: cpp
 
