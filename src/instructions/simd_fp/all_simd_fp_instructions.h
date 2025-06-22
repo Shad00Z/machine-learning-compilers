@@ -5,6 +5,7 @@
 #include "fmadd.h"
 #include "fmax.h"
 #include "fmla.h"
+#include "fmul.h"
 #include "ld1.h"
 #include "ldp.h"
 #include "ldr.h"

@@ -99,6 +99,13 @@ TEST_CASE("Tests the Neon FMLA (by element) instruction generation", "[Neon_FMLA
     REQUIRE(l_hex == "0x4f9c1004");
 }
 
+TEST_CASE("Tests the Neon FMUL (vector) instruction generation", "[Neon_FMUL_VEC]")
+{
+    uint32_t l_ins = simd_fp::fmulVec(simd_fp_t::v2, simd_fp_t::v1, simd_fp_t::v1, arr_spec_t::s4);
+    std::string l_hex = to_string_hex(l_ins);
+    REQUIRE(l_hex == "0x6e21dc22");
+}
+
 TEST_CASE("Tests the Neon LD1 (single structure) with a lane index instruction generation", "[Neon LD1 Single Structure Index]")
 {
     uint32_t l_ins = simd_fp::ld1(simd_fp_t::v0, gpr_t::x0, 3, neon_size_spec_t::s);
