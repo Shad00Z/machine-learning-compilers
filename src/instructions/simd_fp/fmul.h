@@ -38,20 +38,16 @@ namespace mini_jit
                 uint32_t l_ins = 0x2E20DC00;
 
                 // set destination register id
-                uint32_t l_reg_id = reg_dest & 0x1f;
-                l_ins |= l_reg_id;
+                l_ins |= (reg_dest & 0x1f);
 
                 // set first source register id
-                l_reg_id = reg_src1 & 0x1f;
-                l_ins |= l_reg_id << 5;
+                l_ins |= (reg_src1 & 0x1f) << 5;
 
                 // set second source register id
-                l_reg_id = reg_src2 & 0x1f;
-                l_ins |= l_reg_id << 16;
+                l_ins |= (reg_src2 & 0x1f) << 16;
 
                 // set arrangement specifier
-                uint32_t l_arr_spec = arr_spec & 0x40400000;
-                l_ins |= l_arr_spec;
+                l_ins |= (arr_spec & 0x40400000);
 
                 return l_ins;
             }
