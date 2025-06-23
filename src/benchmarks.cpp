@@ -100,6 +100,19 @@ void unary_benchmark(mini_jit::Benchmark &bench, std::ofstream &unary_bm, std::s
     unary_bm << "--------------------------------------------------" << std::endl;
 }
 
+void unary_benchmark_throughput(mini_jit::Benchmark &bench, std::ofstream &unary_bm, std::string name)
+{
+    std::cout << "Running " << name << " benchmark" << std::endl;
+    unary_bm << "Running " << name << " benchmark" << std::endl;
+    bench.run();
+    mini_jit::Benchmark::benchmark_result result = bench.getResult();
+    unary_bm << "Total time (s):                       " << result.elapsedSeconds << std::endl;
+    unary_bm << "Total reps:                           " << result.numReps << std::endl;
+    unary_bm << "Total floating point operations:      " << result.totalOperations << std::endl;
+    unary_bm << "Estimated GFLOPS/sec:                 " << result.gflops << std::endl;
+    unary_bm << "--------------------------------------------------" << std::endl;
+}
+
 void optimized_tensor_benchmark(std::ofstream &top_opt_bm, int64_t thread_target, int64_t max_kernel_size)
 {
     const double RUN_TIME = 3.0;
@@ -678,6 +691,26 @@ int main(int argc, char *argv[])
         unary_benchmark(bench_relu_trans_64_64, unary_bm, "relu_trans_primitive 64x64");
         unary_benchmark(bench_relu_trans_512_512, unary_bm, "relu_trans_primitive 512x512");
         unary_benchmark(bench_relu_trans_2048_2048, unary_bm, "relu_trans_primitive 2048x2048");
+
+        // square_primitive benchmarks
+        mini_jit::benchmarks::Square_primitive_bench bench_square_50_50(RUN_TIME, 50, 50);
+        mini_jit::benchmarks::Square_primitive_bench bench_square_64_64(RUN_TIME, 64, 64);
+        mini_jit::benchmarks::Square_primitive_bench bench_square_512_512(RUN_TIME, 512, 512);
+        mini_jit::benchmarks::Square_primitive_bench bench_square_2048_2048(RUN_TIME, 2048, 2048);
+        unary_benchmark_throughput(bench_square_50_50, unary_bm, "square_primitive 50x50");
+        unary_benchmark_throughput(bench_square_64_64, unary_bm, "square_primitive 64x64");
+        unary_benchmark_throughput(bench_square_512_512, unary_bm, "square_primitive 512x512");
+        unary_benchmark_throughput(bench_square_2048_2048, unary_bm, "square_primitive 2048x2048");
+
+        // square_trans_primitive benchmarks
+        mini_jit::benchmarks::Square_trans_primitive_bench bench_square_trans_50_50(RUN_TIME, 50, 50);
+        mini_jit::benchmarks::Square_trans_primitive_bench bench_square_trans_64_64(RUN_TIME, 64, 64);
+        mini_jit::benchmarks::Square_trans_primitive_bench bench_square_trans_512_512(RUN_TIME, 512, 512);
+        mini_jit::benchmarks::Square_trans_primitive_bench bench_square_trans_2048_2048(RUN_TIME, 2048, 2048);
+        unary_benchmark_throughput(bench_square_trans_50_50, unary_bm, "square_trans_primitive 50x50");
+        unary_benchmark_throughput(bench_square_trans_64_64, unary_bm, "square_trans_primitive 64x64");
+        unary_benchmark_throughput(bench_square_trans_512_512, unary_bm, "square_trans_primitive 512x512");
+        unary_benchmark_throughput(bench_square_trans_2048_2048, unary_bm, "square_trans_primitive 2048x2048");
 
         // zero_eor_primitive benchmarks
         mini_jit::benchmarks::Zero_eor_primitive_bench bench_zero_eor_50_50(RUN_TIME, 50, 50);

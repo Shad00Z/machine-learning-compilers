@@ -9,6 +9,26 @@ namespace inst = mini_jit::instructions;
 namespace base = inst::base;
 namespace simd_fp = inst::simd_fp;
 
+using enum gpr_t;
+using enum simd_fp_t;
+using enum neon_size_spec_t;
+using enum arr_spec_t;
+
+using base::stpPre;
+using base::movSP;
+using base::lsl;
+using base::mov;
+using base::add;
+using base::sub;
+using base::cbnz;
+using base::ldpPost;
+using simd_fp::ldp;
+using simd_fp::stp;
+using simd_fp::ldr;
+using simd_fp::str;
+using simd_fp::fmulVec;
+using simd_fp::fmulScalar;
+
 void mini_jit::kernels::unary::square(mini_jit::Kernel &kernel,
                                       u_int32_t m,
                                       u_int32_t n)
@@ -20,24 +40,24 @@ void mini_jit::kernels::unary::square(mini_jit::Kernel &kernel,
     // x3: leading dimension of B
 
     // Prepare the kernel
-    int mLoopIterations = m / 8;
-    int mLoopRemainder = m % 8;
+    int mLoopIterations = m / 16;
+    int mLoopRemainder = m % 16;
 
     kernel.add_instr({
         // PCS
-        base::stpPre(gpr_t::x29, gpr_t::x30, gpr_t::sp, -16),
-        base::movSP(gpr_t::x29, gpr_t::sp),
+        stpPre(x29, x30, sp, -16),
+        movSP(x29, sp),
 
         // Compute strides (* 4, because of 4 bytes per fp32 element)
-        base::lsl(gpr_t::x2, gpr_t::x2, 2),
-        base::lsl(gpr_t::x3, gpr_t::x3, 2),
+        lsl(x2, x2, 2),
+        lsl(x3, x3, 2),
 
         // Save base matrix pointers
-        base::mov(gpr_t::x4, gpr_t::x0), // A
-        base::mov(gpr_t::x5, gpr_t::x1), // B
+        mov(x4, x0), // A
+        mov(x5, x1), // B
 
         // Set n loop counter
-        base::mov(gpr_t::x6, n)
+        mov(x6, n)
     });
 
     // Start n loop (1 column)
@@ -45,40 +65,39 @@ void mini_jit::kernels::unary::square(mini_jit::Kernel &kernel,
 
     // Set m loop counter
     kernel.add_instr({
-        base::mov(gpr_t::x7, mLoopIterations),
+        mov(x7, mLoopIterations),
 
         // working pointers for rows
-        base::mov(gpr_t::x8, gpr_t::x4), // A
-        base::mov(gpr_t::x9, gpr_t::x5)  // B
+        mov(x8, x4), // A
+        mov(x9, x5)  // B
     });
 
     if (mLoopIterations > 0)
     {
-        kernel.add_label("m_8_loop");
+        kernel.add_label("m_16_loop");
         kernel.add_instr({
-            // load 8 elements from A into v0, v1
-            simd_fp::ldp(simd_fp_t::v0, simd_fp_t::v1, gpr_t::x8, 0, neon_size_spec_t::q),
+            // load 16 elements from A
+            ldp(v0, v1, x8, 0, q),
+            ldp(v2, v3, x8, 32, q),
 
-            // Zero output registers v2, v3
-            simd_fp::eor(simd_fp_t::v2, simd_fp_t::v2, simd_fp_t::v2, arr_spec_t::b16),
-            simd_fp::eor(simd_fp_t::v3, simd_fp_t::v3, simd_fp_t::v3, arr_spec_t::b16),
+            fmulVec(v4, v0, v0, s4),
+            fmulVec(v5, v1, v1, s4),
+            fmulVec(v6, v2, v2, s4),
+            fmulVec(v7, v3, v3, s4),
 
-            // Square: v2 = 0 + (v0 × v0), v3 = 0 + (v1 × v1)
-            simd_fp::fmlaVec(simd_fp_t::v2, simd_fp_t::v0, simd_fp_t::v0, arr_spec_t::s4),
-            simd_fp::fmlaVec(simd_fp_t::v3, simd_fp_t::v1, simd_fp_t::v1, arr_spec_t::s4),
+            // store 16 elements to B
+            stp(v4, v5, x9, 0, q),
+            stp(v6, v7, x9, 32, q),
 
-            // store 8 squared elements to B
-            simd_fp::stp(simd_fp_t::v2, simd_fp_t::v3, gpr_t::x9, 0, neon_size_spec_t::q),
-
-            // jump by 8 rows
-            base::add(gpr_t::x8, gpr_t::x8, 8*4, 0),
-            base::add(gpr_t::x9, gpr_t::x9, 8*4, 0),
+            // jump by 16 rows
+            add(x8, x8, 16*4, 0),
+            add(x9, x9, 16*4, 0),
 
             // decrement m loop counter
-            base::sub(gpr_t::x7, gpr_t::x7, 1, 0),
+            sub(x7, x7, 1, 0),
         });
         // check if loop counter is zero
-        kernel.add_instr(base::cbnz(gpr_t::x7, -kernel.getInstrCountFromLabel("m_8_loop") * 4));
+        kernel.add_instr(cbnz(x7, -kernel.getInstrCountFromLabel("m_16_loop") * 4));
     }
 
     if (mLoopRemainder > 0)
@@ -87,97 +106,198 @@ void mini_jit::kernels::unary::square(mini_jit::Kernel &kernel,
         {
         case 1:
             kernel.add_instr({
-                simd_fp::ldr(simd_fp_t::v0, gpr_t::x8, 0, neon_size_spec_t::s),
-                simd_fp::eor(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v1, arr_spec_t::b16),
-                simd_fp::fmadd(simd_fp_t::v1, simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v1, neon_size_spec_t::s),
-                simd_fp::str(simd_fp_t::v1, gpr_t::x9, 0, neon_size_spec_t::s)
+                // 1 element
+                ldr(v0, x8, 0, s),
+                fmulScalar(v1, v0, v0, s),
+                str(v1, x9, 0, s)
             });
             break;
         case 2:
             kernel.add_instr({
-                simd_fp::ldr(simd_fp_t::v0, gpr_t::x8, 0, neon_size_spec_t::d),
-                simd_fp::eor(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v1, arr_spec_t::b16),
-                simd_fp::fmlaVec(simd_fp_t::v1, simd_fp_t::v0, simd_fp_t::v0, arr_spec_t::s2),
-                simd_fp::str(simd_fp_t::v1, gpr_t::x9, 0, neon_size_spec_t::d)
+                // 2 elements
+                ldr(v0, x8, 0, d),
+                fmulVec(v1, v0, v0, s2),
+                str(v1, x9, 0, d)
             });
             break;
         case 3:
-            // 2 elements
             kernel.add_instr({
-                simd_fp::ldrPost(simd_fp_t::v0, gpr_t::x8, 2*4, neon_size_spec_t::d),
-                simd_fp::eor(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v1, arr_spec_t::b16),
-                simd_fp::fmlaVec(simd_fp_t::v1, simd_fp_t::v0, simd_fp_t::v0, arr_spec_t::s2),
-                simd_fp::strPost(simd_fp_t::v1, gpr_t::x9, 2*4, neon_size_spec_t::d)
-            });
-            // 1 element
-            kernel.add_instr({
-                simd_fp::ldr(simd_fp_t::v0, gpr_t::x8, 0, neon_size_spec_t::s),
-                simd_fp::eor(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v1, arr_spec_t::b16),
-                simd_fp::fmadd(simd_fp_t::v1, simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v1, neon_size_spec_t::s),
-                simd_fp::str(simd_fp_t::v1, gpr_t::x9, 0, neon_size_spec_t::s)
+                // 2 elements
+                ldr(v0, x8, 0, d),
+                fmulVec(v1, v0, v0, s2),
+                str(v1, x9, 0, d),
+                // 1 element
+                ldr(v2, x8, 2*4, s),
+                fmulScalar(v3, v2, v2, s),
+                str(v3, x9, 2*4, s)
             });
             break;
         case 4:
             kernel.add_instr({
-                simd_fp::ldr(simd_fp_t::v0, gpr_t::x8, 0, neon_size_spec_t::q),
-                simd_fp::eor(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v1, arr_spec_t::b16),
-                simd_fp::fmlaVec(simd_fp_t::v1, simd_fp_t::v0, simd_fp_t::v0, arr_spec_t::s4),
-                simd_fp::str(simd_fp_t::v1, gpr_t::x9, 0, neon_size_spec_t::q)
+                // 4 elements
+                ldr(v0, x8, 0, q),
+                fmulVec(v1, v0, v0, s4),
+                str(v1, x9, 0, q)
             });
             break;
         case 5:
-            // 4 elements
             kernel.add_instr({
-                simd_fp::ldrPost(simd_fp_t::v0, gpr_t::x8, 4*4, neon_size_spec_t::q),
-                simd_fp::eor(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v1, arr_spec_t::b16),
-                simd_fp::fmlaVec(simd_fp_t::v1, simd_fp_t::v0, simd_fp_t::v0, arr_spec_t::s4),
-                simd_fp::strPost(simd_fp_t::v1, gpr_t::x9, 4*4, neon_size_spec_t::q)
-            });
-            // 1 element
-            kernel.add_instr({
-                simd_fp::ldr(simd_fp_t::v0, gpr_t::x8, 0, neon_size_spec_t::s),
-                simd_fp::eor(simd_fp_t::v2, simd_fp_t::v2, simd_fp_t::v2, arr_spec_t::b16),
-                simd_fp::fmadd(simd_fp_t::v2, simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v2, neon_size_spec_t::s),
-                simd_fp::str(simd_fp_t::v2, gpr_t::x9, 0, neon_size_spec_t::s)
+                // 4 elements
+                ldr(v0, x8, 0, q),
+                fmulVec(v1, v0, v0, s4),
+                str(v1, x9, 0, q),
+                // 1 element
+                ldr(v2, x8, 4*4, s),
+                fmulScalar(v3, v2, v2, s),
+                str(v3, x9, 4*4, s)
             });
             break;
         case 6:
-            // 4 elements
             kernel.add_instr({
-                simd_fp::ldrPost(simd_fp_t::v0, gpr_t::x8, 4*4, neon_size_spec_t::q),
-                simd_fp::eor(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v1, arr_spec_t::b16),
-                simd_fp::fmlaVec(simd_fp_t::v1, simd_fp_t::v0, simd_fp_t::v0, arr_spec_t::s4),
-                simd_fp::strPost(simd_fp_t::v1, gpr_t::x9, 4*4, neon_size_spec_t::q)
-            });
-            // 2 elements
-            kernel.add_instr({
-                simd_fp::ldr(simd_fp_t::v0, gpr_t::x8, 0, neon_size_spec_t::d),
-                simd_fp::eor(simd_fp_t::v2, simd_fp_t::v2, simd_fp_t::v2, arr_spec_t::b16),
-                simd_fp::fmlaVec(simd_fp_t::v2, simd_fp_t::v0, simd_fp_t::v0, arr_spec_t::s2),
-                simd_fp::str(simd_fp_t::v2, gpr_t::x9, 0, neon_size_spec_t::d)
+                // 4 elements
+                ldr(v0, x8, 0, q),
+                fmulVec(v1, v0, v0, s4),
+                str(v1, x9, 0, q),
+                // 2 elements
+                ldr(v0, x8, 4*4, d),
+                fmulVec(v2, v0, v0, s2),
+                str(v2, x9, 4*4, d)
             });
             break;
         case 7:
-            // 4 elements
             kernel.add_instr({
-                simd_fp::ldrPost(simd_fp_t::v0, gpr_t::x8, 4*4, neon_size_spec_t::q),
-                simd_fp::eor(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v1, arr_spec_t::b16),
-                simd_fp::fmlaVec(simd_fp_t::v1, simd_fp_t::v0, simd_fp_t::v0, arr_spec_t::s4),
-                simd_fp::strPost(simd_fp_t::v1, gpr_t::x9, 4*4, neon_size_spec_t::q)
+                // 4 elements
+                ldr(v0, x8, 0, q),
+                fmulVec(v1, v0, v0, s4),
+                str(v1, x9, 0, q),
+                // 2 elements
+                ldr(v2, x8, 4*4, d),
+                fmulVec(v3, v2, v2, s2),
+                str(v3, x9, 4*4, d),
+                // 1 element
+                ldr(v4, x8, 24, s),
+                fmulScalar(v5, v4, v4, s),
+                str(v5, x9, 24, s)
             });
-            // 2 elements
+            break;
+        case 8:
             kernel.add_instr({
-                simd_fp::ldrPost(simd_fp_t::v0, gpr_t::x8, 2*4, neon_size_spec_t::d),
-                simd_fp::eor(simd_fp_t::v2, simd_fp_t::v2, simd_fp_t::v2, arr_spec_t::b16),
-                simd_fp::fmlaVec(simd_fp_t::v2, simd_fp_t::v0, simd_fp_t::v0, arr_spec_t::s2),
-                simd_fp::strPost(simd_fp_t::v2, gpr_t::x9, 2*4, neon_size_spec_t::d)
+                // 8 elements
+                ldp(v0, v1, x8, 0, q),
+                fmulVec(v2, v0, v0, s4),
+                fmulVec(v3, v1, v1, s4),
+                stp(v2, v3, x9, 0, q)
             });
-            // 1 element
+            break;
+        case 9:
             kernel.add_instr({
-                simd_fp::ldr(simd_fp_t::v0, gpr_t::x8, 0, neon_size_spec_t::s),
-                simd_fp::eor(simd_fp_t::v3, simd_fp_t::v3, simd_fp_t::v3, arr_spec_t::b16),
-                simd_fp::fmadd(simd_fp_t::v3, simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v3, neon_size_spec_t::s),
-                simd_fp::str(simd_fp_t::v3, gpr_t::x9, 0, neon_size_spec_t::s)
+                // 8 elements
+                ldp(v0, v1, x8, 0, q),
+                fmulVec(v2, v0, v0, s4),
+                fmulVec(v3, v1, v1, s4),
+                stp(v2, v3, x9, 0, q),
+                // 1 element
+                ldr(v4, x8, 32, s),
+                fmulScalar(v5, v4, v4, s),
+                str(v5, x9, 32, s)
+            });
+            break;
+        case 10:
+            kernel.add_instr({
+                // 8 elements
+                ldp(v0, v1, x8, 0, q),
+                fmulVec(v2, v0, v0, s4),
+                fmulVec(v3, v1, v1, s4),
+                stp(v2, v3, x9, 0, q),
+                // 2 elements
+                ldr(v4, x8, 32, d),
+                fmulVec(v5, v4, v4, s2),
+                str(v5, x9, 32, d)
+            });
+            break;
+        case 11:
+            kernel.add_instr({
+                // 8 elements
+                ldp(v0, v1, x8, 0, q),
+                fmulVec(v2, v0, v0, s4),
+                fmulVec(v3, v1, v1, s4),
+                stp(v2, v3, x9, 0, q),
+                // 2 elements
+                ldr(v4, x8, 32, d),
+                fmulVec(v5, v4, v4, s2),
+                str(v5, x9, 32, d),
+                // 1 element
+                ldr(v6, x8, 40, s),
+                fmulScalar(v7, v6, v6, s),
+                str(v7, x9, 40, s)
+            });
+            break;
+        case 12:
+            kernel.add_instr({
+                // 8 elements
+                ldp(v0, v1, x8, 0, q),
+                fmulVec(v2, v0, v0, s4),
+                fmulVec(v3, v1, v1, s4),
+                stp(v2, v3, x9, 0, q),
+                // 4 elements
+                ldr(v4, x8, 32, q),
+                fmulVec(v5, v4, v4, s4),
+                str(v5, x9, 32, q)
+            });
+            break;
+        case 13:
+            kernel.add_instr({
+                // 8 elements
+                ldp(v0, v1, x8, 0, q),
+                fmulVec(v2, v0, v0, s4),
+                fmulVec(v3, v1, v1, s4),
+                stp(v2, v3, x9, 0, q),
+                // 4 elements
+                ldr(v4, x8, 32, q),
+                fmulVec(v5, v4, v4, s4),
+                str(v5, x9, 32, q),
+                // 1 element
+                ldr(v6, x8, 48, s),
+                fmulScalar(v7, v6, v6, s),
+                str(v7, x9, 48, s)
+            });
+            break;
+        case 14:
+            kernel.add_instr({
+                // 8 elements
+                ldp(v0, v1, x8, 0, q),
+                fmulVec(v2, v0, v0, s4),
+                fmulVec(v3, v1, v1, s4),
+                stp(v2, v3, x9, 0, q),
+                // 4 elements
+                ldr(v4, x8, 32, q),
+                fmulVec(v5, v4, v4, s4),
+                str(v5, x9, 32, q),
+                // 2 elements
+                ldr(v6, x8, 48, d),
+                fmulVec(v7, v6, v6, s2),
+                str(v7, x9, 48, d)
+            });
+            break;
+        case 15:
+            kernel.add_instr({
+                // 8 elements
+                ldp(v0, v1, x8, 0, q),
+                fmulVec(v2, v0, v0, s4),
+                fmulVec(v3, v1, v1, s4),
+                stp(v2, v3, x9, 0, q),
+                // 4 elements
+                ldr(v4, x8, 32, q),
+                fmulVec(v5, v4, v4, s4),
+                str(v5, x9, 32, q),
+                // 2 elements
+                ldr(v6, x8, 48, d),
+                fmulVec(v7, v6, v6, s2),
+                str(v7, x9, 48, d),
+                // 1 element
+                ldr(v8, x8, 56, s),
+                fmulScalar(v9, v8, v8, s),
+                str(v9, x9, 56, s)
             });
             break;
         default:
@@ -187,18 +307,18 @@ void mini_jit::kernels::unary::square(mini_jit::Kernel &kernel,
 
     kernel.add_instr({
         // jump to next column
-        base::add(gpr_t::x4, gpr_t::x4, gpr_t::x2, 0, 0),
-        base::add(gpr_t::x5, gpr_t::x5, gpr_t::x3, 0, 0),
+        add(x4, x4, x2, 0, 0),
+        add(x5, x5, x3, 0, 0),
 
         // decrement n loop counter
-        base::sub(gpr_t::x6, gpr_t::x6, 1, 0)
+        sub(x6, x6, 1, 0)
     });
     // check if loop counter is zero
     int l_nLoopInstrCount = kernel.getInstrCountFromLabel("n_loop");
-    kernel.add_instr(base::cbnz(gpr_t::x6, -l_nLoopInstrCount * 4));
+    kernel.add_instr(cbnz(x6, -l_nLoopInstrCount * 4));
 
     // Restore stack pointer
-    kernel.add_instr(base::ldpPost(gpr_t::x29, gpr_t::x30, gpr_t::sp, 16));
+    kernel.add_instr(ldpPost(x29, x30, sp, 16));
 
     kernel.add_instr(inst::ret());
     kernel.write("square_primitive.bin");

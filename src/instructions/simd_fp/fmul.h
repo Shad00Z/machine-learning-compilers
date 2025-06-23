@@ -51,6 +51,44 @@ namespace mini_jit
 
                 return l_ins;
             }
+
+            /**
+             * @brief Generates an FMUL (by element) instruction.
+             *
+             * @param reg_dest destination register.
+             * @param reg_src1 first source register.
+             * @param reg_src2 second source register.
+             * @param arr_spec arrangement specifier.
+             *
+             * @return instruction.
+             **/
+            constexpr uint32_t fmulScalar(simd_fp_t reg_dest,
+                                          simd_fp_t reg_src1,
+                                          simd_fp_t reg_src2,
+                                          neon_size_spec_t size_spec)
+            {
+                if (size_spec != neon_size_spec_t::s && 
+                    size_spec != neon_size_spec_t::d)
+                {
+                    throw std::invalid_argument("Invalid size specifier");
+                }
+
+                uint32_t l_ins = 0x1E200800;
+
+                // set destination register id
+                l_ins |= (reg_dest & 0x1f);
+
+                // set first source register id
+                l_ins |= (reg_src1 & 0x1f) << 5;
+
+                // set second source register id
+                l_ins |= (reg_src2 & 0x1f) << 16;
+
+                // set size specifier
+                l_ins |= (size_spec & 0x3) << 22;
+
+                return l_ins;
+            }
         }
     }
 }
