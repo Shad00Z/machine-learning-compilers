@@ -99,6 +99,28 @@ TEST_CASE("Tests the Neon FMLA (by element) instruction generation", "[Neon_FMLA
     REQUIRE(l_hex == "0x4f9c1004");
 }
 
+TEST_CASE("Tests the Neon FRECPE instruction generation", "[Neon_FRECPE]")
+{
+    uint32_t l_ins = simd_fp::frecpeVec(simd_fp_t::v0, simd_fp_t::v1, arr_spec_t::s4);
+    std::string l_hex = to_string_hex(l_ins);
+    REQUIRE(l_hex == "0x4ea1d820");
+
+    l_ins = simd_fp::frecpeScalar(simd_fp_t::v0, simd_fp_t::v2, neon_size_spec_t::s);
+    l_hex = to_string_hex(l_ins);
+    REQUIRE(l_hex == "0x5ea1d840");
+}
+
+TEST_CASE("Tests the Neon FRECPS instruction generation", "[Neon_FRECPS]")
+{
+    uint32_t l_ins = simd_fp::frecpsVec(simd_fp_t::v2, simd_fp_t::v1, simd_fp_t::v0, arr_spec_t::s4);
+    std::string l_hex = to_string_hex(l_ins);
+    REQUIRE(l_hex == "0x4e20fc22");
+
+    l_ins = simd_fp::frecpsScalar(simd_fp_t::v3, simd_fp_t::v2, simd_fp_t::v0, neon_size_spec_t::s);
+    l_hex = to_string_hex(l_ins);
+    REQUIRE(l_hex == "0x5e20fc43");
+}
+
 TEST_CASE("Tests the Neon LD1 (single structure) with a lane index instruction generation", "[Neon LD1 Single Structure Index]")
 {
     uint32_t l_ins = simd_fp::ld1(simd_fp_t::v0, gpr_t::x0, 3, neon_size_spec_t::s);
