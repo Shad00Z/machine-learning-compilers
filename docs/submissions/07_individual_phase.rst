@@ -274,3 +274,59 @@ On the other hand, for the normal squared kernel we enhanced our initial dimensi
 
 Lastly, we performed benchmarks similar to those of the other unary kernels: 
 
+.. code:: text
+
+    --------------------------------------------------
+    Running square_primitive 50x50 benchmark
+    Total time (s):                       3
+    Total reps:                           19109506
+    Total floating point operations:      47773765000
+    Estimated GFLOPS/sec:                 15.9246
+    --------------------------------------------------
+    Running square_primitive 64x64 benchmark
+    Total time (s):                       3
+    Total reps:                           13569270
+    Total floating point operations:      55579729920
+    Estimated GFLOPS/sec:                 18.5266
+    --------------------------------------------------
+    Running square_primitive 512x512 benchmark
+    Total time (s):                       3.00001
+    Total reps:                           175397
+    Total floating point operations:      45979271168
+    Estimated GFLOPS/sec:                 15.3264
+    --------------------------------------------------
+    Running square_primitive 2048x2048 benchmark
+    Total time (s):                       3.00007
+    Total reps:                           9832
+    Total floating point operations:      41238396928
+    Estimated GFLOPS/sec:                 13.7458
+    --------------------------------------------------
+
+.. code:: text 
+
+    Running square_trans_primitive 50x50 benchmark
+    Total time (s):                       3
+    Total reps:                           17201142
+    Total floating point operations:      43002855000
+    Estimated GFLOPS/sec:                 14.3343
+    --------------------------------------------------
+    Running square_trans_primitive 64x64 benchmark
+    Total time (s):                       3
+    Total reps:                           10953385
+    Total floating point operations:      44865064960
+    Estimated GFLOPS/sec:                 14.955
+    --------------------------------------------------
+    Running square_trans_primitive 512x512 benchmark
+    Total time (s):                       3.00041
+    Total reps:                           6112
+    Total floating point operations:      1602224128
+    Estimated GFLOPS/sec:                 0.534002
+    --------------------------------------------------
+    Running square_trans_primitive 2048x2048 benchmark
+    Total time (s):                       3.00258
+    Total reps:                           342
+    Total floating point operations:      1434451968
+    Estimated GFLOPS/sec:                 0.47774
+    --------------------------------------------------
+
+This time we were measuring the throughput of our kernel, differently to the ``zero``, ``identity``, and ``ReLU`` kernel, where we were measuring the data transfer rate.
