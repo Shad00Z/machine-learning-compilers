@@ -9,8 +9,10 @@ var searchData=
   ['_7ematmul_5fm_5fn_5fk_5fbench_6',['~Matmul_m_n_k_bench',['../classmini__jit_1_1benchmarks_1_1Matmul__m__n__k__bench.html#a382f9cbb15eec3257319f2bb13af497a',1,'mini_jit::benchmarks::Matmul_m_n_k_bench']]],
   ['_7erelu_5fprimitive_5fbench_7',['~Relu_primitive_bench',['../classmini__jit_1_1benchmarks_1_1Relu__primitive__bench.html#ae387eb1ead307faa68d95859c73c4436',1,'mini_jit::benchmarks::Relu_primitive_bench']]],
   ['_7erelu_5ftrans_5fprimitive_5fbench_8',['~Relu_trans_primitive_bench',['../classmini__jit_1_1benchmarks_1_1Relu__trans__primitive__bench.html#a6b5ee35d40fb4b07d286caab4157a487',1,'mini_jit::benchmarks::Relu_trans_primitive_bench']]],
-  ['_7etensoroperationbench_9',['~TensorOperationBench',['../classmini__jit_1_1benchmarks_1_1TensorOperationBench.html#a71a7ed21a7801f879e90cf655d3c9550',1,'mini_jit::benchmarks::TensorOperationBench']]],
-  ['_7eunary_10',['~Unary',['../classmini__jit_1_1Unary.html#aaaea16c0e70c93ac02f0b2a069c84435',1,'mini_jit::Unary']]],
-  ['_7ezero_5feor_5fprimitive_5fbench_11',['~Zero_eor_primitive_bench',['../classmini__jit_1_1benchmarks_1_1Zero__eor__primitive__bench.html#ab9bd211d7c028a9652317449179386d7',1,'mini_jit::benchmarks::Zero_eor_primitive_bench']]],
-  ['_7ezero_5fxzr_5fprimitive_5fbench_12',['~Zero_xzr_primitive_bench',['../classmini__jit_1_1benchmarks_1_1Zero__xzr__primitive__bench.html#ae704ae9510cb7c86bbe38da9d7259aa6',1,'mini_jit::benchmarks::Zero_xzr_primitive_bench']]]
+  ['_7esquare_5fprimitive_5fbench_9',['~Square_primitive_bench',['../classmini__jit_1_1benchmarks_1_1Square__primitive__bench.html#aaa735fa377a27ee5a3339db18ea8dc82',1,'mini_jit::benchmarks::Square_primitive_bench']]],
+  ['_7esquare_5ftrans_5fprimitive_5fbench_10',['~Square_trans_primitive_bench',['../classmini__jit_1_1benchmarks_1_1Square__trans__primitive__bench.html#a84352c1135d0aa0e66e3694ec489fcec',1,'mini_jit::benchmarks::Square_trans_primitive_bench']]],
+  ['_7etensoroperationbench_11',['~TensorOperationBench',['../classmini__jit_1_1benchmarks_1_1TensorOperationBench.html#a71a7ed21a7801f879e90cf655d3c9550',1,'mini_jit::benchmarks::TensorOperationBench']]],
+  ['_7eunary_12',['~Unary',['../classmini__jit_1_1Unary.html#aaaea16c0e70c93ac02f0b2a069c84435',1,'mini_jit::Unary']]],
+  ['_7ezero_5feor_5fprimitive_5fbench_13',['~Zero_eor_primitive_bench',['../classmini__jit_1_1benchmarks_1_1Zero__eor__primitive__bench.html#ab9bd211d7c028a9652317449179386d7',1,'mini_jit::benchmarks::Zero_eor_primitive_bench']]],
+  ['_7ezero_5fxzr_5fprimitive_5fbench_14',['~Zero_xzr_primitive_bench',['../classmini__jit_1_1benchmarks_1_1Zero__xzr__primitive__bench.html#ae704ae9510cb7c86bbe38da9d7259aa6',1,'mini_jit::benchmarks::Zero_xzr_primitive_bench']]]
 ];

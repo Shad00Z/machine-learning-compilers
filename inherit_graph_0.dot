@@ -21,9 +21,13 @@ digraph "Graphical Class Hierarchy"
   Node0 -> Node7 [id="edge7_Node000000_Node000007",dir="back",color="steelblue1",style="solid",tooltip=" "];
   Node7 [id="Node000007",label="mini_jit::benchmarks\l::Relu_trans_primitive_bench",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classmini__jit_1_1benchmarks_1_1Relu__trans__primitive__bench.html",tooltip=" "];
   Node0 -> Node8 [id="edge8_Node000000_Node000008",dir="back",color="steelblue1",style="solid",tooltip=" "];
-  Node8 [id="Node000008",label="mini_jit::benchmarks\l::TensorOperationBench",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classmini__jit_1_1benchmarks_1_1TensorOperationBench.html",tooltip=" "];
+  Node8 [id="Node000008",label="mini_jit::benchmarks\l::Square_primitive_bench",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classmini__jit_1_1benchmarks_1_1Square__primitive__bench.html",tooltip=" "];
   Node0 -> Node9 [id="edge9_Node000000_Node000009",dir="back",color="steelblue1",style="solid",tooltip=" "];
-  Node9 [id="Node000009",label="mini_jit::benchmarks\l::Zero_eor_primitive_bench",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classmini__jit_1_1benchmarks_1_1Zero__eor__primitive__bench.html",tooltip=" "];
+  Node9 [id="Node000009",label="mini_jit::benchmarks\l::Square_trans_primitive_bench",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classmini__jit_1_1benchmarks_1_1Square__trans__primitive__bench.html",tooltip=" "];
   Node0 -> Node10 [id="edge10_Node000000_Node000010",dir="back",color="steelblue1",style="solid",tooltip=" "];
-  Node10 [id="Node000010",label="mini_jit::benchmarks\l::Zero_xzr_primitive_bench",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classmini__jit_1_1benchmarks_1_1Zero__xzr__primitive__bench.html",tooltip=" "];
+  Node10 [id="Node000010",label="mini_jit::benchmarks\l::TensorOperationBench",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classmini__jit_1_1benchmarks_1_1TensorOperationBench.html",tooltip=" "];
+  Node0 -> Node11 [id="edge11_Node000000_Node000011",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node11 [id="Node000011",label="mini_jit::benchmarks\l::Zero_eor_primitive_bench",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classmini__jit_1_1benchmarks_1_1Zero__eor__primitive__bench.html",tooltip=" "];
+  Node0 -> Node12 [id="edge12_Node000000_Node000012",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node12 [id="Node000012",label="mini_jit::benchmarks\l::Zero_xzr_primitive_bench",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classmini__jit_1_1benchmarks_1_1Zero__xzr__primitive__bench.html",tooltip=" "];
 }
