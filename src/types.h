@@ -33,6 +33,7 @@ namespace mini_jit
         relu = 2,
         gemm = 3,
         brgemm = 4,
+        square = 5,
         none = 99
     };
 
@@ -43,6 +44,7 @@ namespace mini_jit
             case ptype_t::relu: return "relu";
             case ptype_t::gemm: return "gemm";
             case ptype_t::brgemm: return "brgemm";
+            case ptype_t::square: return "square";
             case ptype_t::none: return "none";
             default: return "unknown";
         }
