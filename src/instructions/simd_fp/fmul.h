@@ -54,12 +54,12 @@ namespace mini_jit
             }
 
             /**
-             * @brief Generates an FMUL (by element) instruction.
+             * @brief Generates an FMUL (scalar) instruction.
              *
              * @param reg_dest destination register.
              * @param reg_src1 first source register.
              * @param reg_src2 second source register.
-             * @param arr_spec arrangement specifier.
+             * @param size_spec size specifier.
              *
              * @return instruction.
              **/

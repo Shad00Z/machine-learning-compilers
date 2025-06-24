@@ -95,10 +95,9 @@ For the unary primitives we were looking at **Square**, **Reciprocal** and **Div
 7.3.1.1 Square Primitive
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Our initial approach was to use instructions, that we already had implemented.
-Thea meant, we first started by using the ``FMLA`` instruction.
-However, we quickly realized that the performance from multiplying two values and adding a zero value to it, was not the best.
-Therefore, we needed to implement new instructions.
+Our initial approach was to use instructions that we already had implemented.
+Therefore, we started by using the ``FMLA`` instruction.
+However, we quickly realized that the performance from multiplying two values and adding a zero value to it was not great. We decided to implement new instructions which would make our code more performant:
 
 .. code:: cpp
 
@@ -131,7 +130,7 @@ Therefore, we needed to implement new instructions.
                 return l_ins;
             }
 
-This ``FMUL`` (vector) allowed us to multiply several elements simultaneous. 
+This ``FMUL`` (vector) allowed us to multiply several elements simultaneously. 
 For the cases where we needed to multiply single elements (``arr_spec_t::``) together, we implemented the following instruction:
 
 .. code:: cpp
@@ -165,7 +164,7 @@ For the cases where we needed to multiply single elements (``arr_spec_t::``) tog
             }
         }
 
-These instructions allowed us, to develop a kernel for the squared primitive. 
+These instructions allowed us to develop a kernel for the squared primitive. 
 The approach for constructing this kernel was similar to the zero, ReLU or identity kernel. 
 
 .. code:: cpp
@@ -190,7 +189,7 @@ With this number, we were then able to execute our main kernel accordingly:
     stp(v6, v7, x9, 32, q)
 
 That means, in our main loop we would calculate 16 squared elements in one iteration. 
-If there were no iterations left, we had to look, if there would be a remainder: 
+If there were no iterations left, we had to check if there would be a remainder: 
 
 .. code:: cpp
 
@@ -216,7 +215,7 @@ If there were no iterations left, we had to look, if there would be a remainder:
         break;
 
 We had to calculate the remainder for all of our 15 cases, in order to guarantee a correctly functioning kernel. 
-After implementing the kernel, we also verified its correctness, for different configurations:
+After implementing the kernel, we also verified its correctness for different configurations:
 
 .. code:: cpp
 
