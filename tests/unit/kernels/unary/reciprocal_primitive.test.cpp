@@ -24,7 +24,7 @@ void test_reciprocal_primitive(uint32_t M,
         A[i] = l_aValue;
         A_expected[i] = l_aValue;
         B[i] = dist(gen);
-        B_expected[i] = 1 / l_aValue;
+        B_expected[i] = 1.0f / l_aValue;
     }
 
     mini_jit::Kernel l_kernel;

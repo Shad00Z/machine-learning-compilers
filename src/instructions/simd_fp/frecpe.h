@@ -22,8 +22,8 @@ namespace mini_jit
              * @param arr_spec arrangement specifier (2s, 4s or 2d).
              */
             constexpr uint32_t frecpeVec(simd_fp_t reg_dest,
-                                      simd_fp_t reg_src,
-                                      arr_spec_t arr_spec)
+                                         simd_fp_t reg_src,
+                                         arr_spec_t arr_spec)
             {
                 u_int32_t l_ins = 0xEA1D800;
 
@@ -47,8 +47,8 @@ namespace mini_jit
              * @param size_spec size specifier (s, d).
              */
             constexpr uint32_t frecpeScalar(simd_fp_t reg_dest,
-                                          simd_fp_t reg_src,
-                                          size_spec_t size_spec)
+                                            simd_fp_t reg_src,
+                                            size_spec_t size_spec)
             {
                 if (size_spec != neon_size_spec_t::s && 
                     size_spec != neon_size_spec_t::d)
