@@ -3,6 +3,7 @@
 
 #include "identity_primitive.h"
 #include "identity_trans_primitive.h"
+#include "reciprocal_primitive.h"
 #include "relu_primitive.h"
 #include "relu_trans_primitive.h"
 #include "zero_primitive_xzr.h"
