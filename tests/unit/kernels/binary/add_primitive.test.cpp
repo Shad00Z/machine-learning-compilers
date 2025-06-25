@@ -50,8 +50,10 @@ void test_add_primitive(uint32_t M,
 
     delete[] A;
     delete[] B;
+    delete[] C;
     delete[] A_expected;
     delete[] B_expected;
+    delete[] C_expected;
 }
 
 TEST_CASE("Tests the add primitive with different M and N", "[add_primitive][parameterized]")

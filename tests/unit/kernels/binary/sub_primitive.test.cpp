@@ -50,8 +50,10 @@ void test_sub_primitive(uint32_t M,
 
     delete[] A;
     delete[] B;
+    delete[] C;
     delete[] A_expected;
     delete[] B_expected;
+    delete[] C_expected;
 }
 
 TEST_CASE("Tests the sub primitive with different M and N", "[sub_primitive][parameterized]")
