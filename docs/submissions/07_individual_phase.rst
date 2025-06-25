@@ -334,7 +334,7 @@ This time we were measuring the throughput of our kernel, differently to the ``z
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The next primitive we implemented is the ``reciprocal`` operation, which computes ``1.0 / x`` for all input values ``x``.
-For this, the A64 arm assembly ISA already provides two instructions ``FRECPE`` and ``FRECPS``. ``FRECPE`` is the ``floating point reciprocal compute estimate`` instruction, which computes a first estimate of ``1.0 / x``. However, this estimate is generally not good enough for 32-bit floating point precision. To solve this, we can utilize ``FRECPS`` (``floating point reciprocal compute step``) iteratively, which improves the accuracy of the previously calculated estimate. We decided to perform only one step, as this already satisfied our used 32-bit floating point precision.
+For this, the AArch64 ISA already provides two instructions ``FRECPE`` and ``FRECPS``. ``FRECPE`` is the ``floating point reciprocal compute estimate`` instruction, which computes a first estimate of ``1.0 / x``. However, this estimate is generally not good enough for 32-bit floating point precision. To solve this, we can utilize ``FRECPS`` (``floating point reciprocal compute step``) iteratively, which improves the accuracy of the previously calculated estimate. We decided to perform only one step, as this already satisfied our used 32-bit floating point precision.
 
 **FRECPE instruction generation**
 
