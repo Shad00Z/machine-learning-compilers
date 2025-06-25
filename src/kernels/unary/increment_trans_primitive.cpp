@@ -94,8 +94,6 @@ void mini_jit::kernels::unary::increment_trans(mini_jit::Kernel &kernel,
 
         // Set register with value 1
         fmovVec(v20, 1, s4), 
-        fmovVec(v21, 1, s2),
-        fmovScalar(v22, 1, s),
     });
 
     if ( nLoopIterations > 0)
@@ -361,8 +359,8 @@ void mini_jit::kernels::unary::internal::incrementM3N4( mini_jit::Kernel &kernel
         // Increment values
         faddVec(v14, v14, v20, s4),
         faddVec(v15, v15, v20, s4),
-        faddVec(v18, v18, v21, s2),
-        faddVec(v19, v19, v21, s2),
+        faddVec(v18, v18, v20, s2),
+        faddVec(v19, v19, v20, s2),
 
         // Store 3x4 Block of B
         str(v14, x8, 0, q),
@@ -491,14 +489,14 @@ void mini_jit::kernels::unary::internal::incrementM4N3( mini_jit::Kernel &kernel
         trn2(v11, v1, v3, s4),
 
         // Increment values
-        faddVec(v8, v8, v21, s2),
-        faddScalar(v4, v4, v22, s),
-        faddVec(v9, v9, v21, s2),
-        faddScalar(v5, v5, v22, s),
-        faddVec(v10, v10, v21, s2),
-        faddScalar(v6, v6, v22, s),
-        faddVec(v11, v11, v21, s2),
-        faddScalar(v7, v7, v22, s),
+        faddVec(v8, v8, v20, s2),
+        faddScalar(v4, v4, v20, s),
+        faddVec(v9, v9, v20, s2),
+        faddScalar(v5, v5, v20, s),
+        faddVec(v10, v10, v20, s2),
+        faddScalar(v6, v6, v20, s),
+        faddVec(v11, v11, v20, s2),
+        faddScalar(v7, v7, v20, s),
 
         // Store 4x3 Block of B
         mov(x17, x8),
@@ -566,10 +564,10 @@ void mini_jit::kernels::unary::internal::incrementM4N2( mini_jit::Kernel &kernel
         trn2(v7, v1, v3, s4),
 
         // Increment values
-        faddVec(v4, v4, v21, s2),
-        faddVec(v5, v5, v21, s2),
-        faddVec(v6, v6, v21, s2),
-        faddVec(v7, v7, v21, s2),
+        faddVec(v4, v4, v20, s2),
+        faddVec(v5, v5, v20, s2),
+        faddVec(v6, v6, v20, s2),
+        faddVec(v7, v7, v20, s2),
 
         // Store 4x2 Block of B
         str(v4, x8, 0, d),
@@ -616,10 +614,10 @@ void mini_jit::kernels::unary::internal::incrementM4N1( mini_jit::Kernel &kernel
         ldr(v3, x7, 0, s),
 
         // Increment values
-        faddScalar(v0, v0, v22, s),
-        faddScalar(v1, v1, v22, s),
-        faddScalar(v2, v2, v22, s),
-        faddScalar(v3, v3, v22, s),
+        faddScalar(v0, v0, v20, s),
+        faddScalar(v1, v1, v20, s),
+        faddScalar(v2, v2, v20, s),
+        faddScalar(v3, v3, v20, s),
 
         // Store 4x1 Block of B
         str(v0, x8, 0, s),
@@ -679,13 +677,13 @@ void mini_jit::kernels::unary::internal::incrementM3N3( mini_jit::Kernel &kernel
         trn2(v8, v0, v2, s4),
 
         // Increment values
-        faddVec(v7, v7, v21, s2),
-        faddScalar(v4, v4, v22, s),
-        faddVec(v8, v8, v21, s2),
-        faddScalar(v5, v5, v22, s),
-        faddScalar(v1, v1, v22, s),
-        faddScalar(v3, v3, v22, s),
-        faddScalar(v6, v6, v22, s),
+        faddVec(v7, v7, v20, s2),
+        faddScalar(v4, v4, v20, s),
+        faddVec(v8, v8, v20, s2),
+        faddScalar(v5, v5, v20, s),
+        faddScalar(v1, v1, v20, s),
+        faddScalar(v3, v3, v20, s),
+        faddScalar(v6, v6, v20, s),
 
         // Store 3x3 Block of B
         mov(x17, x8),
@@ -730,10 +728,10 @@ void mini_jit::kernels::unary::internal::incrementM3N2( mini_jit::Kernel &kernel
         trn2(v5, v0, v2, s4),
 
         // Increment values
-        faddVec(v4, v4, v21, s2),
-        faddVec(v5, v5, v21, s2),
-        faddScalar(v1, v1, v22, s),
-        faddScalar(v3, v3, v22, s),
+        faddVec(v4, v4, v20, s2),
+        faddVec(v5, v5, v20, s2),
+        faddScalar(v1, v1, v20, s),
+        faddScalar(v3, v3, v20, s),
 
         // Store 3x2 Block of B
         str(v4, x8, 0, d),
@@ -760,9 +758,9 @@ void mini_jit::kernels::unary::internal::incrementM3N1( mini_jit::Kernel &kernel
         ldr(v2, x7, 0, s),
 
         // Increment values
-        faddScalar(v0, v0, v22, s),
-        faddScalar(v1, v1, v22, s),
-        faddScalar(v2, v2, v22, s),
+        faddScalar(v0, v0, v20, s),
+        faddScalar(v1, v1, v20, s),
+        faddScalar(v2, v2, v20, s),
 
         // Store 3x2 Block of B
         str(v0, x8, 0, s),
@@ -802,10 +800,10 @@ void mini_jit::kernels::unary::internal::incrementM2N3( mini_jit::Kernel &kernel
         trn2(v5, v0, v1, s2),
 
         // Increment values
-        faddVec(v4, v4, v21, s2),
-        faddScalar(v2, v2, v22, s),
-        faddVec(v5, v5, v21, s2),
-        faddScalar(v3, v3, v22, s),
+        faddVec(v4, v4, v20, s2),
+        faddScalar(v2, v2, v20, s),
+        faddVec(v5, v5, v20, s2),
+        faddScalar(v3, v3, v20, s),
 
         // Store 2x3 Block of B
         mov(x17, x8),
@@ -837,9 +835,9 @@ void mini_jit::kernels::unary::internal::incrementM1N3( mini_jit::Kernel &kernel
         ldr(v2, x7, 0, s),
 
         // Increment values
-        faddScalar(v0, v0, v22, s),
-        faddScalar(v1, v1, v22, s),
-        faddScalar(v2, v2, v22, s),
+        faddScalar(v0, v0, v20, s),
+        faddScalar(v1, v1, v20, s),
+        faddScalar(v2, v2, v20, s),
 
         // Store 1x3 Block of B
         strPost(v0, x8, 4, s),
@@ -867,8 +865,8 @@ void mini_jit::kernels::unary::internal::incrementM2N2( mini_jit::Kernel &kernel
         trn2(v3, v0, v1, s2),
 
         // Increment values
-        faddVec(v2, v2, v21, s2),
-        faddVec(v3, v3, v21, s2),
+        faddVec(v2, v2, v20, s2),
+        faddVec(v3, v3, v20, s2),
 
         // Store 2x3 Block of B
         str(v2, x8, 0, d),
@@ -890,8 +888,8 @@ void mini_jit::kernels::unary::internal::incrementM2N1( mini_jit::Kernel &kernel
         ldr(v1, x7, 0, s),
 
         // Increment values
-        faddScalar(v0, v0, v22, s),
-        faddScalar(v1, v1, v22, s),
+        faddScalar(v0, v0, v20, s),
+        faddScalar(v1, v1, v20, s),
 
         // Store 2x1 Block of B
         str(v0, x8, 0, s),
@@ -915,8 +913,8 @@ void mini_jit::kernels::unary::internal::incrementM1N2( mini_jit::Kernel &kernel
         ldr(v1, x7, 0, s),
 
         // Increment values
-        faddScalar(v0, v0, v22, s),
-        faddScalar(v1, v1, v22, s),
+        faddScalar(v0, v0, v20, s),
+        faddScalar(v1, v1, v20, s),
 
         // Store 1x2 Block of B
         strPost(v0, x8, 4, s),
@@ -935,7 +933,7 @@ void mini_jit::kernels::unary::internal::incrementM1N1( mini_jit::Kernel &kernel
         ldr(v0, x7, 0, s),
 
         // Increment values
-        faddScalar(v0, v0, v22, s),
+        faddScalar(v0, v0, v20, s),
 
         // Store 1x1 Block of B
         str(v0, x8, 0, s)

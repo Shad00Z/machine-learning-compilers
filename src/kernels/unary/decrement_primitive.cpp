@@ -63,8 +63,6 @@ void mini_jit::kernels::unary::decrement(mini_jit::Kernel &kernel,
 
         // Set register with value 1
         fmovVec(v19, 1, s4), 
-        fmovVec(v20, 1, s2),
-        fmovScalar(v21, 1, s),
     });
 
     // Start n loop (1 column)
@@ -115,7 +113,7 @@ void mini_jit::kernels::unary::decrement(mini_jit::Kernel &kernel,
             kernel.add_instr({
                 // 1 element
                 ldr(v0, x8, 0, s),
-                fsubScalar(v1, v0, v21, s),
+                fsubScalar(v1, v0, v19, s),
                 str(v1, x9, 0, s)
             });
             break;
@@ -123,7 +121,7 @@ void mini_jit::kernels::unary::decrement(mini_jit::Kernel &kernel,
             kernel.add_instr({
                 // 2 elements
                 ldr(v0, x8, 0, d),
-                fsubVec(v1, v0, v20, s2),
+                fsubVec(v1, v0, v19, s2),
                 str(v1, x9, 0, d)
             });
             break;
@@ -131,11 +129,11 @@ void mini_jit::kernels::unary::decrement(mini_jit::Kernel &kernel,
             kernel.add_instr({
                 // 2 elements
                 ldr(v0, x8, 0, d),
-                fsubVec(v1, v0, v20, s2),
+                fsubVec(v1, v0, v19, s2),
                 str(v1, x9, 0, d),
                 // 1 element
                 ldr(v2, x8, 2*4, s),
-                fsubScalar(v3, v2, v21, s),
+                fsubScalar(v3, v2, v19, s),
                 str(v3, x9, 2*4, s)
             });
             break;
@@ -155,7 +153,7 @@ void mini_jit::kernels::unary::decrement(mini_jit::Kernel &kernel,
                 str(v1, x9, 0, q),
                 // 1 element
                 ldr(v2, x8, 4*4, s),
-                fsubScalar(v3, v2, v21, s),
+                fsubScalar(v3, v2, v19, s),
                 str(v3, x9, 4*4, s)
             });
             break;
@@ -167,7 +165,7 @@ void mini_jit::kernels::unary::decrement(mini_jit::Kernel &kernel,
                 str(v1, x9, 0, q),
                 // 2 elements
                 ldr(v0, x8, 4*4, d),
-                fsubVec(v2, v0, v20, s2),
+                fsubVec(v2, v0, v19, s2),
                 str(v2, x9, 4*4, d)
             });
             break;
@@ -179,11 +177,11 @@ void mini_jit::kernels::unary::decrement(mini_jit::Kernel &kernel,
                 str(v1, x9, 0, q),
                 // 2 elements
                 ldr(v2, x8, 4*4, d),
-                fsubVec(v3, v2, v20, s2),
+                fsubVec(v3, v2, v19, s2),
                 str(v3, x9, 4*4, d),
                 // 1 element
                 ldr(v4, x8, 24, s),
-                fsubScalar(v5, v4, v21, s),
+                fsubScalar(v5, v4, v19, s),
                 str(v5, x9, 24, s)
             });
             break;
@@ -205,7 +203,7 @@ void mini_jit::kernels::unary::decrement(mini_jit::Kernel &kernel,
                 stp(v2, v3, x9, 0, q),
                 // 1 element
                 ldr(v4, x8, 32, s),
-                fsubScalar(v5, v4, v21, s),
+                fsubScalar(v5, v4, v19, s),
                 str(v5, x9, 32, s)
             });
             break;
@@ -218,7 +216,7 @@ void mini_jit::kernels::unary::decrement(mini_jit::Kernel &kernel,
                 stp(v2, v3, x9, 0, q),
                 // 2 elements
                 ldr(v4, x8, 32, d),
-                fsubVec(v5, v4, v20, s2),
+                fsubVec(v5, v4, v19, s2),
                 str(v5, x9, 32, d)
             });
             break;
@@ -231,11 +229,11 @@ void mini_jit::kernels::unary::decrement(mini_jit::Kernel &kernel,
                 stp(v2, v3, x9, 0, q),
                 // 2 elements
                 ldr(v4, x8, 32, d),
-                fsubVec(v5, v4, v20, s2),
+                fsubVec(v5, v4, v19, s2),
                 str(v5, x9, 32, d),
                 // 1 element
                 ldr(v6, x8, 40, s),
-                fsubScalar(v7, v6, v21, s),
+                fsubScalar(v7, v6, v19, s),
                 str(v7, x9, 40, s)
             });
             break;
@@ -265,7 +263,7 @@ void mini_jit::kernels::unary::decrement(mini_jit::Kernel &kernel,
                 str(v5, x9, 32, q),
                 // 1 element
                 ldr(v6, x8, 48, s),
-                fsubScalar(v7, v6, v21, s),
+                fsubScalar(v7, v6, v19, s),
                 str(v7, x9, 48, s)
             });
             break;
@@ -282,7 +280,7 @@ void mini_jit::kernels::unary::decrement(mini_jit::Kernel &kernel,
                 str(v5, x9, 32, q),
                 // 2 elements
                 ldr(v6, x8, 48, d),
-                fsubVec(v7, v6, v20, s2),
+                fsubVec(v7, v6, v19, s2),
                 str(v7, x9, 48, d)
             });
             break;
@@ -299,11 +297,11 @@ void mini_jit::kernels::unary::decrement(mini_jit::Kernel &kernel,
                 str(v5, x9, 32, q),
                 // 2 elements
                 ldr(v6, x8, 48, d),
-                fsubVec(v7, v6, v20, s2),
+                fsubVec(v7, v6, v19, s2),
                 str(v7, x9, 48, d),
                 // 1 element
                 ldr(v16, x8, 56, s),
-                fsubScalar(v17, v16, v21, s),
+                fsubScalar(v17, v16, v19, s),
                 str(v17, x9, 56, s)
             });
             break;
