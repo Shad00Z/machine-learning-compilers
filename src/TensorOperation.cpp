@@ -40,7 +40,7 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
     }
 
     /////////////////////////////////////////////////////////////////////
-    // Check allowed data type∂
+    // Check allowed data type
     /////////////////////////////////////////////////////////////////////
     if (dtype != dtype_t::fp32)
     {

@@ -1,5 +1,5 @@
-#ifndef MINI_JIT_UNARY_ADD_PRIMITVE_H
-#define MINI_JIT_UNARY_ADD_PRIMITVE_H
+#ifndef MINI_JIT_UNARY_ADD_PRIMITIVE_H
+#define MINI_JIT_UNARY_ADD_PRIMITIVE_H
 
 #include "Kernel.h"
 
@@ -22,4 +22,4 @@ namespace mini_jit
     }
 };
 
-#endif //MINI_JIT_UNARY_ADD_PRIMITVE_H
+#endif //MINI_JIT_UNARY_ADD_PRIMITIVE_H

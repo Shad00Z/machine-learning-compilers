@@ -39,7 +39,28 @@ mini_jit::error_t mini_jit::Binary::generate(uint32_t m,
 
     switch (ptype)
     {
-    
+    case ptype_t::add:
+        if (0 == trans_c)
+        {
+            mini_jit::kernels::binary::add(*m_kernel, m, n);
+        }
+        else if (1 == trans_c)
+        {
+            std::cout << "Transposition for add primitive is not supported" << std::endl;
+            return error_t::operation_not_supported;
+        }
+        break;
+    case ptype_t::sub:
+        if (0 == trans_c)
+        {
+            mini_jit::kernels::binary::sub(*m_kernel, m, n);
+        }
+        else if (1 == trans_c)
+        {
+            std::cout << "Transposition for sub primitive is not supported" << std::endl;
+            return error_t::operation_not_supported;
+        }
+        break;
     default:
         std::cout << ("Invalid primitive type") << std::endl;
         return error_t::wrong_ptype;
