@@ -50,9 +50,9 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
     /////////////////////////////////////////////////////////////////////
     // Check allowed primitive types
     /////////////////////////////////////////////////////////////////////
-    std::vector<ptype_t> allowed_first_touch_types = {ptype_t::none, ptype_t::zero, ptype_t::relu};
+    std::vector<ptype_t> allowed_first_touch_types = {ptype_t::none, ptype_t::zero, ptype_t::relu, ptype_t::square, ptype_t::reciprocal};
     std::vector<ptype_t> allowed_main_types = {ptype_t::none, ptype_t::identity, ptype_t::brgemm, ptype_t::gemm};
-    std::vector<ptype_t> allowed_last_touch_types = {ptype_t::none, ptype_t::relu};
+    std::vector<ptype_t> allowed_last_touch_types = {ptype_t::none, ptype_t::relu, ptype_t::square, ptype_t::reciprocal};
 
     if (std::find(allowed_first_touch_types.begin(), allowed_first_touch_types.end(), prim_first_touch) == allowed_first_touch_types.end())
     {

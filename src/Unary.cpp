@@ -62,6 +62,26 @@ mini_jit::error_t mini_jit::Unary::generate(uint32_t m,
             mini_jit::kernels::unary::relu_trans(*m_kernel, m, n);
         }
         break;
+    case ptype_t::square:
+        if (0 == trans_b)
+        {
+            mini_jit::kernels::unary::square(*m_kernel, m, n);
+        }
+        else if (1 == trans_b)
+        {
+            mini_jit::kernels::unary::square_trans(*m_kernel, m, n);
+        }
+        break;
+    case ptype_t::reciprocal:
+        if (0 == trans_b)
+        {
+            mini_jit::kernels::unary::reciprocal(*m_kernel, m, n);
+        }
+        else if (1 == trans_b)
+        {
+            mini_jit::kernels::unary::reciprocal_trans(*m_kernel, m, n);
+        }
+        break;
     default:
         std::cout << ("Invalid primitive type") << std::endl;
         return error_t::wrong_ptype;

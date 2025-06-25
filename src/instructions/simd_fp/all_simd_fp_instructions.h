@@ -9,6 +9,8 @@
 #include "fmov.h"
 #include "fmul.h"
 #include "fsub.h"
+#include "frecpe.h"
+#include "frecps.h"
 #include "ld1.h"
 #include "ldp.h"
 #include "ldr.h"

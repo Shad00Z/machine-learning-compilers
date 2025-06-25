@@ -329,3 +329,205 @@ Lastly, we performed benchmarks similar to those of the other unary kernels:
     --------------------------------------------------
 
 This time we were measuring the throughput of our kernel, differently to the ``zero``, ``identity``, and ``ReLU`` kernel, where we were measuring the data transfer rate.
+
+7.3.1.2 Reciprocal Primitive
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The next primitive we implemented is the ``reciprocal`` operation, which computes ``1.0 / x`` for all input values ``x``.
+For this, the AArch64 ISA already provides two instructions ``FRECPE`` and ``FRECPS``. ``FRECPE`` is the ``floating point reciprocal compute estimate`` instruction, which computes a first estimate of ``1.0 / x``. However, this estimate is generally not good enough for 32-bit floating point precision. To solve this, we can utilize ``FRECPS`` (``floating point reciprocal compute step``) iteratively, which improves the accuracy of the previously calculated estimate. We decided to perform only one step, as this already satisfied our used 32-bit floating point precision.
+
+**FRECPE instruction generation**
+
+.. code:: cpp
+
+    constexpr uint32_t frecpeVec(simd_fp_t reg_dest,
+                                 simd_fp_t reg_src,
+                                 arr_spec_t arr_spec)
+    {
+        u_int32_t l_ins = 0xEA1D800;
+        // set destination register id - Rd
+        l_ins |= (reg_dest & 0x1f);
+        // set source register id - Rn
+        l_ins |= (reg_src & 0x1f) << 5;
+        // set arrangement specifier
+        l_ins |= (arr_spec & 0x40400000);
+        return l_ins;
+    }
+
+    constexpr uint32_t frecpeScalar(simd_fp_t reg_dest,
+                                    simd_fp_t reg_src,
+                                    size_spec_t size_spec)
+    {
+        if (size_spec != neon_size_spec_t::s && 
+            size_spec != neon_size_spec_t::d)
+        {
+                throw std::invalid_argument("Invalid size specifier");
+        }
+        u_int32_t l_ins = 0x5EA1D800;
+        // set destination register id - Rd
+        l_ins |= (reg_dest & 0x1f);
+        // set source register id - Rn
+        l_ins |= (reg_src & 0x1f) << 5;
+        // set size specifier
+        l_ins |= (size_spec & 0x1) << 22;
+        return l_ins;
+    }
+
+**FRECPS instruction generation**
+
+.. code:: cpp
+
+    constexpr uint32_t frecpsVec(simd_fp_t reg_dest,
+                                 simd_fp_t reg_src1,
+                                 simd_fp_t reg_src2,
+                                 arr_spec_t arr_spec)
+    {
+        u_int32_t l_ins = 0xE20FC00;
+        // set destination register id - Rd
+        l_ins |= (reg_dest & 0x1f);
+        // set first source register id
+        l_ins |= (reg_src1 & 0x1f) << 5;
+        // set second source register id
+        l_ins |= (reg_src2 & 0x1f) << 16;
+        // set size specifier
+        l_ins |= (arr_spec & 0x40400000);
+        return l_ins;
+    }
+
+    constexpr uint32_t frecpsScalar(simd_fp_t reg_dest,
+                                    simd_fp_t reg_src1,
+                                    simd_fp_t reg_src2,
+                                    size_spec_t size_spec)
+    {
+
+        if (size_spec != neon_size_spec_t::s && 
+            size_spec != neon_size_spec_t::d)
+        {
+                throw std::invalid_argument("Invalid size specifier");
+        }
+        u_int32_t l_ins = 0x5E20FC00;
+        // set destination register id - Rd
+        l_ins |= (reg_dest & 0x1f);
+        // set first source register id
+        l_ins |= (reg_src1 & 0x1f) << 5;
+        // set second source register id
+        l_ins |= (reg_src2 & 0x1f) << 16;
+        // set size specifier
+        l_ins |= (size_spec & 0x1) << 22;
+        return l_ins;
+    }
+
+To compute the reciprocal, we also needed the ``FMUL`` instruction which we implemented in the previous section. A full reciprocal computation looks like this:
+
+
+.. code:: asm
+
+    frecpe  v0.4s, v1.4s        // Estimate reciprocal of v1 and save to v0
+    frecps  v2.4s, v1.4s, v0.4s // Refine reciprocal
+    fmul    v0.4s, v0.4s, v2.4s // Apply refinement -> v0 now has better estimate
+
+With these instructions, we began implementing the new kernel. Structurally it is identical to the square primitive. We simply replaced the calculations with the new instructions:
+
+**Reciprocal primitive: main loop**
+
+.. code:: cpp
+
+    kernel.add_instr({
+        // load 16 elements from A
+        ldp(v0, v1, x8, 0, q),
+        ldp(v2, v3, x8, 32, q),
+
+        frecpeVec(v4, v0, s4),
+        frecpsVec(v10, v0, v4, s4),
+        fmulVec(v4, v4, v10, s4),
+
+        frecpeVec(v5, v1, s4),
+        frecpsVec(v10, v1, v5, s4),
+        fmulVec(v5, v5, v10, s4),
+
+        frecpeVec(v6, v2, s4),
+        frecpsVec(v10, v2, v6, s4),
+        fmulVec(v6, v6, v10, s4),
+
+        frecpeVec(v7, v3, s4),
+        frecpsVec(v10, v3, v7, s4),
+        fmulVec(v7, v7, v10, s4),
+
+        // store 16 elements to B
+        stp(v4, v5, x9, 0, q),
+        stp(v6, v7, x9, 32, q),
+
+        // jump by 16 rows
+        add(x8, x8, 16*4, 0),
+        add(x9, x9, 16*4, 0),
+
+        // decrement m loop counter
+        sub(x7, x7, 1, 0),
+    });
+
+**Reciprocal transposition primitive: main loop**
+
+.. code:: cpp
+
+    kernel.add_instr({
+        // working pointer for A and B
+        mov(x7, x4),
+        mov(x8, x5),
+        
+        // Load 4x4 block of A (input matrix)
+        ldr(v0, x7, 0, q),
+        add(x7, x7, x2, 0, 0),
+        ldr(v1, x7, 0, q),
+        add(x7, x7, x2, 0, 0),
+        ldr(v2, x7, 0, q),
+        add(x7, x7, x2, 0, 0),
+        ldr(v3, x7, 0, q),
+
+        frecpeVec(v16, v0, s4),
+        frecpsVec(v17, v0, v16, s4),
+        fmulVec(v0, v16, v17, s4),
+
+        frecpeVec(v16, v1, s4),
+        frecpsVec(v17, v1, v16, s4),
+        fmulVec(v1, v16, v17, s4),
+
+        frecpeVec(v16, v2, s4),
+        frecpsVec(v17, v2, v16, s4),
+        fmulVec(v2, v16, v17, s4),
+
+        frecpeVec(v16, v3, s4),
+        frecpsVec(v17, v3, v16, s4),
+        fmulVec(v3, v16, v17, s4),
+
+        // Transpose 4x4 block
+        // TRN
+        trn1(v4, v0, v2, s4),
+        trn1(v5, v1, v3, s4),
+        trn2(v6, v0, v2, s4),
+        trn2(v7, v1, v3, s4),
+
+        // ZIP
+        zip1(v8, v4, v5, s4),
+        zip1(v9, v6, v7, s4),
+
+        zip2(v10, v4, v5, s4),
+        zip2(v11, v6, v7, s4),
+
+        // Store 4x4 Block of B
+        str(v8, x8, 0, q),
+        add(x8, x8, x3, 0, 0),
+        str(v9, x8, 0, q),
+        add(x8, x8, x3, 0, 0),
+        str(v10, x8, 0, q),
+        add(x8, x8, x3, 0, 0),
+        str(v11, x8, 0, q),
+
+        // Matrix A next 4 rows
+        add(x4, x4, x25, 0, 0),
+
+        // Matrix B next 4 columns
+        add(x5, x5, x27, 0, 0),
+        
+        // decrement m loop counter
+        sub(x6, x6, 1, 0)
+    });

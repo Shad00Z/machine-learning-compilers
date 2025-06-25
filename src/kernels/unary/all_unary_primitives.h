@@ -7,8 +7,12 @@
 #include "identity_trans_primitive.h"
 #include "increment_primitive.h"
 #include "increment_trans_primitive.h"
+#include "reciprocal_primitive.h"
+#include "reciprocal_trans_primitive.h"
 #include "relu_primitive.h"
 #include "relu_trans_primitive.h"
+#include "square_primitive.h"
+#include "square_trans_primitive.h"
 #include "zero_primitive_xzr.h"
 #include "zero_primitive.h"
 
