@@ -1,4 +1,4 @@
-#include "square_primitive.h"
+#include "increment_primitive.h"
 #include "Kernel.h"
 
 #include "registers/gp_registers.h"
@@ -26,12 +26,14 @@ using simd_fp::ldp;
 using simd_fp::stp;
 using simd_fp::ldr;
 using simd_fp::str;
-using simd_fp::fmulVec;
-using simd_fp::fmulScalar;
+using simd_fp::fmovVec;
+using simd_fp::fmovScalar;
+using simd_fp::faddVec;
+using simd_fp::faddScalar;
 
-void mini_jit::kernels::unary::square(mini_jit::Kernel &kernel,
-                                      u_int32_t m,
-                                      u_int32_t n)
+void mini_jit::kernels::unary::increment(mini_jit::Kernel &kernel,
+                                         u_int32_t m,
+                                         u_int32_t n)
 {
     // Inputs:
     // x0: pointer to A
@@ -57,7 +59,12 @@ void mini_jit::kernels::unary::square(mini_jit::Kernel &kernel,
         mov(x5, x1), // B
 
         // Set n loop counter
-        mov(x6, n)
+        mov(x6, n),
+
+        // Set register with value 1
+        fmovVec(v19, 1, s4), 
+        fmovVec(v20, 1, s2),
+        fmovScalar(v21, 1, s),
     });
 
     // Start n loop (1 column)
@@ -80,10 +87,10 @@ void mini_jit::kernels::unary::square(mini_jit::Kernel &kernel,
             ldp(v0, v1, x8, 0, q),
             ldp(v2, v3, x8, 32, q),
 
-            fmulVec(v4, v0, v0, s4),
-            fmulVec(v5, v1, v1, s4),
-            fmulVec(v6, v2, v2, s4),
-            fmulVec(v7, v3, v3, s4),
+            faddVec(v4, v0, v19, s4),
+            faddVec(v5, v1, v19, s4),
+            faddVec(v6, v2, v19, s4),
+            faddVec(v7, v3, v19, s4),
 
             // store 16 elements to B
             stp(v4, v5, x9, 0, q),
@@ -108,7 +115,7 @@ void mini_jit::kernels::unary::square(mini_jit::Kernel &kernel,
             kernel.add_instr({
                 // 1 element
                 ldr(v0, x8, 0, s),
-                fmulScalar(v1, v0, v0, s),
+                faddScalar(v1, v0, v21, s),
                 str(v1, x9, 0, s)
             });
             break;
@@ -116,7 +123,7 @@ void mini_jit::kernels::unary::square(mini_jit::Kernel &kernel,
             kernel.add_instr({
                 // 2 elements
                 ldr(v0, x8, 0, d),
-                fmulVec(v1, v0, v0, s2),
+                faddVec(v1, v0, v20, s2),
                 str(v1, x9, 0, d)
             });
             break;
@@ -124,11 +131,11 @@ void mini_jit::kernels::unary::square(mini_jit::Kernel &kernel,
             kernel.add_instr({
                 // 2 elements
                 ldr(v0, x8, 0, d),
-                fmulVec(v1, v0, v0, s2),
+                faddVec(v1, v0, v20, s2),
                 str(v1, x9, 0, d),
                 // 1 element
                 ldr(v2, x8, 2*4, s),
-                fmulScalar(v3, v2, v2, s),
+                faddScalar(v3, v2, v21, s),
                 str(v3, x9, 2*4, s)
             });
             break;
@@ -136,7 +143,7 @@ void mini_jit::kernels::unary::square(mini_jit::Kernel &kernel,
             kernel.add_instr({
                 // 4 elements
                 ldr(v0, x8, 0, q),
-                fmulVec(v1, v0, v0, s4),
+                faddVec(v1, v0, v19, s4),
                 str(v1, x9, 0, q)
             });
             break;
@@ -144,11 +151,11 @@ void mini_jit::kernels::unary::square(mini_jit::Kernel &kernel,
             kernel.add_instr({
                 // 4 elements
                 ldr(v0, x8, 0, q),
-                fmulVec(v1, v0, v0, s4),
+                faddVec(v1, v0, v19, s4),
                 str(v1, x9, 0, q),
                 // 1 element
                 ldr(v2, x8, 4*4, s),
-                fmulScalar(v3, v2, v2, s),
+                faddScalar(v3, v2, v21, s),
                 str(v3, x9, 4*4, s)
             });
             break;
@@ -156,11 +163,11 @@ void mini_jit::kernels::unary::square(mini_jit::Kernel &kernel,
             kernel.add_instr({
                 // 4 elements
                 ldr(v0, x8, 0, q),
-                fmulVec(v1, v0, v0, s4),
+                faddVec(v1, v0, v19, s4),
                 str(v1, x9, 0, q),
                 // 2 elements
                 ldr(v0, x8, 4*4, d),
-                fmulVec(v2, v0, v0, s2),
+                faddVec(v2, v0, v20, s2),
                 str(v2, x9, 4*4, d)
             });
             break;
@@ -168,15 +175,15 @@ void mini_jit::kernels::unary::square(mini_jit::Kernel &kernel,
             kernel.add_instr({
                 // 4 elements
                 ldr(v0, x8, 0, q),
-                fmulVec(v1, v0, v0, s4),
+                faddVec(v1, v0, v19, s4),
                 str(v1, x9, 0, q),
                 // 2 elements
                 ldr(v2, x8, 4*4, d),
-                fmulVec(v3, v2, v2, s2),
+                faddVec(v3, v2, v20, s2),
                 str(v3, x9, 4*4, d),
                 // 1 element
                 ldr(v4, x8, 24, s),
-                fmulScalar(v5, v4, v4, s),
+                faddScalar(v5, v4, v21, s),
                 str(v5, x9, 24, s)
             });
             break;
@@ -184,8 +191,8 @@ void mini_jit::kernels::unary::square(mini_jit::Kernel &kernel,
             kernel.add_instr({
                 // 8 elements
                 ldp(v0, v1, x8, 0, q),
-                fmulVec(v2, v0, v0, s4),
-                fmulVec(v3, v1, v1, s4),
+                faddVec(v2, v0, v19, s4),
+                faddVec(v3, v1, v19, s4),
                 stp(v2, v3, x9, 0, q)
             });
             break;
@@ -193,12 +200,12 @@ void mini_jit::kernels::unary::square(mini_jit::Kernel &kernel,
             kernel.add_instr({
                 // 8 elements
                 ldp(v0, v1, x8, 0, q),
-                fmulVec(v2, v0, v0, s4),
-                fmulVec(v3, v1, v1, s4),
+                faddVec(v2, v0, v19, s4),
+                faddVec(v3, v1, v19, s4),
                 stp(v2, v3, x9, 0, q),
                 // 1 element
                 ldr(v4, x8, 32, s),
-                fmulScalar(v5, v4, v4, s),
+                faddScalar(v5, v4, v21, s),
                 str(v5, x9, 32, s)
             });
             break;
@@ -206,12 +213,12 @@ void mini_jit::kernels::unary::square(mini_jit::Kernel &kernel,
             kernel.add_instr({
                 // 8 elements
                 ldp(v0, v1, x8, 0, q),
-                fmulVec(v2, v0, v0, s4),
-                fmulVec(v3, v1, v1, s4),
+                faddVec(v2, v0, v19, s4),
+                faddVec(v3, v1, v19, s4),
                 stp(v2, v3, x9, 0, q),
                 // 2 elements
                 ldr(v4, x8, 32, d),
-                fmulVec(v5, v4, v4, s2),
+                faddVec(v5, v4, v20, s2),
                 str(v5, x9, 32, d)
             });
             break;
@@ -219,16 +226,16 @@ void mini_jit::kernels::unary::square(mini_jit::Kernel &kernel,
             kernel.add_instr({
                 // 8 elements
                 ldp(v0, v1, x8, 0, q),
-                fmulVec(v2, v0, v0, s4),
-                fmulVec(v3, v1, v1, s4),
+                faddVec(v2, v0, v19, s4),
+                faddVec(v3, v1, v19, s4),
                 stp(v2, v3, x9, 0, q),
                 // 2 elements
                 ldr(v4, x8, 32, d),
-                fmulVec(v5, v4, v4, s2),
+                faddVec(v5, v4, v20, s2),
                 str(v5, x9, 32, d),
                 // 1 element
                 ldr(v6, x8, 40, s),
-                fmulScalar(v7, v6, v6, s),
+                faddScalar(v7, v6, v21, s),
                 str(v7, x9, 40, s)
             });
             break;
@@ -236,12 +243,12 @@ void mini_jit::kernels::unary::square(mini_jit::Kernel &kernel,
             kernel.add_instr({
                 // 8 elements
                 ldp(v0, v1, x8, 0, q),
-                fmulVec(v2, v0, v0, s4),
-                fmulVec(v3, v1, v1, s4),
+                faddVec(v2, v0, v19, s4),
+                faddVec(v3, v1, v19, s4),
                 stp(v2, v3, x9, 0, q),
                 // 4 elements
                 ldr(v4, x8, 32, q),
-                fmulVec(v5, v4, v4, s4),
+                faddVec(v5, v4, v19, s4),
                 str(v5, x9, 32, q)
             });
             break;
@@ -249,16 +256,16 @@ void mini_jit::kernels::unary::square(mini_jit::Kernel &kernel,
             kernel.add_instr({
                 // 8 elements
                 ldp(v0, v1, x8, 0, q),
-                fmulVec(v2, v0, v0, s4),
-                fmulVec(v3, v1, v1, s4),
+                faddVec(v2, v0, v19, s4),
+                faddVec(v3, v1, v19, s4),
                 stp(v2, v3, x9, 0, q),
                 // 4 elements
                 ldr(v4, x8, 32, q),
-                fmulVec(v5, v4, v4, s4),
+                faddVec(v5, v4, v19, s4),
                 str(v5, x9, 32, q),
                 // 1 element
                 ldr(v6, x8, 48, s),
-                fmulScalar(v7, v6, v6, s),
+                faddScalar(v7, v6, v21, s),
                 str(v7, x9, 48, s)
             });
             break;
@@ -266,16 +273,16 @@ void mini_jit::kernels::unary::square(mini_jit::Kernel &kernel,
             kernel.add_instr({
                 // 8 elements
                 ldp(v0, v1, x8, 0, q),
-                fmulVec(v2, v0, v0, s4),
-                fmulVec(v3, v1, v1, s4),
+                faddVec(v2, v0, v19, s4),
+                faddVec(v3, v1, v19, s4),
                 stp(v2, v3, x9, 0, q),
                 // 4 elements
                 ldr(v4, x8, 32, q),
-                fmulVec(v5, v4, v4, s4),
+                faddVec(v5, v4, v19, s4),
                 str(v5, x9, 32, q),
                 // 2 elements
                 ldr(v6, x8, 48, d),
-                fmulVec(v7, v6, v6, s2),
+                faddVec(v7, v6, v20, s2),
                 str(v7, x9, 48, d)
             });
             break;
@@ -283,20 +290,20 @@ void mini_jit::kernels::unary::square(mini_jit::Kernel &kernel,
             kernel.add_instr({
                 // 8 elements
                 ldp(v0, v1, x8, 0, q),
-                fmulVec(v2, v0, v0, s4),
-                fmulVec(v3, v1, v1, s4),
+                faddVec(v2, v0, v19, s4),
+                faddVec(v3, v1, v19, s4),
                 stp(v2, v3, x9, 0, q),
                 // 4 elements
                 ldr(v4, x8, 32, q),
-                fmulVec(v5, v4, v4, s4),
+                faddVec(v5, v4, v19, s4),
                 str(v5, x9, 32, q),
                 // 2 elements
                 ldr(v6, x8, 48, d),
-                fmulVec(v7, v6, v6, s2),
+                faddVec(v7, v6, v20, s2),
                 str(v7, x9, 48, d),
                 // 1 element
                 ldr(v16, x8, 56, s),
-                fmulScalar(v17, v16, v16, s),
+                faddScalar(v17, v16, v21, s),
                 str(v17, x9, 56, s)
             });
             break;
@@ -321,6 +328,6 @@ void mini_jit::kernels::unary::square(mini_jit::Kernel &kernel,
     kernel.add_instr(ldpPost(x29, x30, sp, 16));
 
     kernel.add_instr(inst::ret());
-    kernel.write("square_primitive.bin");
+    kernel.write("increment_primitive.bin");
     kernel.set_kernel();
 }
