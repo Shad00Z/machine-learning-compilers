@@ -195,10 +195,10 @@ void mini_jit::kernels::binary::sub(mini_jit::Kernel &kernel,
                 simd_fp::str(v5, x13, 4*4, d),
 
                 // 1 element
-                simd_fp::ldr(v6, x11, 24, s),
-                simd_fp::ldr(v7, x12, 24, s),
+                simd_fp::ldr(v6, x11, 6*4, s),
+                simd_fp::ldr(v7, x12, 6*4, s),
                 simd_fp::fsubScalar(v8, v6, v7, s),
-                simd_fp::str(v8, x13, 24, s)
+                simd_fp::str(v8, x13, 6*4, s)
             });
             break;
         case 8:
