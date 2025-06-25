@@ -89,6 +89,8 @@
 <li class="toctree-l2"><a class="reference internal" href="#mini-jit-kernels-unary">mini_jit::kernels::unary</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit7kernels5unary8identityERN8mini_jit6KernelE8uint32_t8uint32_t"><code class="docutils literal notranslate"><span class="pre">identity()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit7kernels5unary14identity_transERN8mini_jit6KernelEii"><code class="docutils literal notranslate"><span class="pre">identity_trans()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit7kernels5unary10reciprocalERN8mini_jit6KernelE9u_int32_t9u_int32_t"><code class="docutils literal notranslate"><span class="pre">reciprocal()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit7kernels5unary16reciprocal_transERN8mini_jit6KernelEii"><code class="docutils literal notranslate"><span class="pre">reciprocal_trans()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit7kernels5unary4reluERN8mini_jit6KernelE9u_int32_t9u_int32_t"><code class="docutils literal notranslate"><span class="pre">relu()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit7kernels5unary10relu_transERN8mini_jit6KernelEii"><code class="docutils literal notranslate"><span class="pre">relu_trans()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit7kernels5unary6squareERN8mini_jit6KernelE9u_int32_t9u_int32_t"><code class="docutils literal notranslate"><span class="pre">square()</span></code></a></li>
@@ -273,6 +275,36 @@
 <dt class="sig sig-object cpp" id="_CPPv4N8mini_jit7kernels5unary14identity_transERN8mini_jit6KernelEii">
 <span id="_CPPv3N8mini_jit7kernels5unary14identity_transERN8mini_jit6KernelEii"></span><span id="_CPPv2N8mini_jit7kernels5unary14identity_transERN8mini_jit6KernelEii"></span><span id="mini_jit::kernels::unary::identity_trans__mini_jit::KernelR.i.i"></span><span class="target" id="identity__trans__primitive_8h_1a65a7bbebd56efa47e887e1abb71b8dec"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">kernels</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">unary</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">identity_trans</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Kernel</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">kernel</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit7kernels5unary14identity_transERN8mini_jit6KernelEii" title="Link to this definition"></a><br /></dt>
 <dd><p><a class="reference internal" href="mini_jit.html#classmini__jit_1_1Kernel"><span class="std std-ref">Kernel</span></a> for performing the identity operation on a matrix while transposing the output. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>kernel</strong> – <a class="reference internal" href="mini_jit.html#classmini__jit_1_1Kernel"><span class="std std-ref">Kernel</span></a> object to be filled with instructions. </p></li>
+<li><p><strong>m</strong> – number of rows in the matrix. </p></li>
+<li><p><strong>n</strong> – number of columns in the matrix. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit7kernels5unary10reciprocalERN8mini_jit6KernelE9u_int32_t9u_int32_t">
+<span id="_CPPv3N8mini_jit7kernels5unary10reciprocalERN8mini_jit6KernelE9u_int32_t9u_int32_t"></span><span id="_CPPv2N8mini_jit7kernels5unary10reciprocalERN8mini_jit6KernelE9u_int32_t9u_int32_t"></span><span id="mini_jit::kernels::unary::reciprocal__mini_jit::KernelR.u_int32_t.u_int32_t"></span><span class="target" id="reciprocal__primitive_8h_1acd8677e16a7077bf53361d8034fc790b"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">kernels</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">unary</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">reciprocal</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Kernel</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">kernel</span></span>, <span class="n"><span class="pre">u_int32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <span class="n"><span class="pre">u_int32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit7kernels5unary10reciprocalERN8mini_jit6KernelE9u_int32_t9u_int32_t" title="Link to this definition"></a><br /></dt>
+<dd><p><a class="reference internal" href="mini_jit.html#classmini__jit_1_1Kernel"><span class="std std-ref">Kernel</span></a> that computes the element-wise reciprocal of the input and stores it into the output. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>kernel</strong> – <a class="reference internal" href="mini_jit.html#classmini__jit_1_1Kernel"><span class="std std-ref">Kernel</span></a> object to be filled with instructions. </p></li>
+<li><p><strong>m</strong> – number of rows in the matrix. </p></li>
+<li><p><strong>n</strong> – number of columns in the matrix. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit7kernels5unary16reciprocal_transERN8mini_jit6KernelEii">
+<span id="_CPPv3N8mini_jit7kernels5unary16reciprocal_transERN8mini_jit6KernelEii"></span><span id="_CPPv2N8mini_jit7kernels5unary16reciprocal_transERN8mini_jit6KernelEii"></span><span id="mini_jit::kernels::unary::reciprocal_trans__mini_jit::KernelR.i.i"></span><span class="target" id="reciprocal__trans__primitive_8h_1a7d25088ccdd07e3b6f9c3edfcfeb8679"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">kernels</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">unary</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">reciprocal_trans</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Kernel</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">kernel</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit7kernels5unary16reciprocal_transERN8mini_jit6KernelEii" title="Link to this definition"></a><br /></dt>
+<dd><p><a class="reference internal" href="mini_jit.html#classmini__jit_1_1Kernel"><span class="std std-ref">Kernel</span></a> for performing the reciprocal operation on a matrix while transposing the output. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
