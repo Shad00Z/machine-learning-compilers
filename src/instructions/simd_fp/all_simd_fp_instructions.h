@@ -3,6 +3,7 @@
 
 #include "eor.h"
 #include "fadd.h"
+#include "fdiv.h"
 #include "fmadd.h"
 #include "fmax.h"
 #include "fmla.h"
