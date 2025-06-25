@@ -72,6 +72,8 @@
 <li class="toctree-l3"><a class="reference internal" href="#unary-primitives">7.3.1 Unary Primitives</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#square-primitive">7.3.1.1 Square Primitive</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#reciprocal-primitive">7.3.1.2 Reciprocal Primitive</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#increment-and-decrement-primitive">7.3.1.3 Increment and Decrement Primitive</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#integration-in-framework">7.3.1.4 Integration in Framework</a></li>
 </ul>
 </li>
 </ul>
@@ -610,6 +612,266 @@ For this, the AArch64 ISA already provides two instructions <code class="docutil
 <span class="p">});</span>
 </pre></div>
 </div>
+</section>
+<section id="increment-and-decrement-primitive">
+<h4>7.3.1.3 Increment and Decrement Primitive<a class="headerlink" href="#increment-and-decrement-primitive" title="Link to this heading"></a></h4>
+<p>The last unary primitives that we wanted to implement were the increment and decrement operations.</p>
+<p>Similar to the other primitives, we had to first implement a few new instructions.
+Instructions that were directly needed for these primitives are <code class="docutils literal notranslate"><span class="pre">FADD</span></code> and <code class="docutils literal notranslate"><span class="pre">FSUB</span></code>.
+To fully utilize these instructions, we were implementing both a scalar and a vector version for these instructions:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">constexpr</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="nf">faddVec</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="w"> </span><span class="n">reg_dest</span><span class="p">,</span>
+<span class="w">                           </span><span class="n">simd_fp_t</span><span class="w"> </span><span class="n">reg_src1</span><span class="p">,</span>
+<span class="w">                           </span><span class="n">simd_fp_t</span><span class="w"> </span><span class="n">reg_src2</span><span class="p">,</span>
+<span class="w">                           </span><span class="n">arr_spec_t</span><span class="w"> </span><span class="n">arr_spec</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">arr_spec</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">arr_spec_t</span><span class="o">::</span><span class="n">s2</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<span class="w">        </span><span class="n">arr_spec</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">arr_spec_t</span><span class="o">::</span><span class="n">s4</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<span class="w">        </span><span class="n">arr_spec</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">arr_spec_t</span><span class="o">::</span><span class="n">d2</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">invalid_argument</span><span class="p">(</span><span class="s">&quot;Invalid arrangement specifier&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">l_ins</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0xE20D400</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">// set destination register id</span>
+<span class="w">    </span><span class="n">l_ins</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="p">(</span><span class="n">reg_dest</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mh">0x1f</span><span class="p">);</span>
+<span class="w">    </span><span class="c1">// set first source register id</span>
+<span class="w">    </span><span class="n">l_ins</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="p">(</span><span class="n">reg_src1</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mh">0x1f</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">// set second source register id</span>
+<span class="w">    </span><span class="n">l_ins</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="p">(</span><span class="n">reg_src2</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mh">0x1f</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">16</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">// set arrangement specifier</span>
+<span class="w">    </span><span class="n">l_ins</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="p">(</span><span class="n">arr_spec</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mh">0x40400000</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">l_ins</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">constexpr</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="nf">faddScalar</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="w"> </span><span class="n">reg_dest</span><span class="p">,</span>
+<span class="w">                            </span><span class="n">simd_fp_t</span><span class="w"> </span><span class="n">reg_src1</span><span class="p">,</span>
+<span class="w">                            </span><span class="n">simd_fp_t</span><span class="w"> </span><span class="n">reg_src2</span><span class="p">,</span>
+<span class="w">                            </span><span class="n">neon_size_spec_t</span><span class="w"> </span><span class="n">size_spec</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">size_spec</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">neon_size_spec_t</span><span class="o">::</span><span class="n">s</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<span class="w">        </span><span class="n">size_spec</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">neon_size_spec_t</span><span class="o">::</span><span class="n">d</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">invalid_argument</span><span class="p">(</span><span class="s">&quot;Invalid size specifier&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">l_ins</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x1E202800</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">// set destination register id</span>
+<span class="w">    </span><span class="n">l_ins</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="p">(</span><span class="n">reg_dest</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mh">0x1f</span><span class="p">);</span>
+<span class="w">    </span><span class="c1">// set first source register id</span>
+<span class="w">    </span><span class="n">l_ins</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="p">(</span><span class="n">reg_src1</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mh">0x1f</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">// set second source register id</span>
+<span class="w">    </span><span class="n">l_ins</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="p">(</span><span class="n">reg_src2</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mh">0x1f</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">16</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">// set size specifier</span>
+<span class="w">    </span><span class="n">l_ins</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="p">(</span><span class="n">size_spec</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mh">0x3</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">22</span><span class="p">;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">l_ins</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Beside these instructions, we needed to move the value <code class="docutils literal notranslate"><span class="pre">1</span></code> into a Neon register.
+That meant, we had to also implement the <code class="docutils literal notranslate"><span class="pre">FMOV</span></code> instruction.
+Implementing the <code class="docutils literal notranslate"><span class="pre">FMOV</span></code> instruction has been slightly different to those of other implemenations.
+The main reason for this special behavior is the split of the 8-bit immediate into 1 signed bit, a 3-bit exponent and a 4-bit precision part.
+This unique characteristic changes the use of these 8-bits slightly.</p>
+<p>For example, we have looked at different scenarios for moving a floating point value:</p>
+<table class="docutils align-default" id="id1">
+<caption><span class="caption-text">Different Floating-Point Movements</span><a class="headerlink" href="#id1" title="Link to this table"></a></caption>
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 10.0%" />
+<col style="width: 10.0%" />
+<col style="width: 10.0%" />
+<col style="width: 10.0%" />
+<col style="width: 10.0%" />
+<col style="width: 10.0%" />
+<col style="width: 10.0%" />
+<col style="width: 10.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>FP-Number</p></th>
+<th class="head"><p>Bit-18</p></th>
+<th class="head"><p>Bit-17</p></th>
+<th class="head"><p>Bit-16</p></th>
+<th class="head"><p>Bit-9</p></th>
+<th class="head"><p>Bit-8</p></th>
+<th class="head"><p>Bit-7</p></th>
+<th class="head"><p>Bit-6</p></th>
+<th class="head"><p>Bit-5</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>1.0f</strong></p></td>
+<td><p>0</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>2.0f</strong></p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>3.0f</strong></p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>1</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>7.0f</strong></p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>18.0f</strong></p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>1</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>31.0f</strong></p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>-31.0f</strong></p></td>
+<td><p>1</p></td>
+<td><p>0</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+</tr>
+</tbody>
+</table>
+<p>Looking at these examples we were able to find some special cases (e.g. <code class="docutils literal notranslate"><span class="pre">1</span></code>), but also patterns, that we were trying apply to our implementation:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">constexpr</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="nf">fmovVec</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="w"> </span><span class="n">reg_dest</span><span class="p">,</span>
+<span class="w">                           </span><span class="kt">int32_t</span><span class="w"> </span><span class="n">imm8</span><span class="p">,</span>
+<span class="w">                           </span><span class="n">arr_spec_t</span><span class="w"> </span><span class="n">arr_spec</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">arr_spec</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">arr_spec_t</span><span class="o">::</span><span class="n">s2</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<span class="w">        </span><span class="n">arr_spec</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">arr_spec_t</span><span class="o">::</span><span class="n">s4</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<span class="w">        </span><span class="n">arr_spec</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">arr_spec_t</span><span class="o">::</span><span class="n">d2</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">invalid_argument</span><span class="p">(</span><span class="s">&quot;Invalid arrangement specifier&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="kt">int32_t</span><span class="w"> </span><span class="n">l_ins</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0xF00F400</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">// set destination register id</span>
+<span class="w">    </span><span class="n">l_ins</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="p">(</span><span class="n">reg_dest</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mh">0x1f</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">imm8</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">31</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">imm8</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">-31</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">invalid_argument</span><span class="p">(</span><span class="s">&quot;Invalid immediate (allowed range: -31, 31)&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">imm8</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">l_ins</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="p">(</span><span class="mh">0x1</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">18</span><span class="p">;</span>
+<span class="w">        </span><span class="n">imm8</span><span class="w"> </span><span class="o">*=</span><span class="w"> </span><span class="mi">-1</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// immediate bits</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">imm8</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">l_ins</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="p">(</span><span class="mh">0x3</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">16</span><span class="p">;</span>
+<span class="w">        </span><span class="n">l_ins</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="p">(</span><span class="mh">0x1</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">9</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">imm8</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">imm8</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">l_ins</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="p">(</span><span class="mh">0x1</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">8</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">imm8</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">8</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">l_ins</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="p">(</span><span class="n">imm8</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mh">0x7</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">7</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">else</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">l_ins</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="p">(</span><span class="mh">0x1</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">16</span><span class="p">;</span>
+
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">imm8</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">8</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">imm8</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">16</span><span class="p">)</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="n">l_ins</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="p">(</span><span class="n">imm8</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mh">0x7</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">6</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">imm8</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">16</span><span class="p">)</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="n">l_ins</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="p">(</span><span class="n">imm8</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mh">0x1f</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// set arrangement specifier</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">arr_spec</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">arr_spec_t</span><span class="o">::</span><span class="n">s4</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">l_ins</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="p">(</span><span class="mh">0x1</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">30</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">arr_spec</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">arr_spec_t</span><span class="o">::</span><span class="n">d2</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">l_ins</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="p">(</span><span class="mh">0x1</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">29</span><span class="p">;</span>
+<span class="w">        </span><span class="n">l_ins</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="p">(</span><span class="mh">0x1</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">30</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">l_ins</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>In practice we would need the <code class="docutils literal notranslate"><span class="pre">FMOV</span></code> instruction to transfer the <code class="docutils literal notranslate"><span class="pre">1.0f</span></code> into a vector, in order to be able to execute vector addition and subtraction operations.</p>
+<p>After implementing the instructions we simply took our <code class="docutils literal notranslate"><span class="pre">square</span></code> kernel and replaced all multiplication operations with a <code class="docutils literal notranslate"><span class="pre">FADD</span></code> or a <code class="docutils literal notranslate"><span class="pre">FSUB</span></code> operation:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Set register with value 1</span>
+<span class="n">fmovVec</span><span class="p">(</span><span class="n">v19</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">)</span>
+
+<span class="p">...</span>
+
+<span class="c1">// load 16 elements from A</span>
+<span class="n">ldp</span><span class="p">(</span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">x8</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">q</span><span class="p">)</span>
+<span class="n">ldp</span><span class="p">(</span><span class="n">v2</span><span class="p">,</span><span class="w"> </span><span class="n">v3</span><span class="p">,</span><span class="w"> </span><span class="n">x8</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="p">,</span><span class="w"> </span><span class="n">q</span><span class="p">)</span>
+
+<span class="n">faddVec</span><span class="p">(</span><span class="n">v4</span><span class="p">,</span><span class="w"> </span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">v19</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">)</span>
+<span class="n">faddVec</span><span class="p">(</span><span class="n">v5</span><span class="p">,</span><span class="w"> </span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">v19</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">)</span>
+<span class="n">faddVec</span><span class="p">(</span><span class="n">v6</span><span class="p">,</span><span class="w"> </span><span class="n">v2</span><span class="p">,</span><span class="w"> </span><span class="n">v19</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">)</span>
+<span class="n">faddVec</span><span class="p">(</span><span class="n">v7</span><span class="p">,</span><span class="w"> </span><span class="n">v3</span><span class="p">,</span><span class="w"> </span><span class="n">v19</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">)</span>
+
+<span class="c1">// store 16 elements to B</span>
+<span class="n">stp</span><span class="p">(</span><span class="n">v4</span><span class="p">,</span><span class="w"> </span><span class="n">v5</span><span class="p">,</span><span class="w"> </span><span class="n">x9</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">q</span><span class="p">)</span>
+<span class="n">stp</span><span class="p">(</span><span class="n">v6</span><span class="p">,</span><span class="w"> </span><span class="n">v7</span><span class="p">,</span><span class="w"> </span><span class="n">x9</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="p">,</span><span class="w"> </span><span class="n">q</span><span class="p">)</span>
+
+<span class="c1">// jump by 16 rows</span>
+<span class="n">add</span><span class="p">(</span><span class="n">x8</span><span class="p">,</span><span class="w"> </span><span class="n">x8</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="o">*</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+<span class="n">add</span><span class="p">(</span><span class="n">x9</span><span class="p">,</span><span class="w"> </span><span class="n">x9</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="o">*</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c1">// decrement m loop counter</span>
+<span class="n">sub</span><span class="p">(</span><span class="n">x7</span><span class="p">,</span><span class="w"> </span><span class="n">x7</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>After implementing both the <code class="docutils literal notranslate"><span class="pre">increment</span></code> and <code class="docutils literal notranslate"><span class="pre">decrement</span></code> kernel, we also implemented their transposed versions.</p>
+</section>
+<section id="integration-in-framework">
+<h4>7.3.1.4 Integration in Framework<a class="headerlink" href="#integration-in-framework" title="Link to this heading"></a></h4>
 </section>
 </section>
 </section>
