@@ -531,3 +531,253 @@ With these instructions, we began implementing the new kernel. Structurally it i
         // decrement m loop counter
         sub(x6, x6, 1, 0)
     });
+
+7.3.1.3 Increment and Decrement Primitive
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The last unary primitives that we wanted to implement were the increment and decrement operations.
+
+Similar to the other primitives, we had to first implement a few new instructions. 
+Instructions that were directly needed for these primitives are ``FADD`` and ``FSUB``. 
+To fully utilize these instructions, we were implementing both a scalar and a vector version for these instructions:
+
+.. code:: cpp
+
+    constexpr uint32_t faddVec(simd_fp_t reg_dest,
+                               simd_fp_t reg_src1,
+                               simd_fp_t reg_src2,
+                               arr_spec_t arr_spec)
+    {
+        if (arr_spec != arr_spec_t::s2 && 
+            arr_spec != arr_spec_t::s4 &&
+            arr_spec != arr_spec_t::d2)
+        {
+            throw std::invalid_argument("Invalid arrangement specifier");
+        }
+        uint32_t l_ins = 0xE20D400;
+        // set destination register id
+        l_ins |= (reg_dest & 0x1f);
+        // set first source register id
+        l_ins |= (reg_src1 & 0x1f) << 5;
+        // set second source register id
+        l_ins |= (reg_src2 & 0x1f) << 16;
+        // set arrangement specifier
+        l_ins |= (arr_spec & 0x40400000);
+        return l_ins;
+    }
+
+    constexpr uint32_t faddScalar(simd_fp_t reg_dest,
+                                simd_fp_t reg_src1,
+                                simd_fp_t reg_src2,
+                                neon_size_spec_t size_spec)
+    {
+        if (size_spec != neon_size_spec_t::s && 
+            size_spec != neon_size_spec_t::d)
+        {
+            throw std::invalid_argument("Invalid size specifier");
+        }
+        uint32_t l_ins = 0x1E202800;
+        // set destination register id
+        l_ins |= (reg_dest & 0x1f);
+        // set first source register id
+        l_ins |= (reg_src1 & 0x1f) << 5;
+        // set second source register id
+        l_ins |= (reg_src2 & 0x1f) << 16;
+        // set size specifier
+        l_ins |= (size_spec & 0x3) << 22;
+        return l_ins;
+    }
+
+Beside these instructions, we needed to move the value ``1`` into a Neon register. 
+That meant, we had to also implement the ``FMOV`` instruction. 
+Implementing the ``FMOV`` instruction has been slightly different to those of other implemenations. 
+The main reason for this special behavior is the split of the 8-bit immediate into 1 signed bit, a 3-bit exponent and a 4-bit precision part. 
+This unique characteristic changes the use of these 8-bits slightly. 
+
+For example, we have looked at different scenarios for moving a floating point value:
+
+.. list-table:: Different Floating-Point Movements
+   :widths: 20 10 10 10 10 10 10 10 10
+   :header-rows: 1
+
+   * - FP-Number
+     - Bit-18
+     - Bit-17
+     - Bit-16
+     - Bit-9
+     - Bit-8
+     - Bit-7
+     - Bit-6
+     - Bit-5
+   * - **1.0f**
+     - 0
+     - 1
+     - 1
+     - 1
+     - 0
+     - 0
+     - 0
+     - 0
+   * - **2.0f**
+     - 0
+     - 0
+     - 0
+     - 0
+     - 0
+     - 0
+     - 0
+     - 0
+   * - **3.0f**
+     - 0
+     - 0
+     - 0
+     - 0
+     - 1
+     - 0
+     - 0
+     - 0
+   * - **7.0f**
+     - 0
+     - 0
+     - 0
+     - 1
+     - 1
+     - 1
+     - 0
+     - 0
+   * - **18.0f**
+     - 0
+     - 0
+     - 1
+     - 1
+     - 0
+     - 0
+     - 1
+     - 0
+   * - **31.0f**
+     - 0
+     - 0
+     - 1
+     - 1
+     - 1
+     - 1
+     - 1
+     - 1
+   * - **\-31.0f**
+     - 1
+     - 0
+     - 1
+     - 1
+     - 1
+     - 1
+     - 1
+     - 1
+
+Looking at these examples we were able to find some special cases (e.g. ``1``), but also patterns, that we were trying apply to our implementation:
+
+.. code:: cpp
+
+    constexpr uint32_t fmovVec(simd_fp_t reg_dest,
+                               int32_t imm8,
+                               arr_spec_t arr_spec)
+    {
+        if (arr_spec != arr_spec_t::s2 && 
+            arr_spec != arr_spec_t::s4 && 
+            arr_spec != arr_spec_t::d2)
+        {
+            throw std::invalid_argument("Invalid arrangement specifier");
+        }
+        int32_t l_ins = 0xF00F400;
+        // set destination register id
+        l_ins |= (reg_dest & 0x1f);
+
+        if (imm8 > 31 || imm8 < -31)
+        {
+            throw std::invalid_argument("Invalid immediate (allowed range: -31, 31)");
+        }
+        if (imm8 < 0)
+        {
+            l_ins |= (0x1) << 18;
+            imm8 *= -1;
+        }
+
+        // immediate bits
+        if (imm8 == 1)
+        {
+            l_ins |= (0x3) << 16;
+            l_ins |= (0x1) << 9;
+        }
+        else if (imm8 == 2)
+        {
+        }
+        else if (imm8 == 3)
+        {
+            l_ins |= (0x1) << 8;
+        }
+        else if (imm8 < 8)
+        {
+            l_ins |= (imm8 & 0x7) << 7;
+        }
+        else
+        {
+            l_ins |= (0x1) << 16;
+
+            if (imm8 > 8 && imm8 < 16)
+            {
+                l_ins |= (imm8 & 0x7) << 6;
+            }
+            else if (imm8 > 16)
+            {
+                l_ins |= (imm8 & 0x1f) << 5;
+            }
+        }
+
+        // set arrangement specifier
+        if (arr_spec == arr_spec_t::s4)
+        {
+            l_ins |= (0x1) << 30;
+        }
+        else if (arr_spec == arr_spec_t::d2)
+        {
+            l_ins |= (0x1) << 29;
+            l_ins |= (0x1) << 30;
+        }
+
+        return l_ins;
+    }
+
+In practice we would need the ``FMOV`` instruction to transfer the ``1.0f`` into a vector, in order to be able to execute vector addition and subtraction operations. 
+
+After implementing the instructions we simply took our ``square`` kernel and replaced all multiplication operations with a ``FADD`` or a ``FSUB`` operation:
+
+.. code:: cpp
+
+    // Set register with value 1
+    fmovVec(v19, 1, s4)
+
+    ...
+
+    // load 16 elements from A
+    ldp(v0, v1, x8, 0, q)
+    ldp(v2, v3, x8, 32, q)
+
+    faddVec(v4, v0, v19, s4)
+    faddVec(v5, v1, v19, s4)
+    faddVec(v6, v2, v19, s4)
+    faddVec(v7, v3, v19, s4)
+
+    // store 16 elements to B
+    stp(v4, v5, x9, 0, q)
+    stp(v6, v7, x9, 32, q)
+
+    // jump by 16 rows
+    add(x8, x8, 16*4, 0)
+    add(x9, x9, 16*4, 0)
+
+    // decrement m loop counter
+    sub(x7, x7, 1, 0)
+
+After implementing both the ``increment`` and ``decrement`` kernel, we also implemented their transposed versions.
+
+7.3.1.4 Integration in Framework
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
