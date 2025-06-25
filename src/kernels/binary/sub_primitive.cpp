@@ -117,6 +117,7 @@ void mini_jit::kernels::binary::sub(mini_jit::Kernel &kernel,
                 simd_fp::fsubScalar(v2, v0, v1, s),
                 simd_fp::str(v2, x13, 0, s)
             });
+            break;
         case 2:
             kernel.add_instr({
                 // 2 elements
