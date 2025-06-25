@@ -1,4 +1,4 @@
-#include "square_trans_primitive.h"
+#include "decrement_trans_primitive.h"
 #include "Kernel.h"
 
 #include "registers/gp_registers.h"
@@ -34,12 +34,14 @@ using simd_fp::trn1;
 using simd_fp::trn2;
 using simd_fp::zip1;
 using simd_fp::zip2;
-using simd_fp::fmulVec;
-using simd_fp::fmulScalar;
+using simd_fp::fmovVec;
+using simd_fp::fmovScalar;
+using simd_fp::fsubVec;
+using simd_fp::fsubScalar;
 
-void mini_jit::kernels::unary::square_trans(mini_jit::Kernel &kernel,
-                                            int m,
-                                            int n)
+void mini_jit::kernels::unary::decrement_trans(mini_jit::Kernel &kernel,
+                                               int m,
+                                               int n)
 {
     // Prepare the kernel
     int mLoopIterations = m / 4;
@@ -54,6 +56,9 @@ void mini_jit::kernels::unary::square_trans(mini_jit::Kernel &kernel,
         movSP(x29, sp),
 
         // Save callee-saved registers
+        stpPre(x19, x20, sp, -16),
+        stpPre(x21, x22, sp, -16),
+        stpPre(x23, x24, sp, -16),
         stpPre(x25, x26, sp, -16),
         stpPre(x27, x28, sp, -16),
 
@@ -86,6 +91,9 @@ void mini_jit::kernels::unary::square_trans(mini_jit::Kernel &kernel,
 
         // Jumping 4 columns in B       - (x27)
         lsl(x27, x3, 2),
+
+        // Set register with value 1
+        fmovVec(v20, 1, s4), 
     });
 
     if ( nLoopIterations > 0)
@@ -95,7 +103,7 @@ void mini_jit::kernels::unary::square_trans(mini_jit::Kernel &kernel,
     
         if (mLoopIterations > 0)
         {
-            internal_subkernels::squareM4N4( kernel, mLoopIterations );
+            internal_subkernels::decrementM4N4( kernel, mLoopIterations );
         }
     
         if (mLoopRemainder > 0)
@@ -103,13 +111,13 @@ void mini_jit::kernels::unary::square_trans(mini_jit::Kernel &kernel,
             switch (mLoopRemainder)
             {
             case 1:
-                internal_subkernels::squareM1N4( kernel );
+                internal_subkernels::decrementM1N4( kernel );
                 break;
             case 2:
-                internal_subkernels::squareM2N4( kernel );
+                internal_subkernels::decrementM2N4( kernel );
                 break;
             case 3:
-                internal_subkernels::squareM3N4( kernel );
+                internal_subkernels::decrementM3N4( kernel );
                 break;
             default:
                 break;
@@ -149,13 +157,13 @@ void mini_jit::kernels::unary::square_trans(mini_jit::Kernel &kernel,
             switch (nLoopRemainder)
             {
                 case 1:
-                    internal_subkernels::squareM4N1( kernel, mLoopIterations );
+                    internal_subkernels::decrementM4N1( kernel, mLoopIterations );
                     break;
                 case 2:
-                    internal_subkernels::squareM4N2( kernel, mLoopIterations );
+                    internal_subkernels::decrementM4N2( kernel, mLoopIterations );
                     break;
                 case 3:
-                    internal_subkernels::squareM4N3( kernel, mLoopIterations );
+                    internal_subkernels::decrementM4N3( kernel, mLoopIterations );
                     break;
                 default:
                     break;
@@ -169,43 +177,43 @@ void mini_jit::kernels::unary::square_trans(mini_jit::Kernel &kernel,
             case 1:
                 if ( nLoopRemainder == 1 )
                 {
-                    internal_subkernels::squareM1N1( kernel );
+                    internal_subkernels::decrementM1N1( kernel );
                 }
                 else if ( nLoopRemainder == 2 )
                 {
-                    internal_subkernels::squareM1N2( kernel );
+                    internal_subkernels::decrementM1N2( kernel );
                 }
                 else if ( nLoopRemainder == 3 )
                 {
-                    internal_subkernels::squareM1N3( kernel );
+                    internal_subkernels::decrementM1N3( kernel );
                 }
                 break;
             case 2:
                 if ( nLoopRemainder == 1 )
                 {
-                    internal_subkernels::squareM2N1( kernel );
+                    internal_subkernels::decrementM2N1( kernel );
                 }
                 else if ( nLoopRemainder == 2 )
                 {
-                    internal_subkernels::squareM2N2( kernel );
+                    internal_subkernels::decrementM2N2( kernel );
                 }
                 else if ( nLoopRemainder == 3 )
                 {
-                    internal_subkernels::squareM2N3( kernel );
+                    internal_subkernels::decrementM2N3( kernel );
                 }
                 break;
             case 3:
                 if ( nLoopRemainder == 1 )
                 {
-                    internal_subkernels::squareM3N1( kernel );
+                    internal_subkernels::decrementM3N1( kernel );
                 }
                 else if ( nLoopRemainder == 2 )
                 {
-                    internal_subkernels::squareM3N2( kernel );
+                    internal_subkernels::decrementM3N2( kernel );
                 }
                 else if ( nLoopRemainder == 3 )
                 {
-                    internal_subkernels::squareM3N3( kernel );
+                    internal_subkernels::decrementM3N3( kernel );
                 }
                 break;
             default:
@@ -223,6 +231,9 @@ void mini_jit::kernels::unary::square_trans(mini_jit::Kernel &kernel,
 
         ldpPost(x27, x28, sp, 16),
         ldpPost(x25, x26, sp, 16),
+        ldpPost(x23, x24, sp, 16),
+        ldpPost(x21, x22, sp, 16),
+        ldpPost(x19, x20, sp, 16),
 
         // Restore stack pointer
         ldpPost(x29, x30, sp, 16),
@@ -230,11 +241,11 @@ void mini_jit::kernels::unary::square_trans(mini_jit::Kernel &kernel,
         inst::ret()
     });
 
-    kernel.write("square_trans_primitive.bin");
+    kernel.write("decrement_trans_primitive.bin");
     kernel.set_kernel();
 }
 
-void mini_jit::kernels::unary::internal::squareM4N4( mini_jit::Kernel &kernel,
+void mini_jit::kernels::unary::internal::decrementM4N4( mini_jit::Kernel &kernel,
                                                      int mLoopIterations )
 {
     kernel.add_instr(mov(x6, mLoopIterations));
@@ -255,12 +266,6 @@ void mini_jit::kernels::unary::internal::squareM4N4( mini_jit::Kernel &kernel,
         add(x7, x7, x2, 0, 0),
         ldr(v3, x7, 0, q),
 
-        // Square values
-        fmulVec(v0, v0, v0, s4),
-        fmulVec(v1, v1, v1, s4),
-        fmulVec(v2, v2, v2, s4),
-        fmulVec(v3, v3, v3, s4),
-
         // Transpose 4x4 block
         // TRN
         trn1(v4, v0, v2, s4),
@@ -274,6 +279,12 @@ void mini_jit::kernels::unary::internal::squareM4N4( mini_jit::Kernel &kernel,
 
         zip2(v10, v4, v5, s4),
         zip2(v11, v6, v7, s4),
+
+        // Increment values
+        fsubVec( v8,  v8, v20, s4),
+        fsubVec( v9,  v9, v20, s4),
+        fsubVec(v10, v10, v20, s4),
+        fsubVec(v11, v11, v20, s4),
 
         // Store 4x4 Block of B
         str(v8, x8, 0, q),
@@ -299,7 +310,7 @@ void mini_jit::kernels::unary::internal::squareM4N4( mini_jit::Kernel &kernel,
     kernel.add_instr(base::cbnz(x6, -l_mLoopInstrCount * 4));
 }
 
-void mini_jit::kernels::unary::internal::squareM3N4( mini_jit::Kernel &kernel )
+void mini_jit::kernels::unary::internal::decrementM3N4( mini_jit::Kernel &kernel )
 {
     kernel.add_instr({
         // working pointer for A and B
@@ -327,16 +338,6 @@ void mini_jit::kernels::unary::internal::squareM3N4( mini_jit::Kernel &kernel )
         ldrPost(v6, x17, 8, d),
         ldr(v7, x17, 0, s),
 
-        // Square values
-        fmulVec(v0, v0, v0, s2),
-        fmulScalar(v1, v1, v1, s),
-        fmulVec(v2, v2, v2, s2),
-        fmulScalar(v3, v3, v3, s),
-        fmulVec(v4, v4, v4, s2),
-        fmulScalar(v5, v5, v5, s),
-        fmulVec(v6, v6, v6, s2),
-        fmulScalar(v7, v7, v7, s),
-
         // Transpose 3x4 block
         // TRN (d)
         trn1(v8, v0, v4, s4),
@@ -355,6 +356,12 @@ void mini_jit::kernels::unary::internal::squareM3N4( mini_jit::Kernel &kernel )
         zip1(v18, v12, v13, s2),
         zip2(v19, v12, v13, s2),
 
+        // Increment values
+        fsubVec(v14, v14, v20, s4),
+        fsubVec(v15, v15, v20, s4),
+        fsubVec(v18, v18, v20, s2),
+        fsubVec(v19, v19, v20, s2),
+
         // Store 3x4 Block of B
         str(v14, x8, 0, q),
         add(x8, x8, x3, 0, 0),
@@ -367,7 +374,7 @@ void mini_jit::kernels::unary::internal::squareM3N4( mini_jit::Kernel &kernel )
     });
 }
 
-void mini_jit::kernels::unary::internal::squareM2N4( mini_jit::Kernel &kernel )
+void mini_jit::kernels::unary::internal::decrementM2N4( mini_jit::Kernel &kernel )
 {
     kernel.add_instr({
         // working pointer for A and B
@@ -386,12 +393,6 @@ void mini_jit::kernels::unary::internal::squareM2N4( mini_jit::Kernel &kernel )
 
         ldr(v3, x7, 0, d),
 
-        // Square values
-        fmulVec(v0, v0, v0, s2),
-        fmulVec(v1, v1, v1, s2),
-        fmulVec(v2, v2, v2, s2),
-        fmulVec(v3, v3, v3, s2),
-
         // Transpose 2x4 block
         // TRN
         trn1(v4, v0, v2, s4),
@@ -404,6 +405,10 @@ void mini_jit::kernels::unary::internal::squareM2N4( mini_jit::Kernel &kernel )
         zip1(v8, v4, v5, s4),
         zip1(v9, v6, v7, s4),
 
+        // Increment values
+        fsubVec(v8, v8, v20, s4),
+        fsubVec(v9, v9, v20, s4),
+
         // Store 2x4 Block of B
         str(v8, x8, 0, q),
         add(x8, x8, x3, 0, 0),
@@ -412,7 +417,7 @@ void mini_jit::kernels::unary::internal::squareM2N4( mini_jit::Kernel &kernel )
     });
 }
 
-void mini_jit::kernels::unary::internal::squareM1N4( mini_jit::Kernel &kernel )
+void mini_jit::kernels::unary::internal::decrementM1N4( mini_jit::Kernel &kernel )
 {
     kernel.add_instr({
         // working pointer for A and B
@@ -431,12 +436,6 @@ void mini_jit::kernels::unary::internal::squareM1N4( mini_jit::Kernel &kernel )
 
         ldr(v3, x7, 0, s),
 
-        // Square values
-        fmulScalar(v0, v0, v0, s),
-        fmulScalar(v1, v1, v1, s),
-        fmulScalar(v2, v2, v2, s),
-        fmulScalar(v3, v3, v3, s),
-
         // Transpose 1x4 block
         // TRN
         trn1(v4, v0, v2, s2),
@@ -445,12 +444,15 @@ void mini_jit::kernels::unary::internal::squareM1N4( mini_jit::Kernel &kernel )
         // ZIP
         zip1(v6, v4, v5, s4),
 
+        // Increment values
+        fsubVec(v6, v6, v20, s4),
+
         // Store 1x4 Block of B
         str(v6, x8, 0, q)
     });
 }
 
-void mini_jit::kernels::unary::internal::squareM4N3( mini_jit::Kernel &kernel,
+void mini_jit::kernels::unary::internal::decrementM4N3( mini_jit::Kernel &kernel,
                                                        int mLoopIterations )
 {
     kernel.add_instr(mov(x6, mLoopIterations));
@@ -479,22 +481,22 @@ void mini_jit::kernels::unary::internal::squareM4N3( mini_jit::Kernel &kernel,
         ldrPost(v6, x17, 4, s),
         ldr(v7, x17, 0, s),
 
-        // Square values
-        fmulVec(v0, v0, v0, s2),
-        fmulVec(v1, v1, v1, s2),
-        fmulVec(v2, v2, v2, s2),
-        fmulVec(v3, v3, v3, s2),
-        fmulScalar(v4, v4, v4, s),
-        fmulScalar(v5, v5, v5, s),
-        fmulScalar(v6, v6, v6, s),
-        fmulScalar(v7, v7, v7, s),
-
         // Transpose 4x3 matrix
         // TRN
         trn1(v8, v0, v2, s4),
         trn2(v9, v0, v2, s4),
         trn1(v10, v1, v3, s4),
         trn2(v11, v1, v3, s4),
+
+        // Increment values
+        fsubVec(v8, v8, v20, s2),
+        fsubScalar(v4, v4, v20, s),
+        fsubVec(v9, v9, v20, s2),
+        fsubScalar(v5, v5, v20, s),
+        fsubVec(v10, v10, v20, s2),
+        fsubScalar(v6, v6, v20, s),
+        fsubVec(v11, v11, v20, s2),
+        fsubScalar(v7, v7, v20, s),
 
         // Store 4x3 Block of B
         mov(x17, x8),
@@ -532,7 +534,7 @@ void mini_jit::kernels::unary::internal::squareM4N3( mini_jit::Kernel &kernel,
     kernel.add_instr(base::cbnz(x6, -l_mLoopInstrCount * 4));
 }
 
-void mini_jit::kernels::unary::internal::squareM4N2( mini_jit::Kernel &kernel,
+void mini_jit::kernels::unary::internal::decrementM4N2( mini_jit::Kernel &kernel,
                                                        int mLoopIterations )
 {
     kernel.add_instr(mov(x6, mLoopIterations));
@@ -553,12 +555,6 @@ void mini_jit::kernels::unary::internal::squareM4N2( mini_jit::Kernel &kernel,
         ldrPost(v2, x17, 8, d),
         ldr(v3, x17, 0, d),
 
-        // Square values
-        fmulVec(v0, v0, v0, s2),
-        fmulVec(v1, v1, v1, s2),
-        fmulVec(v2, v2, v2, s2),
-        fmulVec(v3, v3, v3, s2),
-
         // Transpose 4x2 matrix
         // TRN
         trn1(v4, v0, v2, s4),
@@ -566,6 +562,12 @@ void mini_jit::kernels::unary::internal::squareM4N2( mini_jit::Kernel &kernel,
 
         trn1(v6, v1, v3, s4),
         trn2(v7, v1, v3, s4),
+
+        // Increment values
+        fsubVec(v4, v4, v20, s2),
+        fsubVec(v5, v5, v20, s2),
+        fsubVec(v6, v6, v20, s2),
+        fsubVec(v7, v7, v20, s2),
 
         // Store 4x2 Block of B
         str(v4, x8, 0, d),
@@ -594,7 +596,7 @@ void mini_jit::kernels::unary::internal::squareM4N2( mini_jit::Kernel &kernel,
     kernel.add_instr(base::cbnz(x6, -l_mLoopInstrCount * 4));
 }
 
-void mini_jit::kernels::unary::internal::squareM4N1( mini_jit::Kernel &kernel,
+void mini_jit::kernels::unary::internal::decrementM4N1( mini_jit::Kernel &kernel,
                                                        int mLoopIterations )
 {
     kernel.add_instr(mov(x6, mLoopIterations));
@@ -611,11 +613,11 @@ void mini_jit::kernels::unary::internal::squareM4N1( mini_jit::Kernel &kernel,
         ldrPost(v2, x7, 4, s),
         ldr(v3, x7, 0, s),
 
-        // Square values
-        fmulScalar(v0, v0, v0, s),
-        fmulScalar(v1, v1, v1, s),
-        fmulScalar(v2, v2, v2, s),
-        fmulScalar(v3, v3, v3, s),
+        // Increment values
+        fsubScalar(v0, v0, v20, s),
+        fsubScalar(v1, v1, v20, s),
+        fsubScalar(v2, v2, v20, s),
+        fsubScalar(v3, v3, v20, s),
 
         // Store 4x1 Block of B
         str(v0, x8, 0, s),
@@ -645,7 +647,7 @@ void mini_jit::kernels::unary::internal::squareM4N1( mini_jit::Kernel &kernel,
     kernel.add_instr(base::cbnz(x6, -l_mLoopInstrCount * 4));
 }
 
-void mini_jit::kernels::unary::internal::squareM3N3( mini_jit::Kernel &kernel )
+void mini_jit::kernels::unary::internal::decrementM3N3( mini_jit::Kernel &kernel )
 {
     kernel.add_instr({
         // working pointer for A and B
@@ -669,19 +671,19 @@ void mini_jit::kernels::unary::internal::squareM3N3( mini_jit::Kernel &kernel )
         ldrPost(v5, x17, 4, s),
         ldr(v6, x17, 0, s),
 
-        // Square values
-        fmulVec(v0, v0, v0, s2),
-        fmulScalar(v1, v1, v1, s),
-        fmulVec(v2, v2, v2, s2),
-        fmulScalar(v3, v3, v3, s),
-        fmulScalar(v4, v4, v4, s),
-        fmulScalar(v5, v5, v5, s),
-        fmulScalar(v6, v6, v6, s),
-
         // Transpose 3x3 matrix
         // TRN
         trn1(v7, v0, v2, s4),
         trn2(v8, v0, v2, s4),
+
+        // Increment values
+        fsubVec(v7, v7, v20, s2),
+        fsubScalar(v4, v4, v20, s),
+        fsubVec(v8, v8, v20, s2),
+        fsubScalar(v5, v5, v20, s),
+        fsubScalar(v1, v1, v20, s),
+        fsubScalar(v3, v3, v20, s),
+        fsubScalar(v6, v6, v20, s),
 
         // Store 3x3 Block of B
         mov(x17, x8),
@@ -702,7 +704,7 @@ void mini_jit::kernels::unary::internal::squareM3N3( mini_jit::Kernel &kernel )
     });
 }
 
-void mini_jit::kernels::unary::internal::squareM3N2( mini_jit::Kernel &kernel )
+void mini_jit::kernels::unary::internal::decrementM3N2( mini_jit::Kernel &kernel )
 {
     kernel.add_instr({
         // working pointer for A and B
@@ -720,16 +722,16 @@ void mini_jit::kernels::unary::internal::squareM3N2( mini_jit::Kernel &kernel )
         ldrPost(v2, x17, 8, d),
         ldr(v3, x17, 0, s),
 
-        // Square values
-        fmulVec(v0, v0, v0, s2),
-        fmulScalar(v1, v1, v1, s),
-        fmulVec(v2, v2, v2, s2),
-        fmulScalar(v3, v3, v3, s),
-
         // Transpose 3x2 matrix
         // TRN
         trn1(v4, v0, v2, s4),
         trn2(v5, v0, v2, s4),
+
+        // Increment values
+        fsubVec(v4, v4, v20, s2),
+        fsubVec(v5, v5, v20, s2),
+        fsubScalar(v1, v1, v20, s),
+        fsubScalar(v3, v3, v20, s),
 
         // Store 3x2 Block of B
         str(v4, x8, 0, d),
@@ -743,7 +745,7 @@ void mini_jit::kernels::unary::internal::squareM3N2( mini_jit::Kernel &kernel )
     });
 }
 
-void mini_jit::kernels::unary::internal::squareM3N1( mini_jit::Kernel &kernel )
+void mini_jit::kernels::unary::internal::decrementM3N1( mini_jit::Kernel &kernel )
 {
     kernel.add_instr({
         // working pointer for A and B
@@ -755,10 +757,10 @@ void mini_jit::kernels::unary::internal::squareM3N1( mini_jit::Kernel &kernel )
         ldrPost(v1, x7, 4, s),
         ldr(v2, x7, 0, s),
 
-        // Square values
-        fmulScalar(v0, v0, v0, s),
-        fmulScalar(v1, v1, v1, s),
-        fmulScalar(v2, v2, v2, s),
+        // Increment values
+        fsubScalar(v0, v0, v20, s),
+        fsubScalar(v1, v1, v20, s),
+        fsubScalar(v2, v2, v20, s),
 
         // Store 3x2 Block of B
         str(v0, x8, 0, s),
@@ -771,7 +773,7 @@ void mini_jit::kernels::unary::internal::squareM3N1( mini_jit::Kernel &kernel )
     });
 }
 
-void mini_jit::kernels::unary::internal::squareM2N3( mini_jit::Kernel &kernel )
+void mini_jit::kernels::unary::internal::decrementM2N3( mini_jit::Kernel &kernel )
 {
     kernel.add_instr({
         // working pointer for A and B
@@ -792,16 +794,16 @@ void mini_jit::kernels::unary::internal::squareM2N3( mini_jit::Kernel &kernel )
         ldrPost(v2, x17, 4, s),
         ldr(v3, x17, 0, s),
 
-        // Square values
-        fmulVec(v0, v0, v0, s2),
-        fmulVec(v1, v1, v1, s2),
-        fmulScalar(v2, v2, v2, s),
-        fmulScalar(v3, v3, v3, s),
-
         // Transpose 2x3 matrix
         // TRN
         trn1(v4, v0, v1, s2),
         trn2(v5, v0, v1, s2),
+
+        // Increment values
+        fsubVec(v4, v4, v20, s2),
+        fsubScalar(v2, v2, v20, s),
+        fsubVec(v5, v5, v20, s2),
+        fsubScalar(v3, v3, v20, s),
 
         // Store 2x3 Block of B
         mov(x17, x8),
@@ -816,7 +818,7 @@ void mini_jit::kernels::unary::internal::squareM2N3( mini_jit::Kernel &kernel )
     });
 }
 
-void mini_jit::kernels::unary::internal::squareM1N3( mini_jit::Kernel &kernel )
+void mini_jit::kernels::unary::internal::decrementM1N3( mini_jit::Kernel &kernel )
 {
     kernel.add_instr({
         // working pointer for A and B
@@ -832,10 +834,10 @@ void mini_jit::kernels::unary::internal::squareM1N3( mini_jit::Kernel &kernel )
 
         ldr(v2, x7, 0, s),
 
-        // Square values
-        fmulScalar(v0, v0, v0, s),
-        fmulScalar(v1, v1, v1, s),
-        fmulScalar(v2, v2, v2, s),
+        // Increment values
+        fsubScalar(v0, v0, v20, s),
+        fsubScalar(v1, v1, v20, s),
+        fsubScalar(v2, v2, v20, s),
 
         // Store 1x3 Block of B
         strPost(v0, x8, 4, s),
@@ -844,7 +846,7 @@ void mini_jit::kernels::unary::internal::squareM1N3( mini_jit::Kernel &kernel )
     });
 }
 
-void mini_jit::kernels::unary::internal::squareM2N2( mini_jit::Kernel &kernel )
+void mini_jit::kernels::unary::internal::decrementM2N2( mini_jit::Kernel &kernel )
 {
     kernel.add_instr({
         // working pointer for A and B
@@ -857,14 +859,14 @@ void mini_jit::kernels::unary::internal::squareM2N2( mini_jit::Kernel &kernel )
 
         ldr(v1, x7, 0, d),
 
-        // Square values
-        fmulVec(v0, v0, v0, s2),
-        fmulVec(v1, v1, v1, s2),
-
         // Transpose 2x3 matrix
         // TRN
         trn1(v2, v0, v1, s2),
         trn2(v3, v0, v1, s2),
+
+        // Increment values
+        fsubVec(v2, v2, v20, s2),
+        fsubVec(v3, v3, v20, s2),
 
         // Store 2x3 Block of B
         str(v2, x8, 0, d),
@@ -874,7 +876,7 @@ void mini_jit::kernels::unary::internal::squareM2N2( mini_jit::Kernel &kernel )
     });
 }
 
-void mini_jit::kernels::unary::internal::squareM2N1( mini_jit::Kernel &kernel )
+void mini_jit::kernels::unary::internal::decrementM2N1( mini_jit::Kernel &kernel )
 {
     kernel.add_instr({
         // working pointer for A and B
@@ -885,9 +887,9 @@ void mini_jit::kernels::unary::internal::squareM2N1( mini_jit::Kernel &kernel )
         ldrPost(v0, x7, 4, s),
         ldr(v1, x7, 0, s),
 
-        // Square values
-        fmulScalar(v0, v0, v0, s),
-        fmulScalar(v1, v1, v1, s),
+        // Increment values
+        fsubScalar(v0, v0, v20, s),
+        fsubScalar(v1, v1, v20, s),
 
         // Store 2x1 Block of B
         str(v0, x8, 0, s),
@@ -897,7 +899,7 @@ void mini_jit::kernels::unary::internal::squareM2N1( mini_jit::Kernel &kernel )
     });
 }
 
-void mini_jit::kernels::unary::internal::squareM1N2( mini_jit::Kernel &kernel )
+void mini_jit::kernels::unary::internal::decrementM1N2( mini_jit::Kernel &kernel )
 {
     kernel.add_instr({
         // working pointer for A and B
@@ -910,9 +912,9 @@ void mini_jit::kernels::unary::internal::squareM1N2( mini_jit::Kernel &kernel )
 
         ldr(v1, x7, 0, s),
 
-        // Square values
-        fmulScalar(v0, v0, v0, s),
-        fmulScalar(v1, v1, v1, s),
+        // Increment values
+        fsubScalar(v0, v0, v20, s),
+        fsubScalar(v1, v1, v20, s),
 
         // Store 1x2 Block of B
         strPost(v0, x8, 4, s),
@@ -920,7 +922,7 @@ void mini_jit::kernels::unary::internal::squareM1N2( mini_jit::Kernel &kernel )
     });
 }
 
-void mini_jit::kernels::unary::internal::squareM1N1( mini_jit::Kernel &kernel )
+void mini_jit::kernels::unary::internal::decrementM1N1( mini_jit::Kernel &kernel )
 {
     kernel.add_instr({
         // working pointer for A and B
@@ -930,8 +932,8 @@ void mini_jit::kernels::unary::internal::squareM1N1( mini_jit::Kernel &kernel )
         // Load 1x1 block of A (input matrix)
         ldr(v0, x7, 0, s),
 
-        // Square values
-        fmulScalar(v0, v0, v0, s),
+        // Increment values
+        fsubScalar(v0, v0, v20, s),
 
         // Store 1x1 Block of B
         str(v0, x8, 0, s)

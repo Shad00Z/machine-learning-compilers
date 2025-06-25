@@ -2,10 +2,13 @@
 #define MINI_JIT_INSTRUCTIONS_ALL_SIMD_INSTRUCTIONS_H
 
 #include "eor.h"
+#include "fadd.h"
 #include "fmadd.h"
 #include "fmax.h"
 #include "fmla.h"
+#include "fmov.h"
 #include "fmul.h"
+#include "fsub.h"
 #include "frecpe.h"
 #include "frecps.h"
 #include "ld1.h"

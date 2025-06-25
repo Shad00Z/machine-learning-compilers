@@ -1,21 +1,39 @@
-#include "reciprocal_primitive.h"
+#include "decrement_primitive.h"
 #include "Kernel.h"
 
 #include "registers/gp_registers.h"
 #include "registers/simd_fp_registers.h"
 #include "instructions/all_instructions.h"
 
+namespace inst = mini_jit::instructions;
+namespace base = inst::base;
+namespace simd_fp = inst::simd_fp;
+
 using enum gpr_t;
 using enum simd_fp_t;
 using enum neon_size_spec_t;
 using enum arr_spec_t;
 
-using namespace mini_jit::instructions::base;
-using namespace mini_jit::instructions::simd_fp;
+using base::stpPre;
+using base::movSP;
+using base::lsl;
+using base::mov;
+using base::add;
+using base::sub;
+using base::cbnz;
+using base::ldpPost;
+using simd_fp::ldp;
+using simd_fp::stp;
+using simd_fp::ldr;
+using simd_fp::str;
+using simd_fp::fmovVec;
+using simd_fp::fmovScalar;
+using simd_fp::fsubVec;
+using simd_fp::fsubScalar;
 
-void mini_jit::kernels::unary::reciprocal(mini_jit::Kernel &kernel,
-                                          u_int32_t m,
-                                          u_int32_t n)
+void mini_jit::kernels::unary::decrement(mini_jit::Kernel &kernel,
+                                         u_int32_t m,
+                                         u_int32_t n)
 {
     // Inputs:
     // x0: pointer to A
@@ -32,10 +50,6 @@ void mini_jit::kernels::unary::reciprocal(mini_jit::Kernel &kernel,
         stpPre(x29, x30, sp, -16),
         movSP(x29, sp),
 
-        // Save callee-saved registers
-        stpPre(v8, v9, sp, -16, d),
-        stpPre(v10, v11, sp, -16, d),
-
         // Compute strides (* 4, because of 4 bytes per fp32 element)
         lsl(x2, x2, 2),
         lsl(x3, x3, 2),
@@ -45,7 +59,10 @@ void mini_jit::kernels::unary::reciprocal(mini_jit::Kernel &kernel,
         mov(x5, x1), // B
 
         // Set n loop counter
-        mov(x6, n)
+        mov(x6, n),
+
+        // Set register with value 1
+        fmovVec(v19, 1, s4), 
     });
 
     // Start n loop (1 column)
@@ -68,21 +85,10 @@ void mini_jit::kernels::unary::reciprocal(mini_jit::Kernel &kernel,
             ldp(v0, v1, x8, 0, q),
             ldp(v2, v3, x8, 32, q),
 
-            frecpeVec(v4, v0, s4),
-            frecpsVec(v10, v0, v4, s4),
-            fmulVec(v4, v4, v10, s4),
-
-            frecpeVec(v5, v1, s4),
-            frecpsVec(v10, v1, v5, s4),
-            fmulVec(v5, v5, v10, s4),
-
-            frecpeVec(v6, v2, s4),
-            frecpsVec(v10, v2, v6, s4),
-            fmulVec(v6, v6, v10, s4),
-
-            frecpeVec(v7, v3, s4),
-            frecpsVec(v10, v3, v7, s4),
-            fmulVec(v7, v7, v10, s4),
+            fsubVec(v4, v0, v19, s4),
+            fsubVec(v5, v1, v19, s4),
+            fsubVec(v6, v2, v19, s4),
+            fsubVec(v7, v3, v19, s4),
 
             // store 16 elements to B
             stp(v4, v5, x9, 0, q),
@@ -107,9 +113,7 @@ void mini_jit::kernels::unary::reciprocal(mini_jit::Kernel &kernel,
             kernel.add_instr({
                 // 1 element
                 ldr(v0, x8, 0, s),
-                frecpeScalar(v1, v0, s),
-                frecpsScalar(v10, v0, v1, s),
-                fmulScalar(v1, v1, v10, s),
+                fsubScalar(v1, v0, v19, s),
                 str(v1, x9, 0, s)
             });
             break;
@@ -117,9 +121,7 @@ void mini_jit::kernels::unary::reciprocal(mini_jit::Kernel &kernel,
             kernel.add_instr({
                 // 2 elements
                 ldr(v0, x8, 0, d),
-                frecpeVec(v1, v0, s2),
-                frecpsVec(v10, v0, v1, s2),
-                fmulVec(v1, v1, v10, s2),
+                fsubVec(v1, v0, v19, s2),
                 str(v1, x9, 0, d)
             });
             break;
@@ -127,16 +129,11 @@ void mini_jit::kernels::unary::reciprocal(mini_jit::Kernel &kernel,
             kernel.add_instr({
                 // 2 elements
                 ldr(v0, x8, 0, d),
-                frecpeVec(v1, v0, s2),
-                frecpsVec(v10, v0, v1, s2),
-                fmulVec(v1, v1, v10, s2),
+                fsubVec(v1, v0, v19, s2),
                 str(v1, x9, 0, d),
-
                 // 1 element
                 ldr(v2, x8, 2*4, s),
-                frecpeScalar(v3, v2, s),
-                frecpsScalar(v10, v2, v3, s),
-                fmulScalar(v3, v3, v10, s),
+                fsubScalar(v3, v2, v19, s),
                 str(v3, x9, 2*4, s)
             });
             break;
@@ -144,9 +141,7 @@ void mini_jit::kernels::unary::reciprocal(mini_jit::Kernel &kernel,
             kernel.add_instr({
                 // 4 elements
                 ldr(v0, x8, 0, q),
-                frecpeVec(v1, v0, s4),
-                frecpsVec(v10, v0, v1, s4),
-                fmulVec(v1, v1, v10, s4),
+                fsubVec(v1, v0, v19, s4),
                 str(v1, x9, 0, q)
             });
             break;
@@ -154,16 +149,11 @@ void mini_jit::kernels::unary::reciprocal(mini_jit::Kernel &kernel,
             kernel.add_instr({
                 // 4 elements
                 ldr(v0, x8, 0, q),
-                frecpeVec(v1, v0, s4),
-                frecpsVec(v10, v0, v1, s4),
-                fmulVec(v1, v1, v10, s4),
+                fsubVec(v1, v0, v19, s4),
                 str(v1, x9, 0, q),
-
                 // 1 element
                 ldr(v2, x8, 4*4, s),
-                frecpeScalar(v3, v2, s),
-                frecpsScalar(v10, v2, v3, s),
-                fmulScalar(v3, v3, v10, s),
+                fsubScalar(v3, v2, v19, s),
                 str(v3, x9, 4*4, s)
             });
             break;
@@ -171,16 +161,11 @@ void mini_jit::kernels::unary::reciprocal(mini_jit::Kernel &kernel,
             kernel.add_instr({
                 // 4 elements
                 ldr(v0, x8, 0, q),
-                frecpeVec(v1, v0, s4),
-                frecpsVec(v10, v0, v1, s4),
-                fmulVec(v1, v1, v10, s4),
+                fsubVec(v1, v0, v19, s4),
                 str(v1, x9, 0, q),
-
                 // 2 elements
                 ldr(v0, x8, 4*4, d),
-                frecpeVec(v2, v0, s2),
-                frecpsVec(v10, v0, v2, s2),
-                fmulVec(v2, v2, v10, s2),
+                fsubVec(v2, v0, v19, s2),
                 str(v2, x9, 4*4, d)
             });
             break;
@@ -188,23 +173,15 @@ void mini_jit::kernels::unary::reciprocal(mini_jit::Kernel &kernel,
             kernel.add_instr({
                 // 4 elements
                 ldr(v0, x8, 0, q),
-                frecpeVec(v1, v0, s4),
-                frecpsVec(v10, v0, v1, s4),
-                fmulVec(v1, v1, v10, s4),
+                fsubVec(v1, v0, v19, s4),
                 str(v1, x9, 0, q),
-
                 // 2 elements
                 ldr(v2, x8, 4*4, d),
-                frecpeVec(v3, v2, s2),
-                frecpsVec(v10, v2, v3, s2),
-                fmulVec(v3, v3, v10, s2),
+                fsubVec(v3, v2, v19, s2),
                 str(v3, x9, 4*4, d),
-
                 // 1 element
                 ldr(v4, x8, 24, s),
-                frecpeScalar(v5, v4, s),
-                frecpsScalar(v10, v4, v5, s),
-                fmulScalar(v5, v5, v10, s),
+                fsubScalar(v5, v4, v19, s),
                 str(v5, x9, 24, s)
             });
             break;
@@ -212,13 +189,8 @@ void mini_jit::kernels::unary::reciprocal(mini_jit::Kernel &kernel,
             kernel.add_instr({
                 // 8 elements
                 ldp(v0, v1, x8, 0, q),
-                frecpeVec(v2, v0, s4),
-                frecpsVec(v10, v0, v2, s4),
-                fmulVec(v2, v2, v10, s4),
-
-                frecpeVec(v3, v1, s4),
-                frecpsVec(v10, v1, v3, s4),
-                fmulVec(v3, v3, v10, s4),
+                fsubVec(v2, v0, v19, s4),
+                fsubVec(v3, v1, v19, s4),
                 stp(v2, v3, x9, 0, q)
             });
             break;
@@ -226,20 +198,12 @@ void mini_jit::kernels::unary::reciprocal(mini_jit::Kernel &kernel,
             kernel.add_instr({
                 // 8 elements
                 ldp(v0, v1, x8, 0, q),
-                frecpeVec(v2, v0, s4),
-                frecpsVec(v10, v0, v2, s4),
-                fmulVec(v2, v2, v10, s4),
-
-                frecpeVec(v3, v1, s4),
-                frecpsVec(v10, v1, v3, s4),
-                fmulVec(v3, v3, v10, s4),
+                fsubVec(v2, v0, v19, s4),
+                fsubVec(v3, v1, v19, s4),
                 stp(v2, v3, x9, 0, q),
-
                 // 1 element
                 ldr(v4, x8, 32, s),
-                frecpeScalar(v5, v4, s),
-                frecpsScalar(v10, v4, v5, s),
-                fmulScalar(v5, v5, v10, s),
+                fsubScalar(v5, v4, v19, s),
                 str(v5, x9, 32, s)
             });
             break;
@@ -247,20 +211,12 @@ void mini_jit::kernels::unary::reciprocal(mini_jit::Kernel &kernel,
             kernel.add_instr({
                 // 8 elements
                 ldp(v0, v1, x8, 0, q),
-                frecpeVec(v2, v0, s4),
-                frecpsVec(v10, v0, v2, s4),
-                fmulVec(v2, v2, v10, s4),
-
-                frecpeVec(v3, v1, s4),
-                frecpsVec(v10, v1, v3, s4),
-                fmulVec(v3, v3, v10, s4),
+                fsubVec(v2, v0, v19, s4),
+                fsubVec(v3, v1, v19, s4),
                 stp(v2, v3, x9, 0, q),
-
                 // 2 elements
                 ldr(v4, x8, 32, d),
-                frecpeVec(v5, v4, s2),
-                frecpsVec(v10, v4, v5, s2),
-                fmulVec(v5, v5, v10, s2),
+                fsubVec(v5, v4, v19, s2),
                 str(v5, x9, 32, d)
             });
             break;
@@ -268,27 +224,16 @@ void mini_jit::kernels::unary::reciprocal(mini_jit::Kernel &kernel,
             kernel.add_instr({
                 // 8 elements
                 ldp(v0, v1, x8, 0, q),
-                frecpeVec(v2, v0, s4),
-                frecpsVec(v10, v0, v2, s4),
-                fmulVec(v2, v2, v10, s4),
-
-                frecpeVec(v3, v1, s4),
-                frecpsVec(v10, v1, v3, s4),
-                fmulVec(v3, v3, v10, s4),
+                fsubVec(v2, v0, v19, s4),
+                fsubVec(v3, v1, v19, s4),
                 stp(v2, v3, x9, 0, q),
-
                 // 2 elements
                 ldr(v4, x8, 32, d),
-                frecpeVec(v5, v4, s2),
-                frecpsVec(v10, v4, v5, s2),
-                fmulVec(v5, v5, v10, s2),
+                fsubVec(v5, v4, v19, s2),
                 str(v5, x9, 32, d),
-
                 // 1 element
                 ldr(v6, x8, 40, s),
-                frecpeScalar(v7, v6, s),
-                frecpsScalar(v10, v6, v7, s),
-                fmulScalar(v7, v7, v10, s),
+                fsubScalar(v7, v6, v19, s),
                 str(v7, x9, 40, s)
             });
             break;
@@ -296,20 +241,12 @@ void mini_jit::kernels::unary::reciprocal(mini_jit::Kernel &kernel,
             kernel.add_instr({
                 // 8 elements
                 ldp(v0, v1, x8, 0, q),
-                frecpeVec(v2, v0, s4),
-                frecpsVec(v10, v0, v2, s4),
-                fmulVec(v2, v2, v10, s4),
-
-                frecpeVec(v3, v1, s4),
-                frecpsVec(v10, v1, v3, s4),
-                fmulVec(v3, v3, v10, s4),
+                fsubVec(v2, v0, v19, s4),
+                fsubVec(v3, v1, v19, s4),
                 stp(v2, v3, x9, 0, q),
-
                 // 4 elements
                 ldr(v4, x8, 32, q),
-                frecpeVec(v5, v4, s4),
-                frecpsVec(v10, v4, v5, s4),
-                fmulVec(v5, v5, v10, s4),
+                fsubVec(v5, v4, v19, s4),
                 str(v5, x9, 32, q)
             });
             break;
@@ -317,27 +254,16 @@ void mini_jit::kernels::unary::reciprocal(mini_jit::Kernel &kernel,
             kernel.add_instr({
                 // 8 elements
                 ldp(v0, v1, x8, 0, q),
-                frecpeVec(v2, v0, s4),
-                frecpsVec(v10, v0, v2, s4),
-                fmulVec(v2, v2, v10, s4),
-
-                frecpeVec(v3, v1, s4),
-                frecpsVec(v10, v1, v3, s4),
-                fmulVec(v3, v3, v10, s4),
+                fsubVec(v2, v0, v19, s4),
+                fsubVec(v3, v1, v19, s4),
                 stp(v2, v3, x9, 0, q),
-
                 // 4 elements
                 ldr(v4, x8, 32, q),
-                frecpeVec(v5, v4, s4),
-                frecpsVec(v10, v4, v5, s4),
-                fmulVec(v5, v5, v10, s4),
+                fsubVec(v5, v4, v19, s4),
                 str(v5, x9, 32, q),
-
                 // 1 element
                 ldr(v6, x8, 48, s),
-                frecpeScalar(v7, v6, s),
-                frecpsScalar(v10, v6, v7, s),
-                fmulScalar(v7, v7, v10, s),
+                fsubScalar(v7, v6, v19, s),
                 str(v7, x9, 48, s)
             });
             break;
@@ -345,27 +271,16 @@ void mini_jit::kernels::unary::reciprocal(mini_jit::Kernel &kernel,
             kernel.add_instr({
                 // 8 elements
                 ldp(v0, v1, x8, 0, q),
-                frecpeVec(v2, v0, s4),
-                frecpsVec(v10, v0, v2, s4),
-                fmulVec(v2, v2, v10, s4),
-
-                frecpeVec(v3, v1, s4),
-                frecpsVec(v10, v1, v3, s4),
-                fmulVec(v3, v3, v10, s4),
+                fsubVec(v2, v0, v19, s4),
+                fsubVec(v3, v1, v19, s4),
                 stp(v2, v3, x9, 0, q),
-
                 // 4 elements
                 ldr(v4, x8, 32, q),
-                frecpeVec(v5, v4, s4),
-                frecpsVec(v10, v4, v5, s4),
-                fmulVec(v5, v5, v10, s4),
+                fsubVec(v5, v4, v19, s4),
                 str(v5, x9, 32, q),
-
                 // 2 elements
                 ldr(v6, x8, 48, d),
-                frecpeVec(v7, v6, s2),
-                frecpsVec(v10, v6, v7, s2),
-                fmulVec(v7, v7, v10, s2),
+                fsubVec(v7, v6, v19, s2),
                 str(v7, x9, 48, d)
             });
             break;
@@ -373,35 +288,21 @@ void mini_jit::kernels::unary::reciprocal(mini_jit::Kernel &kernel,
             kernel.add_instr({
                 // 8 elements
                 ldp(v0, v1, x8, 0, q),
-                frecpeVec(v2, v0, s4),
-                frecpsVec(v10, v0, v2, s4),
-                fmulVec(v2, v2, v10, s4),
-
-                frecpeVec(v3, v1, s4),
-                frecpsVec(v10, v1, v3, s4),
-                fmulVec(v3, v3, v10, s4),
+                fsubVec(v2, v0, v19, s4),
+                fsubVec(v3, v1, v19, s4),
                 stp(v2, v3, x9, 0, q),
-
                 // 4 elements
                 ldr(v4, x8, 32, q),
-                frecpeVec(v5, v4, s4),
-                frecpsVec(v10, v4, v5, s4),
-                fmulVec(v5, v5, v10, s4),
+                fsubVec(v5, v4, v19, s4),
                 str(v5, x9, 32, q),
-
                 // 2 elements
                 ldr(v6, x8, 48, d),
-                frecpeVec(v7, v6, s2),
-                frecpsVec(v10, v6, v7, s2),
-                fmulVec(v7, v7, v10, s2),
+                fsubVec(v7, v6, v19, s2),
                 str(v7, x9, 48, d),
-
                 // 1 element
-                ldr(v8, x8, 56, s),
-                frecpeScalar(v9, v8, s),
-                frecpsScalar(v10, v8, v9, s),
-                fmulScalar(v9, v9, v10, s),
-                str(v9, x9, 56, s)
+                ldr(v16, x8, 56, s),
+                fsubScalar(v17, v16, v19, s),
+                str(v17, x9, 56, s)
             });
             break;
         default:
@@ -421,16 +322,10 @@ void mini_jit::kernels::unary::reciprocal(mini_jit::Kernel &kernel,
     int l_nLoopInstrCount = kernel.getInstrCountFromLabel("n_loop");
     kernel.add_instr(cbnz(x6, -l_nLoopInstrCount * 4));
 
-    kernel.add_instr({
-        // Restore callee-saved registers
-        ldpPost(v10, v11, sp, 16, d),
-        ldpPost(v8, v9, sp, 16, d),
+    // Restore stack pointer
+    kernel.add_instr(ldpPost(x29, x30, sp, 16));
 
-        // Restore stack pointer
-        ldpPost(x29, x30, sp, 16),
-
-        mini_jit::instructions::ret()
-    });
-    kernel.write("reciprocal_primitive.bin");
+    kernel.add_instr(inst::ret());
+    kernel.write("decrement_primitive.bin");
     kernel.set_kernel();
 }
