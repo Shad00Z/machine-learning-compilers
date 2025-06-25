@@ -387,10 +387,8 @@ void mini_jit::kernels::binary::add(mini_jit::Kernel &kernel,
         // Restore stack pointer
         base::ldpPost(x29, x30, sp, 16),
 
-        mini_jit::instructions::ret()
+        ret()
     });
-
-    kernel.add_instr(ret());
     kernel.write("add_primitive.bin");
     kernel.set_kernel();
 }
