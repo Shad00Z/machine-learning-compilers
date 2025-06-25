@@ -1,4 +1,4 @@
-#include "add_primitive.h"
+#include "sub_primitive.h"
 #include "Kernel.h"
 
 #include "registers/gp_registers.h"
@@ -12,7 +12,7 @@ using enum arr_spec_t;
 
 using namespace mini_jit::instructions;
 
-void mini_jit::kernels::binary::add(mini_jit::Kernel &kernel,
+void mini_jit::kernels::binary::sub(mini_jit::Kernel &kernel,
                                     u_int32_t m,
                                     u_int32_t n)
 {
@@ -84,10 +84,10 @@ void mini_jit::kernels::binary::add(mini_jit::Kernel &kernel,
             simd_fp::ldp(v6, v7, x12, 32, q),
 
             // compute C = A + B
-            simd_fp::faddVec(v8, v0, v4, s4),
-            simd_fp::faddVec(v9, v1, v5, s4),
-            simd_fp::faddVec(v10, v2, v6, s4),
-            simd_fp::faddVec(v11, v3, v7, s4),
+            simd_fp::fsubVec(v8, v0, v4, s4),
+            simd_fp::fsubVec(v9, v1, v5, s4),
+            simd_fp::fsubVec(v10, v2, v6, s4),
+            simd_fp::fsubVec(v11, v3, v7, s4),
 
             // store 16 elements to C
             simd_fp::stp(v8, v9, x13, 0, q),
@@ -114,7 +114,7 @@ void mini_jit::kernels::binary::add(mini_jit::Kernel &kernel,
                 // 1 element
                 simd_fp::ldr(v0, x11, 0, s),
                 simd_fp::ldr(v1, x12, 0, s),
-                simd_fp::faddScalar(v2, v0, v1, s),
+                simd_fp::fsubScalar(v2, v0, v1, s),
                 simd_fp::str(v2, x13, 0, s)
             });
         case 2:
@@ -122,7 +122,7 @@ void mini_jit::kernels::binary::add(mini_jit::Kernel &kernel,
                 // 2 elements
                 simd_fp::ldr(v0, x11, 0, d),
                 simd_fp::ldr(v1, x12, 0, d),
-                simd_fp::faddVec(v2, v0, v1, s2),
+                simd_fp::fsubVec(v2, v0, v1, s2),
                 simd_fp::str(v2, x13, 0, d)
             });
             break;
@@ -131,13 +131,13 @@ void mini_jit::kernels::binary::add(mini_jit::Kernel &kernel,
                 // 2 elements
                 simd_fp::ldr(v0, x11, 0, d),
                 simd_fp::ldr(v1, x12, 0, d),
-                simd_fp::faddVec(v2, v0, v1, s2),
+                simd_fp::fsubVec(v2, v0, v1, s2),
                 simd_fp::str(v2, x13, 0, d),
 
                 // 1 element
                 simd_fp::ldr(v3, x11, 2*4, s),
                 simd_fp::ldr(v4, x12, 2*4, s),
-                simd_fp::faddScalar(v5, v3, v4, s),
+                simd_fp::fsubScalar(v5, v3, v4, s),
                 simd_fp::str(v5, x13, 2*4, s)
             });
             break;
@@ -146,7 +146,7 @@ void mini_jit::kernels::binary::add(mini_jit::Kernel &kernel,
                 // 4 elements
                 simd_fp::ldr(v0, x11, 0, q),
                 simd_fp::ldr(v1, x12, 0, q),
-                simd_fp::faddVec(v2, v0, v1, s4),
+                simd_fp::fsubVec(v2, v0, v1, s4),
                 simd_fp::str(v2, x13, 0, q)
             });
             break;
@@ -155,13 +155,13 @@ void mini_jit::kernels::binary::add(mini_jit::Kernel &kernel,
                 // 4 elements
                 simd_fp::ldr(v0, x11, 0, q),
                 simd_fp::ldr(v1, x12, 0, q),
-                simd_fp::faddVec(v2, v0, v1, s4),
+                simd_fp::fsubVec(v2, v0, v1, s4),
                 simd_fp::str(v2, x13, 0, q),
                 
                 // 5 elements
                 simd_fp::ldr(v3, x11, 4*4, s),
                 simd_fp::ldr(v4, x12, 4*4, s),
-                simd_fp::faddScalar(v5, v3, v4, s),
+                simd_fp::fsubScalar(v5, v3, v4, s),
                 simd_fp::str(v5, x13, 4*4, s)
             });
             break;
@@ -170,13 +170,13 @@ void mini_jit::kernels::binary::add(mini_jit::Kernel &kernel,
                 // 4 elements
                 simd_fp::ldr(v0, x11, 0, q),
                 simd_fp::ldr(v1, x12, 0, q),
-                simd_fp::faddVec(v2, v0, v1, s4),
+                simd_fp::fsubVec(v2, v0, v1, s4),
                 simd_fp::str(v2, x13, 0, q),
 
                 // 2 elements
                 simd_fp::ldr(v3, x11, 4*4, d),
                 simd_fp::ldr(v4, x12, 4*4, d),
-                simd_fp::faddVec(v5, v3, v4, s2),
+                simd_fp::fsubVec(v5, v3, v4, s2),
                 simd_fp::str(v5, x13, 4*4, d)
             });
             break;
@@ -185,19 +185,19 @@ void mini_jit::kernels::binary::add(mini_jit::Kernel &kernel,
                 // 4 elements
                 simd_fp::ldr(v0, x11, 0, q),
                 simd_fp::ldr(v1, x12, 0, q),
-                simd_fp::faddVec(v2, v0, v1, s4),
+                simd_fp::fsubVec(v2, v0, v1, s4),
                 simd_fp::str(v2, x13, 0, q),
 
                 // 2 elements
                 simd_fp::ldr(v3, x11, 4*4, d),
                 simd_fp::ldr(v4, x12, 4*4, d),
-                simd_fp::faddVec(v5, v3, v4, s2),
+                simd_fp::fsubVec(v5, v3, v4, s2),
                 simd_fp::str(v5, x13, 4*4, d),
 
                 // 1 element
                 simd_fp::ldr(v6, x11, 24, s),
                 simd_fp::ldr(v7, x12, 24, s),
-                simd_fp::faddScalar(v8, v6, v7, s),
+                simd_fp::fsubScalar(v8, v6, v7, s),
                 simd_fp::str(v8, x13, 24, s)
             });
             break;
@@ -206,8 +206,8 @@ void mini_jit::kernels::binary::add(mini_jit::Kernel &kernel,
                 // 8 elements
                 simd_fp::ldp(v0, v1, x11, 0, q),
                 simd_fp::ldp(v2, v3, x12, 0, q),
-                simd_fp::faddVec(v4, v0, v2, s4),
-                simd_fp::faddVec(v5, v1, v3, s4),
+                simd_fp::fsubVec(v4, v0, v2, s4),
+                simd_fp::fsubVec(v5, v1, v3, s4),
                 simd_fp::stp(v4, v5, x13, 0, q)
             });
             break;
@@ -216,14 +216,14 @@ void mini_jit::kernels::binary::add(mini_jit::Kernel &kernel,
                 // 8 elements
                 simd_fp::ldp(v0, v1, x11, 0, q),
                 simd_fp::ldp(v2, v3, x12, 0, q),
-                simd_fp::faddVec(v4, v0, v2, s4),
-                simd_fp::faddVec(v5, v1, v3, s4),
+                simd_fp::fsubVec(v4, v0, v2, s4),
+                simd_fp::fsubVec(v5, v1, v3, s4),
                 simd_fp::stp(v4, v5, x13, 0, q),
 
                 // 1 element
                 simd_fp::ldr(v6, x11, 8*4, s),
                 simd_fp::ldr(v7, x12, 8*4, s),
-                simd_fp::faddScalar(v8, v6, v7, s),
+                simd_fp::fsubScalar(v8, v6, v7, s),
                 simd_fp::str(v8, x13, 8*4, s)
             });
             break;
@@ -232,14 +232,14 @@ void mini_jit::kernels::binary::add(mini_jit::Kernel &kernel,
                 // 8 elements
                 simd_fp::ldp(v0, v1, x11, 0, q),
                 simd_fp::ldp(v2, v3, x12, 0, q),
-                simd_fp::faddVec(v4, v0, v2, s4),
-                simd_fp::faddVec(v5, v1, v3, s4),
+                simd_fp::fsubVec(v4, v0, v2, s4),
+                simd_fp::fsubVec(v5, v1, v3, s4),
                 simd_fp::stp(v4, v5, x13, 0, q),
 
                 // 2 elements
                 simd_fp::ldr(v6, x11, 8*4, d),
                 simd_fp::ldr(v7, x12, 8*4, d),
-                simd_fp::faddVec(v8, v6, v7, s2),
+                simd_fp::fsubVec(v8, v6, v7, s2),
                 simd_fp::str(v8, x13, 8*4, d)
             });
             break;
@@ -248,20 +248,20 @@ void mini_jit::kernels::binary::add(mini_jit::Kernel &kernel,
                 // 8 elements
                 simd_fp::ldp(v0, v1, x11, 0, q),
                 simd_fp::ldp(v2, v3, x12, 0, q),
-                simd_fp::faddVec(v4, v0, v2, s4),
-                simd_fp::faddVec(v5, v1, v3, s4),
+                simd_fp::fsubVec(v4, v0, v2, s4),
+                simd_fp::fsubVec(v5, v1, v3, s4),
                 simd_fp::stp(v4, v5, x13, 0, q),
 
                 // 2 elements
                 simd_fp::ldr(v6, x11, 8*4, d),
                 simd_fp::ldr(v7, x12, 8*4, d),
-                simd_fp::faddVec(v8, v6, v7, s2),
+                simd_fp::fsubVec(v8, v6, v7, s2),
                 simd_fp::str(v8, x13, 8*4, d),
 
                 // 1 element
                 simd_fp::ldr(v9, x11, 10*4, s),
                 simd_fp::ldr(v10, x12, 10*4, s),
-                simd_fp::faddScalar(v11, v9, v10, s),
+                simd_fp::fsubScalar(v11, v9, v10, s),
                 simd_fp::str(v11, x13, 10*4, s)
             });
             break;
@@ -270,14 +270,14 @@ void mini_jit::kernels::binary::add(mini_jit::Kernel &kernel,
                 // 8 elements
                 simd_fp::ldp(v0, v1, x11, 0, q),
                 simd_fp::ldp(v2, v3, x12, 0, q),
-                simd_fp::faddVec(v4, v0, v2, s4),
-                simd_fp::faddVec(v5, v1, v3, s4),
+                simd_fp::fsubVec(v4, v0, v2, s4),
+                simd_fp::fsubVec(v5, v1, v3, s4),
                 simd_fp::stp(v4, v5, x13, 0, q),
 
                 // 4 elements
                 simd_fp::ldr(v6, x11, 8*4, q),
                 simd_fp::ldr(v7, x12, 8*4, q),
-                simd_fp::faddVec(v8, v6, v7, s4),
+                simd_fp::fsubVec(v8, v6, v7, s4),
                 simd_fp::str(v8, x13, 8*4, q)
             });
             break;
@@ -286,20 +286,20 @@ void mini_jit::kernels::binary::add(mini_jit::Kernel &kernel,
                 // 8 elements
                 simd_fp::ldp(v0, v1, x11, 0, q),
                 simd_fp::ldp(v2, v3, x12, 0, q),
-                simd_fp::faddVec(v4, v0, v2, s4),
-                simd_fp::faddVec(v5, v1, v3, s4),
+                simd_fp::fsubVec(v4, v0, v2, s4),
+                simd_fp::fsubVec(v5, v1, v3, s4),
                 simd_fp::stp(v4, v5, x13, 0, q),
 
                 // 4 elements
                 simd_fp::ldr(v6, x11, 8*4, q),
                 simd_fp::ldr(v7, x12, 8*4, q),
-                simd_fp::faddVec(v8, v6, v7, s4),
+                simd_fp::fsubVec(v8, v6, v7, s4),
                 simd_fp::str(v8, x13, 8*4, q),
 
                 // 1 element
                 simd_fp::ldr(v9, x11, 12*4, s),
                 simd_fp::ldr(v10, x12, 12*4, s),
-                simd_fp::faddScalar(v11, v9, v10, s),
+                simd_fp::fsubScalar(v11, v9, v10, s),
                 simd_fp::str(v11, x13, 12*4, s)
             });
             break;
@@ -308,20 +308,20 @@ void mini_jit::kernels::binary::add(mini_jit::Kernel &kernel,
                 // 8 elements
                 simd_fp::ldp(v0, v1, x11, 0, q),
                 simd_fp::ldp(v2, v3, x12, 0 , q),
-                simd_fp::faddVec(v4, v0, v2, s4),
-                simd_fp::faddVec(v5, v1, v3, s4),
+                simd_fp::fsubVec(v4, v0, v2, s4),
+                simd_fp::fsubVec(v5, v1, v3, s4),
                 simd_fp::stp(v4, v5, x13, 0, q),
 
                 // 4 elements
                 simd_fp::ldr(v6, x11, 8*4, q),
                 simd_fp::ldr(v7, x12, 8*4, q),
-                simd_fp::faddVec(v8, v6, v7, s4),
+                simd_fp::fsubVec(v8, v6, v7, s4),
                 simd_fp::str(v8, x13, 8*4, q),
 
                 // 2 elements
                 simd_fp::ldr(v9, x11, 12*4, d),
                 simd_fp::ldr(v10, x12, 12*4, d),
-                simd_fp::faddVec(v11, v9, v10, s2),
+                simd_fp::fsubVec(v11, v9, v10, s2),
                 simd_fp::str(v11, x13, 12*4, d)
             });
             break;
@@ -330,26 +330,26 @@ void mini_jit::kernels::binary::add(mini_jit::Kernel &kernel,
                 // 8 elements
                 simd_fp::ldp(v0, v1, x11, 0, q),
                 simd_fp::ldp(v2, v3, x12, 0, q),
-                simd_fp::faddVec(v4, v0, v2, s4),
-                simd_fp::faddVec(v5, v1, v3, s4),
+                simd_fp::fsubVec(v4, v0, v2, s4),
+                simd_fp::fsubVec(v5, v1, v3, s4),
                 simd_fp::stp(v4, v5, x13, 0, q),
 
                 // 4 elements
                 simd_fp::ldr(v6, x11, 8*4, q),
                 simd_fp::ldr(v7, x12, 8*4, q),
-                simd_fp::faddVec(v8, v6, v7, s4),
+                simd_fp::fsubVec(v8, v6, v7, s4),
                 simd_fp::str(v8, x13, 8*4, q),
 
                 // 2 elements
                 simd_fp::ldr(v9, x11, 12*4, d),
                 simd_fp::ldr(v10, x12, 12*4, d),
-                simd_fp::faddVec(v11, v9, v10, s2),
+                simd_fp::fsubVec(v11, v9, v10, s2),
                 simd_fp::str(v11, x13, 12*4, d),
 
                 // 1 element
                 simd_fp::ldr(v12, x11, 14*4, s),
                 simd_fp::ldr(v13, x12, 14*4, s),
-                simd_fp::faddScalar(v14, v12, v13, s),
+                simd_fp::fsubScalar(v14, v12, v13, s),
                 simd_fp::str(v14, x13, 14*4, s)
             });
             break;

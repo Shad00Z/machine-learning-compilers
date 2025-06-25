@@ -40,7 +40,7 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
     }
 
     /////////////////////////////////////////////////////////////////////
-    // Check allowed data type
+    // Check allowed data type∂
     /////////////////////////////////////////////////////////////////////
     if (dtype != dtype_t::fp32)
     {
@@ -50,9 +50,27 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
     /////////////////////////////////////////////////////////////////////
     // Check allowed primitive types
     /////////////////////////////////////////////////////////////////////
-    std::vector<ptype_t> allowed_first_touch_types = {ptype_t::none, ptype_t::zero, ptype_t::relu, ptype_t::square, ptype_t::reciprocal};
-    std::vector<ptype_t> allowed_main_types = {ptype_t::none, ptype_t::identity, ptype_t::brgemm, ptype_t::gemm};
-    std::vector<ptype_t> allowed_last_touch_types = {ptype_t::none, ptype_t::relu, ptype_t::square, ptype_t::reciprocal};
+    std::vector<ptype_t> allowed_first_touch_types = {
+        ptype_t::none,
+        ptype_t::zero,
+        ptype_t::relu, 
+        ptype_t::square, 
+        ptype_t::reciprocal
+    };
+    std::vector<ptype_t> allowed_main_types = {
+        ptype_t::none,
+        ptype_t::identity, 
+        ptype_t::brgemm, 
+        ptype_t::gemm,
+        ptype_t::add,
+        ptype_t::sub
+    };
+    std::vector<ptype_t> allowed_last_touch_types = {
+        ptype_t::none,
+        ptype_t::relu, 
+        ptype_t::square, 
+        ptype_t::reciprocal
+    };
 
     if (std::find(allowed_first_touch_types.begin(), allowed_first_touch_types.end(), prim_first_touch) == allowed_first_touch_types.end())
     {
@@ -247,7 +265,7 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
     }
     else
     {
-        // GEMM & BRGEMM
+        // GEMM & BRGEMM & BINARY
         m_adjusted_stride_in0 = m_strides_in0[m_dim_id_prim_K];
         m_adjusted_stride_in1 = m_strides_in1[m_dim_id_prim_N];
         m_adjusted_stride_out = m_strides_out[m_dim_id_prim_N];
@@ -303,6 +321,22 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
                               prim_main);
         m_kernel_unary_main = m_unary_main.get_kernel();
     }
+    else if (prim_main == ptype_t::add || prim_main == ptype_t::sub)
+    {
+        m_binary_main.generate(m_dim_sizes[m_dim_id_prim_M],
+                               m_dim_sizes[m_dim_id_prim_N],
+                               0,
+                               dtype,
+                               prim_main);
+        m_kernel_binary_main = m_binary_main.get_kernel();
+    }
+    else if (prim_main == ptype_t::none)
+    {
+        // no main kernel
+        m_kernel_gemm_main = nullptr;
+        m_kernel_unary_main = nullptr;
+    }
+
     if (prim_last_touch != ptype_t::none)
     {
         // no transposition
@@ -533,6 +567,15 @@ void mini_jit::TensorOperation::execute_kernel_main(char const *ptr_in0,
                             ptr_out,
                             ldA,
                             ldC);
+    }
+    else if (m_kernel_main_type == ptype_t::add || m_kernel_main_type == ptype_t::sub)
+    {
+        m_kernel_binary_main(ptr_in0,
+                             ptr_in1,
+                             ptr_out,
+                             ldA,
+                             ldB,
+                             ldC);
     }
 }
 

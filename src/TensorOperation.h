@@ -7,6 +7,7 @@
 
 #include "types.h"
 #include "Unary.h"
+#include "Binary.h"
 #include "Brgemm.h"
 
 namespace mini_jit
@@ -26,6 +27,8 @@ private:
     mini_jit::Unary m_unary_first_touch;
     /// Unary object for main kernel
     mini_jit::Unary m_unary_main;
+    /// Binary object for main kernel
+    mini_jit::Binary m_binary_main;
     /// Unary object for last touch kernel
     mini_jit::Unary m_unary_last_touch;
 
@@ -43,6 +46,14 @@ private:
                                 void *,
                                 int64_t,
                                 int64_t);
+
+    /// main binary kernel
+    void (*m_kernel_binary_main)(void const *,
+                                 void const *,
+                                 void *,
+                                 int64_t,
+                                 int64_t,
+                                 int64_t);
 
     /// main brgemm kernel
     void (*m_kernel_gemm_main)(void const *,

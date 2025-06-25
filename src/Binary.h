@@ -58,9 +58,11 @@ public:
      * - ld_c: Leading dimension of C.
      */
     using kernel_t = void (*)(void const *a,
-                              void *b,
+                              void const *b,
+                              void *c,
                               int64_t ld_a,
-                              int64_t ld_b);
+                              int64_t ld_b,
+                              int64_t ld_c);
 
     /**
      * @brief Get the generated kernel: C := op(A, B).

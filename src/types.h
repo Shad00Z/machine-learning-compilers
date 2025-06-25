@@ -35,6 +35,8 @@ namespace mini_jit
         brgemm = 4,
         square = 5,
         reciprocal = 6,
+        add = 7,
+        sub = 8,
         none = 99
     };
 
