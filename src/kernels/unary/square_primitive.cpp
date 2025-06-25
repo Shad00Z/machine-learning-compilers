@@ -51,17 +51,8 @@ void mini_jit::kernels::unary::square(mini_jit::Kernel &kernel,
         movSP(x29, sp),
 
         // Save callee-saved registers
-        stpPre(x19, x20, sp, -16),
-        stpPre(x21, x22, sp, -16),
-        stpPre(x23, x24, sp, -16),
-        stpPre(x25, x26, sp, -16),
-        stpPre(x27, x28, sp, -16),
-
         simd_fp::stpPre(v8, v9, sp, -16, d),
-        simd_fp::stpPre(v10, v11, sp, -16, d),
-        simd_fp::stpPre(v12, v13, sp, -16, d),
-        simd_fp::stpPre(v14, v15, sp, -16, d),
-
+        
         // Compute strides (* 4, because of 4 bytes per fp32 element)
         lsl(x2, x2, 2),
         lsl(x3, x3, 2),
@@ -327,23 +318,14 @@ void mini_jit::kernels::unary::square(mini_jit::Kernel &kernel,
         // decrement n loop counter
         sub(x6, x6, 1, 0)
     });
-    
+
     // check if loop counter is zero
     int l_nLoopInstrCount = kernel.getInstrCountFromLabel("n_loop");
     kernel.add_instr(cbnz(x6, -l_nLoopInstrCount * 4));
 
     kernel.add_instr({
         // Restore callee-saved registers
-        simd_fp::ldpPost(v14, v15, sp, 16, d),
-        simd_fp::ldpPost(v12, v13, sp, 16, d),
-        simd_fp::ldpPost(v10, v11, sp, 16, d),
         simd_fp::ldpPost(v8, v9, sp, 16, d),
-
-        ldpPost(x27, x28, sp, 16),
-        ldpPost(x25, x26, sp, 16),
-        ldpPost(x23, x24, sp, 16),
-        ldpPost(x21, x22, sp, 16),
-        ldpPost(x19, x20, sp, 16),
 
         // Restore stack pointer
         ldpPost(x29, x30, sp, 16),

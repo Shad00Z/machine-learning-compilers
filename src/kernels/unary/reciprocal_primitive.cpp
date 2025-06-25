@@ -33,16 +33,8 @@ void mini_jit::kernels::unary::reciprocal(mini_jit::Kernel &kernel,
         movSP(x29, sp),
 
         // Save callee-saved registers
-        stpPre(x19, x20, sp, -16),
-        stpPre(x21, x22, sp, -16),
-        stpPre(x23, x24, sp, -16),
-        stpPre(x25, x26, sp, -16),
-        stpPre(x27, x28, sp, -16),
-
         stpPre(v8, v9, sp, -16, d),
         stpPre(v10, v11, sp, -16, d),
-        stpPre(v12, v13, sp, -16, d),
-        stpPre(v14, v15, sp, -16, d),
 
         // Compute strides (* 4, because of 4 bytes per fp32 element)
         lsl(x2, x2, 2),
@@ -431,16 +423,8 @@ void mini_jit::kernels::unary::reciprocal(mini_jit::Kernel &kernel,
 
     kernel.add_instr({
         // Restore callee-saved registers
-        ldpPost(v14, v15, sp, 16, d),
-        ldpPost(v12, v13, sp, 16, d),
         ldpPost(v10, v11, sp, 16, d),
         ldpPost(v8, v9, sp, 16, d),
-
-        ldpPost(x27, x28, sp, 16),
-        ldpPost(x25, x26, sp, 16),
-        ldpPost(x23, x24, sp, 16),
-        ldpPost(x21, x22, sp, 16),
-        ldpPost(x19, x20, sp, 16),
 
         // Restore stack pointer
         ldpPost(x29, x30, sp, 16),
