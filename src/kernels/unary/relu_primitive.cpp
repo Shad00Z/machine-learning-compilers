@@ -58,8 +58,8 @@ void mini_jit::kernels::unary::relu(mini_jit::Kernel &kernel,
         // load 8 elements from A
         simd_fp::ldp(simd_fp_t::v0, simd_fp_t::v1, gpr_t::x8, 0, neon_size_spec_t::q),
         // compute f(x)=max(x,0)
-        simd_fp::fmax(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, arr_spec_t::s4),
-        simd_fp::fmax(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v31, arr_spec_t::s4),
+        simd_fp::fmaxVec(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, arr_spec_t::s4),
+        simd_fp::fmaxVec(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v31, arr_spec_t::s4),
         // store 8 elements to B
         simd_fp::stp(simd_fp_t::v0, simd_fp_t::v1, gpr_t::x9, 0, neon_size_spec_t::q),
         // jump by 8 rows
@@ -78,61 +78,61 @@ void mini_jit::kernels::unary::relu(mini_jit::Kernel &kernel,
         {
         case 1:
             kernel.add_instr(simd_fp::ldr(simd_fp_t::v0, gpr_t::x8, 0, neon_size_spec_t::s));
-            kernel.add_instr(simd_fp::fmax(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, neon_size_spec_t::s));
+            kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, neon_size_spec_t::s));
             kernel.add_instr(simd_fp::str(simd_fp_t::v0, gpr_t::x9, 0, neon_size_spec_t::s));
             break;
         case 2:
             kernel.add_instr(simd_fp::ldr(simd_fp_t::v0, gpr_t::x8, 0, neon_size_spec_t::d));
-            kernel.add_instr(simd_fp::fmax(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, arr_spec_t::s2));
+            kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, arr_spec_t::s2));
             kernel.add_instr(simd_fp::str(simd_fp_t::v0, gpr_t::x9, 0, neon_size_spec_t::d));
             break;
         case 3:
             // 2
             kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v0, gpr_t::x8, 2*4, neon_size_spec_t::d));
-            kernel.add_instr(simd_fp::fmax(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, arr_spec_t::s2));
+            kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, arr_spec_t::s2));
             kernel.add_instr(simd_fp::strPost(simd_fp_t::v0, gpr_t::x9, 2*4, neon_size_spec_t::d));
             // 1
             kernel.add_instr(simd_fp::ldr(simd_fp_t::v0, gpr_t::x8, 0, neon_size_spec_t::s));
-            kernel.add_instr(simd_fp::fmax(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, neon_size_spec_t::s));
+            kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, neon_size_spec_t::s));
             kernel.add_instr(simd_fp::str(simd_fp_t::v0, gpr_t::x9, 0, neon_size_spec_t::s));
             break;
         case 4:
             kernel.add_instr(simd_fp::ldr(simd_fp_t::v0, gpr_t::x8, 0, neon_size_spec_t::q));
-            kernel.add_instr(simd_fp::fmax(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, arr_spec_t::s4));
+            kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, arr_spec_t::s4));
             kernel.add_instr(simd_fp::str(simd_fp_t::v0, gpr_t::x9, 0, neon_size_spec_t::q));
             break;
         case 5:
             // 4
             kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v0, gpr_t::x8, 4*4, neon_size_spec_t::q));
-            kernel.add_instr(simd_fp::fmax(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, arr_spec_t::s4));
+            kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, arr_spec_t::s4));
             kernel.add_instr(simd_fp::strPost(simd_fp_t::v0, gpr_t::x9, 4*4, neon_size_spec_t::q));
             // 1
             kernel.add_instr(simd_fp::ldr(simd_fp_t::v0, gpr_t::x8, 0, neon_size_spec_t::s));
-            kernel.add_instr(simd_fp::fmax(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, neon_size_spec_t::s));
+            kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, neon_size_spec_t::s));
             kernel.add_instr(simd_fp::str(simd_fp_t::v0, gpr_t::x9, 0, neon_size_spec_t::s));
             break;
         case 6:
             // 4
             kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v0, gpr_t::x8, 4*4, neon_size_spec_t::q));
-            kernel.add_instr(simd_fp::fmax(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, arr_spec_t::s4));
+            kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, arr_spec_t::s4));
             kernel.add_instr(simd_fp::strPost(simd_fp_t::v0, gpr_t::x9, 4*4, neon_size_spec_t::q));
             // 2
             kernel.add_instr(simd_fp::ldr(simd_fp_t::v0, gpr_t::x8, 0, neon_size_spec_t::d));
-            kernel.add_instr(simd_fp::fmax(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, arr_spec_t::s2));
+            kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, arr_spec_t::s2));
             kernel.add_instr(simd_fp::str(simd_fp_t::v0, gpr_t::x9, 0, neon_size_spec_t::d));
             break;
         case 7:
             // 4
             kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v0, gpr_t::x8, 4*4, neon_size_spec_t::q));
-            kernel.add_instr(simd_fp::fmax(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, arr_spec_t::s4));
+            kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, arr_spec_t::s4));
             kernel.add_instr(simd_fp::strPost(simd_fp_t::v0, gpr_t::x9, 4*4, neon_size_spec_t::q));
             // 2
             kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v0, gpr_t::x8, 2*4, neon_size_spec_t::d));
-            kernel.add_instr(simd_fp::fmax(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, arr_spec_t::s2));
+            kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, arr_spec_t::s2));
             kernel.add_instr(simd_fp::strPost(simd_fp_t::v0, gpr_t::x9, 2*4, neon_size_spec_t::d));
             // 1
             kernel.add_instr(simd_fp::ldr(simd_fp_t::v0, gpr_t::x8, 0, neon_size_spec_t::s));
-            kernel.add_instr(simd_fp::fmax(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, neon_size_spec_t::s));
+            kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, neon_size_spec_t::s));
             kernel.add_instr(simd_fp::str(simd_fp_t::v0, gpr_t::x9, 0, neon_size_spec_t::s));
             break;
         default:

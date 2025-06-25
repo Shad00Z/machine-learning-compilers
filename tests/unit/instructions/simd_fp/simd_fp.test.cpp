@@ -334,27 +334,53 @@ TEST_CASE("Tests the Neon FMADD instruction generation", "[Neon FMADD]")
 TEST_CASE("Tests the Neon FMAX instruction generation", "[Neon FMAX]")
 {
     // vector
-    uint32_t l_ins = simd_fp::fmax(simd_fp_t::v3, simd_fp_t::v0, simd_fp_t::v1, arr_spec_t::s4);
+    uint32_t l_ins = simd_fp::fmaxVec(simd_fp_t::v3, simd_fp_t::v0, simd_fp_t::v1, arr_spec_t::s4);
     std::string l_hex = to_string_hex(l_ins);
     REQUIRE(l_hex == "0x4e21f403");
 
-    l_ins = simd_fp::fmax(simd_fp_t::v24, simd_fp_t::v31, simd_fp_t::v13, arr_spec_t::s2);
+    l_ins = simd_fp::fmaxVec(simd_fp_t::v24, simd_fp_t::v31, simd_fp_t::v13, arr_spec_t::s2);
     l_hex = to_string_hex(l_ins);
     REQUIRE(l_hex == "0x0e2df7f8");
 
-    CHECK_THROWS_AS(simd_fp::fmax(simd_fp_t::v24, simd_fp_t::v31, simd_fp_t::v13, arr_spec_t::b8), std::invalid_argument);
-    CHECK_THROWS_AS(simd_fp::fmax(simd_fp_t::v24, simd_fp_t::v31, simd_fp_t::v13, arr_spec_t::b16), std::invalid_argument);
+    CHECK_THROWS_AS(simd_fp::fmaxVec(simd_fp_t::v24, simd_fp_t::v31, simd_fp_t::v13, arr_spec_t::b8), std::invalid_argument);
+    CHECK_THROWS_AS(simd_fp::fmaxVec(simd_fp_t::v24, simd_fp_t::v31, simd_fp_t::v13, arr_spec_t::b16), std::invalid_argument);
 
     // scalar
-    l_ins = simd_fp::fmax(simd_fp_t::v3, simd_fp_t::v0, simd_fp_t::v1, neon_size_spec_t::s);
+    l_ins = simd_fp::fmaxScalar(simd_fp_t::v3, simd_fp_t::v0, simd_fp_t::v1, neon_size_spec_t::s);
     l_hex = to_string_hex(l_ins);
     REQUIRE(l_hex == "0x1e214803");
 
-    l_ins = simd_fp::fmax(simd_fp_t::v24, simd_fp_t::v31, simd_fp_t::v13, neon_size_spec_t::d);
+    l_ins = simd_fp::fmaxScalar(simd_fp_t::v24, simd_fp_t::v31, simd_fp_t::v13, neon_size_spec_t::d);
     l_hex = to_string_hex(l_ins);
     REQUIRE(l_hex == "0x1e6d4bf8");
 
-    CHECK_THROWS_AS(simd_fp::fmax(simd_fp_t::v24, simd_fp_t::v31, simd_fp_t::v13, neon_size_spec_t::q), std::invalid_argument);
+    CHECK_THROWS_AS(simd_fp::fmaxScalar(simd_fp_t::v24, simd_fp_t::v31, simd_fp_t::v13, neon_size_spec_t::q), std::invalid_argument);
+}
+
+TEST_CASE("Tests the Neon FMIN instruction generation", "[Neon FMIN]")
+{
+    // vector
+    uint32_t l_ins = simd_fp::fminVec(simd_fp_t::v3, simd_fp_t::v0, simd_fp_t::v1, arr_spec_t::s4);
+    std::string l_hex = to_string_hex(l_ins);
+    REQUIRE(l_hex == "0x4ea1f403");
+
+    l_ins = simd_fp::fminVec(simd_fp_t::v24, simd_fp_t::v31, simd_fp_t::v13, arr_spec_t::s2);
+    l_hex = to_string_hex(l_ins);
+    REQUIRE(l_hex == "0x0eadf7f8");
+
+    CHECK_THROWS_AS(simd_fp::fminVec(simd_fp_t::v24, simd_fp_t::v31, simd_fp_t::v13, arr_spec_t::b8), std::invalid_argument);
+    CHECK_THROWS_AS(simd_fp::fminVec(simd_fp_t::v24, simd_fp_t::v31, simd_fp_t::v13, arr_spec_t::b16), std::invalid_argument);
+
+    // scalar
+    l_ins = simd_fp::fminScalar(simd_fp_t::v3, simd_fp_t::v0, simd_fp_t::v1, neon_size_spec_t::s);
+    l_hex = to_string_hex(l_ins);
+    REQUIRE(l_hex == "0x1e215803");
+
+    l_ins = simd_fp::fminScalar(simd_fp_t::v24, simd_fp_t::v31, simd_fp_t::v13, neon_size_spec_t::d);
+    l_hex = to_string_hex(l_ins);
+    REQUIRE(l_hex == "0x1e6d5bf8");
+
+    CHECK_THROWS_AS(simd_fp::fminScalar(simd_fp_t::v24, simd_fp_t::v31, simd_fp_t::v13, neon_size_spec_t::q), std::invalid_argument);
 }
 
 TEST_CASE("Tests the Neon EOR instruction generation", "[Neon EOR]")

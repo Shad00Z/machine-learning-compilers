@@ -1,5 +1,5 @@
-#ifndef MINI_JIT_INSTRUCTIONS_SIMD_FP_FMAX_H
-#define MINI_JIT_INSTRUCTIONS_SIMD_FP_FMAX_H
+#ifndef MINI_JIT_INSTRUCTIONS_SIMD_FP_FMIN_H
+#define MINI_JIT_INSTRUCTIONS_SIMD_FP_FMIN_H
 
 #include <cstdint>
 #include <stdexcept>
@@ -15,14 +15,14 @@ namespace mini_jit
         namespace simd_fp
         {
             /**
-             * @brief Generates an FMAX (scalar) instruction.
+             * @brief Generates an FMIN (scalar) instruction.
              *
              * @param reg_dest destination register.
              * @param reg_src1 first source register.
              * @param reg_src2 second source register.
              * @param size_spec size specifier (s or d).
              */
-            constexpr uint32_t fmaxScalar(simd_fp_t reg_dest,
+            constexpr uint32_t fminScalar(simd_fp_t reg_dest,
                                           simd_fp_t reg_src1,
                                           simd_fp_t reg_src2,
                                           neon_size_spec_t size_spec)
@@ -32,7 +32,7 @@ namespace mini_jit
                     throw std::invalid_argument("Invalid size specifier");
                 }
 
-                u_int32_t l_ins = 0x1E204800;
+                u_int32_t l_ins = 0x1E205800;
 
                 // set destination register id - Rd
                 l_ins |= (reg_dest & 0x1f);
@@ -50,14 +50,14 @@ namespace mini_jit
             }
 
             /**
-             * @brief Generates an FMAX (vector) instruction.
+             * @brief Generates an FMIN (vector) instruction.
              *
              * @param reg_dest destination register.
              * @param reg_src1 first source register.
              * @param reg_src2 second source register.
              * @param arr_spec_t arrangement specifier.
              */
-            constexpr uint32_t fmaxVec(simd_fp_t reg_dest,
+            constexpr uint32_t fminVec(simd_fp_t reg_dest,
                                        simd_fp_t reg_src1,
                                        simd_fp_t reg_src2,
                                        arr_spec_t arr_spec)
@@ -68,7 +68,7 @@ namespace mini_jit
                     throw std::invalid_argument("Invalid arrangement specifier");
                 }
 
-                u_int32_t l_ins = 0xE20F400;
+                u_int32_t l_ins = 0xEA0F400;
 
                 // set destination register id - Rd
                 l_ins |= (reg_dest & 0x1f);
@@ -88,4 +88,4 @@ namespace mini_jit
     }
 }
 
-#endif // MINI_JIT_INSTRUCTIONS_SIMD_FP_FMAX_H
+#endif // MINI_JIT_INSTRUCTIONS_SIMD_FP_FMIN_H

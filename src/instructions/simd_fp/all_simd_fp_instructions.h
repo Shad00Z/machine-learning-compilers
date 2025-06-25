@@ -5,6 +5,7 @@
 #include "fadd.h"
 #include "fmadd.h"
 #include "fmax.h"
+#include "fmin.h"
 #include "fmla.h"
 #include "fmov.h"
 #include "fmul.h"

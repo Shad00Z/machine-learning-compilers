@@ -227,10 +227,10 @@ void mini_jit::kernels::unary::internal::reluM4N4( mini_jit::Kernel &kernel,
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v3, gpr_t::x7, 0, neon_size_spec_t::q));
 
     // Compute ReLU
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, arr_spec_t::s4));
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v31, arr_spec_t::s4));
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v2, simd_fp_t::v2, simd_fp_t::v31, arr_spec_t::s4));
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v3, simd_fp_t::v3, simd_fp_t::v31, arr_spec_t::s4));
+    kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, arr_spec_t::s4));
+    kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v31, arr_spec_t::s4));
+    kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v2, simd_fp_t::v2, simd_fp_t::v31, arr_spec_t::s4));
+    kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v3, simd_fp_t::v3, simd_fp_t::v31, arr_spec_t::s4));
 
     // Transpose 4x4 block
     // TRN
@@ -296,17 +296,17 @@ void mini_jit::kernels::unary::internal::reluM3N4( mini_jit::Kernel &kernel )
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v7, gpr_t::x17, 0, neon_size_spec_t::s));
 
     // Compute ReLU
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, arr_spec_t::s2));
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v31, neon_size_spec_t::s));
+    kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, arr_spec_t::s2));
+    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v31, neon_size_spec_t::s));
 
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v2, simd_fp_t::v2, simd_fp_t::v31, arr_spec_t::s2));
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v3, simd_fp_t::v3, simd_fp_t::v31, neon_size_spec_t::s));
+    kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v2, simd_fp_t::v2, simd_fp_t::v31, arr_spec_t::s2));
+    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v3, simd_fp_t::v3, simd_fp_t::v31, neon_size_spec_t::s));
 
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v4, simd_fp_t::v4, simd_fp_t::v31, arr_spec_t::s2));
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v5, simd_fp_t::v5, simd_fp_t::v31, neon_size_spec_t::s));
+    kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v4, simd_fp_t::v4, simd_fp_t::v31, arr_spec_t::s2));
+    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v5, simd_fp_t::v5, simd_fp_t::v31, neon_size_spec_t::s));
 
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v6, simd_fp_t::v6, simd_fp_t::v31, arr_spec_t::s2));
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v7, simd_fp_t::v7, simd_fp_t::v31, neon_size_spec_t::s));
+    kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v6, simd_fp_t::v6, simd_fp_t::v31, arr_spec_t::s2));
+    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v7, simd_fp_t::v7, simd_fp_t::v31, neon_size_spec_t::s));
 
     // Transpose 3x4 block
     // TRN (d)
@@ -356,10 +356,10 @@ void mini_jit::kernels::unary::internal::reluM2N4( mini_jit::Kernel &kernel )
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v3, gpr_t::x7, 0, neon_size_spec_t::d));
 
     // Compute ReLU
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, arr_spec_t::s2));
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v31, arr_spec_t::s2));
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v2, simd_fp_t::v2, simd_fp_t::v31, arr_spec_t::s2));
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v3, simd_fp_t::v3, simd_fp_t::v31, arr_spec_t::s2));
+    kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, arr_spec_t::s2));
+    kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v31, arr_spec_t::s2));
+    kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v2, simd_fp_t::v2, simd_fp_t::v31, arr_spec_t::s2));
+    kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v3, simd_fp_t::v3, simd_fp_t::v31, arr_spec_t::s2));
 
     // Transpose 2x4 block
     // TRN
@@ -399,10 +399,10 @@ void mini_jit::kernels::unary::internal::reluM1N4( mini_jit::Kernel &kernel )
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v3, gpr_t::x7, 0, neon_size_spec_t::s));
 
     // Compute ReLU
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, neon_size_spec_t::s));
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v31, neon_size_spec_t::s));
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v2, simd_fp_t::v2, simd_fp_t::v31, neon_size_spec_t::s));
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v3, simd_fp_t::v3, simd_fp_t::v31, neon_size_spec_t::s));
+    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, neon_size_spec_t::s));
+    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v31, neon_size_spec_t::s));
+    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v2, simd_fp_t::v2, simd_fp_t::v31, neon_size_spec_t::s));
+    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v3, simd_fp_t::v3, simd_fp_t::v31, neon_size_spec_t::s));
 
     // Transpose 1x4 block
     // TRN
@@ -445,16 +445,16 @@ void mini_jit::kernels::unary::internal::reluM4N3( mini_jit::Kernel &kernel,
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v7, gpr_t::x17, 0, neon_size_spec_t::s));
 
     // Compute ReLU
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, arr_spec_t::s2));
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v31, arr_spec_t::s2));
+    kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, arr_spec_t::s2));
+    kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v31, arr_spec_t::s2));
 
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v2, simd_fp_t::v2, simd_fp_t::v31, arr_spec_t::s2));
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v3, simd_fp_t::v3, simd_fp_t::v31, arr_spec_t::s2));
+    kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v2, simd_fp_t::v2, simd_fp_t::v31, arr_spec_t::s2));
+    kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v3, simd_fp_t::v3, simd_fp_t::v31, arr_spec_t::s2));
 
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v4, simd_fp_t::v4, simd_fp_t::v31, neon_size_spec_t::s));
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v5, simd_fp_t::v5, simd_fp_t::v31, neon_size_spec_t::s));
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v6, simd_fp_t::v6, simd_fp_t::v31, neon_size_spec_t::s));
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v7, simd_fp_t::v7, simd_fp_t::v31, neon_size_spec_t::s));
+    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v4, simd_fp_t::v4, simd_fp_t::v31, neon_size_spec_t::s));
+    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v5, simd_fp_t::v5, simd_fp_t::v31, neon_size_spec_t::s));
+    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v6, simd_fp_t::v6, simd_fp_t::v31, neon_size_spec_t::s));
+    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v7, simd_fp_t::v7, simd_fp_t::v31, neon_size_spec_t::s));
 
     // Transpose 4x3 matrix
     // TRN
@@ -518,10 +518,10 @@ void mini_jit::kernels::unary::internal::reluM4N2( mini_jit::Kernel &kernel,
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v3, gpr_t::x17, 0, neon_size_spec_t::d));
 
     // Compute ReLU
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, arr_spec_t::s2));
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v31, arr_spec_t::s2));
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v2, simd_fp_t::v2, simd_fp_t::v31, arr_spec_t::s2));
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v3, simd_fp_t::v3, simd_fp_t::v31, arr_spec_t::s2));
+    kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, arr_spec_t::s2));
+    kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v31, arr_spec_t::s2));
+    kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v2, simd_fp_t::v2, simd_fp_t::v31, arr_spec_t::s2));
+    kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v3, simd_fp_t::v3, simd_fp_t::v31, arr_spec_t::s2));
 
     // Transpose 4x2 matrix
     // TRN
@@ -573,10 +573,10 @@ void mini_jit::kernels::unary::internal::reluM4N1( mini_jit::Kernel &kernel,
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v3, gpr_t::x7, 0, neon_size_spec_t::s));
 
     // Compute ReLU
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, neon_size_spec_t::s));
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v31, neon_size_spec_t::s));
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v2, simd_fp_t::v2, simd_fp_t::v31, neon_size_spec_t::s));
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v3, simd_fp_t::v3, simd_fp_t::v31, neon_size_spec_t::s));
+    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, neon_size_spec_t::s));
+    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v31, neon_size_spec_t::s));
+    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v2, simd_fp_t::v2, simd_fp_t::v31, neon_size_spec_t::s));
+    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v3, simd_fp_t::v3, simd_fp_t::v31, neon_size_spec_t::s));
 
     // Store 4x1 Block of B
     kernel.add_instr(simd_fp::str(simd_fp_t::v0, gpr_t::x8, 0, neon_size_spec_t::s));
@@ -628,15 +628,15 @@ void mini_jit::kernels::unary::internal::reluM3N3( mini_jit::Kernel &kernel )
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v6, gpr_t::x17, 0, neon_size_spec_t::s));
 
     // Compute ReLU
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, arr_spec_t::s2));
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v31, neon_size_spec_t::s));
+    kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, arr_spec_t::s2));
+    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v31, neon_size_spec_t::s));
 
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v2, simd_fp_t::v2, simd_fp_t::v31, arr_spec_t::s2));
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v3, simd_fp_t::v3, simd_fp_t::v31, neon_size_spec_t::s));
+    kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v2, simd_fp_t::v2, simd_fp_t::v31, arr_spec_t::s2));
+    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v3, simd_fp_t::v3, simd_fp_t::v31, neon_size_spec_t::s));
 
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v4, simd_fp_t::v4, simd_fp_t::v31, neon_size_spec_t::s));
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v5, simd_fp_t::v5, simd_fp_t::v31, neon_size_spec_t::s));
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v6, simd_fp_t::v6, simd_fp_t::v31, neon_size_spec_t::s));
+    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v4, simd_fp_t::v4, simd_fp_t::v31, neon_size_spec_t::s));
+    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v5, simd_fp_t::v5, simd_fp_t::v31, neon_size_spec_t::s));
+    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v6, simd_fp_t::v6, simd_fp_t::v31, neon_size_spec_t::s));
 
     // Transpose 3x3 matrix
     // TRN
@@ -679,11 +679,11 @@ void mini_jit::kernels::unary::internal::reluM3N2( mini_jit::Kernel &kernel )
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v3, gpr_t::x17, 0, neon_size_spec_t::s));
 
     // Compute ReLU
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, arr_spec_t::s2));
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v31, neon_size_spec_t::s));
+    kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, arr_spec_t::s2));
+    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v31, neon_size_spec_t::s));
 
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v2, simd_fp_t::v2, simd_fp_t::v31, arr_spec_t::s2));
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v3, simd_fp_t::v3, simd_fp_t::v31, neon_size_spec_t::s));
+    kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v2, simd_fp_t::v2, simd_fp_t::v31, arr_spec_t::s2));
+    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v3, simd_fp_t::v3, simd_fp_t::v31, neon_size_spec_t::s));
 
     // Transpose 3x2 matrix
     // TRN
@@ -713,9 +713,9 @@ void mini_jit::kernels::unary::internal::reluM3N1( mini_jit::Kernel &kernel )
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v2, gpr_t::x7, 0, neon_size_spec_t::s));
 
     // Compute ReLU
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, neon_size_spec_t::s));
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v31, neon_size_spec_t::s));
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v2, simd_fp_t::v2, simd_fp_t::v31, neon_size_spec_t::s));
+    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, neon_size_spec_t::s));
+    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v31, neon_size_spec_t::s));
+    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v2, simd_fp_t::v2, simd_fp_t::v31, neon_size_spec_t::s));
 
     // Store 3x2 Block of B
     kernel.add_instr(simd_fp::str(simd_fp_t::v0, gpr_t::x8, 0, neon_size_spec_t::s));
@@ -748,10 +748,10 @@ void mini_jit::kernels::unary::internal::reluM2N3( mini_jit::Kernel &kernel )
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v3, gpr_t::x17, 0, neon_size_spec_t::s));
 
     // Compute ReLU
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, arr_spec_t::s2));
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v31, arr_spec_t::s2));
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v2, simd_fp_t::v2, simd_fp_t::v31, neon_size_spec_t::s));
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v3, simd_fp_t::v3, simd_fp_t::v31, neon_size_spec_t::s));
+    kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, arr_spec_t::s2));
+    kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v31, arr_spec_t::s2));
+    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v2, simd_fp_t::v2, simd_fp_t::v31, neon_size_spec_t::s));
+    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v3, simd_fp_t::v3, simd_fp_t::v31, neon_size_spec_t::s));
 
     // Transpose 2x3 matrix
     // TRN
@@ -786,9 +786,9 @@ void mini_jit::kernels::unary::internal::reluM1N3( mini_jit::Kernel &kernel )
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v2, gpr_t::x7, 0, neon_size_spec_t::s));
 
     // Compute ReLU
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, neon_size_spec_t::s));
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v31, neon_size_spec_t::s));
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v2, simd_fp_t::v2, simd_fp_t::v31, neon_size_spec_t::s));
+    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, neon_size_spec_t::s));
+    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v31, neon_size_spec_t::s));
+    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v2, simd_fp_t::v2, simd_fp_t::v31, neon_size_spec_t::s));
 
     // Store 1x3 Block of B
     kernel.add_instr(simd_fp::strPost(simd_fp_t::v0, gpr_t::x8, 4, neon_size_spec_t::s));
@@ -809,8 +809,8 @@ void mini_jit::kernels::unary::internal::reluM2N2( mini_jit::Kernel &kernel )
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v1, gpr_t::x7, 0, neon_size_spec_t::d));
 
     // Compute ReLU
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, arr_spec_t::s2));
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v31, arr_spec_t::s2));
+    kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, arr_spec_t::s2));
+    kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v31, arr_spec_t::s2));
 
     // Transpose 2x3 matrix
     // TRN
@@ -835,8 +835,8 @@ void mini_jit::kernels::unary::internal::reluM2N1( mini_jit::Kernel &kernel )
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v1, gpr_t::x7, 0, neon_size_spec_t::s));
 
     // Compute ReLU
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, neon_size_spec_t::s));
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v31, neon_size_spec_t::s));
+    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, neon_size_spec_t::s));
+    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v31, neon_size_spec_t::s));
 
     // Store 2x1 Block of B
     kernel.add_instr(simd_fp::str(simd_fp_t::v0, gpr_t::x8, 0, neon_size_spec_t::s));
@@ -858,8 +858,8 @@ void mini_jit::kernels::unary::internal::reluM1N2( mini_jit::Kernel &kernel )
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v1, gpr_t::x7, 0, neon_size_spec_t::s));
 
     // Compute ReLU
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, neon_size_spec_t::s));
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v31, neon_size_spec_t::s));
+    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, neon_size_spec_t::s));
+    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v31, neon_size_spec_t::s));
 
     // Store 1x2 Block of B
     kernel.add_instr(simd_fp::strPost(simd_fp_t::v0, gpr_t::x8, 4, neon_size_spec_t::s));
@@ -876,7 +876,7 @@ void mini_jit::kernels::unary::internal::reluM1N1( mini_jit::Kernel &kernel )
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v0, gpr_t::x7, 0, neon_size_spec_t::s));
 
     // Compute ReLU
-    kernel.add_instr(simd_fp::fmax(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, neon_size_spec_t::s));
+    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, neon_size_spec_t::s));
 
     // Store 1x1 Block of B
     kernel.add_instr(simd_fp::str(simd_fp_t::v0, gpr_t::x8, 0, neon_size_spec_t::s));
