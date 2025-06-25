@@ -54,9 +54,6 @@ void mini_jit::kernels::unary::square_trans(mini_jit::Kernel &kernel,
         movSP(x29, sp),
 
         // Save callee-saved registers
-        stpPre(x19, x20, sp, -16),
-        stpPre(x21, x22, sp, -16),
-        stpPre(x23, x24, sp, -16),
         stpPre(x25, x26, sp, -16),
         stpPre(x27, x28, sp, -16),
 
@@ -226,9 +223,6 @@ void mini_jit::kernels::unary::square_trans(mini_jit::Kernel &kernel,
 
         ldpPost(x27, x28, sp, 16),
         ldpPost(x25, x26, sp, 16),
-        ldpPost(x23, x24, sp, 16),
-        ldpPost(x21, x22, sp, 16),
-        ldpPost(x19, x20, sp, 16),
 
         // Restore stack pointer
         ldpPost(x29, x30, sp, 16),
