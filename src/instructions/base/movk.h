@@ -37,8 +37,35 @@ namespace mini_jit
                 // set immediate value
                 l_ins |= (imm16 & 0xFFFF) << 5;
 
-                // set shift value
-                l_ins |= (shift & 0x3) << 21;
+                // w
+                if ( reg_dest < 32 )
+                {
+                    if (shift != 0 || shift != 16)
+                    {
+                        throw std::invalid_argument("MOVK: invalid shift for w");
+                    }  
+                }
+                // x
+                else
+                {
+                    if (shift != 0 || shift != 16 || shift != 32 || shift != 48)
+                    {
+                        throw std::invalid_argument("MOVK: invalid shift for x");
+                    }   
+                }
+
+                if (shift == 16)
+                {
+                    l_ins |= (0x1) << 21;
+                }
+                else if (shift == 32)
+                {
+                    l_ins |= (0x1) << 22;
+                }
+                else if (shift == 48)
+                {
+                    l_ins |= (0x3) << 21;
+                }
 
                 return l_ins;
             }
