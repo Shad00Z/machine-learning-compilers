@@ -38,6 +38,15 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
     {
         return error_t::wrong_exec_type;
     }
+    else if (prim_main == ptype_t::add || prim_main == ptype_t::sub || 
+             prim_main == ptype_t::mul || prim_main == ptype_t::div || 
+             prim_main == ptype_t::min || prim_main == ptype_t::max)
+    {
+        if (prim_count != 2)
+        {
+            return error_t::wrong_exec_type;
+        }
+    }
 
     /////////////////////////////////////////////////////////////////////
     // Check allowed data type
@@ -216,7 +225,7 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
     }
 
     /////////////////////////////////////////////////////////////////////
-    // Find M and N dimensions for dim_t::c (PRIM)
+    // Find M and N dimensions for dim_t::c (PRIM, IDENTITY)
     /////////////////////////////////////////////////////////////////////
     if (prim_main == ptype_t::identity)
     {
@@ -271,9 +280,17 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
             m_adjusted_stride_out = m_strides_out[m_dim_id_prim_M];
         }
     }
+    else if(prim_main == ptype_t::add || prim_main == ptype_t::sub ||
+            prim_main == ptype_t::mul || prim_main == ptype_t::div ||
+            prim_main == ptype_t::min || prim_main == ptype_t::max)
+    {
+            m_adjusted_stride_in0 = m_strides_in0[m_dim_id_prim_N];
+            m_adjusted_stride_in1 = m_strides_in1[m_dim_id_prim_N];
+            m_adjusted_stride_out = m_strides_out[m_dim_id_prim_N];
+    }
     else
     {
-        // GEMM & BRGEMM & BINARY
+        // GEMM & BRGEMM
         m_adjusted_stride_in0 = m_strides_in0[m_dim_id_prim_K];
         m_adjusted_stride_in1 = m_strides_in1[m_dim_id_prim_N];
         m_adjusted_stride_out = m_strides_out[m_dim_id_prim_N];
@@ -344,6 +361,7 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
     {
         // no main kernel
         m_kernel_gemm_main = nullptr;
+        m_kernel_binary_main = nullptr;
         m_kernel_unary_main = nullptr;
     }
 
@@ -448,7 +466,6 @@ void mini_jit::TensorOperation::execute_iter(int64_t id_loop,
                 execute_kernel_first_touch(sub_ptr_out,
                                            m_adjusted_stride_out);
             }
-
             execute_kernel_main(sub_ptr_in0,
                                 sub_ptr_in1,
                                 sub_ptr_out,

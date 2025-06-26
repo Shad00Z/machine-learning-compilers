@@ -93,7 +93,7 @@ As suggested in our sketch, our plan was to implement the new functionalities in
 For the unary primitives we were looking at **Square**, **Reciprocal**, **Increment** and **Decrement** operations.
 
 7.3.1.1 Square Primitive
-^^^^^^^^^^^^^^^^^^^^^^^^^
+-------------------------
 
 Our initial approach was to use instructions that we already had implemented.
 Therefore, we started by using the ``FMLA`` instruction.
@@ -339,7 +339,7 @@ Lastly, we performed benchmarks similar to those of the other unary kernels:
 This time we were measuring the throughput of our kernel, differently to the ``zero``, ``identity``, and ``ReLU`` kernel, where we were measuring the data transfer rate.
 
 7.3.1.2 Reciprocal Primitive
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+------------------------------
 
 The next primitive we implemented is the ``reciprocal`` operation, which computes ``1.0 / x`` for all input values ``x``.
 For this, the AArch64 ISA already provides two instructions ``FRECPE`` and ``FRECPS``. ``FRECPE`` is the ``floating point reciprocal compute estimate`` instruction, which computes a first estimate of ``1.0 / x``. However, this estimate is generally not good enough for 32-bit floating point precision. To solve this, we can utilize ``FRECPS`` (``floating point reciprocal compute step``) iteratively, which improves the accuracy of the previously calculated estimate. We decided to perform only one step, as this already satisfied our used 32-bit floating point precision.
@@ -432,7 +432,7 @@ To compute the reciprocal, we also needed the ``FMUL`` instruction which we impl
 
 With these instructions, we began implementing the new kernel. Structurally it is identical to the square primitive. We simply replaced the calculations with the new instructions:
 
-.. code:: cpp
+.. code-block:: cpp
     :caption: Reciprocal primitive main loop calculation
 
     kernel.add_instr({
@@ -536,7 +536,7 @@ With these instructions, we began implementing the new kernel. Structurally it i
 .. _increment-decrement:
 
 7.3.1.3 Increment and Decrement Primitive
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+------------------------------------------
 
 The last unary primitives that we wanted to implement were the increment and decrement operations.
 
@@ -785,10 +785,6 @@ After implementing the instructions we simply took our ``square`` kernel and rep
 
 After implementing both the ``increment`` and ``decrement`` kernel, we also implemented their transposed versions.
 
-7.3.1.4 Integration in Framework
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-
 7.3.2 Binary Primitives
 ====================================
 
@@ -801,7 +797,7 @@ We implemented the kernels in the following order:
 3. Max and Min
 
 7.3.2.1 Add and Sub Primitive
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+---------------------------------
 
 The first binary primitive which we implemented is the element-wise addition and the subtraction of two matrices. Fortunately, the required instructions ``FADD`` and ``FSUB`` were already implemented in :ref:`increment-decrement`.
 Since the subtraction kernel is fundamentally the same as the addition kernel, we will only consider the addition kernel in this section.
@@ -895,7 +891,7 @@ If there is a remainder that is smaller than 16, we execute special cases, for e
             break;
 
 7.3.2.2 Mul and Div Primitive
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+---------------------------------
 
 As we had already implemented a ``GEMM`` kernel, we decided to implement a simple ``Mul`` and ``Div`` kernel, that would support **element-wise** calculations.
 
@@ -937,7 +933,7 @@ and replace the ``FADD`` and ``FSUB`` operations with ``FMUL`` and ``FDIV`` resp
     
 
 7.3.2.3 Max and Min Primitive
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+---------------------------------
 
 As we had already implemented the ``FMAX`` instruction for our :ref:`relu-primitive`, we only needed to implement the ``FMIN`` instruction generation:
 
@@ -1025,5 +1021,177 @@ The final primitive is almost identical to the previous kernels, except that we 
 
 For the ``Min`` primitive, all ``fmaxVec`` and ``fmaxScalar`` calls were replaced with the respective calls to ``fmin``.
 
-7.3.2.4 Integration in Framework
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+7.3.3 Integration in Framework
+====================================
+
+After implementing our unary and binary kernels, we needed to integrate them into our TensorOperation backend.
+We started by adjusting our allowed main primitives, and our first and last touches.
+
+.. code-block:: cpp
+    :caption: allowed primitive types in a TensorOperation
+    
+    /////////////////////////////////////////////////////////////////////
+    // Check allowed primitive types
+    /////////////////////////////////////////////////////////////////////
+    std::vector<ptype_t> allowed_first_touch_types = {
+        ptype_t::none,
+        ptype_t::zero,
+        ptype_t::relu, 
+        ptype_t::square, 
+        ptype_t::reciprocal,
+        ptype_t::increment,
+        ptype_t::decrement
+    };
+    std::vector<ptype_t> allowed_main_types = {
+        ptype_t::none,
+        ptype_t::identity, 
+        ptype_t::brgemm, 
+        ptype_t::gemm,
+        ptype_t::add,
+        ptype_t::sub,
+        ptype_t::mul,
+        ptype_t::div,
+        ptype_t::min,
+        ptype_t::max
+    };
+    std::vector<ptype_t> allowed_last_touch_types = {
+        ptype_t::none,
+        ptype_t::relu, 
+        ptype_t::square, 
+        ptype_t::reciprocal,
+        ptype_t::increment,
+        ptype_t::decrement
+    };
+
+As we had already implemented our ``Unary`` endpoint, which connects the unary primitives to the ``TensorOperation``, this was all we had to do for these primitives. 
+For the ``Binary`` primitives the situation was slightly different. First we had to set up our binary primitives. 
+We did that by implementing a ``Binary`` endpoint, which makes calls the new binary primitives based on the input parameters:
+
+.. code-block:: cpp
+    :caption: Binary kernel interface
+
+    switch (ptype)
+    {
+    case ptype_t::add:
+        if (0 == trans_c)
+        {
+            mini_jit::kernels::binary::add(*m_kernel, m, n);
+        }
+        else if (1 == trans_c)
+        {
+            std::cout << "Transposition for add primitive is not supported" << std::endl;
+            return error_t::operation_not_supported;
+        }
+        break;
+    case ptype_t::sub:
+        if (0 == trans_c)
+        {
+            mini_jit::kernels::binary::sub(*m_kernel, m, n);
+        }
+        else if (1 == trans_c)
+        {
+            std::cout << "Transposition for sub primitive is not supported" << std::endl;
+            return error_t::operation_not_supported;
+        }
+        break;
+    case ptype_t::mul:
+        if (0 == trans_c)
+        {
+            mini_jit::kernels::binary::mul(*m_kernel, m, n);
+        }
+        else if (1 == trans_c)
+        {
+            std::cout << "Transposition for mul primitive is not supported" << std::endl;
+            return error_t::operation_not_supported;
+        }
+        break;
+    case ptype_t::div:
+        if (0 == trans_c)
+        {
+            mini_jit::kernels::binary::div(*m_kernel, m, n);
+        }
+        else if (1 == trans_c)
+        {
+            std::cout << "Transposition for div primitive is not supported" << std::endl;
+            return error_t::operation_not_supported;
+        }
+        break;
+    case ptype_t::min:
+        if (0 == trans_c)
+        {
+            mini_jit::kernels::binary::min(*m_kernel, m, n);
+        }
+        else if (1 == trans_c)
+        {
+            std::cout << "Transposition for min primitive is not supported" << std::endl;
+            return error_t::operation_not_supported;
+        }
+        break;
+    case ptype_t::max:
+        if (0 == trans_c)
+        {
+            mini_jit::kernels::binary::max(*m_kernel, m, n);
+        }
+        else if (1 == trans_c)
+        {
+            std::cout << "Transposition for max primitive is not supported" << std::endl;
+            return error_t::operation_not_supported;
+        }
+        break;
+    default:
+        std::cout << "Invalid primitive type" << std::endl;
+        return error_t::wrong_ptype;
+    }
+
+Inside our TensorOperation, we now also check if there are exactly two primitive dimensions for the new binary primitives:
+
+.. code-block:: cpp
+    :caption: Checking the number of primitive dimensions for binary primitives
+
+    else if (prim_main == ptype_t::add || prim_main == ptype_t::sub || 
+             prim_main == ptype_t::mul || prim_main == ptype_t::div || 
+             prim_main == ptype_t::min || prim_main == ptype_t::max)
+    {
+        if (prim_count != 2)
+        {
+            return error_t::wrong_exec_type;
+        }
+    }
+
+Next, we call the generate function of our ``Binary`` endpoint:
+
+.. code-block:: cpp
+    :caption: Generating the binary kernels
+
+    else if (prim_main == ptype_t::add || prim_main == ptype_t::sub ||
+             prim_main == ptype_t::mul || prim_main == ptype_t::div ||
+             prim_main == ptype_t::min || prim_main == ptype_t::max)
+    {
+        m_binary_main.generate(m_dim_sizes[m_dim_id_prim_M],
+                               m_dim_sizes[m_dim_id_prim_N],
+                               0,
+                               dtype,
+                               prim_main);
+        m_kernel_binary_main = m_binary_main.get_kernel();
+        
+    }
+
+And lastly, we just need to execute the generated binary kernels:
+
+.. code-block:: cpp
+    :caption: Executing the binary kernels
+    
+    else if (m_kernel_main_type == ptype_t::add || m_kernel_main_type == ptype_t::sub ||
+             m_kernel_main_type == ptype_t::mul || m_kernel_main_type == ptype_t::div ||
+             m_kernel_main_type == ptype_t::min || m_kernel_main_type == ptype_t::max)
+    {
+        m_kernel_binary_main(ptr_in0,
+                             ptr_in1,
+                             ptr_out,
+                             ldA,
+                             ldB,
+                             ldC);
+    }
+
+As for the new unary primitives, no major changes needed to be done. 
+Our TensorOperation backend already supported unary operations such as ``zero`` and ``relu``, so simply extending it with the new primitives was a trivial task.

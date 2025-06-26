@@ -1,5 +1,6 @@
 #include <catch2/catch.hpp>
 #include <random>
+#include <algorithm>
 #include <iostream>
 #include <vector>
 #include <span>
@@ -309,9 +310,9 @@ TEST_CASE("Reference test for IDENTITY layout transformation trus → turs", "[t
 
     const int SIZE = T * R * U * S;
 
-    float* A = new float[SIZE];
-    float* C = new float[SIZE];
-    float* C_expected = new float[SIZE];
+    float *A = new float[SIZE];
+    float *C = new float[SIZE];
+    float *C_expected = new float[SIZE];
 
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -356,23 +357,22 @@ TEST_CASE("Reference test for IDENTITY layout transformation trus → turs", "[t
     };
 
     std::vector<int64_t> dim_sizes = {
-        T, R, U, S
-    };
+        T, R, U, S};
 
     std::vector<int64_t> strides_in0 = {
-        R * U * S,  // t
-        U * S,      // r
-        S,          // u
-        1           // s
+        R * U * S, // t
+        U * S,     // r
+        S,         // u
+        1          // s
     };
 
     std::vector<int64_t> strides_in1 = {0, 0, 0, 0};
 
     std::vector<int64_t> strides_out = {
-        U * R * S,  // t
-        S,          // r
-        R * S,      // u
-        1           // s
+        U * R * S, // t
+        S,         // r
+        R * S,     // u
+        1          // s
     };
 
     mini_jit::TensorOperation l_top;
@@ -412,9 +412,9 @@ TEST_CASE("Reference test for SHARED IDENTITY layout transformation trus → tur
 
     const int SIZE = T * R * U * S;
 
-    float* A = new float[SIZE];
-    float* C = new float[SIZE];
-    float* C_expected = new float[SIZE];
+    float *A = new float[SIZE];
+    float *C = new float[SIZE];
+    float *C_expected = new float[SIZE];
 
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -452,30 +452,29 @@ TEST_CASE("Reference test for SHARED IDENTITY layout transformation trus → tur
     };
 
     std::vector<mini_jit::exec_t> exec_types = {
-        mini_jit::exec_t::shared,  // t
-        mini_jit::exec_t::shared,  // r
-        mini_jit::exec_t::prim, // u
-        mini_jit::exec_t::prim  // s
+        mini_jit::exec_t::shared, // t
+        mini_jit::exec_t::shared, // r
+        mini_jit::exec_t::prim,   // u
+        mini_jit::exec_t::prim    // s
     };
 
     std::vector<int64_t> dim_sizes = {
-        T, R, U, S
-    };
+        T, R, U, S};
 
     std::vector<int64_t> strides_in0 = {
-        R * U * S,  // t
-        U * S,      // r
-        S,          // u
-        1           // s
+        R * U * S, // t
+        U * S,     // r
+        S,         // u
+        1          // s
     };
 
     std::vector<int64_t> strides_in1 = {0, 0, 0, 0};
 
     std::vector<int64_t> strides_out = {
-        U * R * S,  // t
-        S,          // r
-        R * S,      // u
-        1           // s
+        U * R * S, // t
+        S,         // r
+        R * S,     // u
+        1          // s
     };
 
     mini_jit::TensorOperation l_top;
@@ -492,7 +491,8 @@ TEST_CASE("Reference test for SHARED IDENTITY layout transformation trus → tur
 
     l_top.execute(A, nullptr, C);
 
-    for (int i = 0; i < SIZE; ++i) {
+    for (int i = 0; i < SIZE; ++i)
+    {
         REQUIRE(C[i] == Approx(C_expected[i]).margin(FLOAT_ERROR_MARGIN));
     }
 
@@ -514,9 +514,9 @@ TEST_CASE("Reference test for ZERO + IDENTITY layout transformation trus → tur
 
     const int SIZE = T * R * U * S;
 
-    float* A = new float[SIZE];
-    float* C = new float[SIZE];
-    float* C_expected = new float[SIZE];
+    float *A = new float[SIZE];
+    float *C = new float[SIZE];
+    float *C_expected = new float[SIZE];
 
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -561,23 +561,22 @@ TEST_CASE("Reference test for ZERO + IDENTITY layout transformation trus → tur
     };
 
     std::vector<int64_t> dim_sizes = {
-        T, R, U, S
-    };
+        T, R, U, S};
 
     std::vector<int64_t> strides_in0 = {
-        R * U * S,  // t
-        U * S,      // r
-        S,          // u
-        1           // s
+        R * U * S, // t
+        U * S,     // r
+        S,         // u
+        1          // s
     };
 
     std::vector<int64_t> strides_in1 = {0, 0, 0, 0};
 
     std::vector<int64_t> strides_out = {
-        U * R * S,  // t
-        S,          // r
-        R * S,      // u
-        1           // s
+        U * R * S, // t
+        S,         // r
+        R * S,     // u
+        1          // s
     };
 
     mini_jit::TensorOperation l_top;
@@ -617,9 +616,9 @@ TEST_CASE("Reference test for IDENTITY + RELU layout transformation trus → tur
 
     const int SIZE = T * R * U * S;
 
-    float* A = new float[SIZE];
-    float* C = new float[SIZE];
-    float* C_expected = new float[SIZE];
+    float *A = new float[SIZE];
+    float *C = new float[SIZE];
+    float *C_expected = new float[SIZE];
 
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -643,10 +642,11 @@ TEST_CASE("Reference test for IDENTITY + RELU layout transformation trus → tur
                     int l_idx_c_exp = t * (U * R * S) + r * S + u * (R * S) + s;
                     // Calculate index in input format (t,u,r,s) using strides_in0
                     int l_idx_a = t * (R * U * S) + u * S + r * (U * S) + s;
-                    if ( A[l_idx_a] < 0 ) 
+                    if (A[l_idx_a] < 0)
                     {
                         C_expected[l_idx_c_exp] = 0; // Apply ReLU
-                    } else 
+                    }
+                    else
                     {
                         C_expected[l_idx_c_exp] = A[l_idx_a];
                     }
@@ -670,23 +670,22 @@ TEST_CASE("Reference test for IDENTITY + RELU layout transformation trus → tur
     };
 
     std::vector<int64_t> dim_sizes = {
-        T, R, U, S
-    };
+        T, R, U, S};
 
     std::vector<int64_t> strides_in0 = {
-        R * U * S,  // t
-        U * S,      // r
-        S,          // u
-        1           // s
+        R * U * S, // t
+        U * S,     // r
+        S,         // u
+        1          // s
     };
 
     std::vector<int64_t> strides_in1 = {0, 0, 0, 0};
 
     std::vector<int64_t> strides_out = {
-        U * R * S,  // t
-        S,          // r
-        R * S,      // u
-        1           // s
+        U * R * S, // t
+        S,         // r
+        R * S,     // u
+        1          // s
     };
 
     mini_jit::TensorOperation l_top;
@@ -757,34 +756,28 @@ TEST_CASE("Reference test for ZERO + IDENTITY_TRANS tensor operation kernel with
     // Define dimension types (all 'c' for unary operation)
     std::vector<mini_jit::dim_t> dim_types = {
         mini_jit::dim_t::c,
-        mini_jit::dim_t::c
-    };
+        mini_jit::dim_t::c};
 
     // Define execution types
     std::vector<mini_jit::exec_t> exec_types = {
         mini_jit::exec_t::prim,
-        mini_jit::exec_t::prim
-    };
+        mini_jit::exec_t::prim};
 
     // Define dimension sizes
     std::vector<int64_t> dim_sizes = {
         R,
-        S
-    };
+        S};
 
     // Define strides
     std::vector<int64_t> strides_in0 = {
         S,
-        1
-    };
+        1};
     std::vector<int64_t> strides_in1 = {
         0,
-        0
-    };
+        0};
     std::vector<int64_t> strides_out = {
         1,
-        R
-    };
+        R};
 
     mini_jit::TensorOperation l_top;
     l_top.setup(mini_jit::dtype_t::fp32,
@@ -802,7 +795,8 @@ TEST_CASE("Reference test for ZERO + IDENTITY_TRANS tensor operation kernel with
     l_top.execute(A, nullptr, C);
 
     // Verify results
-    for (int i = 0; i < SIZE_C; ++i) {
+    for (int i = 0; i < SIZE_C; ++i)
+    {
         REQUIRE(C[i] == Approx(C_expected[i]).margin(FLOAT_ERROR_MARGIN));
     }
 
@@ -842,41 +836,35 @@ TEST_CASE("Reference test for ZERO + IDENTITY_TRANS + RELU tensor operation kern
     {
         for (int s = 0; s < S; ++s)
         {
-            C_expected[s * R + r] =  std::max(0.0f,A[r * S + s]);
+            C_expected[s * R + r] = std::max(0.0f, A[r * S + s]);
         }
     }
 
     // Define dimension types (all 'c' for unary operation)
     std::vector<mini_jit::dim_t> dim_types = {
         mini_jit::dim_t::c,
-        mini_jit::dim_t::c
-    };
+        mini_jit::dim_t::c};
 
     // Define execution types
     std::vector<mini_jit::exec_t> exec_types = {
         mini_jit::exec_t::prim,
-        mini_jit::exec_t::prim
-    };
+        mini_jit::exec_t::prim};
 
     // Define dimension sizes
     std::vector<int64_t> dim_sizes = {
         R,
-        S
-    };
+        S};
 
     // Define strides
     std::vector<int64_t> strides_in0 = {
         S,
-        1
-    };
+        1};
     std::vector<int64_t> strides_in1 = {
         0,
-        0
-    };
+        0};
     std::vector<int64_t> strides_out = {
         1,
-        R
-    };
+        R};
 
     mini_jit::TensorOperation l_top;
     l_top.setup(mini_jit::dtype_t::fp32,
@@ -939,34 +927,28 @@ TEST_CASE("Reference test for ZERO + IDENTITY + RELU optimized tensor operation 
     // Define dimension types (all 'c' for unary operation)
     std::vector<mini_jit::dim_t> dim_types = {
         mini_jit::dim_t::c,
-        mini_jit::dim_t::c
-    };
+        mini_jit::dim_t::c};
 
     // Define execution types
     std::vector<mini_jit::exec_t> exec_types = {
         mini_jit::exec_t::seq,
-        mini_jit::exec_t::seq
-    };
+        mini_jit::exec_t::seq};
 
     // Define dimension sizes
     std::vector<int64_t> dim_sizes = {
         R,
-        S
-    };
+        S};
 
     // Define strides
     std::vector<int64_t> strides_in0 = {
         S,
-        1
-    };
+        1};
     std::vector<int64_t> strides_in1 = {
         0,
-        0
-    };
+        0};
     std::vector<int64_t> strides_out = {
         S,
-        1
-    };
+        1};
 
     // max kernel size of 4
     mini_jit::ir::Optimizer::optimize(dim_types,
@@ -1002,4 +984,170 @@ TEST_CASE("Reference test for ZERO + IDENTITY + RELU optimized tensor operation 
     delete[] A;
     delete[] C;
     delete[] C_expected;
+}
+
+void binaryTensorOperationTest(const mini_jit::ptype_t main_type)
+{
+    const int M = GENERATE(3, 4, 7, 128);
+    const int N = GENERATE(3, 4, 7, 128);
+
+    const int SIZE_A = M * N;
+    const int SIZE_B = M * N;
+    const int SIZE_C = M * N;
+
+    float *A = new float[SIZE_A];
+    float *B = new float[SIZE_B];
+    float *C = new float[SIZE_C]{0.0f};
+    float *C_expected = new float[SIZE_C];
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<float> dist(-10.0f, 10.0f);
+
+    for (int i = 0; i < SIZE_A; ++i)
+    {
+        A[i] = dist(gen);
+    }
+
+    for (int i = 0; i < SIZE_B; ++i)
+    {
+        B[i] = dist(gen);
+    }
+
+    if (main_type == mini_jit::ptype_t::add)
+    {
+        for (int i = 0; i < SIZE_C; ++i)
+        {
+            C_expected[i] = A[i] + B[i];
+        }
+    }
+    else if (main_type == mini_jit::ptype_t::sub)
+    {
+        for (int i = 0; i < SIZE_C; ++i)
+        {
+            C_expected[i] = A[i] - B[i];
+        }
+    }
+    else if (main_type == mini_jit::ptype_t::mul)
+    {
+        for (int i = 0; i < SIZE_C; ++i)
+        {
+            C_expected[i] = A[i] * B[i];
+        }
+    }
+    else if (main_type == mini_jit::ptype_t::div)
+    {
+        for (int i = 0; i < SIZE_C; ++i)
+        {
+            C_expected[i] = A[i] / B[i];
+        }
+    }
+    else if (main_type == mini_jit::ptype_t::max)
+    {
+        for (int i = 0; i < SIZE_C; ++i)
+        {
+            C_expected[i] = std::max(A[i], B[i]);
+        }
+    }
+    else if (main_type == mini_jit::ptype_t::min)
+    {
+        for (int i = 0; i < SIZE_C; ++i)
+        {
+            C_expected[i] = std::min(A[i], B[i]);
+        }
+    }
+    else
+    {
+        throw std::runtime_error("Unsupported main type for binary operation");
+    }
+
+    // Define dimension types (all 'c' for unary operation)
+    std::vector<mini_jit::dim_t> dim_types = {
+        mini_jit::dim_t::m,
+        mini_jit::dim_t::n};
+
+    // Define execution types
+    std::vector<mini_jit::exec_t> exec_types = {
+        mini_jit::exec_t::prim,
+        mini_jit::exec_t::prim};
+
+    // Define dimension sizes
+    std::vector<int64_t> dim_sizes = {
+        M,
+        N};
+
+    // Define strides
+    std::vector<int64_t> strides_in0 = {
+        1,
+        M};
+    std::vector<int64_t> strides_in1 = {
+        1,
+        M};
+    std::vector<int64_t> strides_out = {
+        1,
+        M};
+
+    mini_jit::ir::Optimizer::optimize(dim_types,
+                                      exec_types,
+                                      dim_sizes,
+                                      strides_in0,
+                                      strides_in1,
+                                      strides_out,
+                                      256,
+                                      64);
+
+    mini_jit::TensorOperation l_top;
+    l_top.setup(mini_jit::dtype_t::fp32,
+                mini_jit::ptype_t::none,
+                main_type,
+                mini_jit::ptype_t::none,
+                dim_types,
+                exec_types,
+                dim_sizes,
+                strides_in0,
+                strides_in1,
+                strides_out);
+
+    l_top.execute(A, B, C);
+
+    // Verify results
+    for (int i = 0; i < SIZE_C; ++i)
+    {
+        REQUIRE(C[i] == Approx(C_expected[i]).margin(FLOAT_ERROR_MARGIN));
+    }
+
+    delete[] A;
+    delete[] B;
+    delete[] C;
+    delete[] C_expected;
+}
+
+TEST_CASE("Reference test for ADD tensor operation kernel with variable M, N", "[tensor_operation][parameterized][add]")
+{
+    binaryTensorOperationTest(mini_jit::ptype_t::add);
+}
+
+TEST_CASE("Reference test for SUB tensor operation kernel with variable M, N", "[tensor_operation][parameterized][sub]")
+{
+    binaryTensorOperationTest(mini_jit::ptype_t::sub);
+}
+
+TEST_CASE("Reference test for MUL tensor operation kernel with variable M, N", "[tensor_operation][parameterized][mul]")
+{
+    binaryTensorOperationTest(mini_jit::ptype_t::mul);
+}
+
+TEST_CASE("Reference test for DIV tensor operation kernel with variable M, N", "[tensor_operation][parameterized][div]")
+{
+    binaryTensorOperationTest(mini_jit::ptype_t::div);
+}
+
+TEST_CASE("Reference test for MAX tensor operation kernel with variable M, N", "[tensor_operation][parameterized][max]")
+{
+    binaryTensorOperationTest(mini_jit::ptype_t::max);
+}
+
+TEST_CASE("Reference test for MIN tensor operation kernel with variable M, N", "[tensor_operation][parameterized][min]")
+{
+    binaryTensorOperationTest(mini_jit::ptype_t::min);
 }

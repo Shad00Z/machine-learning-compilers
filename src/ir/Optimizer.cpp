@@ -62,12 +62,20 @@ void mini_jit::ir::Optimizer::optimize(std::vector<mini_jit::dim_t> &dim_types,
 
 void mini_jit::ir::Optimizer::identifyPrimitives(std::vector<mini_jit::ir::Dimension> &dimensions)
 {
-    // Handle unary case first
+    // Handle identity case first
     auto l_has_c_dim = std::any_of(dimensions.begin(), dimensions.end(),
                                    [](const mini_jit::ir::Dimension &dim)
                                    {
                                        return dim.type == dim_t::c;
                                    });
+
+    // Handle binary case
+    auto l_has_k_dim = std::any_of(dimensions.begin(), dimensions.end(),
+                                   [](const mini_jit::ir::Dimension &dim)
+                                   {
+                                       return dim.type == dim_t::k;
+                                   });
+
     if (l_has_c_dim)
     {
         // check that all dimensions are c
@@ -204,6 +212,80 @@ void mini_jit::ir::Optimizer::identifyPrimitives(std::vector<mini_jit::ir::Dimen
 
         return; // all primary dimensions set
     }
+    // BINARY CASE
+    else if (!l_has_k_dim)
+    {
+        /////////////////////////////////////////////////////////////////
+        // FIND PRIM M
+        /////////////////////////////////////////////////////////////////
+        // req: unit stride in all tensors
+        auto l_dim_m_it = std::find_if(dimensions.begin(), dimensions.end(),
+                                       [](const mini_jit::ir::Dimension &dim)
+                                       {
+                                           return (dim.type == dim_t::m || dim.type == dim_t::undefined) &&
+                                                  dim.stride_in0 == 1 &&
+                                                  dim.stride_in1 == 1 &&
+                                                  dim.stride_out == 1;
+                                       });
+
+        if (l_dim_m_it != dimensions.end())
+        {
+            // set dimension data
+            l_dim_m_it->type = dim_t::m;
+            l_dim_m_it->exec_type = exec_t::prim;
+            if (l_dim_m_it != dimensions.end() - 1)
+            {
+                // move M to the back
+                std::rotate(l_dim_m_it, l_dim_m_it + 1, dimensions.end());
+            }
+        }
+        else
+        {
+            throw std::invalid_argument("Optimizer: No suitable primary dimension M found.");
+        }
+
+        /////////////////////////////////////////////////////////////////
+        // FIND PRIM N
+        /////////////////////////////////////////////////////////////////
+        // req: choose the one with stride m
+        int l_size_m = 1;
+        for (const auto &dim : dimensions)
+        {
+            if (dim.type == dim_t::m)
+            {
+                l_size_m *= dim.size;
+                break;
+            }
+        }
+
+        int l_n_dim_id = -1;
+        for (size_t i = 0; i < dimensions.size(); i++)
+        {
+            if ((dimensions[i].type == dim_t::n || dimensions[i].type == dim_t::undefined) &&
+                dimensions[i].stride_in0 == l_size_m &&
+                dimensions[i].stride_in1 == l_size_m &&
+                dimensions[i].stride_out == l_size_m)
+            {
+                l_n_dim_id = static_cast<int>(i);
+                break;
+            }
+        }
+
+        if (l_n_dim_id == -1)
+        {
+            throw std::invalid_argument("Optimizer: No suitable primary dimension N found.");
+        }
+
+        // set dimension data
+        dimensions[l_n_dim_id].type = dim_t::n;
+        dimensions[l_n_dim_id].exec_type = exec_t::prim;
+        // move N to the back
+        if (l_n_dim_id != static_cast<int>(dimensions.size()) - 1)
+        {
+            std::rotate(dimensions.begin() + l_n_dim_id, dimensions.begin() + l_n_dim_id + 1, dimensions.end());
+        }
+    }
+    // TERNARY CASE
     else
     {
         /////////////////////////////////////////////////////////////////

@@ -61,6 +61,50 @@ mini_jit::error_t mini_jit::Binary::generate(uint32_t m,
             return error_t::operation_not_supported;
         }
         break;
+    case ptype_t::mul:
+        if (0 == trans_c)
+        {
+            mini_jit::kernels::binary::mul(*m_kernel, m, n);
+        }
+        else if (1 == trans_c)
+        {
+            std::cout << "Transposition for mul primitive is not supported" << std::endl;
+            return error_t::operation_not_supported;
+        }
+        break;
+    case ptype_t::div:
+        if (0 == trans_c)
+        {
+            mini_jit::kernels::binary::div(*m_kernel, m, n);
+        }
+        else if (1 == trans_c)
+        {
+            std::cout << "Transposition for div primitive is not supported" << std::endl;
+            return error_t::operation_not_supported;
+        }
+        break;
+    case ptype_t::min:
+        if (0 == trans_c)
+        {
+            mini_jit::kernels::binary::min(*m_kernel, m, n);
+        }
+        else if (1 == trans_c)
+        {
+            std::cout << "Transposition for min primitive is not supported" << std::endl;
+            return error_t::operation_not_supported;
+        }
+        break;
+    case ptype_t::max:
+        if (0 == trans_c)
+        {
+            mini_jit::kernels::binary::max(*m_kernel, m, n);
+        }
+        else if (1 == trans_c)
+        {
+            std::cout << "Transposition for max primitive is not supported" << std::endl;
+            return error_t::operation_not_supported;
+        }
+        break;
     default:
         std::cout << ("Invalid primitive type") << std::endl;
         return error_t::wrong_ptype;
