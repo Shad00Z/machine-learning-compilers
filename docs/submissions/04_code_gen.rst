@@ -1418,6 +1418,8 @@ We benchmarked the performance of our identity primitive for the given parameter
 
 Most notably, we can see that the performance of the transposition kernel is significantly lower for larger matrices, such as 512x512 and 2048x2048. Here, we achieved a bandwidth of only 3.6 to 4 GiB/s, while all other configurations achieved bandwidths greater than 100 GiB/s.
 
+.. _relu-primitive:
+
 4.2.3 ReLU Primitive
 ===========================
 

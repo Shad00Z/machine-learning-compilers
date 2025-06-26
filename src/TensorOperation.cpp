@@ -55,7 +55,9 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
         ptype_t::zero,
         ptype_t::relu, 
         ptype_t::square, 
-        ptype_t::reciprocal
+        ptype_t::reciprocal,
+        ptype_t::increment,
+        ptype_t::decrement
     };
     std::vector<ptype_t> allowed_main_types = {
         ptype_t::none,
@@ -63,13 +65,19 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
         ptype_t::brgemm, 
         ptype_t::gemm,
         ptype_t::add,
-        ptype_t::sub
+        ptype_t::sub,
+        ptype_t::mul,
+        ptype_t::div,
+        ptype_t::min,
+        ptype_t::max
     };
     std::vector<ptype_t> allowed_last_touch_types = {
         ptype_t::none,
         ptype_t::relu, 
         ptype_t::square, 
-        ptype_t::reciprocal
+        ptype_t::reciprocal,
+        ptype_t::increment,
+        ptype_t::decrement
     };
 
     if (std::find(allowed_first_touch_types.begin(), allowed_first_touch_types.end(), prim_first_touch) == allowed_first_touch_types.end())
@@ -321,7 +329,9 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
                               prim_main);
         m_kernel_unary_main = m_unary_main.get_kernel();
     }
-    else if (prim_main == ptype_t::add || prim_main == ptype_t::sub)
+    else if (prim_main == ptype_t::add || prim_main == ptype_t::sub ||
+             prim_main == ptype_t::mul || prim_main == ptype_t::div ||
+             prim_main == ptype_t::min || prim_main == ptype_t::max)
     {
         m_binary_main.generate(m_dim_sizes[m_dim_id_prim_M],
                                m_dim_sizes[m_dim_id_prim_N],
@@ -521,7 +531,11 @@ void mini_jit::TensorOperation::execute_kernel_first_touch(char *ptr_out,
                              0,
                              ldOut);
     }
-    else if (m_kernel_first_touch_type == ptype_t::relu)
+    else if (m_kernel_first_touch_type == ptype_t::relu || 
+             m_kernel_first_touch_type == ptype_t::square || 
+             m_kernel_first_touch_type == ptype_t::reciprocal ||
+             m_kernel_first_touch_type == ptype_t::increment ||
+             m_kernel_first_touch_type == ptype_t::decrement)
     {
         m_kernel_first_touch(ptr_out,
                              ptr_out,
@@ -568,7 +582,9 @@ void mini_jit::TensorOperation::execute_kernel_main(char const *ptr_in0,
                             ldA,
                             ldC);
     }
-    else if (m_kernel_main_type == ptype_t::add || m_kernel_main_type == ptype_t::sub)
+    else if (m_kernel_main_type == ptype_t::add || m_kernel_main_type == ptype_t::sub ||
+             m_kernel_main_type == ptype_t::mul || m_kernel_main_type == ptype_t::div ||
+             m_kernel_main_type == ptype_t::min || m_kernel_main_type == ptype_t::max)
     {
         m_kernel_binary_main(ptr_in0,
                              ptr_in1,
@@ -589,7 +605,11 @@ void mini_jit::TensorOperation::execute_kernel_last_touch(char *ptr_out,
                             0,
                             ldOut);
     }
-    else if (m_kernel_last_touch_type == ptype_t::relu)
+    else if (m_kernel_last_touch_type == ptype_t::relu || 
+             m_kernel_last_touch_type == ptype_t::square || 
+             m_kernel_last_touch_type == ptype_t::reciprocal ||
+             m_kernel_last_touch_type == ptype_t::increment ||
+             m_kernel_last_touch_type == ptype_t::decrement)
     {
         m_kernel_last_touch(ptr_out,
                             ptr_out,

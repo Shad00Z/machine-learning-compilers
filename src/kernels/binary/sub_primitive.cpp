@@ -83,7 +83,7 @@ void mini_jit::kernels::binary::sub(mini_jit::Kernel &kernel,
             simd_fp::ldp(v4, v5, x12, 0, q),
             simd_fp::ldp(v6, v7, x12, 32, q),
 
-            // compute C = A + B
+            // compute C = A - B
             simd_fp::fsubVec(v8, v0, v4, s4),
             simd_fp::fsubVec(v9, v1, v5, s4),
             simd_fp::fsubVec(v10, v2, v6, s4),

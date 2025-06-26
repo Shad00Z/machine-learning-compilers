@@ -100,7 +100,7 @@ void mini_jit::kernels::binary::div(mini_jit::Kernel &kernel,
             ldp(v4, v5, x12, 0, q),
             ldp(v6, v7, x12, 32, q),
 
-            // compute C = A + B
+            // compute C = A / B
             fdivVec(v8, v0, v4, s4),
             fdivVec(v9, v1, v5, s4),
             fdivVec(v10, v2, v6, s4),

@@ -35,12 +35,14 @@ namespace mini_jit
         brgemm = 4,
         square = 5,
         reciprocal = 6,
-        add = 7,
-        sub = 8,
-        mul = 9,
-        div = 10,
-        min = 11,
-        max = 12,
+        increment = 7,
+        decrement = 8,
+        add = 9,
+        sub = 10,
+        mul = 11,
+        div = 12,
+        min = 13,
+        max = 14,
         none = 99
     };
 
@@ -53,6 +55,8 @@ namespace mini_jit
             case ptype_t::brgemm: return "brgemm";
             case ptype_t::square: return "square";
             case ptype_t::reciprocal: return "reciprocal";
+            case ptype_t::increment: return "increment";
+            case ptype_t::decrement: return "decrement";
             case ptype_t::add: return "add";
             case ptype_t::sub: return "sub";
             case ptype_t::mul: return "mul";
