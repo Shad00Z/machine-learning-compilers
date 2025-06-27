@@ -164,9 +164,9 @@ void mini_jit::kernels::unary::square(mini_jit::Kernel &kernel,
                 fmulVec(v1, v0, v0, s4),
                 str(v1, x9, 0, q),
                 // 2 elements
-                ldr(v0, x8, 4*4, d),
-                fmulVec(v2, v0, v0, s2),
-                str(v2, x9, 4*4, d)
+                ldr(v2, x8, 4*4, d),
+                fmulVec(v3, v2, v2, s2),
+                str(v3, x9, 4*4, d)
             });
             break;
         case 7:

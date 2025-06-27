@@ -48,16 +48,16 @@ void test_fast_sigmoid_primitive(uint32_t M,
     delete[] B_expected;
 }
 
-// TEST_CASE("Tests the fast sigmoid primitive with different M and N", "[fast_sigmoid_primitive][parameterized]")
-// {
-//     uint32_t M = GENERATE(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
-//     uint32_t N = GENERATE(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
-//     test_fast_sigmoid_primitive(M, N);
-// }
+TEST_CASE("Tests the fast sigmoid primitive with different M and N", "[fast_sigmoid_primitive][parameterized]")
+{
+    uint32_t M = GENERATE(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
+    uint32_t N = GENERATE(1, 2, 3, 4);
+    test_fast_sigmoid_primitive(M, N);
+}
 
 TEST_CASE("Tests the fast sigmoid primitive with larger M and N", "[fast_sigmoid_primitive][large]")
 {
-    uint32_t M = 16;
-    uint32_t N = 16;
+    uint32_t M = 64;
+    uint32_t N = 65;
     test_fast_sigmoid_primitive(M, N);
 }

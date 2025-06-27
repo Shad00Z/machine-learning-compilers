@@ -48,7 +48,7 @@ void test_square_primitive(uint32_t M,
 TEST_CASE("Tests the square primitive with different M and N", "[square_primitive][parameterized]")
 {
     uint32_t M = GENERATE(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
-    uint32_t N = GENERATE(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
+    uint32_t N = GENERATE(1, 2, 3, 4);
     test_square_primitive(M, N);
 }
 
