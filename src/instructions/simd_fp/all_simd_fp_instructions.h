@@ -2,6 +2,7 @@
 #define MINI_JIT_INSTRUCTIONS_ALL_SIMD_INSTRUCTIONS_H
 
 #include "eor.h"
+#include "fabs.h"
 #include "fadd.h"
 #include "fdiv.h"
 #include "fmadd.h"

@@ -26,8 +26,8 @@ using simd_fp::ldp;
 using simd_fp::stp;
 using simd_fp::ldr;
 using simd_fp::str;
-using simd_fp::fmovVec;
-using simd_fp::fmovScalar;
+using simd_fp::fmovIntVec;
+using simd_fp::fmovIntScalar;
 using simd_fp::fsubVec;
 using simd_fp::fsubScalar;
 
@@ -62,7 +62,7 @@ void mini_jit::kernels::unary::decrement(mini_jit::Kernel &kernel,
         mov(x6, n),
 
         // Set register with value 1
-        fmovVec(v19, 1, s4), 
+        fmovIntVec(v19, 1, s4), 
     });
 
     // Start n loop (1 column)

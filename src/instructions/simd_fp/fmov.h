@@ -39,6 +39,89 @@ namespace mini_jit
                 // set destination register id
                 l_ins |= (reg_dest & 0x1f);
 
+                // move lower 5 immediate bits
+                l_ins |= (imm8 & 0x1f)  << 5;
+
+                // move upper 3 immediate bits
+                l_ins |= (imm8 & 0xe0)  << 11;
+
+                // set arrangement specifier
+                if (arr_spec == arr_spec_t::s4)
+                {
+                    l_ins |= (0x1) << 30;
+                }
+                else if (arr_spec == arr_spec_t::d2)
+                {
+                    l_ins |= (0x1) << 29;
+                    l_ins |= (0x1) << 30;
+                }
+
+                return l_ins;
+            }
+
+            /**
+             * @brief Generates an FMOV (scalar, immediate) instruction.
+             *
+             * @param reg_dest destination register.
+             * @param imm8 8-bit immediate (sign bit, 3-bit exponent, 4-bit precision).
+             * @param size_spec size specifier.
+             *
+             * @return instruction.
+             **/
+            constexpr uint32_t fmovScalar(simd_fp_t reg_dest,
+                                          int32_t imm8,
+                                          neon_size_spec_t size_spec)
+            {
+                if (size_spec != neon_size_spec_t::s && 
+                    size_spec != neon_size_spec_t::d)
+                {
+                    throw std::invalid_argument("Invalid size specifier");
+                }
+
+                uint32_t l_ins = 0x1E201000;
+
+                // set destination register id
+                l_ins |= (reg_dest & 0x1f);
+
+                if (imm8 > 31 || imm8 < -31)
+                {
+                    throw std::invalid_argument("Invalid immediate (allowed range: -31, 31)");
+                }
+
+                // immediate
+                l_ins |= (imm8 & 0xff)  << 13;
+
+                // set size specifier
+                l_ins |= (size_spec & 0x3) << 22;
+
+                return l_ins;
+            }
+
+            /**
+             * @brief Generates an FMOV (vector, immediate) instruction.
+             *
+             * @param reg_dest destination register.
+             * @param imm8 8-bit integer value to move.
+             * @param arr_spec arrangement specifier.
+             *
+             * @return instruction.
+             **/
+            constexpr uint32_t fmovIntVec(simd_fp_t reg_dest,
+                                          int32_t imm8,
+                                          arr_spec_t arr_spec)
+            {
+                if (arr_spec != arr_spec_t::s2 && 
+                    arr_spec != arr_spec_t::s4 && 
+                    arr_spec != arr_spec_t::d2)
+                {
+                    throw std::invalid_argument("Invalid arrangement specifier");
+                }
+
+                int32_t l_ins = 0xF00F400;
+
+                // set destination register id
+                l_ins |= (reg_dest & 0x1f);
+
                 if (imm8 > 31 || imm8 < -31)
                 {
                     throw std::invalid_argument("Invalid immediate (allowed range: -31, 31)");
@@ -99,14 +182,14 @@ namespace mini_jit
              * @brief Generates an FMOV (scalar, immediate) instruction.
              *
              * @param reg_dest destination register.
-             * @param imm8 8-bit immediate (sign bit, 3-bit exponent, 4-bit precision).
+             * @param imm8 8-bit integer value to move.
              * @param size_spec size specifier.
              *
              * @return instruction.
              **/
-            constexpr uint32_t fmovScalar(simd_fp_t reg_dest,
-                                          int32_t imm8,
-                                          neon_size_spec_t size_spec)
+            constexpr uint32_t fmovIntScalar(simd_fp_t reg_dest,
+                                             int32_t imm8,
+                                             neon_size_spec_t size_spec)
             {
                 if (size_spec != neon_size_spec_t::s && 
                     size_spec != neon_size_spec_t::d)

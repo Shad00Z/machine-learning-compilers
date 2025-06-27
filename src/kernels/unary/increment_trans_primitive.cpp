@@ -34,8 +34,8 @@ using simd_fp::trn1;
 using simd_fp::trn2;
 using simd_fp::zip1;
 using simd_fp::zip2;
-using simd_fp::fmovVec;
-using simd_fp::fmovScalar;
+using simd_fp::fmovIntVec;
+using simd_fp::fmovIntScalar;
 using simd_fp::faddVec;
 using simd_fp::faddScalar;
 
@@ -93,7 +93,7 @@ void mini_jit::kernels::unary::increment_trans(mini_jit::Kernel &kernel,
         lsl(x27, x3, 2),
 
         // Set register with value 1
-        fmovVec(v20, 1, s4), 
+        fmovIntVec(v20, 1, s4), 
     });
 
     if ( nLoopIterations > 0)
