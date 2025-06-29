@@ -7,6 +7,7 @@
 #include "ldr.h"
 #include "lsl.h"
 #include "mov.h"
+#include "movk.h"
 #include "movz.h"
 #include "mul.h"
 #include "orr.h"
