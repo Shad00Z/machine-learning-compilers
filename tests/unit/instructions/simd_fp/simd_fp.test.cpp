@@ -16,7 +16,30 @@ using namespace mini_jit::converters;
 namespace inst = mini_jit::instructions;
 namespace simd_fp = inst::simd_fp;
 
-TEST_CASE("Tests the Neon LDR instruction generation", "[Neon LDR]")
+TEST_CASE("Tests the Neon FABS instruction generation", "[Neon_FABS]")
+{
+    uint32_t l_ins = simd_fp::fabsVec(simd_fp_t::v5, simd_fp_t::v4, arr_spec_t::s2);
+    std::string l_hex = to_string_hex(l_ins);
+    REQUIRE(l_hex == "0x0ea0f885");
+
+    l_ins = simd_fp::fabsVec(simd_fp_t::v7, simd_fp_t::v6, arr_spec_t::s4);
+    l_hex = to_string_hex(l_ins);
+    REQUIRE(l_hex == "0x4ea0f8c7");
+
+    l_ins = simd_fp::fabsVec(simd_fp_t::v9, simd_fp_t::v8, arr_spec_t::d2);
+    l_hex = to_string_hex(l_ins);
+    REQUIRE(l_hex == "0x4ee0f909");
+
+    l_ins = simd_fp::fabsScalar(simd_fp_t::v11, simd_fp_t::v10, neon_size_spec_t::s);
+    l_hex = to_string_hex(l_ins);
+    REQUIRE(l_hex == "0x1e20c14b");
+
+    l_ins = simd_fp::fabsScalar(simd_fp_t::v13, simd_fp_t::v12, neon_size_spec_t::d);
+    l_hex = to_string_hex(l_ins);
+    REQUIRE(l_hex == "0x1e60c18d");
+}
+
+TEST_CASE("Tests the Neon LDR instruction generation", "[Neon_LDR]")
 {
     uint32_t l_ins = simd_fp::ldr(simd_fp_t::v28, gpr_t::x6, 0, neon_size_spec_t::s);
     std::string l_hex = to_string_hex(l_ins);
@@ -39,7 +62,7 @@ TEST_CASE("Tests the Neon LDR instruction generation", "[Neon LDR]")
     REQUIRE(l_hex == "0x3cc20567");
 }
 
-TEST_CASE("Tests the Neon LDP instruction generation", "[Neon LDP]")
+TEST_CASE("Tests the Neon LDP instruction generation", "[Neon_LDP]")
 {
     uint32_t l_ins = simd_fp::ldp(simd_fp_t::v1, simd_fp_t::v2, gpr_t::x0, -16, neon_size_spec_t::d);
     std::string l_hex = to_string_hex(l_ins);
@@ -54,7 +77,7 @@ TEST_CASE("Tests the Neon LDP instruction generation", "[Neon LDP]")
     REQUIRE(l_hex == "0x6dc10801");
 }
 
-TEST_CASE("Tests the Neon STR instruction generation", "[Neon STR]")
+TEST_CASE("Tests the Neon STR instruction generation", "[Neon_STR]")
 {
     uint32_t l_ins = simd_fp::str(simd_fp_t::v0, gpr_t::x12, 0, neon_size_spec_t::s);
     std::string l_hex = to_string_hex(l_ins);
@@ -77,7 +100,7 @@ TEST_CASE("Tests the Neon STR instruction generation", "[Neon STR]")
     REQUIRE(l_hex == "0x3c820567");
 }
 
-TEST_CASE("Tests the Neon STP instruction generation", "[Neon STP]")
+TEST_CASE("Tests the Neon STP instruction generation", "[Neon_STP]")
 {
     uint32_t l_ins = simd_fp::stp(simd_fp_t::v1, simd_fp_t::v2, gpr_t::x0, -16, neon_size_spec_t::d);
     std::string l_hex = to_string_hex(l_ins);
@@ -146,40 +169,48 @@ TEST_CASE("Tests the Neon FDIV (vector) instruction generation", "[Neon_FDIV_VEC
 
 TEST_CASE("Tests the Neon FMOV (scalar, immediate) instruction generation", "[Neon_FMOV_SCALAR]")
 {
-    uint32_t l_ins = simd_fp::fmovScalar(simd_fp_t::v0, 1, neon_size_spec_t::s);
+    uint32_t l_ins = simd_fp::fmovIntScalar(simd_fp_t::v0, 1, neon_size_spec_t::s);
     std::string l_hex = to_string_hex(l_ins);
     REQUIRE(l_hex == "0x1e2e1000");
 
-    l_ins = simd_fp::fmovScalar(simd_fp_t::v3, 7, neon_size_spec_t::s);
+    l_ins = simd_fp::fmovIntScalar(simd_fp_t::v3, 7, neon_size_spec_t::s);
     l_hex = to_string_hex(l_ins);
     REQUIRE(l_hex == "0x1e239003");
 
-    l_ins = simd_fp::fmovScalar(simd_fp_t::v5, 13, neon_size_spec_t::d);
+    l_ins = simd_fp::fmovIntScalar(simd_fp_t::v5, 13, neon_size_spec_t::d);
     l_hex = to_string_hex(l_ins);
     REQUIRE(l_hex == "0x1e655005");
 
-    l_ins = simd_fp::fmovScalar(simd_fp_t::v7, 21, neon_size_spec_t::d);
+    l_ins = simd_fp::fmovIntScalar(simd_fp_t::v7, 21, neon_size_spec_t::d);
     l_hex = to_string_hex(l_ins);
     REQUIRE(l_hex == "0x1e66b007");
 }
 
 TEST_CASE("Tests the Neon FMOV (vector, immediate) instruction generation", "[Neon_FMOV_VEC]")
 {
-    uint32_t l_ins = simd_fp::fmovVec(simd_fp_t::v0, 1, arr_spec_t::s2);
+    uint32_t l_ins = simd_fp::fmovIntVec(simd_fp_t::v0, 1, arr_spec_t::s2);
     std::string l_hex = to_string_hex(l_ins);
     REQUIRE(l_hex == "0x0f03f600");
 
-    l_ins = simd_fp::fmovVec(simd_fp_t::v0, 2, arr_spec_t::s2);
+    l_ins = simd_fp::fmovIntVec(simd_fp_t::v0, 2, arr_spec_t::s2);
     l_hex = to_string_hex(l_ins);
     REQUIRE(l_hex == "0x0f00f400");
 
-    l_ins = simd_fp::fmovVec(simd_fp_t::v7, 9, arr_spec_t::s4);
+    l_ins = simd_fp::fmovIntVec(simd_fp_t::v7, 9, arr_spec_t::s4);
     l_hex = to_string_hex(l_ins);
     REQUIRE(l_hex == "0x4f01f447");
 
-    l_ins = simd_fp::fmovVec(simd_fp_t::v11, 13, arr_spec_t::d2);
+    l_ins = simd_fp::fmovIntVec(simd_fp_t::v11, 13, arr_spec_t::d2);
     l_hex = to_string_hex(l_ins);
     REQUIRE(l_hex == "0x6f01f54b");
+
+    l_ins = simd_fp::fmovVec(simd_fp_t::v0, 0b01110000, arr_spec_t::s4);
+    l_hex = to_string_hex(l_ins);
+    REQUIRE(l_hex == "0x4f03f600");
+
+    l_ins = simd_fp::fmovVec(simd_fp_t::v1, 0b01100000, arr_spec_t::s4);
+    l_hex = to_string_hex(l_ins);
+    REQUIRE(l_hex == "0x4f03f401");
 }
 
 TEST_CASE("Tests the Neon FMLA (by element) instruction generation", "[Neon_FMLA_ELEM]")

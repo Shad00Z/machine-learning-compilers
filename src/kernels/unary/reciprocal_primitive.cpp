@@ -177,11 +177,11 @@ void mini_jit::kernels::unary::reciprocal(mini_jit::Kernel &kernel,
                 str(v1, x9, 0, q),
 
                 // 2 elements
-                ldr(v0, x8, 4*4, d),
-                frecpeVec(v2, v0, s2),
-                frecpsVec(v10, v0, v2, s2),
-                fmulVec(v2, v2, v10, s2),
-                str(v2, x9, 4*4, d)
+                ldr(v2, x8, 4*4, d),
+                frecpeVec(v3, v2, s2),
+                frecpsVec(v10, v2, v3, s2),
+                fmulVec(v3, v3, v10, s2),
+                str(v3, x9, 4*4, d)
             });
             break;
         case 7:

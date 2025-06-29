@@ -40,7 +40,7 @@ namespace mini_jit
                 // w
                 if ( reg_dest < 32 )
                 {
-                    if (shift != 0 || shift != 16)
+                    if (shift != 0 && shift != 16)
                     {
                         throw std::invalid_argument("MOVK: invalid shift for w");
                     }  
@@ -48,7 +48,7 @@ namespace mini_jit
                 // x
                 else
                 {
-                    if (shift != 0 || shift != 16 || shift != 32 || shift != 48)
+                    if (shift != 0 && shift != 16 && shift != 32 && shift != 48)
                     {
                         throw std::invalid_argument("MOVK: invalid shift for x");
                     }   
