@@ -113,6 +113,58 @@ namespace mini_jit
 
                 return l_ins;
             }
+
+            /**
+             * @brief Generates an LDR (register, SIMD&FP) instruction using register offset.
+             *
+             * @param reg_dest destination register.
+             * @param reg_src1 first source register.
+             * @param reg_src2 second source register.
+             * @param option option (0:uxtw, 1:sxtw, 2:lsl, 3:sxtx).
+             * @param size_spec size specifier (s, d, q).
+             */
+            constexpr uint32_t ldrReg(simd_fp_t reg_dest,
+                                      gpr_t reg_src1,
+                                      gpr_t reg_src2,
+                                      uint32_t option,
+                                      neon_size_spec_t size_spec)
+            {
+                uint32_t l_ins = 0x3C600800;
+
+                // set size
+                uint32_t l_size = (size_spec == neon_size_spec_t::s) ? 2 : (size_spec == neon_size_spec_t::d) ? 3
+                                                                                                              : 0;
+
+                uint32_t l_sf = l_size & 0x3;
+                l_ins |= l_sf << 30; // set bit 31, 30
+
+                // set destination register id
+                l_ins |= (reg_dest & 0x1f);
+
+                // set first source register id
+                l_ins |= (reg_src1 & 0x1f) << 5;
+
+                // set second source register id
+                l_ins |= (reg_src2 & 0x1f) << 16;
+
+                // Currently only uxtw supported
+                if (option != 0)
+                {
+                    throw std::invalid_argument("Invalid option, only uxtw supported");
+                }
+
+                // set option
+                if (option == 0)
+                {
+                    l_ins |= (1) << 14;
+                }
+
+                // set op code
+                uint32_t l_opc = (size_spec == neon_size_spec_t::q) ? 1 : 0;
+                l_ins |= l_opc << 23;
+
+                return l_ins;
+            }
         }
     }
 }
