@@ -6,16 +6,16 @@
 #include "Kernel.h"
 #include "Unary.h"
 
-mini_jit::benchmarks::Square_primitive_bench::Square_primitive_bench(double runTime,
-                                                                        uint32_t m,
-                                                                        uint32_t n) : Benchmark()
+mini_jit::benchmarks::SquarePrimitiveBench::SquarePrimitiveBench(double runTime,
+                                                                 uint32_t m,
+                                                                 uint32_t n) : Benchmark()
 {
     m_M = m;
     m_N = n;
     m_runTime = runTime;
 }
 
-void mini_jit::benchmarks::Square_primitive_bench::run()
+void mini_jit::benchmarks::SquarePrimitiveBench::run()
 {
     m_A = new float[m_M * m_N];
     m_B = new float[m_M * m_N];

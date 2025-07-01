@@ -7,7 +7,7 @@ namespace mini_jit
 {
     namespace benchmarks
     {
-        class Square_trans_primitive_bench : public Benchmark
+        class SquareTransPrimitiveBench : public Benchmark
         {
         public:
             /**
@@ -16,11 +16,11 @@ namespace mini_jit
              * @param m number of rows in A and B.
              * @param n number of columns in A and B.
              */
-            Square_trans_primitive_bench(double runTime,
-                                         uint32_t m,
-                                         uint32_t n);
+            SquareTransPrimitiveBench(double runTime,
+                                      uint32_t m,
+                                      uint32_t n);
             //! Destructor
-            ~Square_trans_primitive_bench() override = default;
+            ~SquareTransPrimitiveBench() override = default;
             //! Runs the benchmark.
             void run() override;
 

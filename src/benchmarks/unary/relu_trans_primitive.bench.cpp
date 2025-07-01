@@ -6,16 +6,16 @@
 #include "Kernel.h"
 #include "Unary.h"
 
-mini_jit::benchmarks::Relu_trans_primitive_bench::Relu_trans_primitive_bench(double runTime,
-                                                                             uint32_t m,
-                                                                             uint32_t n) : Benchmark()
+mini_jit::benchmarks::ReLUTransPrimitiveBench::ReLUTransPrimitiveBench(double runTime,
+                                                                       uint32_t m,
+                                                                       uint32_t n) : Benchmark()
 {
     m_M = m;
     m_N = n;
     m_runTime = runTime;
 }
 
-void mini_jit::benchmarks::Relu_trans_primitive_bench::run()
+void mini_jit::benchmarks::ReLUTransPrimitiveBench::run()
 {
     m_A = new float[m_M * m_N];
     m_B = new float[m_M * m_N];

@@ -6,7 +6,7 @@
 #include "Kernel.h"
 #include "Unary.h"
 
-mini_jit::benchmarks::Zero_eor_primitive_bench::Zero_eor_primitive_bench(double runTime,
+mini_jit::benchmarks::ZeroEorPrimitiveBench::ZeroEorPrimitiveBench(double runTime,
                                                                          uint32_t m,
                                                                          uint32_t n) : Benchmark()
 {
@@ -15,7 +15,7 @@ mini_jit::benchmarks::Zero_eor_primitive_bench::Zero_eor_primitive_bench(double 
     m_runTime = runTime;
 }
 
-void mini_jit::benchmarks::Zero_eor_primitive_bench::run()
+void mini_jit::benchmarks::ZeroEorPrimitiveBench::run()
 {
     m_A = new float[m_M * m_N];
     m_B = new float[m_M * m_N];

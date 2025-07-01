@@ -1,5 +1,5 @@
-#ifndef IDENTITY_TRANS_PRIMITIVE_BENCH_H
-#define IDENTITY_TRANS_PRIMITIVE_BENCH_H
+#ifndef RECIPROCAL_PRIMITIVE_BENCH_H
+#define RECIPROCAL_PRIMITIVE_BENCH_H
 #include "benchmarks/Benchmark.h"
 #include <cstdint>
 
@@ -7,20 +7,20 @@ namespace mini_jit
 {
     namespace benchmarks
     {
-        class IdentityTransPrimitiveBench : public Benchmark
+        class ReciprocalPrimitiveBench : public Benchmark
         {
         public:
             /**
-             * @brief Constructor for the benchmark for identity transposition primitive.
+             * @brief Constructor for the benchmark for the reciprocal primitive.
              * @param runTime The time to run the benchmark in seconds.
              * @param m number of rows in A and B.
              * @param n number of columns in A and B.
              */
-            IdentityTransPrimitiveBench(double runTime,
-                                        uint32_t m,
-                                        uint32_t n);
+            ReciprocalPrimitiveBench(double runTime,
+                                      uint32_t m,
+                                      uint32_t n);
             //! Destructor
-            ~IdentityTransPrimitiveBench() override = default;
+            ~ReciprocalPrimitiveBench() override = default;
             //! Runs the benchmark.
             void run() override;
 
@@ -35,4 +35,4 @@ namespace mini_jit
     }
 }
 
-#endif // IDENTITY_TRANS_PRIMITIVE_BENCH_H
+#endif // RECIPROCAL_PRIMITIVE_BENCH_H
