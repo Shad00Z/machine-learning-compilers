@@ -60,6 +60,21 @@ public:
                               int64_t ld_a,
                               int64_t ld_b);
 
+    /*
+     * Kernel type.
+     * The kernel is a function that takes the following parameters:
+     * - a:    Pointer to column-major matrix A, nullptr if zero kernel.
+     * - b:    Pointer to matrix B.
+     * - tab:  Pointer to lookup table.
+     * - ld_a: Leading dimension of A.
+     * - ld_b: Leading dimension of B.
+     */
+    using kernel_t_sig = void (*)(void const *a,
+                                  void *b,
+                                  void *tab,
+                                  int64_t ld_a,
+                                  int64_t ld_b);
+
     /**
      * @brief Get the generated kernel: B := op(A).
      * @return pointer to the generated kernel.
