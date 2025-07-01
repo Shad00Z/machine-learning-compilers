@@ -6,10 +6,10 @@
 #include "Brgemm.h"
 #include "kernels/matmul/matmul_m_n_k.h"
 
-mini_jit::benchmarks::Matmul_m_n_k_bench::Matmul_m_n_k_bench(double run_time,
-                                                             int m,
-                                                             int n,
-                                                             int k) : Benchmark()
+mini_jit::benchmarks::MatmulMNKBench::MatmulMNKBench(double run_time,
+                                                     int m,
+                                                     int n,
+                                                     int k) : Benchmark()
 {
     m_M = m;
     m_N = n;
@@ -17,7 +17,7 @@ mini_jit::benchmarks::Matmul_m_n_k_bench::Matmul_m_n_k_bench(double run_time,
     m_run_time = run_time;
 }
 
-void mini_jit::benchmarks::Matmul_m_n_k_bench::run()
+void mini_jit::benchmarks::MatmulMNKBench::run()
 {
     m_A = new float[m_M * m_K];
     m_B = new float[m_K * m_N];

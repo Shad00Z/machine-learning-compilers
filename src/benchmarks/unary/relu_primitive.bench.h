@@ -7,7 +7,7 @@ namespace mini_jit
 {
     namespace benchmarks
     {
-        class Relu_primitive_bench : public Benchmark
+        class ReLUPrimitiveBench : public Benchmark
         {
         public:
             /**
@@ -16,11 +16,11 @@ namespace mini_jit
              * @param m number of rows in A and B.
              * @param n number of columns in A and B.
              */
-            Relu_primitive_bench(double runTime,
-                                 uint32_t m,
-                                 uint32_t n);
+            ReLUPrimitiveBench(double runTime,
+                               uint32_t m,
+                               uint32_t n);
             //! Destructor
-            ~Relu_primitive_bench() override = default;
+            ~ReLUPrimitiveBench() override = default;
             //! Runs the benchmark.
             void run() override;
 

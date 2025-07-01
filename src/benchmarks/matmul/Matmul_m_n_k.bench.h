@@ -6,7 +6,7 @@ namespace mini_jit
 {
     namespace benchmarks
     {
-        class Matmul_m_n_k_bench : public Benchmark
+        class MatmulMNKBench : public Benchmark
         {
         public:
             /**
@@ -16,12 +16,12 @@ namespace mini_jit
              * @param n number of columns in B and C.
              * @param k number of columns in A and rows in B.
              */
-            Matmul_m_n_k_bench(double run_time,
-                               int m,
-                               int n,
-                               int k);
+            MatmulMNKBench(double run_time,
+                           int m,
+                           int n,
+                           int k);
             //! Destructor
-            ~Matmul_m_n_k_bench() override = default;
+            ~MatmulMNKBench() override = default;
             //! Runs the benchmark.
             void run() override;
 

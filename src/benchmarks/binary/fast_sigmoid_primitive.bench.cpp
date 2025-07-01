@@ -1,24 +1,24 @@
 #include <random>
 #include <chrono>
-#include "identity_trans_primitive.bench.h"
+#include "fast_sigmoid_primitive.bench.h"
 #include "benchmarks/Benchmark.h"
-#include "kernels/unary/identity_trans_primitive.h"
+#include "kernels/unary/fast_sigmoid_primitive.h"
 #include "Kernel.h"
 #include "Unary.h"
 
-mini_jit::benchmarks::IdentityTransPrimitiveBench::IdentityTransPrimitiveBench(double runTime,
-                                                                               uint32_t m,
-                                                                               uint32_t n) : Benchmark()
+mini_jit::benchmarks::FastSigmoidPrimitiveBench::FastSigmoidPrimitiveBench(double runTime,
+                                                                           uint32_t m,
+                                                                           uint32_t n) : Benchmark()
 {
     m_M = m;
     m_N = n;
     m_runTime = runTime;
 }
 
-void mini_jit::benchmarks::IdentityTransPrimitiveBench::run()
+void mini_jit::benchmarks::FastSigmoidPrimitiveBench::run()
 {
     m_A = new float[m_M * m_N];
-    m_B = new float[m_N * m_M];
+    m_B = new float[m_M * m_N];
 
     // Initialize matrices A and B with random values
     std::random_device rd;
@@ -33,7 +33,7 @@ void mini_jit::benchmarks::IdentityTransPrimitiveBench::run()
 
     // Generate and get the kernel function
     mini_jit::Kernel l_kernel;
-    mini_jit::kernels::unary::identity_trans(l_kernel, m_M, m_N);
+    mini_jit::kernels::unary::fast_sigmoid(l_kernel, m_M, m_N);
     mini_jit::Unary::kernel_t l_kernel_t = reinterpret_cast<mini_jit::Unary::kernel_t>(const_cast<void *>(l_kernel.get_kernel()));
 
     // RUN
@@ -43,7 +43,7 @@ void mini_jit::benchmarks::IdentityTransPrimitiveBench::run()
     double l_runTimeMs = m_runTime * 1e6;
     do
     {
-        l_kernel_t(m_A, m_B, m_M, m_N);
+        l_kernel_t(m_A, m_B, m_M, m_M);
         ++l_num_reps;
         auto l_now = std::chrono::high_resolution_clock::now();
         l_elapsed = std::chrono::duration_cast<std::chrono::microseconds>(l_now - l_start_time).count();

@@ -9,7 +9,7 @@ namespace mini_jit
         /**
          * @brief Benchmark for matrix multiplication using BRGEMM.
          */
-        class Matmul_br_m_n_k_bench : public Benchmark
+        class MatmulBrMNKBench : public Benchmark
         {
         public:
             /**
@@ -20,13 +20,13 @@ namespace mini_jit
              * @param k number of columns in A and rows in B.
              * @param br_size The size of the batch-reduce.
              */
-            Matmul_br_m_n_k_bench(double run_time,
-                                  int m,
-                                  int n,
-                                  int k,
-                                  int br_size);
+            MatmulBrMNKBench(double run_time,
+                             int m,
+                             int n,
+                             int k,
+                             int br_size);
             //! Destructor
-            ~Matmul_br_m_n_k_bench() override = default;
+            ~MatmulBrMNKBench() override = default;
             //! Runs the benchmark.
             void run() override;
 

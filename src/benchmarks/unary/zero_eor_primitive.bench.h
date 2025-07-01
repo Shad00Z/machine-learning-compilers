@@ -7,7 +7,7 @@ namespace mini_jit
 {
     namespace benchmarks
     {
-        class Zero_eor_primitive_bench : public Benchmark
+        class ZeroEorPrimitiveBench : public Benchmark
         {
         public:
             /**
@@ -16,11 +16,11 @@ namespace mini_jit
              * @param m number of rows in A and B.
              * @param n number of columns in A and B.
              */
-            Zero_eor_primitive_bench(double runTime,
-                                     uint32_t m,
-                                     uint32_t n);
+            ZeroEorPrimitiveBench(double runTime,
+                                  uint32_t m,
+                                  uint32_t n);
             //! Destructor
-            ~Zero_eor_primitive_bench() override = default;
+            ~ZeroEorPrimitiveBench() override = default;
             //! Runs the benchmark.
             void run() override;
 
