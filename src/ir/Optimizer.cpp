@@ -645,7 +645,7 @@ void mini_jit::ir::Optimizer::fuseDimensions(std::vector<mini_jit::ir::Dimension
                     l_dim_1.stride_out == l_dim_0.size * l_dim_0.stride_out)
                 {
                     // fuse the two dimensions and keep the smaller stride
-                    l_dim_0.size += l_dim_1.size;
+                    l_dim_0.size *= l_dim_1.size;
                     l_dim_0.stride_in0 = std::min(l_dim_0.stride_in0, l_dim_1.stride_in0);
                     l_dim_0.stride_in1 = std::min(l_dim_0.stride_in1, l_dim_1.stride_in1);
                     l_dim_0.stride_out = std::min(l_dim_0.stride_out, l_dim_1.stride_out);
