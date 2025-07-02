@@ -73,7 +73,9 @@ void brgemm_benchmark()
     std::cout << "BRGEMM benchmark completed." << std::endl;
 }
 
-void print_bandwidth(mini_jit::Benchmark &bench, std::ofstream &bm_file, std::string name)
+void print_bandwidth(mini_jit::Benchmark &bench,
+                     std::ofstream &bm_file,
+                     std::string name)
 {
     std::cout << "Running " << name << " benchmark" << std::endl;
     bm_file << "Running " << name << " benchmark" << std::endl;
@@ -87,7 +89,9 @@ void print_bandwidth(mini_jit::Benchmark &bench, std::ofstream &bm_file, std::st
     bm_file << "--------------------------------------------------" << std::endl;
 }
 
-void print_throughput(mini_jit::Benchmark &bench, std::ofstream &bm_file, std::string name)
+void print_throughput(mini_jit::Benchmark &bench,
+                      std::ofstream &bm_file,
+                      std::string name)
 {
     std::cout << "Running " << name << " benchmark" << std::endl;
     bm_file << "Running " << name << " benchmark" << std::endl;
@@ -100,7 +104,10 @@ void print_throughput(mini_jit::Benchmark &bench, std::ofstream &bm_file, std::s
     bm_file << "--------------------------------------------------" << std::endl;
 }
 
-void optimized_tensor_benchmark(std::ofstream &top_opt_bm, int64_t thread_target, int64_t max_kernel_size)
+void optimized_tensor_benchmark(std::ofstream &top_opt_bm,
+                                int64_t thread_target,
+                                int64_t max_kernel_size,
+                                int64_t min_kernel_size)
 {
     const double RUN_TIME = 3.0;
 
@@ -118,7 +125,8 @@ void optimized_tensor_benchmark(std::ofstream &top_opt_bm, int64_t thread_target
                                       l_strides_in1,
                                       l_strides_out,
                                       thread_target,
-                                      max_kernel_size);
+                                      max_kernel_size,
+                                      min_kernel_size);
 
     int l_prim_count = 0;
     for (const auto &exec : l_execs)
@@ -152,7 +160,10 @@ void optimized_tensor_benchmark(std::ofstream &top_opt_bm, int64_t thread_target
     top_opt_bm << "--------------------------------------------------" << std::endl;
 }
 
-void optimized_tensor_benchmark_einsum(std::ofstream &top_opt_bm, int64_t thread_target, int64_t max_kernel_size)
+void optimized_tensor_benchmark_einsum(std::ofstream &top_opt_bm,
+                                       int64_t thread_target,
+                                       int64_t max_kernel_size,
+                                       int64_t min_kernel_size)
 {
     const double RUN_TIME = 3.0;
 
@@ -189,6 +200,7 @@ void optimized_tensor_benchmark_einsum(std::ofstream &top_opt_bm, int64_t thread
                                                        dtype,
                                                        thread_target,
                                                        max_kernel_size,
+                                                       min_kernel_size,
                                                        tensor_inputs);
 
     delete[] tensor_A;
@@ -205,7 +217,11 @@ void optimized_tensor_benchmark_einsum(std::ofstream &top_opt_bm, int64_t thread
     top_opt_bm << "--------------------------------------------------" << std::endl;
 }
 
-void einsum_benchmark_1(std::ofstream &einsum_bm, double RUN_TIME, int64_t thread_target, int64_t max_kernel_size)
+void einsum_benchmark_1(std::ofstream &einsum_bm,
+                        double RUN_TIME,
+                        int64_t thread_target,
+                        int64_t max_kernel_size,
+                        int64_t min_kernel_size)
 {
     std::string expression = "[[8,4],[7,3,8]->[7,3,4]],[[[2,6,7],[1,5,6]->[1,2,5,7]],[0,5]->[0,1,2,7]]->[0,1,2,3,4]";
     std::vector<int64_t> dimension_sizes = {100, 72, 128, 128, 3, 71, 305, 32, 3};
@@ -262,6 +278,7 @@ void einsum_benchmark_1(std::ofstream &einsum_bm, double RUN_TIME, int64_t threa
                                                        dtype,
                                                        thread_target,
                                                        max_kernel_size,
+                                                       min_kernel_size,
                                                        tensor_inputs);
 
     einsum_bm << "Running EinsumTree benchmark #1" << std::endl;
@@ -281,7 +298,11 @@ void einsum_benchmark_1(std::ofstream &einsum_bm, double RUN_TIME, int64_t threa
     delete[] tensor_E;
 }
 
-void einsum_benchmark_2(std::ofstream &einsum_bm, double RUN_TIME, int64_t thread_target, int64_t max_kernel_size)
+void einsum_benchmark_2(std::ofstream &einsum_bm,
+                        double RUN_TIME,
+                        int64_t thread_target,
+                        int64_t max_kernel_size,
+                        int64_t min_kernel_size)
 {
     std::string expression = "[[[[3,6,8,9]->[8,6,9,3]],[[2,5,7,9]->[7,5,2,9]]->[7,8,5,6,2,3]],[0,4,5,6]->[0,4,7,8,2,3]],[1,4,7,8]->[0,1,2,3]";
     std::vector<int64_t> dimension_sizes = {60, 60, 20, 20, 8, 8, 8, 8, 8, 8};
@@ -332,6 +353,7 @@ void einsum_benchmark_2(std::ofstream &einsum_bm, double RUN_TIME, int64_t threa
                                                        dtype,
                                                        thread_target,
                                                        max_kernel_size,
+                                                       min_kernel_size,
                                                        tensor_inputs);
 
     einsum_bm << "Running EinsumTree benchmark #2" << std::endl;
@@ -350,7 +372,11 @@ void einsum_benchmark_2(std::ofstream &einsum_bm, double RUN_TIME, int64_t threa
     delete[] tensor_D;
 }
 
-void einsum_benchmark_optimization_example_1(std::ofstream &einsum_bm, double RUN_TIME, int64_t thread_target, int64_t max_kernel_size)
+void einsum_benchmark_optimization_example_1(std::ofstream &einsum_bm,
+                                             double RUN_TIME,
+                                             int64_t thread_target,
+                                             int64_t max_kernel_size,
+                                             int64_t min_kernel_size)
 {
     std::string expression = "[[7,3,8],[8,4]->[7,3,4]],[[0,5],[[5,1,6],[6,2,7]->[5,1,2,7]]->[0,1,2,7]]->[0,1,2,3,4]";
     std::vector<int64_t> dimension_sizes = {100, 72, 128, 128, 3, 71, 305, 32, 3};
@@ -409,6 +435,7 @@ void einsum_benchmark_optimization_example_1(std::ofstream &einsum_bm, double RU
                                                        dtype,
                                                        thread_target,
                                                        max_kernel_size,
+                                                       min_kernel_size,
                                                        tensor_inputs);
 
     einsum_bm << "Running EinsumTree benchmark - Optimization Example #1" << std::endl;
@@ -428,7 +455,11 @@ void einsum_benchmark_optimization_example_1(std::ofstream &einsum_bm, double RU
     delete[] tensor_E;
 }
 
-void einsum_benchmark_optimization_example_2(std::ofstream &einsum_bm, double RUN_TIME, int64_t thread_target, int64_t max_kernel_size)
+void einsum_benchmark_optimization_example_2(std::ofstream &einsum_bm,
+                                             double RUN_TIME,
+                                             int64_t thread_target,
+                                             int64_t max_kernel_size,
+                                             int64_t min_kernel_size)
 {
     std::string expression = "[1,4,7,8],[[0,4,5,6],[[2,5,7,9],[3,6,8,9]->[2,5,7,3,6,8]]->[0,4,2,7,3,8]]->[0,1,2,3]";
     std::vector<int64_t> dimension_sizes = {60, 60, 20, 20, 8, 8, 8, 8, 8, 8};
@@ -479,6 +510,7 @@ void einsum_benchmark_optimization_example_2(std::ofstream &einsum_bm, double RU
                                                        dtype,
                                                        thread_target,
                                                        max_kernel_size,
+                                                       min_kernel_size,
                                                        tensor_inputs);
 
     einsum_bm << "Running EinsumTree benchmark - Optimization Example #2" << std::endl;
@@ -497,7 +529,10 @@ void einsum_benchmark_optimization_example_2(std::ofstream &einsum_bm, double RU
     delete[] tensor_D;
 }
 
-void einsum_benchmark_optimization_example_3(std::ofstream &einsum_bm, double RUN_TIME, int64_t thread_target, int64_t max_kernel_size)
+void einsum_benchmark_optimization_example_3(std::ofstream &einsum_bm,
+                                             double RUN_TIME, int64_t thread_target,
+                                             int64_t max_kernel_size,
+                                             int64_t min_kernel_size)
 {
     std::string expression = "[[2,7,3],[3,8,4]->[2,7,8,4]],[[4,9,0],[[0,5,1],[1,6,2]->[0,5,6,2]]->[4,9,5,6,2]]->[5,6,7,8,9]";
     std::vector<int64_t> dimension_sizes = {40, 40, 40, 40, 40, 25, 25, 25, 25, 25};
@@ -556,6 +591,7 @@ void einsum_benchmark_optimization_example_3(std::ofstream &einsum_bm, double RU
                                                        dtype,
                                                        thread_target,
                                                        max_kernel_size,
+                                                       min_kernel_size,
                                                        tensor_inputs);
 
     einsum_bm << "Running EinsumTree benchmark - Optimization Example #3" << std::endl;
@@ -873,6 +909,7 @@ int main(int argc, char *argv[])
         std::vector<int64_t> l_strides_in1_1 = {0, 0, 40000, 1600, 25, 1};
         std::vector<int64_t> l_strides_out_1 = {25, 1, 40000, 1600, 0, 0};
 
+        // min_kernel_size was implemented after the benchmarks were run, so we set it to 1
         mini_jit::ir::Optimizer::optimize(l_dims_1,
                                           l_execs_1,
                                           l_sizes_1,
@@ -880,7 +917,8 @@ int main(int argc, char *argv[])
                                           l_strides_in1_1,
                                           l_strides_out_1,
                                           INT_MAX,
-                                          512);
+                                          512,
+                                          1);
 
         int l_prim_count_1 = 0;
         for (const auto &exec : l_execs_1)
@@ -910,26 +948,26 @@ int main(int argc, char *argv[])
         top_bm << "#####################################################" << std::endl;
         for (int64_t max_kernel_size : {1024, 512, 256, 125, 64, 32, 16})
         {
-            optimized_tensor_benchmark(top_bm, 64, max_kernel_size);
-            optimized_tensor_benchmark(top_bm, 256, max_kernel_size);
-            optimized_tensor_benchmark_einsum(top_bm, 64, max_kernel_size);
-            optimized_tensor_benchmark_einsum(top_bm, 256, max_kernel_size);
+            optimized_tensor_benchmark(top_bm, 64, max_kernel_size, 1);
+            optimized_tensor_benchmark(top_bm, 256, max_kernel_size, 1);
+            optimized_tensor_benchmark_einsum(top_bm, 64, max_kernel_size, 1);
+            optimized_tensor_benchmark_einsum(top_bm, 256, max_kernel_size, 1);
         }
     }
 
     if (has_einsum_benchmark)
     {
         std::ofstream einsum_bm("benchmarks/einsum_benchmark.txt");
-        einsum_benchmark_1(einsum_bm, 3.0, 256, 64);
-        einsum_benchmark_2(einsum_bm, 3.0, 256, 64);
+        einsum_benchmark_1(einsum_bm, 3.0, 256, 64, 1);
+        einsum_benchmark_2(einsum_bm, 3.0, 256, 64, 1);
     }
 
     if (has_opt_einsum_benchmark)
     {
         std::ofstream einsum_bm("benchmarks/opt_einsum_benchmark.txt");
-        einsum_benchmark_optimization_example_1(einsum_bm, 3.0, 256, 64);
-        einsum_benchmark_optimization_example_2(einsum_bm, 3.0, 256, 64);
-        einsum_benchmark_optimization_example_3(einsum_bm, 3.0, 256, 64);
+        einsum_benchmark_optimization_example_1(einsum_bm, 3.0, 256, 64, 1);
+        einsum_benchmark_optimization_example_2(einsum_bm, 3.0, 256, 64, 1);
+        einsum_benchmark_optimization_example_3(einsum_bm, 3.0, 256, 64, 1);
     }
 
     if (has_reciprocal)

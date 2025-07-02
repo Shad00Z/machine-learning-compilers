@@ -114,10 +114,12 @@ public:
      * @param root_node The root node of the einsum tree.
      * @param thread_target The target number of threads for parallel execution.
      * @param max_kernel_size The maximum size of the kernel to be used.
+     * @param min_kernel_size The minimum size of the kernel to be used.
      */
     static void optimize_einsum_nodes(EinsumNode *root_node,
                                       int64_t thread_target,
-                                      int64_t max_kernel_size);
+                                      int64_t max_kernel_size,
+                                      int64_t min_kernel_size);
 
     /**
      * @brief Lower the given einsum tree to executable tensor operations.

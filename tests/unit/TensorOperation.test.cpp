@@ -958,7 +958,8 @@ TEST_CASE("Reference test for ZERO + IDENTITY + RELU optimized tensor operation 
                                       strides_in1,
                                       strides_out,
                                       256,
-                                      4);
+                                      4,
+                                      1);
 
     mini_jit::TensorOperation l_top;
     l_top.setup(mini_jit::dtype_t::fp32,
@@ -1094,7 +1095,8 @@ void binaryTensorOperationTest(const mini_jit::ptype_t main_type)
                                       strides_in1,
                                       strides_out,
                                       256,
-                                      64);
+                                      64,
+                                      1);
 
     mini_jit::TensorOperation l_top;
     l_top.setup(mini_jit::dtype_t::fp32,

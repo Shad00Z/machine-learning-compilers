@@ -18,6 +18,7 @@ namespace mini_jit
                             mini_jit::dtype_t dtype,
                             int64_t thread_target,
                             int64_t max_kernel_size,
+                            int64_t min_kernel_size,
                             std::map<std::string, void const *> &tensor_inputs);
             //! Destructor
             ~EinsumTreeBench() override

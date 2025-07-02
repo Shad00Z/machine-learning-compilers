@@ -11,6 +11,7 @@ mini_jit::benchmarks::EinsumTreeBench::EinsumTreeBench(double run_time,
                                                        mini_jit::dtype_t dtype,
                                                        int64_t thread_target,
                                                        int64_t max_kernel_size,
+                                                       int64_t min_kernel_size,
                                                        std::map<std::string, void const *> &tensor_inputs) : Benchmark()
 {
     m_run_time = run_time;
@@ -21,7 +22,8 @@ mini_jit::benchmarks::EinsumTreeBench::EinsumTreeBench(double run_time,
 
     mini_jit::einsum::EinsumTree::optimize_einsum_nodes(m_root_node, 
                                                         thread_target, 
-                                                        max_kernel_size);
+                                                        max_kernel_size,
+                                                        min_kernel_size);
     
     mini_jit::einsum::EinsumTree::lower_einsum_nodes_to_tensor_operations(m_root_node, 
                                                                           dimension_sizes, 

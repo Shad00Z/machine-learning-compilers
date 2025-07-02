@@ -32,10 +32,12 @@ public:
      * @param dimensions A vector of dimensions to be optimized.
      * @param thread_target The target number of threads for optimization.
      * @param max_kernel_size The maximum size of a kernel dimension
+     * @param min_kernel_size The minimum size of a kernel dimension
      */
     static void optimize(std::vector<Dimension> &dimensions,
                          int64_t thread_target,
-                         int64_t max_kernel_size);
+                         int64_t max_kernel_size,
+                         int64_t min_kernel_size);
 
     /**
      * @brief Optimize the dimensions of a tensor operation.
@@ -48,6 +50,7 @@ public:
      * @param strides_out A vector of strides for the output tensor.
      * @param thread_target The target number of threads for optimization.
      * @param max_kernel_size The maximum size of a kernel dimension
+     * @param min_kernel_size The minimum size of a kernel dimension
      */
     static void optimize(std::vector<dim_t> &dim_types,
                          std::vector<exec_t> &exec_types,
@@ -56,7 +59,8 @@ public:
                          std::vector<int64_t> &strides_in1,
                          std::vector<int64_t> &strides_out,
                          int64_t thread_target,
-                         int64_t max_kernel_size);
+                         int64_t max_kernel_size,
+                         int64_t min_kernel_size);
 
     /**
      * @brief Identify primitive dimensions in the tensor operation and adjust their order.
@@ -73,6 +77,15 @@ public:
      */
     static void splitDimensions(std::vector<Dimension> &dimensions,
                                 int64_t max_kernel_size);
+
+    /**
+     * @brief Fuse small dimensions into larger dimensions.
+     * 
+     * @param dimensions A vector of dimensions to be processed.
+     * @param min_kernel_size The minimum size for a kernel dimension to be considered for fusion.
+     */
+    static void fuseDimensions(std::vector<Dimension> &dimensions,
+                               int64_t min_kernel_size);
 
     /**
      * @brief Turn sequential dimensions into shared dimensions.

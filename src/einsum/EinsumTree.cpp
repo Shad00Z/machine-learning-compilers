@@ -276,7 +276,8 @@ void mini_jit::einsum::EinsumTree::initialize_einsum_nodes(EinsumNode *root_node
 
 void mini_jit::einsum::EinsumTree::optimize_einsum_nodes(EinsumNode *root_node,
                                                          int64_t thread_target,
-                                                         int64_t max_kernel_size)
+                                                         int64_t max_kernel_size,
+                                                         int64_t min_kernel_size)
 {
     if (root_node == nullptr)
     {
@@ -290,8 +291,8 @@ void mini_jit::einsum::EinsumTree::optimize_einsum_nodes(EinsumNode *root_node,
     }
 
     // optimize children
-    optimize_einsum_nodes(root_node->m_left_child, thread_target, max_kernel_size);
-    optimize_einsum_nodes(root_node->m_right_child, thread_target, max_kernel_size);
+    optimize_einsum_nodes(root_node->m_left_child, thread_target, max_kernel_size, min_kernel_size);
+    optimize_einsum_nodes(root_node->m_right_child, thread_target, max_kernel_size, min_kernel_size);
 
     // optimize current node
     mini_jit::ir::Optimizer::optimize(root_node->m_dim_types,
@@ -301,7 +302,8 @@ void mini_jit::einsum::EinsumTree::optimize_einsum_nodes(EinsumNode *root_node,
                                       root_node->m_strides_in1,
                                       root_node->m_strides_out,
                                       thread_target,
-                                      max_kernel_size);
+                                      max_kernel_size,
+                                      min_kernel_size);
 }
 
 void mini_jit::einsum::EinsumTree::lower_einsum_nodes_to_tensor_operations(EinsumNode *root_node,

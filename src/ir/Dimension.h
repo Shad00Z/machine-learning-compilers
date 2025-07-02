@@ -17,7 +17,7 @@ namespace mini_jit
         struct Dimension
         {
             //! Type of the dimension (M, N, K)
-            dim_t type = dim_t::undefined;
+            dim_t type = dim_t::m;
             //! Execution type (Prim, Seq, Shared, ...)
             exec_t exec_type = exec_t::undefined;
             //! Dimension size

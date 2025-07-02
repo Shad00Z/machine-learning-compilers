@@ -75,7 +75,6 @@ namespace mini_jit
         m = 1,
         n = 2,
         k = 3,
-        undefined = 99
     };
 
     inline const std::string to_string(dim_t d) {
@@ -84,7 +83,6 @@ namespace mini_jit
             case dim_t::m: return "m";
             case dim_t::n: return "n";
             case dim_t::k: return "k";
-            case dim_t::undefined: return "undefined";
             default: return "unknown";
         }
     }
