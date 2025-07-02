@@ -963,6 +963,15 @@ int main(int argc, char *argv[])
         print_bandwidth(bench_sigmoid_512_512, sigmoid_bm, "FastSigmoidPrimitiveBench 512x512");
         print_bandwidth(bench_sigmoid_2048_2048, sigmoid_bm, "FastSigmoidPrimitiveBench 2048x2048");
 
+        mini_jit::benchmarks::SigmoidInterpolationPrimitiveBench bench_sigmoid_interpolation_50_50(RUN_TIME, 50, 50);
+        mini_jit::benchmarks::SigmoidInterpolationPrimitiveBench bench_sigmoid_interpolation_64_64(RUN_TIME, 64, 64);
+        mini_jit::benchmarks::SigmoidInterpolationPrimitiveBench bench_sigmoid_interpolation_512_512(RUN_TIME, 512, 512);
+        mini_jit::benchmarks::SigmoidInterpolationPrimitiveBench bench_sigmoid_interpolation_2048_2048(RUN_TIME, 2048, 2048);
+        print_bandwidth(bench_sigmoid_interpolation_50_50, sigmoid_bm, "SigmoidInterpolationPrimitiveBench 50x50");
+        print_bandwidth(bench_sigmoid_interpolation_64_64, sigmoid_bm, "SigmoidInterpolationPrimitiveBench 64x64");
+        print_bandwidth(bench_sigmoid_interpolation_512_512, sigmoid_bm, "SigmoidInterpolationPrimitiveBench 512x512");
+        print_bandwidth(bench_sigmoid_interpolation_2048_2048, sigmoid_bm, "SigmoidInterpolationPrimitiveBench 2048x2048");
+
         sigmoid_bm.close();
     }
 

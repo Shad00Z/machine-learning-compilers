@@ -87,6 +87,11 @@ void mini_jit::kernels::unary::sigmoid_interpolation(mini_jit::Kernel &kernel,
         // Save callee-saved registers (save in pairs for 16-byte alignment)
         stpPre(x21, x22, sp, -16),
         stpPre(x23, x24, sp, -16),
+
+        stpPre(v8, v9, sp, -16, d),
+        stpPre(v10, v11, sp, -16, d),
+        stpPre(v12, v13, sp, -16, d),
+        stpPre(v14, v15, sp, -16, d),
         
         // Compute stride (convert to bytes)
         lsl(x3, x3, 2),  // x3 = ldA * 4 (stride in bytes)
@@ -452,6 +457,12 @@ void mini_jit::kernels::unary::sigmoid_interpolation(mini_jit::Kernel &kernel,
     kernel.add_instr(cbnz(x7, -l_nLoopInstrCount * 4));
 
     kernel.add_instr({
+        // Restore callee-saved registers
+        ldpPost(v14, v15, sp, 16, d),
+        ldpPost(v12, v13, sp, 16, d),
+        ldpPost(v10, v11, sp, 16, d),
+        ldpPost(v8, v9, sp, 16, d),
+
         // Restore callee-saved registers (in reverse order)
         ldpPost(x23, x24, sp, 16),
         ldpPost(x21, x22, sp, 16),

@@ -10,6 +10,7 @@
 #include "unary/reciprocal_primitive.bench.h"
 #include "unary/relu_primitive.bench.h"
 #include "unary/relu_trans_primitive.bench.h"
+#include "unary/sigmoid_interpolation_primitive.bench.h"
 #include "unary/square_primitive.bench.h"
 #include "unary/square_trans_primitive.bench.h"
 #include "unary/zero_eor_primitive.bench.h"

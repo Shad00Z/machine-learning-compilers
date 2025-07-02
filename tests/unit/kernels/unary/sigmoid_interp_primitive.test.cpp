@@ -62,7 +62,7 @@ void test_sigmoid_interp_primitive(uint32_t M,
     {
         float l_aValue = dist(gen);
         A[i] = l_aValue;
-        std::cout << A[i] << std::endl;
+        // std::cout << A[i] << std::endl;
         A_expected[i] = l_aValue;
 
         B[i] = dist(gen);
@@ -77,17 +77,17 @@ void test_sigmoid_interp_primitive(uint32_t M,
     mini_jit::Unary::kernel_t_sig l_kernel_t = reinterpret_cast<mini_jit::Unary::kernel_t_sig>(const_cast<void *>(l_kernel.get_kernel()));
     l_kernel_t(A, B, sig_table, M, M);
 
-    std::cout << "\nMatrix B" << std::endl;
-    for (u_int32_t i = 0; i < M * N; i++)
-    {
-        std::cout << "B[" << i << "] = " << B[i] << std::endl;
-    }
+    // std::cout << "\nMatrix B" << std::endl;
+    // for (u_int32_t i = 0; i < M * N; i++)
+    // {
+    //     std::cout << "B[" << i << "] = " << B[i] << std::endl;
+    // }
 
-    std::cout << "\nMatrix B_expected" << std::endl;
-    for (u_int32_t i = 0; i < M * N; i++)
-    {
-        std::cout << "B[" << i << "] = " << B_true[i] << std::endl;
-    }
+    // std::cout << "\nMatrix B_expected" << std::endl;
+    // for (u_int32_t i = 0; i < M * N; i++)
+    // {
+    //     std::cout << "B[" << i << "] = " << B_true[i] << std::endl;
+    // }
 
     // for (u_int32_t i = 0; i < M * N; i++)
     // {
@@ -96,27 +96,27 @@ void test_sigmoid_interp_primitive(uint32_t M,
     //     REQUIRE(B[i] == Approx(B_expected[i]).margin(0.01f));
     // }
 
-    // Print comparison results
-    std::cout << "\n=== Sigmoid Comparison Results ===" << std::endl;
-    std::cout << std::fixed << std::setprecision(6);
-    std::cout << "Input\t\tTrue Sigmoid\tKernel Result\tDifference\tApprox (Taylor)" << std::endl;
-    std::cout << "-----\t\t------------\t-------------\t----------\t--------------" << std::endl;
+    // // Print comparison results
+    // std::cout << "\n=== Sigmoid Comparison Results ===" << std::endl;
+    // std::cout << std::fixed << std::setprecision(6);
+    // std::cout << "Input\t\tTrue Sigmoid\tKernel Result\tDifference\tApprox (Taylor)" << std::endl;
+    // std::cout << "-----\t\t------------\t-------------\t----------\t--------------" << std::endl;
     
     for (u_int32_t i = 0; i < M * N; i++)
     {
         float difference = std::abs(B_true[i] - B[i]);
-        std::cout << A[i] << "\t\t" 
-                  << B_true[i] << "\t\t" 
-                  << B[i] << "\t\t" 
-                  << difference << "\t\t"
-                  << B_expected[i] << std::endl;
+        // std::cout << A[i] << "\t\t" 
+        //           << B_true[i] << "\t\t" 
+        //           << B[i] << "\t\t" 
+        //           << difference << "\t\t"
+        //           << B_expected[i] << std::endl;
         
         // Check accuracy - use a reasonable tolerance for interpolation
         REQUIRE(A[i] == Approx(A_expected[i]).margin(FLOAT_ERROR_MARGIN));
         REQUIRE(B[i] == Approx(B_true[i]).margin(0.01f)); // Allow 10% error for interpolation
     }
 
-    std::cout << "===================================\n" << std::endl;
+    // std::cout << "===================================\n" << std::endl;
 
     delete[] A;
     delete[] B;
@@ -139,10 +139,10 @@ TEST_CASE("Tests the sigmoid interpolation primitive with different M%4=1 and N"
     test_sigmoid_interp_primitive(M, N);
 }
 
-// TEST_CASE("3 Tests the sigmoid interpolation primitive with different M and N", "[sigmoid_primitive][parameterized]")
+// TEST_CASE("Tests the sigmoid interpolation primitive with M=50 and N=50", "[sigmoid_primitive][parameterized]")
 // {
-//     uint32_t M = GENERATE(4);
-//     uint32_t N = GENERATE(1);
+//     uint32_t M = GENERATE(1024);
+//     uint32_t N = GENERATE(1024);
 //     test_sigmoid_interp_primitive(M, N);
 // }
 
