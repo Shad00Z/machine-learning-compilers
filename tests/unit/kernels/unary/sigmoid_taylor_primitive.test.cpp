@@ -4,12 +4,12 @@
 #include <iomanip>
 #include <cmath>
 
-#include "sigmoid_primitive.h"
+#include "sigmoid_taylor_primitive.h"
 #include "Unary.h"
 #include "constants.h"
 
-void test_sigmoid_primitive(uint32_t M,
-                            uint32_t N)
+void test_sigmoid_taylor_primitive(uint32_t M,
+                                   uint32_t N)
 {
     float* A = new float[M * N];
     float* B = new float[M * N];
@@ -39,9 +39,9 @@ void test_sigmoid_primitive(uint32_t M,
     }
 
     mini_jit::Kernel l_kernel;
-    mini_jit::kernels::unary::sigmoid(l_kernel, M, N);
-    mini_jit::Unary::kernel_t l_kernel_t = reinterpret_cast<mini_jit::Unary::kernel_t>(const_cast<void *>(l_kernel.get_kernel()));
-    l_kernel_t(A, B, M, M);
+    mini_jit::kernels::unary::sigmoid_taylor(l_kernel, M, N);
+    mini_jit::Unary::kernel_t_sig l_kernel_t = reinterpret_cast<mini_jit::Unary::kernel_t_sig>(const_cast<void *>(l_kernel.get_kernel()));
+    l_kernel_t(A, B, const_cast<void*>(static_cast<const void*>(sig_taylor_values)), M, M);
 
     for (u_int32_t i = 0; i < M * N; i++)
     {
@@ -56,16 +56,16 @@ void test_sigmoid_primitive(uint32_t M,
     delete[] B_expected;
 }
 
-TEST_CASE("Tests the sigmoid primitive with different M and N", "[sigmoid_primitive][parameterized]")
+TEST_CASE("Tests the sigmoid primitive with different M and N", "[sigmoid_taylor_primitive][parameterized]")
 {
     uint32_t M = GENERATE(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
     uint32_t N = GENERATE(1, 2, 3);
-    test_sigmoid_primitive(M, N);
+    test_sigmoid_taylor_primitive(M, N);
 }
 
-TEST_CASE("Tests the sigmoid primitive with larger M and N", "[sigmoid_primitive][large]")
+TEST_CASE("Tests the sigmoid primitive with larger M and N", "[sigmoid_taylor_primitive][large]")
 {
     uint32_t M = 64;
     uint32_t N = 65;
-    test_sigmoid_primitive(M, N);
+    test_sigmoid_taylor_primitive(M, N);
 }

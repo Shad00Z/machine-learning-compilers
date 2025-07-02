@@ -1,56 +1,84 @@
 Running FastSigmoidPrimitiveBench 50x50 benchmark
 Total time (s):                       3
-Total reps:                           9587072
-Total number of elements:             23967680000
-Total amount of processed data (GiB): 178.573
-Bandwidth (GiB/s)                     59.5244
+Total reps:                           9493261
+Total number of elements:             23733152500
+Total amount of processed data (GiB): 176.826
+Bandwidth (GiB/s)                     58.9419
 --------------------------------------------------
 Running FastSigmoidPrimitiveBench 64x64 benchmark
 Total time (s):                       3
-Total reps:                           6389533
-Total number of elements:             26171527168
-Total amount of processed data (GiB): 194.993
-Bandwidth (GiB/s)                     64.9977
+Total reps:                           6447430
+Total number of elements:             26408673280
+Total amount of processed data (GiB): 196.76
+Bandwidth (GiB/s)                     65.5866
 --------------------------------------------------
 Running FastSigmoidPrimitiveBench 512x512 benchmark
-Total time (s):                       3.00002
-Total reps:                           107609
-Total number of elements:             28209053696
-Total amount of processed data (GiB): 210.174
-Bandwidth (GiB/s)                     70.0575
+Total time (s):                       3.00001
+Total reps:                           107222
+Total number of elements:             28107603968
+Total amount of processed data (GiB): 209.418
+Bandwidth (GiB/s)                     69.8058
 --------------------------------------------------
 Running FastSigmoidPrimitiveBench 2048x2048 benchmark
-Total time (s):                       3.00027
-Total reps:                           6674
-Total number of elements:             27992784896
-Total amount of processed data (GiB): 208.562
-Bandwidth (GiB/s)                     69.5147
+Total time (s):                       3.00006
+Total reps:                           6663
+Total number of elements:             27946647552
+Total amount of processed data (GiB): 208.219
+Bandwidth (GiB/s)                     69.4048
+--------------------------------------------------
+Running SigmoidTaylorPrimitiveBench 50x50 benchmark
+Total time (s):                       3
+Total reps:                           7591820
+Total number of elements:             18979550000
+Total amount of processed data (GiB): 141.409
+Bandwidth (GiB/s)                     47.1362
+--------------------------------------------------
+Running SigmoidTaylorPrimitiveBench 64x64 benchmark
+Total time (s):                       3
+Total reps:                           5008049
+Total number of elements:             20512968704
+Total amount of processed data (GiB): 152.834
+Bandwidth (GiB/s)                     50.9445
+--------------------------------------------------
+Running SigmoidTaylorPrimitiveBench 512x512 benchmark
+Total time (s):                       3.00004
+Total reps:                           80699
+Total number of elements:             21154758656
+Total amount of processed data (GiB): 157.615
+Bandwidth (GiB/s)                     52.5377
+--------------------------------------------------
+Running SigmoidTaylorPrimitiveBench 2048x2048 benchmark
+Total time (s):                       3.00036
+Total reps:                           5024
+Total number of elements:             21072183296
+Total amount of processed data (GiB): 157
+Bandwidth (GiB/s)                     52.327
 --------------------------------------------------
 Running SigmoidInterpolationPrimitiveBench 50x50 benchmark
 Total time (s):                       3
-Total reps:                           1389853
-Total number of elements:             3474632500
-Total amount of processed data (GiB): 25.888
-Bandwidth (GiB/s)                     8.62934
+Total reps:                           2255744
+Total number of elements:             5639360000
+Total amount of processed data (GiB): 42.0165
+Bandwidth (GiB/s)                     14.0055
 --------------------------------------------------
 Running SigmoidInterpolationPrimitiveBench 64x64 benchmark
 Total time (s):                       3
-Total reps:                           867942
-Total number of elements:             3555090432
-Total amount of processed data (GiB): 26.4875
-Bandwidth (GiB/s)                     8.82916
+Total reps:                           862531
+Total number of elements:             3532926976
+Total amount of processed data (GiB): 26.3224
+Bandwidth (GiB/s)                     8.77411
 --------------------------------------------------
 Running SigmoidInterpolationPrimitiveBench 512x512 benchmark
-Total time (s):                       3.0002
-Total reps:                           13658
-Total number of elements:             3580362752
-Total amount of processed data (GiB): 26.6758
-Bandwidth (GiB/s)                     8.89134
+Total time (s):                       3.00022
+Total reps:                           13549
+Total number of elements:             3551789056
+Total amount of processed data (GiB): 26.4629
+Bandwidth (GiB/s)                     8.82033
 --------------------------------------------------
 Running SigmoidInterpolationPrimitiveBench 2048x2048 benchmark
-Total time (s):                       3.00107
-Total reps:                           849
-Total number of elements:             3560964096
-Total amount of processed data (GiB): 26.5312
-Bandwidth (GiB/s)                     8.84061
+Total time (s):                       3.00054
+Total reps:                           842
+Total number of elements:             3531603968
+Total amount of processed data (GiB): 26.3125
+Bandwidth (GiB/s)                     8.76926
 --------------------------------------------------

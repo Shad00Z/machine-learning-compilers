@@ -1,22 +1,22 @@
 #include <random>
 #include <chrono>
-#include "sigmoid_interpolation_primitive.bench.h"
+#include "sigmoid_taylor_primitive.bench.h"
 #include "benchmarks/Benchmark.h"
-#include "kernels/unary/sigmoid_interp_primitive.h"
+#include "kernels/unary/sigmoid_taylor_primitive.h"
 #include "Kernel.h"
 #include "Unary.h"
 #include "constants.h"
 
-mini_jit::benchmarks::SigmoidInterpolationPrimitiveBench::SigmoidInterpolationPrimitiveBench(double runTime,
-                                                                                             uint32_t m,
-                                                                                             uint32_t n) : Benchmark()
+mini_jit::benchmarks::SigmoidTaylorPrimitiveBench::SigmoidTaylorPrimitiveBench(double runTime,
+                                                                               uint32_t m,
+                                                                               uint32_t n) : Benchmark()
 {
     m_M = m;
     m_N = n;
     m_runTime = runTime;
 }
 
-void mini_jit::benchmarks::SigmoidInterpolationPrimitiveBench::run()
+void mini_jit::benchmarks::SigmoidTaylorPrimitiveBench::run()
 {
     m_A = new float[m_M * m_N];
     m_B = new float[m_M * m_N];
@@ -34,7 +34,7 @@ void mini_jit::benchmarks::SigmoidInterpolationPrimitiveBench::run()
 
     // Generate and get the kernel function
     mini_jit::Kernel l_kernel;
-    mini_jit::kernels::unary::sigmoid_interpolation(l_kernel, m_M, m_N);
+    mini_jit::kernels::unary::sigmoid_taylor(l_kernel, m_M, m_N);
     mini_jit::Unary::kernel_t_sig l_kernel_t = reinterpret_cast<mini_jit::Unary::kernel_t_sig>(const_cast<void *>(l_kernel.get_kernel()));
 
     // RUN
@@ -44,7 +44,7 @@ void mini_jit::benchmarks::SigmoidInterpolationPrimitiveBench::run()
     double l_runTimeMs = m_runTime * 1e6;
     do
     {
-        l_kernel_t(m_A, m_B, const_cast<void*>(static_cast<const void*>(sig_table)), m_M, m_M);
+        l_kernel_t(m_A, m_B, const_cast<void*>(static_cast<const void*>(sig_taylor_values)), m_M, m_M);
         ++l_num_reps;
         auto l_now = std::chrono::high_resolution_clock::now();
         l_elapsed = std::chrono::duration_cast<std::chrono::microseconds>(l_now - l_start_time).count();

@@ -28,6 +28,8 @@ CXXFLAGS += -g
 CXXFLAGS += -Wall
 CXXFLAGS += -Wextra
 CXXFLAGS += -Wpedantic
+# Suppress warnings from Catch2 and standard library regex
+CXXFLAGS += -Wno-maybe-uninitialized
 
 # LINKER FLAGS
 LDFLAGS = 

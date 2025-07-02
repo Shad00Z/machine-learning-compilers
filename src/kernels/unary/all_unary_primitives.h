@@ -12,6 +12,8 @@
 #include "reciprocal_trans_primitive.h"
 #include "relu_primitive.h"
 #include "relu_trans_primitive.h"
+#include "sigmoid_interp_primitive.h"
+#include "sigmoid_taylor_primitive.h"
 #include "square_primitive.h"
 #include "square_trans_primitive.h"
 #include "zero_primitive_xzr.h"
