@@ -22,7 +22,8 @@ TEST_CASE("EinsumTree Simple GEMM Test")
 
     mini_jit::einsum::EinsumTree::optimize_einsum_nodes(node,
                                                         256,
-                                                        512);
+                                                        512,
+                                                        16);
     mini_jit::einsum::EinsumTree::lower_einsum_nodes_to_tensor_operations(node,
                                                                           dimension_sizes,
                                                                           dtype);
@@ -107,7 +108,8 @@ TEST_CASE("EinsumTree Simple BRGEMM Test")
 
     mini_jit::einsum::EinsumTree::optimize_einsum_nodes(node,
                                                         256,
-                                                        512);
+                                                        512,
+                                                        16);
 
     mini_jit::einsum::EinsumTree::lower_einsum_nodes_to_tensor_operations(node,
                                                                           dimension_sizes,
@@ -170,7 +172,8 @@ TEST_CASE("EinsumTree Simple BRGEMM Test")
 
     mini_jit::einsum::EinsumTree::optimize_einsum_nodes(node,
                                                         256,
-                                                        512);
+                                                        512,
+                                                        16);
 
     mini_jit::einsum::EinsumTree::lower_einsum_nodes_to_tensor_operations(node,
                                                                           dimension_sizes,
@@ -207,7 +210,8 @@ TEST_CASE("EinsumTree Simple Permutation Test")
 
     mini_jit::einsum::EinsumTree::optimize_einsum_nodes(node,
                                                         256,
-                                                        512);
+                                                        512,
+                                                        16);
 
     mini_jit::einsum::EinsumTree::lower_einsum_nodes_to_tensor_operations(node,
                                                                           dimension_sizes,
@@ -286,7 +290,8 @@ TEST_CASE("EinsumTree Complex Permutation + GEMM Test")
 
     mini_jit::einsum::EinsumTree::optimize_einsum_nodes(node,
                                                         256,
-                                                        512);
+                                                        512,
+                                                        16);
 
     mini_jit::einsum::EinsumTree::lower_einsum_nodes_to_tensor_operations(node,
                                                                           dimension_sizes,
@@ -444,7 +449,8 @@ TEST_CASE("EinsumTree Complex Permutation + GEMM Test")
 
 //     mini_jit::einsum::EinsumTree::optimize_einsum_nodes(node,
 //                                                         256,
-//                                                         512);
+//                                                         512,
+//                                                         16);
 
 //     mini_jit::einsum::EinsumTree::lower_einsum_nodes_to_tensor_operations(node,
 //                                                                           dimension_sizes,

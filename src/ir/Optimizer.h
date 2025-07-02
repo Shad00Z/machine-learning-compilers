@@ -32,10 +32,12 @@ public:
      * @param dimensions A vector of dimensions to be optimized.
      * @param thread_target The target number of threads for optimization.
      * @param max_kernel_size The maximum size of a kernel dimension
+     * @param min_kernel_size The minimum size of a kernel dimension
      */
     static void optimize(std::vector<Dimension> &dimensions,
                          int64_t thread_target,
-                         int64_t max_kernel_size);
+                         int64_t max_kernel_size,
+                         int64_t min_kernel_size);
 
     /**
      * @brief Optimize the dimensions of a tensor operation.
@@ -48,6 +50,7 @@ public:
      * @param strides_out A vector of strides for the output tensor.
      * @param thread_target The target number of threads for optimization.
      * @param max_kernel_size The maximum size of a kernel dimension
+     * @param min_kernel_size The minimum size of a kernel dimension
      */
     static void optimize(std::vector<dim_t> &dim_types,
                          std::vector<exec_t> &exec_types,
@@ -56,7 +59,8 @@ public:
                          std::vector<int64_t> &strides_in1,
                          std::vector<int64_t> &strides_out,
                          int64_t thread_target,
-                         int64_t max_kernel_size);
+                         int64_t max_kernel_size,
+                         int64_t min_kernel_size);
 
     /**
      * @brief Identify primitive dimensions in the tensor operation and adjust their order.
@@ -70,9 +74,20 @@ public:
      *
      * @param dimensions A vector of dimensions to be processed.
      * @param max_kernel_size The maximum size allowed for a kernel dimension.
+     * @param min_kernel_size The minimum size allowed for a kernel dimension.
      */
     static void splitDimensions(std::vector<Dimension> &dimensions,
-                                int64_t max_kernel_size);
+                                int64_t max_kernel_size,
+                                int64_t min_kernel_size);
+
+    /**
+     * @brief Fuse small dimensions into larger dimensions.
+     * 
+     * @param dimensions A vector of dimensions to be processed.
+     * @param min_kernel_size The minimum size for a kernel dimension to be considered for fusion.
+     */
+    static void fuseDimensions(std::vector<Dimension> &dimensions,
+                               int64_t min_kernel_size);
 
     /**
      * @brief Turn sequential dimensions into shared dimensions.
@@ -91,12 +106,14 @@ private:
      *
      * @param i_size The size of the dimension to be split.
      * @param i_max_kernel_size The maximum size allowed for the dimension.
+     * @param i_min_kernel_size The minimum size allowed for the dimension.
      * @param i_type The type of the dimension (e.g., M, N, K).
      * @param o_size_0 Output size for the first part of the split (SEQ).
      * @param o_size_1 Output size for the second part of the split (PRIM).
      */
     static void findBestSplit(int64_t i_size,
                               int64_t i_max_kernel_size,
+                              int64_t i_min_kernel_size,
                               dim_t i_type,
                               int64_t &o_size_0,
                               int64_t &o_size_1);
@@ -113,13 +130,15 @@ private:
      * 
      * @param i_divisor The divisor to find the largest multiple of.
      * @param i_size The size of the dimension to be processed.
-     * @param i_max_kernel_size The maximum size allowed for the dimension.
+     * @param i_max_size The maximum size allowed for the divisor.
+     * @param i_min_size The minimum size allowed for the divisor and multiplicand.
      * @param o_size_0 The input size divided by the largest multiple of the divisor.
      * @param o_size_1 The largest multiple of the divisor that is less than or equal to the maximum kernel size.
      */
     static void findLargestMultipleOfDivisor(int64_t i_divisor,
                                              int64_t i_size,
-                                             int64_t i_max_kernel_size,
+                                             int64_t i_max_size,
+                                             int64_t i_min_size,
                                              int64_t &o_size_0,
                                              int64_t &o_size_1);
 };
