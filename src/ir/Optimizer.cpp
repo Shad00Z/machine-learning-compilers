@@ -2,7 +2,6 @@
 #include "IRConverter.h"
 #include <algorithm>
 #include <limits.h>
-#include <iostream>
 
 void mini_jit::ir::Optimizer::optimize(std::vector<mini_jit::ir::Dimension> &dimensions,
                                        int64_t thread_target,
@@ -13,7 +12,8 @@ void mini_jit::ir::Optimizer::optimize(std::vector<mini_jit::ir::Dimension> &dim
                    min_kernel_size);
 
     splitDimensions(dimensions,
-                    max_kernel_size);
+                    max_kernel_size,
+                    min_kernel_size);
 
     identifyPrimitives(dimensions);
 
@@ -418,7 +418,8 @@ void mini_jit::ir::Optimizer::identifyPrimitives(std::vector<mini_jit::ir::Dimen
 }
 
 void mini_jit::ir::Optimizer::splitDimensions(std::vector<mini_jit::ir::Dimension> &dimensions,
-                                              int64_t max_kernel_size)
+                                              int64_t max_kernel_size,
+                                              int64_t min_kernel_size)
 {
     // Dimensions should be split if they are too large (> max_kernel_size)
     for (size_t i = 0; i < dimensions.size(); i++)
@@ -429,6 +430,7 @@ void mini_jit::ir::Optimizer::splitDimensions(std::vector<mini_jit::ir::Dimensio
             int64_t l_size_dim_1 = 0;
             findBestSplit(dimensions[i].size,
                           max_kernel_size,
+                          min_kernel_size,
                           dimensions[i].type,
                           l_size_dim_0,
                           l_size_dim_1);
@@ -503,6 +505,7 @@ void mini_jit::ir::Optimizer::createSharedLoops(std::vector<mini_jit::ir::Dimens
 
 void mini_jit::ir::Optimizer::findBestSplit(int64_t i_size,
                                             int64_t i_max_kernel_size,
+                                            int64_t i_min_kernel_size,
                                             dim_t i_type,
                                             int64_t &o_size_0,
                                             int64_t &o_size_1)
@@ -519,15 +522,15 @@ void mini_jit::ir::Optimizer::findBestSplit(int64_t i_size,
         // multiples of (multiples of) 4 are efficient (LDP, STP)
         for (int64_t i = 16; i > 4; i -= 4)
         {
-            findLargestMultipleOfDivisor(i, i_size, i_max_kernel_size, o_size_0, o_size_1);
-            if (o_size_0 > 1)
+            findLargestMultipleOfDivisor(i, i_size, i_max_kernel_size, i_min_kernel_size, o_size_0, o_size_1);
+            if (o_size_0 >= i_min_kernel_size)
             {
                 return;
             }
         }
         // split by 2
-        findLargestMultipleOfDivisor(2, i_size, i_max_kernel_size, o_size_0, o_size_1);
-        if (o_size_0 > 1)
+        findLargestMultipleOfDivisor(2, i_size, i_max_kernel_size, i_min_kernel_size, o_size_0, o_size_1);
+        if (o_size_0 >= i_min_kernel_size)
         {
             return;
         }
@@ -536,14 +539,14 @@ void mini_jit::ir::Optimizer::findBestSplit(int64_t i_size,
     else if (i_type == dim_t::n)
     {
         // split by 4
-        findLargestMultipleOfDivisor(4, i_size, i_max_kernel_size, o_size_0, o_size_1);
-        if (o_size_0 > 1)
+        findLargestMultipleOfDivisor(4, i_size, i_max_kernel_size, i_min_kernel_size, o_size_0, o_size_1);
+        if (o_size_0 >= i_min_kernel_size)
         {
             return;
         }
         // split by 2
-        findLargestMultipleOfDivisor(2, i_size, i_max_kernel_size, o_size_0, o_size_1);
-        if (o_size_0 > 1)
+        findLargestMultipleOfDivisor(2, i_size, i_max_kernel_size, i_min_kernel_size, o_size_0, o_size_1);
+        if (o_size_0 >= i_min_kernel_size)
         {
             return;
         }
@@ -552,8 +555,8 @@ void mini_jit::ir::Optimizer::findBestSplit(int64_t i_size,
     else if (i_type == dim_t::k)
     {
         // split by 2
-        findLargestMultipleOfDivisor(2, i_size, i_max_kernel_size, o_size_0, o_size_1);
-        if (o_size_0 > 1)
+        findLargestMultipleOfDivisor(2, i_size, i_max_kernel_size, i_min_kernel_size, o_size_0, o_size_1);
+        if (o_size_0 >= i_min_kernel_size)
         {
             return;
         }
@@ -563,22 +566,22 @@ void mini_jit::ir::Optimizer::findBestSplit(int64_t i_size,
         // identity uses M=8 and N=1
 
         // split by 8
-        findLargestMultipleOfDivisor(8, i_size, i_max_kernel_size, o_size_0, o_size_1);
-        if (o_size_0 > 1)
+        findLargestMultipleOfDivisor(8, i_size, i_max_kernel_size, i_min_kernel_size, o_size_0, o_size_1);
+        if (o_size_0 >= i_min_kernel_size)
         {
             return;
         }
 
         // split by 4
-        findLargestMultipleOfDivisor(4, i_size, i_max_kernel_size, o_size_0, o_size_1);
-        if (o_size_0 > 1)
+        findLargestMultipleOfDivisor(4, i_size, i_max_kernel_size, i_min_kernel_size, o_size_0, o_size_1);
+        if (o_size_0 >= i_min_kernel_size)
         {
             return;
         }
 
         // if 8 and 4 did not work, we try 2
-        findLargestMultipleOfDivisor(2, i_size, i_max_kernel_size, o_size_0, o_size_1);
-        if (o_size_0 > 1)
+        findLargestMultipleOfDivisor(2, i_size, i_max_kernel_size, i_min_kernel_size, o_size_0, o_size_1);
+        if (o_size_0 >= i_min_kernel_size)
         {
             return;
         }
@@ -593,28 +596,34 @@ void mini_jit::ir::Optimizer::findBestSplit(int64_t i_size,
 void mini_jit::ir::Optimizer::findLargestMultipleOfDivisor(int64_t i_divisor,
                                                            int64_t i_size,
                                                            int64_t i_max_size,
+                                                           int64_t i_min_size,
                                                            int64_t &o_size_0,
                                                            int64_t &o_size_1)
 {
     o_size_0 = 1;
     o_size_1 = i_size;
 
-    if (i_divisor <= 0 || i_size <= 0 || i_max_size <= 0)
+    if (i_divisor <= 0 || i_size <= 0 || i_max_size <= 0 || i_min_size <= 0 ||
+        i_divisor > i_max_size || i_size < i_min_size)
     {
         return;
     }
 
     // start: largest multiple of i_divisor < i_max_size
     int64_t l_max_divisible = (i_max_size / i_divisor) * i_divisor;
-
     for (int64_t l_m = l_max_divisible; l_m >= i_divisor; l_m -= i_divisor)
     {
         // we found an m that divides i_size! it is also the largest
         if (i_size % l_m == 0)
         {
-            o_size_1 = l_m;
-            o_size_0 = i_size / l_m;
-            return;
+            int64_t candidate_size_1 = l_m;
+            int64_t candidate_size_0 = i_size / l_m;
+            if (candidate_size_0 >= i_min_size && candidate_size_1 >= i_min_size)
+            {
+                o_size_1 = candidate_size_1;
+                o_size_0 = candidate_size_0;
+                return;
+            }
         }
     }
 }

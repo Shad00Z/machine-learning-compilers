@@ -74,9 +74,11 @@ public:
      *
      * @param dimensions A vector of dimensions to be processed.
      * @param max_kernel_size The maximum size allowed for a kernel dimension.
+     * @param min_kernel_size The minimum size allowed for a kernel dimension.
      */
     static void splitDimensions(std::vector<Dimension> &dimensions,
-                                int64_t max_kernel_size);
+                                int64_t max_kernel_size,
+                                int64_t min_kernel_size);
 
     /**
      * @brief Fuse small dimensions into larger dimensions.
@@ -104,12 +106,14 @@ private:
      *
      * @param i_size The size of the dimension to be split.
      * @param i_max_kernel_size The maximum size allowed for the dimension.
+     * @param i_min_kernel_size The minimum size allowed for the dimension.
      * @param i_type The type of the dimension (e.g., M, N, K).
      * @param o_size_0 Output size for the first part of the split (SEQ).
      * @param o_size_1 Output size for the second part of the split (PRIM).
      */
     static void findBestSplit(int64_t i_size,
                               int64_t i_max_kernel_size,
+                              int64_t i_min_kernel_size,
                               dim_t i_type,
                               int64_t &o_size_0,
                               int64_t &o_size_1);
@@ -126,13 +130,15 @@ private:
      * 
      * @param i_divisor The divisor to find the largest multiple of.
      * @param i_size The size of the dimension to be processed.
-     * @param i_max_kernel_size The maximum size allowed for the dimension.
+     * @param i_max_size The maximum size allowed for the divisor.
+     * @param i_min_size The minimum size allowed for the divisor and multiplicand.
      * @param o_size_0 The input size divided by the largest multiple of the divisor.
      * @param o_size_1 The largest multiple of the divisor that is less than or equal to the maximum kernel size.
      */
     static void findLargestMultipleOfDivisor(int64_t i_divisor,
                                              int64_t i_size,
-                                             int64_t i_max_kernel_size,
+                                             int64_t i_max_size,
+                                             int64_t i_min_size,
                                              int64_t &o_size_0,
                                              int64_t &o_size_1);
 };

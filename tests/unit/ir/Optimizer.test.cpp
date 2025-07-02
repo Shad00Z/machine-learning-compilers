@@ -3,6 +3,7 @@
 #include "Optimizer.h"
 #include "Dimension.h"
 #include "IRConverter.h"
+#include <iostream>
 
 using mini_jit::dim_t;
 using mini_jit::exec_t;
@@ -204,14 +205,14 @@ TEST_CASE("Test Optimizer for Dimension Fusion and Splitting", "[ir][optimizer][
 
     std::vector<dim_t> dim_types = {dim_t::m, dim_t::m, dim_t::n};
     std::vector<exec_t> exec_types = {exec_t::seq, exec_t::seq, exec_t::seq};
-    std::vector<int64_t> dim_sizes = {16, 4, 32};
+    std::vector<int64_t> dim_sizes = {32, 4, 32};
     std::vector<int64_t> strides_in0 = {4, 1, 32};
     std::vector<int64_t> strides_in1 = {4, 1, 32};
     std::vector<int64_t> strides_out = {4, 1, 32};
 
     const int64_t thread_target = 1024;
     const int64_t max_kernel_size = 32;
-    const int64_t min_kernel_size = 16;
+    const int64_t min_kernel_size = 8;
 
     mini_jit::ir::IRConverter::convertConfigToDimensions(dim_types,
                                                          exec_types,
