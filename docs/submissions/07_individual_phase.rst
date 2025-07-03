@@ -1413,11 +1413,380 @@ Having gained ``FABS`` as a new tool, we then implemented the fast sigmoid kerne
 7.4.2.2 Sigmoid using the Taylor Series
 ----------------------------------------
 
+Our second approach was to slightly enhance the precision of our sigmoid implementation for x values in the range ``[-2.0,2.0]``. 
+For this approach an approximation with the taylor series was suitable, as with this approach we could 
+achieve a better precision, with relatively little additional effort. The approximation of the sigmoid function using this 
+approach can be mathematically expressed with the following formula: 
+
+.. math::
+
+    \sigma(x) = \frac{1}{2} + \frac{x}{4} - \frac{x^3}{48} + \frac{x^5}{480} - \frac{17x^7}{80640}+...
+
+In order to not overcomplicate the calculation and to keep the necessary calculations as minimal 
+as possible, we decided to approximate the sigmoid function by using the 5th taylor polynomial:
+
+.. math::
+
+   \sigma(x) \approx 0.5 + 0.25x - 0.020833 x^3 + 0.002083 x^5
+
+Our approach would be to load the constant values (``0.5``, ``0.25``, ...) as an additional parameter into our kernel. 
+
+.. code-block:: cpp
+    :caption: Taylor series constant values
+
+    const float sig_taylor_values[16] = {
+              0.5f,       0.5f,       0.5f,       0.5f,
+             0.25f,      0.25f,      0.25f,      0.25f, 
+        -0.020833f, -0.020833f, -0.020833f, -0.020833f,
+         0.002083f,  0.002083f,  0.002083f,  0.002083f
+    };
+
+That meant, to be able to process this table we needed an additional kernel type in our ``Unary`` class, 
+that would allow us to handle these values: 
+
+.. code-block:: cpp
+    :caption: Special sigmoid kernel signature
+
+    using kernel_t_sig = void (*)(void const *a,
+                                  void *b,
+                                  void *tab,
+                                  int64_t ld_a,
+                                  int64_t ld_b);
+
+After setting up this common entry point for this primitive, we could develop the kernel for the taylor approximation sigmoid kernel. 
+Apart from loading the constant sigmoid values into our kernel, there were no special things that we needed to consider.
+The approach was to:
+
+1. Calculate :math:`x^2, x^3,` and :math:`x^5`
+2. Calculate the polynonmials separately 
+3. Combine the polynomials into the approximation
+
+Just as for the fast sigmoid kernel our base kernel is able to compute blocks of **M=16** and **N=1**:
+
+.. code-block:: cpp
+    :caption: Taylor approximation sigmoid for M=16 and N=1
+
+    // Load fixed values
+    ldp(v31, v30, x2,  0, q),
+    ldp(v29, v28, x2, 32, q),
+
+    ...
+
+    // Load 16 elements from A
+    ldp(v0, v1, x9,  0, q),
+    ldp(v2, v3, x9, 32, q),
+
+    // Step 1:
+    // x^2 = x * x
+    fmulVec(v4, v0, v0, s4),
+    fmulVec(v5, v1, v1, s4),
+    fmulVec(v6, v2, v2, s4),
+    fmulVec(v7, v3, v3, s4),
+
+    // x^3 = x^2 * x
+    fmulVec(v12, v4, v0, s4),
+    fmulVec(v13, v5, v1, s4),
+    fmulVec(v14, v6, v2, s4),
+    fmulVec(v15, v7, v3, s4),
+
+    // x^5 = x^3 * x^2  
+    fmulVec(v16, v12, v4, s4),
+    fmulVec(v17, v13, v5, s4),
+    fmulVec(v18, v14, v6, s4),
+    fmulVec(v19, v15, v7, s4),
+
+    // Step 2:
+    // 0.25 * x
+    fmulVec(v4, v0, v30, s4),
+    fmulVec(v5, v1, v30, s4),
+    fmulVec(v6, v2, v30, s4),
+    fmulVec(v7, v3, v30, s4),
+
+    // -0.020833 * x^3
+    fmulVec(v12, v12, v29, s4),
+    fmulVec(v13, v13, v29, s4),
+    fmulVec(v14, v14, v29, s4),
+    fmulVec(v15, v15, v29, s4),
+
+    // +0.002083 * x^5
+    fmulVec(v16, v16, v28, s4),
+    fmulVec(v17, v17, v28, s4),
+    fmulVec(v18, v18, v28, s4),
+    fmulVec(v19, v19, v28, s4),
+
+    // Step 3:
+    // 0.5 + 0.25*x
+    faddVec(v4, v31, v4, s4),
+    faddVec(v5, v31, v5, s4),
+    faddVec(v6, v31, v6, s4),
+    faddVec(v7, v31, v7, s4),
+
+    // + (-0.020833*x^3)
+    faddVec(v4, v4, v12, s4),
+    faddVec(v5, v5, v13, s4),
+    faddVec(v6, v6, v14, s4),
+    faddVec(v7, v7, v15, s4),
+
+    // + (+0.002083*x^5)
+    faddVec(v0, v4, v16, s4),
+    faddVec(v1, v5, v17, s4),
+    faddVec(v2, v6, v18, s4),
+    faddVec(v3, v7, v19, s4),
+
+    // Store 16 elements to B
+    stp(v0, v1, x10,  0, q),
+    stp(v2, v3, x10, 32, q),
+
+However, the caveat with this approximation is, that it only works in the range from ``[-2.0,2.0]``. 
+Within this range we achieve results that are within an error margin of :math:`1e-5`, which we consider pretty close to the original. 
+Outside this range we quickly get big differences compared to the correct result of the true sigmoid function.
+
 7.4.2.3 Sigmoid using the Linear Interpolation
 ------------------------------------------------
 
+As our goal was to be able to process values outside the range ``[-2.0,2.0]``, the taylor approximation would not suffice us to achieve our goal. 
+However, we would only need to consider values in the range of ``[-8.0,-2.0]`` and ``[2.0,8.0]``, as the sigmoid function would assign 
+the value ``1`` to all values outside this range.
+
+For this reason we decided to linearly interpolate the true sigmoid function. The idea with this interpolation was to 
+be as close as possible to the true sigmoid function and at the same time minimize the effort of the calculations as much as possible. 
+To get an idea how close each function gets in comparison to the true sigmoid function, we put the different approaches together in a single plot: 
+
+.. image:: ../_static/sigmoid_comparison.png
+   :alt: Sigmoid function comparison (fast, taylor, linear, true)
+   :align: center
+
+However, the linear interpolation approach would quickly turn out to be more complex than we initially assumed. 
+
+To make the approach possible, we would again need to pre calculate values in a lookup table. 
+As we wanted to keep it simple, we decided for a table consisting of ``33`` values:
+
+.. code-block:: cpp
+    :caption: Linear interpolation lookup table
+
+    const float sig_table[33] = {
+        // -8.0, -7.5, ..., -5.0
+        0.000335f, 0.000553f, 0.000911f, 0.001503f, 0.002473f, 0.004070f, 0.006693f,
+        // -4.5, ..., -1.5
+        0.011109f, 0.017986f, 0.029312f, 0.047426f, 0.075858f, 0.119203f, 0.182426f,
+        // -1.0, ... 0.0, ..., 2.0
+        0.268941f, 0.377541f, 0.500000f, 0.622459f, 0.731059f, 0.817574f, 0.880797f,
+        // 2.5, ..., 5.5
+        0.924142f, 0.952574f, 0.970688f, 0.982014f, 0.988891f, 0.993307f, 0.995930f,
+        // 6.0, ..., 8.0
+        0.997527f, 0.998497f, 0.999089f, 0.999447f, 0.999665f
+    };
+
+The number ``33`` comes from looking at values in the range from ``[-8.0,8.0]`` and separating this range by ``0.5`` steps (``-8.0``, ``-7.5``, ...).
+That means the first ``16`` values in the table are from the range ``[-8.0,0.0)``, value ``17`` is the one corresponding to ``0.0``, and the last ``16`` values correspond to those in the range ``(0.0,8.0]``.
+
+It is important to clarify the steps before starting the calculation, as the index calculation inside the kernel is dependent on the steps and the value range.
+
+After defining the table we could think about the how we would like to construct our kernel. 
+The creation of our kernel would be separated in 7 consecutive steps. For most of the steps we would again need to create new instructions that would allow us to perform some special operations inside of our kernel.
+But let us go about it step by step.
+
+After loading our first few values into the kernel, the **first step** is to clamp our values. 
+Clamping means, that we only consider values that are within in our specified range from ``[-8.0,8.0]``.
+All other values, that are above or below this range are simply mapped to either ``-8.0`` or ``8.0``:
+
+.. code-block:: 
+    :caption: Clamping values in range ``[-8.0,8.0]``
+
+    fmovIntVec(v31, -8, s4)
+    fmovIntVec(v30,  8, s4)
+
+    ...
+
+    fmaxVec(v0, v0, v31, s4)
+    fminVec(v0, v0, v30, s4)
+
+The **second step** would be to pre-calculate our table indices. The formular for this calculation is: 
+
+.. math::
+
+    i = 2 * (x + 8.0)
+
+The correctness of this formular can be easily confirmed by looking at the extreme values:
+
+.. math::
+
+    x = -8.0 \rightarrow 2 * (-8.0 + 8.0) =  0 = i \\
+    x =  8.0 \rightarrow 2 * ( 8.0 + 8.0) = 32 = i
+
+However, there is another important detail that we need to consider, which is that our highest allowed value for this calculation is actually ``31``. 
+This is the case, as for the interpolation we look at the current index ``i``, and at the following index ``i+1``. 
+To ensure, that we do not go out of bounds we need to clamp again with the value ``31``:
+
+.. code-block::
+    :caption: Index calculation and index clamping
+
+    fmovIntVec(v30,  8, s4),
+    fmovIntVec(v29,  2, s4),
+    fmovIntVec(v28, 31, s4),
+
+    ...
+
+    faddVec(v1, v0, v30, s4)
+    fmulVec(v2, v1, v29, s4)
+
+    fminVec(v2, v2, v28, s4)
+
+After pre-calculating, we can move on to the **third step**, which is to prepare the load of the correct lookup table values. 
+However, in order to be able do that, we first needed to implement some new instructions. 
+
+The first instruction that we needed to implement was the ``FCVTMS`` instruction. 
+This instruction does two things:
+
+- Firstly, ``FCVTMS`` floors our calculated index value. 
+  The flooring is important, as in an interpolation setting the value before the decimal dot describes the correct table index (for positive numbers). 
+  If we would ceil (round to nearest), we would potentially use a wrong value out of our lookup table and therefore increase the difference to the correct sigmoid value. 
+  And as we already have values in the range ``[0,31]`` we can use this instruction.
+
+- Secondly, ``FCVTMS`` transforms the floating point value to a signed integer (``5``). 
+  This is also very important, as we want to use the index to load from the correct address.
+  To perform this address calculation we use ``UMOV``, which expects and signed integer and moves the value from the SIMD&FP register into a general purpose register.
+
+The second instruction that is necessary for later calculations is ``FRINTM``.
+``FRINTM`` stands for floating-point round to integer toward minus infinity, which means, it works similarly to ``FCVTMS``. 
+However, this time the result stays in floating-point format, but as a clean / integral integer (``5.0``). 
+That is important, as we can still use the value for floating-point calculations.
+This detail justifies the use of both ``FCVTMS`` and ``FRINTM``, which otherwise seem to do similar things.
+
+The result from ``FRINTM`` is then used to calculate the fractional part of our pre-calculated indix. 
+The fractional part is defined as the difference from the real table index minus the clean integer. 
+This fractional part will later help us calculate the correct interpolated value:
+
+.. code-block:: cpp
+    :caption: prepare table lookup and interpolation calculation
+
+    // v2 = pre-calculated floating-point index
+    frintmVec(v3, v2, s4)
+    fsubVec(v5, v2, v3, s4)
+    fcvtmsVec(v4, v3, s4)
+
+As shortly described before, we then use the value from our ``FCVTMS`` instruction and move the value into a general purpose register using ``UMOV``. 
+This means, our **fourth step** uses the calculated values from step three and makes the last preparation for our lookup table loads:
+
+.. code-block:: cpp
+    :caption: calculate offset
+
+    umov(w10, v4, 0, s) // s4[0]
+    umov(w11, v4, 1, s) // s4[1]
+    umov(w12, v4, 2, s) // s4[2]
+    umov(w13, v4, 3, s) // s4[3]
+
+    // Multiply with datatype
+    lsl(w10, w10, 2)
+    lsl(w11, w11, 2)
+    lsl(w12, w12, 2)
+    lsl(w13, w13, 2)
+
+The detail for this step is that we need to load the our values into separate registers. 
+This separation is needed, in order to be able to load from the correct table index.
+
+In **step five** we proceed to load the values. As we don't have a real offset this time, but 
+rather all table information are located in a register, we needed to implement ``LDR`` (register, SIMD&FP). 
+The critical thing about this instruction is that in order to load from a register as an offset, you need to set the ``UXTW`` option. 
+``UXTW`` stands for unsigned extend word and is generally used for register addressing mode extensions. 
+This means internally, we take a 32-bit register like ``w10`` as our offset and zero-extend it to 64 bits before adding it to the base address: 
+
+.. code-block:: cpp
+    :caption: load from the lookup table
+
+    ldrReg( v6, x2, w10, 0, s)
+    ldrReg( v7, x2, w11, 0, s)
+    ldrReg(v16, x2, w12, 0, s)
+    ldrReg(v17, x2, w13, 0, s)
+
+**Step six** reassembles the values that we just loaded from our lookup table into a single SIMD&FP register.
+To do that, we use the ``INS`` instruction, that lets us specify the indices from which we want to load and where to load to:
+
+.. code-block:: cpp 
+    :caption: reassembling of the table index values
+
+    ins(v18,  v6, 0, 0, s)
+    ins(v18,  v7, 1, 0, s)
+    ins(v18, v16, 2, 0, s)
+    ins(v18, v17, 3, 0, s)
+
+At this point we are finished for our first table index. But as we described before, we now need to do the same thing for our index at position ``i + 1``.
+This means, we increase our pointer by ``4`` and to the exact same thing for our table at ``i+1``:
+
+.. code-block:: cpp
+
+    // increase offset
+    add(w10, w10, 4, 0)
+    add(w11, w11, 4, 0)
+    add(w12, w12, 4, 0)
+    add(w13, w13, 4, 0)
+
+    // Load from lookup table
+    ldrReg(v19, x2, w10, 0, s)
+    ldrReg(v20, x2, w11, 0, s)
+    ldrReg(v21, x2, w12, 0, s)
+    ldrReg(v22, x2, w13, 0, s)
+
+    // Reassemble
+    ins(v23, v19, 0, 0, s)
+    ins(v23, v20, 1, 0, s)
+    ins(v23, v21, 2, 0, s)
+    ins(v23, v22, 3, 0, s)
+
+Our **last step** is to calculate the interpolate value for our input. 
+For the calculation we need:
+
+- ``v5``  fractional difference between float index and rounded index (:math:`5.89 - 5.0 = 0.89`)
+- ``v18`` SIMD&FP register (4 values) for table at index ``T[i]``
+- ``v23`` SIMD&FP register (4 values) for table at index ``T[i+1]``
+- ``v24`` Difference between the table index values (``T[i+1] - T[i]``)
+
+Given these values the following formula can be derived:
+
+.. math::
+
+    v24 = v23 - v18 \\
+    \sigma(x) = v18 + v5 * v24 \\
+
+.. math:: 
+
+    \sigma(x) = v18 + v5 * (v23 - v18) \\
+
+The last step is to store our results back at the correct position: 
+
+.. code-block:: cpp
+    :caption: store interpolated values
+
+    str(v18, x17, 0, q)
+
+With this interpolation approach, we are now able to achieve an approximation of about ``0.01`` for the whole range of floating-point values. 
+The interpolation approach itself is not so good for values in the range of ``[-2.0,2.0]``. 
+Here the taylor approximation delivers better results. 
+However, considering the range outside of this interval ``x<-2.0`` and ``x>2.0`` we achieve an approximation error of about ``0.005``.
+This error could be decreased by simply using a larger lookup table.
+
 7.4.2.4 Benchmarks and approach comparison
 ------------------------------------------------
+
+To compare the errors of the different approaches, we have created a small overview for different input values:
+
+.. literalinclude:: ../_static/sigmoid_comparison.txt
+    :language: text
+    :caption: sigmoid error margin comparison
+
+The overview clearly shows that the interpolation approach is pretty close over the whole range of values, whereas the taylor approximation has pretty big errors outside the ``[-2,2]`` range. 
+
+Apart from that we also created benchmarks for the different sigmoid approaches:
+
+.. literalinclude:: ../../benchmarks/sigmoid_benchmark.txt
+    :language: text
+    :caption: sigmoid function benchmarks
+
+The benchmarks show that our fast sigmoid has the best bandwidth usage out of the three approaches. 
+However, the taylor approximation comes pretty close to these values as well. 
+The linear interpolation approach on the other side has the weakest performance of the three approaches. 
+
+This comparison shows, that with these three approaches we have a trade off between the precision compared to the true sigmoid function and the amount of data we can transfer per second. 
 
 **********************************
 7.5 Wrap-Up

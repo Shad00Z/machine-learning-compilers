@@ -47,7 +47,7 @@ void test_sigmoid_taylor_primitive(uint32_t M,
     {
         REQUIRE(A[i] == Approx(A_expected[i]).margin(FLOAT_ERROR_MARGIN));
         // For polynomial approximation, relaxed margin
-        REQUIRE(B[i] == Approx(B_expected[i]).margin(0.01f));
+        REQUIRE(B[i] == Approx(B_expected[i]).margin(0.00001f));
     }
 
     delete[] A;

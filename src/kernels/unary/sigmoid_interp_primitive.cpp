@@ -83,11 +83,6 @@ void mini_jit::kernels::unary::sigmoid_interpolation(mini_jit::Kernel &kernel,
             // 2.2 Clamp indices to [0, 31] to prevent out-of-bounds access
             fminVec(v2, v2, v28, s4), // clamp to <= 31
 
-            // // 3. Integer Parts - Potential SegFaults caused by fcvtms with floats
-            // fcvtmsVec(v7, v2, s4),
-            // scvtfVec(v8, v7, s4),
-            // fsubVec(v9, v2, v8, s4),
-
             // 3. Integer Parts
             frintmVec(v3, v2, s4),      // gets the "integer" - XX.FP from v2 and floors the value
             fsubVec(v5, v2, v3, s4),    // gets the "float" - .XX 
@@ -107,14 +102,14 @@ void mini_jit::kernels::unary::sigmoid_interpolation(mini_jit::Kernel &kernel,
             lsl(w13, w13, 2),
 
             // 5. Load values from table at index i
-            ldrReg(v6, x2, w10, 0, s),
-            ldrReg(v7, x2, w11, 0, s),
+            ldrReg( v6, x2, w10, 0, s),
+            ldrReg( v7, x2, w11, 0, s),
             ldrReg(v16, x2, w12, 0, s),
             ldrReg(v17, x2, w13, 0, s),
 
             // 6. Calculate first vector
-            ins(v18, v6, 0, 0, s),
-            ins(v18, v7, 1, 0, s),
+            ins(v18,  v6, 0, 0, s),
+            ins(v18,  v7, 1, 0, s),
             ins(v18, v16, 2, 0, s),
             ins(v18, v17, 3, 0, s),
 

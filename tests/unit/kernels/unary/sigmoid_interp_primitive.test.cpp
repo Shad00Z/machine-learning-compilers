@@ -14,7 +14,6 @@ void test_sigmoid_interp_primitive(uint32_t M,
     float* A = new float[M * N];
     float* B = new float[M * N];
     float* A_expected = new float[M * N];
-    float* B_expected = new float[M * N];
     float* B_true = new float[M * N];
 
     std::random_device rd;
@@ -26,23 +25,13 @@ void test_sigmoid_interp_primitive(uint32_t M,
         return 1.0f / (1.0f + std::exp(-x));
     };
 
-    // sigmoid(x) ≈ 0.5 + 0.25*x - 0.020833*x^3 + 0.002083*x^5 (5th order Taylor)
-    auto fSigmoidApprox = [](float x) {
-        float x2 = x * x;
-        float x3 = x2 * x;
-        float x5 = x3 * x2;
-        return 0.5f + 0.25f * x - 0.020833333f * x3 + 0.002083333f * x5;
-    };
-
     for (u_int32_t i = 0; i < M * N; i++)
     {
         float l_aValue = dist(gen);
         A[i] = l_aValue;
-        // std::cout << A[i] << std::endl;
         A_expected[i] = l_aValue;
 
         B[i] = dist(gen);
-        B_expected[i] = fSigmoidApprox(A[i]);
         B_true[i] = fSigmoidTrue(A[i]);
     }
 
@@ -53,44 +42,15 @@ void test_sigmoid_interp_primitive(uint32_t M,
     mini_jit::Unary::kernel_t_sig l_kernel_t = reinterpret_cast<mini_jit::Unary::kernel_t_sig>(const_cast<void *>(l_kernel.get_kernel()));
     l_kernel_t(A, B, const_cast<void*>(static_cast<const void*>(sig_table)), M, M);
 
-    // Print comparison results
-    std::cout << "\n=== Sigmoid Comparison Results ===" << std::endl;
-    std::cout << std::fixed << std::setprecision(6);
-
-    // Print header with proper column widths
-    std::cout << std::setw(12) << "Input"
-              << std::setw(16) << "True Sigmoid"
-              << std::setw(16) << "Kernel Result"
-              << std::setw(14) << "Difference"
-              << std::setw(18) << "Approx (Taylor)"
-              << std::endl;
-
-    std::cout << std::setw(12) << "-----"
-              << std::setw(16) << "------------"
-              << std::setw(16) << "-------------"
-              << std::setw(14) << "----------"
-              << std::setw(18) << "---------------"
-              << std::endl;
-
     for (u_int32_t i = 0; i < M * N; i++)
     {
-        float difference = std::abs(B_true[i] - B[i]);
-        std::cout << std::setw(12) << A[i]
-                  << std::setw(16) << B_true[i]
-                  << std::setw(16) << B[i]
-                  << std::setw(14) << difference
-                  << std::setw(18) << B_expected[i]
-                  << std::endl;
-
-        // Check accuracy - use a reasonable tolerance for interpolation
         REQUIRE(A[i] == Approx(A_expected[i]).margin(FLOAT_ERROR_MARGIN));
-        REQUIRE(B[i] == Approx(B_true[i]).margin(0.01f)); // Allow 10% error for interpolation
+        REQUIRE(B[i] == Approx(B_true[i]).margin(0.01f));
     }
 
     delete[] A;
     delete[] B;
     delete[] A_expected;
-    delete[] B_expected;
     delete[] B_true;
 }
 
