@@ -53,54 +53,39 @@ void test_sigmoid_interp_primitive(uint32_t M,
     mini_jit::Unary::kernel_t_sig l_kernel_t = reinterpret_cast<mini_jit::Unary::kernel_t_sig>(const_cast<void *>(l_kernel.get_kernel()));
     l_kernel_t(A, B, const_cast<void*>(static_cast<const void*>(sig_table)), M, M);
 
-    // std::cout << "\nMatrix B" << std::endl;
-    // for (u_int32_t i = 0; i < M * N; i++)
-    // {
-    //     if ( i % M == 0)
-    //     {
-    //         std::cout << ""<< std::endl;    
-    //     }
-    //     std::cout << "B[" << i << "] = " << B[i] << std::endl;
-    // }
-
-    // std::cout << "\nMatrix B_expected" << std::endl;
-    // for (u_int32_t i = 0; i < M * N; i++)
-    // {
-    //     if ( i % M == 0)
-    //     {
-    //         std::cout << ""<< std::endl;    
-    //     }
-    //     std::cout << "B[" << i << "] = " << B_true[i] << std::endl;
-    // }
-
-    // for (u_int32_t i = 0; i < M * N; i++)
-    // {
-    //     REQUIRE(A[i] == Approx(A_expected[i]).margin(FLOAT_ERROR_MARGIN));
-    //     // For polynomial approximation, relaxed margin
-    //     REQUIRE(B[i] == Approx(B_expected[i]).margin(0.01f));
-    // }
-
-    // // Print comparison results
+    // Print comparison results
     std::cout << "\n=== Sigmoid Comparison Results ===" << std::endl;
     std::cout << std::fixed << std::setprecision(6);
-    std::cout << "Input\t\tTrue Sigmoid\tKernel Result\tDifference\tApprox (Taylor)" << std::endl;
-    std::cout << "-----\t\t------------\t-------------\t----------\t--------------" << std::endl;
-    
+
+    // Print header with proper column widths
+    std::cout << std::setw(12) << "Input"
+              << std::setw(16) << "True Sigmoid"
+              << std::setw(16) << "Kernel Result"
+              << std::setw(14) << "Difference"
+              << std::setw(18) << "Approx (Taylor)"
+              << std::endl;
+
+    std::cout << std::setw(12) << "-----"
+              << std::setw(16) << "------------"
+              << std::setw(16) << "-------------"
+              << std::setw(14) << "----------"
+              << std::setw(18) << "---------------"
+              << std::endl;
+
     for (u_int32_t i = 0; i < M * N; i++)
     {
         float difference = std::abs(B_true[i] - B[i]);
-        std::cout << A[i] << "\t\t" 
-                  << B_true[i] << "\t\t" 
-                  << B[i] << "\t\t" 
-                  << difference << "\t\t"
-                  << B_expected[i] << std::endl;
-        
+        std::cout << std::setw(12) << A[i]
+                  << std::setw(16) << B_true[i]
+                  << std::setw(16) << B[i]
+                  << std::setw(14) << difference
+                  << std::setw(18) << B_expected[i]
+                  << std::endl;
+
         // Check accuracy - use a reasonable tolerance for interpolation
         REQUIRE(A[i] == Approx(A_expected[i]).margin(FLOAT_ERROR_MARGIN));
         REQUIRE(B[i] == Approx(B_true[i]).margin(0.01f)); // Allow 10% error for interpolation
     }
-
-    // std::cout << "===================================\n" << std::endl;
 
     delete[] A;
     delete[] B;
