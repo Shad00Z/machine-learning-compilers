@@ -106,6 +106,15 @@
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit7kernels5unary8zero_xzrERN8mini_jit6KernelE9u_int32_t9u_int32_t9u_int32_t"><code class="docutils literal notranslate"><span class="pre">zero_xzr()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#mini-jit-kernels-binary">mini_jit::kernels::binary</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit7kernels6binary3addERN8mini_jit6KernelE9u_int32_t9u_int32_t"><code class="docutils literal notranslate"><span class="pre">add()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit7kernels6binary3divERN8mini_jit6KernelE9u_int32_t9u_int32_t"><code class="docutils literal notranslate"><span class="pre">div()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit7kernels6binary3maxERN8mini_jit6KernelE9u_int32_t9u_int32_t"><code class="docutils literal notranslate"><span class="pre">max()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit7kernels6binary3minERN8mini_jit6KernelE9u_int32_t9u_int32_t"><code class="docutils literal notranslate"><span class="pre">min()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit7kernels6binary3mulERN8mini_jit6KernelE9u_int32_t9u_int32_t"><code class="docutils literal notranslate"><span class="pre">mul()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit7kernels6binary3subERN8mini_jit6KernelE9u_int32_t9u_int32_t"><code class="docutils literal notranslate"><span class="pre">sub()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="mini_jit_registers.html">mini_jit::registers</a></li>
@@ -516,6 +525,99 @@
 <li><p><strong>m</strong> – number of rows in the matrix. </p></li>
 <li><p><strong>n</strong> – number of columns in the matrix. </p></li>
 <li><p><strong>trans_b</strong> – 0 if B is stored in column-major order, 1 if B is stored in row-major order. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="mini-jit-kernels-binary">
+<h2>mini_jit::kernels::binary<a class="headerlink" href="#mini-jit-kernels-binary" title="Link to this heading"></a></h2>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit7kernels6binary3addERN8mini_jit6KernelE9u_int32_t9u_int32_t">
+<span id="_CPPv3N8mini_jit7kernels6binary3addERN8mini_jit6KernelE9u_int32_t9u_int32_t"></span><span id="_CPPv2N8mini_jit7kernels6binary3addERN8mini_jit6KernelE9u_int32_t9u_int32_t"></span><span id="mini_jit::kernels::binary::add__mini_jit::KernelR.u_int32_t.u_int32_t"></span><span class="target" id="add__primitive_8h_1adeaa3ecb84983f91ac6bbc95770bc46d"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">kernels</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">binary</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">add</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Kernel</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">kernel</span></span>, <span class="n"><span class="pre">u_int32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <span class="n"><span class="pre">u_int32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit7kernels6binary3addERN8mini_jit6KernelE9u_int32_t9u_int32_t" title="Link to this definition"></a><br /></dt>
+<dd><p><a class="reference internal" href="mini_jit.html#classmini__jit_1_1Kernel"><span class="std std-ref">Kernel</span></a> that adds two matrices element-wise. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>kernel</strong> – <a class="reference internal" href="mini_jit.html#classmini__jit_1_1Kernel"><span class="std std-ref">Kernel</span></a> object to be filled with instructions. </p></li>
+<li><p><strong>m</strong> – number of rows in the matrix. </p></li>
+<li><p><strong>n</strong> – number of columns in the matrix. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit7kernels6binary3divERN8mini_jit6KernelE9u_int32_t9u_int32_t">
+<span id="_CPPv3N8mini_jit7kernels6binary3divERN8mini_jit6KernelE9u_int32_t9u_int32_t"></span><span id="_CPPv2N8mini_jit7kernels6binary3divERN8mini_jit6KernelE9u_int32_t9u_int32_t"></span><span id="mini_jit::kernels::binary::div__mini_jit::KernelR.u_int32_t.u_int32_t"></span><span class="target" id="div__primitive_8h_1ab531e5c1b28ce1b08b65b8c560c48550"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">kernels</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">binary</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">div</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Kernel</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">kernel</span></span>, <span class="n"><span class="pre">u_int32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <span class="n"><span class="pre">u_int32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit7kernels6binary3divERN8mini_jit6KernelE9u_int32_t9u_int32_t" title="Link to this definition"></a><br /></dt>
+<dd><p><a class="reference internal" href="mini_jit.html#classmini__jit_1_1Kernel"><span class="std std-ref">Kernel</span></a> that divides two matrices element-wise. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>kernel</strong> – <a class="reference internal" href="mini_jit.html#classmini__jit_1_1Kernel"><span class="std std-ref">Kernel</span></a> object to be filled with instructions. </p></li>
+<li><p><strong>m</strong> – number of rows in the matrix. </p></li>
+<li><p><strong>n</strong> – number of columns in the matrix. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit7kernels6binary3maxERN8mini_jit6KernelE9u_int32_t9u_int32_t">
+<span id="_CPPv3N8mini_jit7kernels6binary3maxERN8mini_jit6KernelE9u_int32_t9u_int32_t"></span><span id="_CPPv2N8mini_jit7kernels6binary3maxERN8mini_jit6KernelE9u_int32_t9u_int32_t"></span><span id="mini_jit::kernels::binary::max__mini_jit::KernelR.u_int32_t.u_int32_t"></span><span class="target" id="max__primitive_8h_1a1e1c17a755ce5cb7d4623b49e0dc22bd"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">kernels</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">binary</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">max</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Kernel</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">kernel</span></span>, <span class="n"><span class="pre">u_int32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <span class="n"><span class="pre">u_int32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit7kernels6binary3maxERN8mini_jit6KernelE9u_int32_t9u_int32_t" title="Link to this definition"></a><br /></dt>
+<dd><p><a class="reference internal" href="mini_jit.html#classmini__jit_1_1Kernel"><span class="std std-ref">Kernel</span></a> that computes the element-wise maximum of two matrices. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>kernel</strong> – <a class="reference internal" href="mini_jit.html#classmini__jit_1_1Kernel"><span class="std std-ref">Kernel</span></a> object to be filled with instructions. </p></li>
+<li><p><strong>m</strong> – number of rows in the matrix. </p></li>
+<li><p><strong>n</strong> – number of columns in the matrix. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit7kernels6binary3minERN8mini_jit6KernelE9u_int32_t9u_int32_t">
+<span id="_CPPv3N8mini_jit7kernels6binary3minERN8mini_jit6KernelE9u_int32_t9u_int32_t"></span><span id="_CPPv2N8mini_jit7kernels6binary3minERN8mini_jit6KernelE9u_int32_t9u_int32_t"></span><span id="mini_jit::kernels::binary::min__mini_jit::KernelR.u_int32_t.u_int32_t"></span><span class="target" id="min__primitive_8h_1a9eb8a2e441e4d1b445ac213dd68ed994"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">kernels</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">binary</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">min</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Kernel</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">kernel</span></span>, <span class="n"><span class="pre">u_int32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <span class="n"><span class="pre">u_int32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit7kernels6binary3minERN8mini_jit6KernelE9u_int32_t9u_int32_t" title="Link to this definition"></a><br /></dt>
+<dd><p><a class="reference internal" href="mini_jit.html#classmini__jit_1_1Kernel"><span class="std std-ref">Kernel</span></a> that computes the element-wise minimum of two matrices. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>kernel</strong> – <a class="reference internal" href="mini_jit.html#classmini__jit_1_1Kernel"><span class="std std-ref">Kernel</span></a> object to be filled with instructions. </p></li>
+<li><p><strong>m</strong> – number of rows in the matrix. </p></li>
+<li><p><strong>n</strong> – number of columns in the matrix. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit7kernels6binary3mulERN8mini_jit6KernelE9u_int32_t9u_int32_t">
+<span id="_CPPv3N8mini_jit7kernels6binary3mulERN8mini_jit6KernelE9u_int32_t9u_int32_t"></span><span id="_CPPv2N8mini_jit7kernels6binary3mulERN8mini_jit6KernelE9u_int32_t9u_int32_t"></span><span id="mini_jit::kernels::binary::mul__mini_jit::KernelR.u_int32_t.u_int32_t"></span><span class="target" id="mul__primitive_8h_1a478a588b8aaeee104a7d195c838f55c4"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">kernels</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">binary</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">mul</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Kernel</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">kernel</span></span>, <span class="n"><span class="pre">u_int32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <span class="n"><span class="pre">u_int32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit7kernels6binary3mulERN8mini_jit6KernelE9u_int32_t9u_int32_t" title="Link to this definition"></a><br /></dt>
+<dd><p><a class="reference internal" href="mini_jit.html#classmini__jit_1_1Kernel"><span class="std std-ref">Kernel</span></a> that multiplies two matrices element-wise. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>kernel</strong> – <a class="reference internal" href="mini_jit.html#classmini__jit_1_1Kernel"><span class="std std-ref">Kernel</span></a> object to be filled with instructions. </p></li>
+<li><p><strong>m</strong> – number of rows in the matrix. </p></li>
+<li><p><strong>n</strong> – number of columns in the matrix. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit7kernels6binary3subERN8mini_jit6KernelE9u_int32_t9u_int32_t">
+<span id="_CPPv3N8mini_jit7kernels6binary3subERN8mini_jit6KernelE9u_int32_t9u_int32_t"></span><span id="_CPPv2N8mini_jit7kernels6binary3subERN8mini_jit6KernelE9u_int32_t9u_int32_t"></span><span id="mini_jit::kernels::binary::sub__mini_jit::KernelR.u_int32_t.u_int32_t"></span><span class="target" id="sub__primitive_8h_1ac94dd873fd12f595cd389d5989863df9"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">kernels</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">binary</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">sub</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Kernel</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">kernel</span></span>, <span class="n"><span class="pre">u_int32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <span class="n"><span class="pre">u_int32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit7kernels6binary3subERN8mini_jit6KernelE9u_int32_t9u_int32_t" title="Link to this definition"></a><br /></dt>
+<dd><p><a class="reference internal" href="mini_jit.html#classmini__jit_1_1Kernel"><span class="std std-ref">Kernel</span></a> that subtracts two matrices element-wise. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>kernel</strong> – <a class="reference internal" href="mini_jit.html#classmini__jit_1_1Kernel"><span class="std std-ref">Kernel</span></a> object to be filled with instructions. </p></li>
+<li><p><strong>m</strong> – number of rows in the matrix. </p></li>
+<li><p><strong>n</strong> – number of columns in the matrix. </p></li>
 </ul>
 </dd>
 </dl>

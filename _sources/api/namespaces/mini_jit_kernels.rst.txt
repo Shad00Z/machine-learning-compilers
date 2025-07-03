@@ -27,3 +27,10 @@ mini_jit::kernels::unary
    :project: Machine Learning Compilers
    :content-only:
    :members:
+
+mini_jit::kernels::binary
+----------------------------
+.. doxygennamespace:: mini_jit::kernels::binary
+   :project: Machine Learning Compilers
+   :content-only:
+   :members:
