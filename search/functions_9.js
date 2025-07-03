@@ -1,6 +1,4 @@
 var searchData=
 [
-  ['optimize_0',['optimize',['../classmini__jit_1_1ir_1_1Optimizer.html#a9e1a1337409a69d4c731fdb92f2396f1',1,'mini_jit::ir::Optimizer::optimize(std::vector&lt; Dimension &gt; &amp;dimensions, int64_t thread_target, int64_t max_kernel_size)'],['../classmini__jit_1_1ir_1_1Optimizer.html#ac201345b76838c6d1f19b77635233b47',1,'mini_jit::ir::Optimizer::optimize(std::vector&lt; dim_t &gt; &amp;dim_types, std::vector&lt; exec_t &gt; &amp;exec_types, std::vector&lt; int64_t &gt; &amp;dim_sizes, std::vector&lt; int64_t &gt; &amp;strides_in0, std::vector&lt; int64_t &gt; &amp;strides_in1, std::vector&lt; int64_t &gt; &amp;strides_out, int64_t thread_target, int64_t max_kernel_size)']]],
-  ['optimize_5feinsum_5fnodes_1',['optimize_einsum_nodes',['../classmini__jit_1_1einsum_1_1EinsumTree.html#af3f3d28ecafdb30e2de062a6489acf4b',1,'mini_jit::einsum::EinsumTree']]],
-  ['optimizer_2',['Optimizer',['../classmini__jit_1_1ir_1_1Optimizer.html#af04059ad017da7366cf5ed392e70bf59',1,'mini_jit::ir::Optimizer']]]
+  ['lower_5feinsum_5fnodes_5fto_5ftensor_5foperations_0',['lower_einsum_nodes_to_tensor_operations',['../classmini__jit_1_1einsum_1_1EinsumTree.html#abc9cc179460219a9e442fff36a2c2e51',1,'mini_jit::einsum::EinsumTree']]]
 ];

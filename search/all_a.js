@@ -1,6 +1,24 @@
 var searchData=
 [
-  ['optimize_0',['optimize',['../classmini__jit_1_1ir_1_1Optimizer.html#a9e1a1337409a69d4c731fdb92f2396f1',1,'mini_jit::ir::Optimizer::optimize(std::vector&lt; Dimension &gt; &amp;dimensions, int64_t thread_target, int64_t max_kernel_size)'],['../classmini__jit_1_1ir_1_1Optimizer.html#ac201345b76838c6d1f19b77635233b47',1,'mini_jit::ir::Optimizer::optimize(std::vector&lt; dim_t &gt; &amp;dim_types, std::vector&lt; exec_t &gt; &amp;exec_types, std::vector&lt; int64_t &gt; &amp;dim_sizes, std::vector&lt; int64_t &gt; &amp;strides_in0, std::vector&lt; int64_t &gt; &amp;strides_in1, std::vector&lt; int64_t &gt; &amp;strides_out, int64_t thread_target, int64_t max_kernel_size)']]],
-  ['optimize_5feinsum_5fnodes_1',['optimize_einsum_nodes',['../classmini__jit_1_1einsum_1_1EinsumTree.html#af3f3d28ecafdb30e2de062a6489acf4b',1,'mini_jit::einsum::EinsumTree']]],
-  ['optimizer_2',['optimizer',['../classmini__jit_1_1ir_1_1Optimizer.html',1,'mini_jit::ir::Optimizer'],['../classmini__jit_1_1ir_1_1Optimizer.html#af04059ad017da7366cf5ed392e70bf59',1,'mini_jit::ir::Optimizer::Optimizer()']]]
+  ['m_5fcomputational_5foperations_0',['m_computational_operations',['../structmini__jit_1_1einsum_1_1EinsumNode.html#a8180eb2a5d0528aa3d58fa196f8c9e07',1,'mini_jit::einsum::EinsumNode']]],
+  ['m_5fdim_5fsizes_1',['m_dim_sizes',['../structmini__jit_1_1einsum_1_1EinsumNode.html#ae2f5399504dfb88086032286d70f0b8b',1,'mini_jit::einsum::EinsumNode']]],
+  ['m_5fdim_5ftypes_2',['m_dim_types',['../structmini__jit_1_1einsum_1_1EinsumNode.html#a80dc84dbeda5053c0137d3778bf04be6',1,'mini_jit::einsum::EinsumNode']]],
+  ['m_5fdimension_5fids_3',['m_dimension_ids',['../structmini__jit_1_1einsum_1_1EinsumNode.html#a1b915233d0fe483bc04bb4a7553d17e7',1,'mini_jit::einsum::EinsumNode']]],
+  ['m_5fdtype_4',['m_dtype',['../structmini__jit_1_1einsum_1_1EinsumNode.html#ac9400ce848101d8552f82a8b1cc5f276',1,'mini_jit::einsum::EinsumNode']]],
+  ['m_5fexec_5ftypes_5',['m_exec_types',['../structmini__jit_1_1einsum_1_1EinsumNode.html#a852f5f0f5e2b03999b8ff52aa64157f9',1,'mini_jit::einsum::EinsumNode']]],
+  ['m_5fleft_5fchild_6',['m_left_child',['../structmini__jit_1_1einsum_1_1EinsumNode.html#a1242f3e1bef00216d098fb7be29fe69d',1,'mini_jit::einsum::EinsumNode']]],
+  ['m_5foperation_7',['m_operation',['../structmini__jit_1_1einsum_1_1EinsumNode.html#a23f2fb24158f05733cd647e9f801a1ed',1,'mini_jit::einsum::EinsumNode']]],
+  ['m_5foutput_5fdimension_5fids_8',['m_output_dimension_ids',['../structmini__jit_1_1einsum_1_1EinsumNode.html#af7201feca5e45ee3b2ebc25c5a1373f7',1,'mini_jit::einsum::EinsumNode']]],
+  ['m_5fprim_5ffirst_5ftouch_9',['m_prim_first_touch',['../structmini__jit_1_1einsum_1_1EinsumNode.html#acd7811fb51a74d2f14b9697139d8aa13',1,'mini_jit::einsum::EinsumNode']]],
+  ['m_5fprim_5flast_5ftouch_10',['m_prim_last_touch',['../structmini__jit_1_1einsum_1_1EinsumNode.html#a5882889edb544b2c2d5d15cbbe6ed3ea',1,'mini_jit::einsum::EinsumNode']]],
+  ['m_5fprim_5fmain_11',['m_prim_main',['../structmini__jit_1_1einsum_1_1EinsumNode.html#ac25ef3463937cb43fd6c4d640f220440',1,'mini_jit::einsum::EinsumNode']]],
+  ['m_5fright_5fchild_12',['m_right_child',['../structmini__jit_1_1einsum_1_1EinsumNode.html#a5545f13532a1387977f80b7f02367cc4',1,'mini_jit::einsum::EinsumNode']]],
+  ['m_5fstrides_5fin0_13',['m_strides_in0',['../structmini__jit_1_1einsum_1_1EinsumNode.html#a2d289e97b3def8e5d7ac0ff95ad8d484',1,'mini_jit::einsum::EinsumNode']]],
+  ['m_5fstrides_5fin1_14',['m_strides_in1',['../structmini__jit_1_1einsum_1_1EinsumNode.html#adc96efa58c07aeb8150e13b4047e9a83',1,'mini_jit::einsum::EinsumNode']]],
+  ['m_5fstrides_5fout_15',['m_strides_out',['../structmini__jit_1_1einsum_1_1EinsumNode.html#ae65e0b4909339d5dbd8a946ba600c5d8',1,'mini_jit::einsum::EinsumNode']]],
+  ['m_5ftensor_5fexpression_16',['m_tensor_expression',['../structmini__jit_1_1einsum_1_1EinsumNode.html#a09bff6da2a1e8679795549318e31566b',1,'mini_jit::einsum::EinsumNode']]],
+  ['m_5ftensor_5fout_17',['m_tensor_out',['../structmini__jit_1_1einsum_1_1EinsumNode.html#a28d4411592428972af202db6af465728',1,'mini_jit::einsum::EinsumNode']]],
+  ['m_5ftensor_5fsize_18',['m_tensor_size',['../structmini__jit_1_1einsum_1_1EinsumNode.html#a5afb2a44d9beec2ff6b11c7f7a6d07e1',1,'mini_jit::einsum::EinsumNode']]],
+  ['matmulbrmnkbench_19',['matmulbrmnkbench',['../classmini__jit_1_1benchmarks_1_1MatmulBrMNKBench.html#a76ea22f7f6f964ada3b869a0bfa04b6f',1,'mini_jit::benchmarks::MatmulBrMNKBench::MatmulBrMNKBench()'],['../classmini__jit_1_1benchmarks_1_1MatmulBrMNKBench.html',1,'mini_jit::benchmarks::MatmulBrMNKBench']]],
+  ['matmulmnkbench_20',['matmulmnkbench',['../classmini__jit_1_1benchmarks_1_1MatmulMNKBench.html#aab94cec9cfa7d30024032cfa96925bf7',1,'mini_jit::benchmarks::MatmulMNKBench::MatmulMNKBench()'],['../classmini__jit_1_1benchmarks_1_1MatmulMNKBench.html',1,'mini_jit::benchmarks::MatmulMNKBench']]]
 ];

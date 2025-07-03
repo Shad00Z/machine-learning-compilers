@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['write_0',['write',['../classmini__jit_1_1Kernel.html#a18596ddec37836c2b304d740cb798841',1,'mini_jit::Kernel']]]
+  ['unary_0',['Unary',['../classmini__jit_1_1Unary.html',1,'mini_jit']]]
 ];

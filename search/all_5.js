@@ -1,8 +1,7 @@
 var searchData=
 [
-  ['generate_0',['generate',['../classmini__jit_1_1Binary.html#add28c5d4360459f9527c6830923ec0af',1,'mini_jit::Binary::generate()'],['../classmini__jit_1_1Brgemm.html#a368fba286849baf4a86413784ee20dd1',1,'mini_jit::Brgemm::generate()'],['../classmini__jit_1_1Unary.html#ae6f861dddb8cc0e0e6177a04315b64cd',1,'mini_jit::Unary::generate()']]],
-  ['get_5fkernel_1',['get_kernel',['../classmini__jit_1_1Binary.html#ab7aea22d14d4c8337fdcdd0e2fab8610',1,'mini_jit::Binary::get_kernel()'],['../classmini__jit_1_1Brgemm.html#a8bb87d46eb0d84fca3241d8f1c69662a',1,'mini_jit::Brgemm::get_kernel()'],['../classmini__jit_1_1Kernel.html#a003e9eb9eabb03749e8700fdc45f6797',1,'mini_jit::Kernel::get_kernel()'],['../classmini__jit_1_1Unary.html#a7ef08b4895135a02f5057733927455d4',1,'mini_jit::Unary::get_kernel()']]],
-  ['get_5fsize_2',['get_size',['../classmini__jit_1_1Kernel.html#ae231a8fa325231b6d7f0c3b1c345250f',1,'mini_jit::Kernel']]],
-  ['getinstrcountfromlabel_3',['getInstrCountFromLabel',['../classmini__jit_1_1Kernel.html#a2845923d13df854cd3a4e19795257a34',1,'mini_jit::Kernel']]],
-  ['getresult_4',['getResult',['../classmini__jit_1_1Benchmark.html#a92913eb15377accd1734ab2086a563fc',1,'mini_jit::Benchmark']]]
+  ['fast_5fsigmoid_0',['fast_sigmoid',['../namespacesigmoid__benchmark.html#a57dd65b8e6a8c2917a96a3ba6f211fc7',1,'sigmoid_benchmark.fast_sigmoid()'],['../namespacesigmoid__comparison.html#a999cc8d21422abe109379a7a0b7ef149',1,'sigmoid_comparison.fast_sigmoid()']]],
+  ['fastsigmoidprimitivebench_1',['fastsigmoidprimitivebench',['../classmini__jit_1_1benchmarks_1_1FastSigmoidPrimitiveBench.html',1,'mini_jit::benchmarks::FastSigmoidPrimitiveBench'],['../classmini__jit_1_1benchmarks_1_1FastSigmoidPrimitiveBench.html#a3e861a583c67447e76355e6cd20efce3',1,'mini_jit::benchmarks::FastSigmoidPrimitiveBench::FastSigmoidPrimitiveBench()']]],
+  ['format_5fbenchmark_5fresults_2',['format_benchmark_results',['../namespacesigmoid__benchmark.html#af602c9ef9bb51f5d2562ab6587b48032',1,'sigmoid_benchmark']]],
+  ['fusedimensions_3',['fuseDimensions',['../classmini__jit_1_1ir_1_1Optimizer.html#a3afcc1ab333168e6c33ded6b49b36785',1,'mini_jit::ir::Optimizer']]]
 ];

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['lower_5feinsum_5fnodes_5fto_5ftensor_5foperations_0',['lower_einsum_nodes_to_tensor_operations',['../classmini__jit_1_1einsum_1_1EinsumTree.html#abc9cc179460219a9e442fff36a2c2e51',1,'mini_jit::einsum::EinsumTree']]]
+  ['kernel_0',['kernel',['../classmini__jit_1_1Kernel.html',1,'mini_jit::Kernel'],['../classmini__jit_1_1Kernel.html#a872887232720d9d92a8c15802c2518e0',1,'mini_jit::Kernel::Kernel()']]]
 ];

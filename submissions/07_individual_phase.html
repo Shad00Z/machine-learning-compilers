@@ -22,6 +22,7 @@
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../_static/copybutton.js?v=f281be69"></script>
       <script src="../_static/design-tabs.js?v=f930bc37"></script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -68,7 +69,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#sketch">7.2 Sketch</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#implementation">7.3 Implementation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#progress-of-week-1">7.3 Progress of Week 1</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#unary-primitives">7.3.1 Unary Primitives</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#square-primitive">7.3.1.1 Square Primitive</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#reciprocal-primitive">7.3.1.2 Reciprocal Primitive</a></li>
@@ -84,6 +85,18 @@
 <li class="toctree-l3"><a class="reference internal" href="#integration-in-framework">7.3.3 Integration in Framework</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#progress-of-week-2">7.4 Progress of Week 2</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#optimizations">7.4.1 Optimizations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sigmoid">7.4.2 Sigmoid</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#fast-sigmoid">7.4.2.1 Fast Sigmoid</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sigmoid-using-the-taylor-series">7.4.2.2 Sigmoid using the Taylor Series</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sigmoid-using-the-linear-interpolation">7.4.2.3 Sigmoid using the Linear Interpolation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#benchmarks-and-approach-comparison">7.4.2.4 Benchmarks and approach comparison</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#wrap-up">7.5 Wrap-Up</a></li>
 </ul>
 </li>
 </ul>
@@ -129,7 +142,7 @@
 <section id="our-pitch">
 <h2>7.1 Our Pitch<a class="headerlink" href="#our-pitch" title="Link to this heading"></a></h2>
 <section id="roadmap">
-<h3>7.1.1 Roadmap<a class="headerlink" href="#roadmap" title="Link to this heading"></a></h3>
+<span id="id1"></span><h3>7.1.1 Roadmap<a class="headerlink" href="#roadmap" title="Link to this heading"></a></h3>
 <ul>
 <li><p><a class="reference external" href="https://arxiv.org/pdf/2104.05755">Unary Primitives (Tensor Processing Primitives, Table 1)</a></p>
 <blockquote>
@@ -202,8 +215,8 @@ Therefore, we plan to optimize these primitives as much as possible.</p>
 If time allows, we would also like to further optimize our tensor operations by implementing <strong>dimension fusion</strong> and <strong>dimension reordering</strong>.
 Since we already have some other optimizations in place, integrating these should not result in major issues, although we do expect some challenges along the way.</p>
 </section>
-<section id="implementation">
-<h2>7.3 Implementation<a class="headerlink" href="#implementation" title="Link to this heading"></a></h2>
+<section id="progress-of-week-1">
+<h2>7.3 Progress of Week 1<a class="headerlink" href="#progress-of-week-1" title="Link to this heading"></a></h2>
 <p>As suggested in our sketch, our plan was to implement the new functionalities in the following order:</p>
 <ol class="arabic simple">
 <li><p>Unary Primitives</p></li>
@@ -217,8 +230,8 @@ Since we already have some other optimizations in place, integrating these shoul
 <p>Our initial approach was to use instructions that we already had implemented.
 Therefore, we started by using the <code class="docutils literal notranslate"><span class="pre">FMLA</span></code> instruction.
 However, we quickly realized that the performance from multiplying two values and adding a zero value to it was not great. We decided to implement new instructions which would make our code more performant:</p>
-<div class="literal-block-wrapper docutils container" id="id1">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">FMUL</span></code> (vector) instruction generation</span><a class="headerlink" href="#id1" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">FMUL</span></code> (vector) instruction generation</span><a class="headerlink" href="#id2" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">constexpr</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="nf">fmulVec</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="w"> </span><span class="n">reg_dest</span><span class="p">,</span>
 <span class="w">                           </span><span class="n">simd_fp_t</span><span class="w"> </span><span class="n">reg_src1</span><span class="p">,</span>
 <span class="w">                           </span><span class="n">simd_fp_t</span><span class="w"> </span><span class="n">reg_src2</span><span class="p">,</span>
@@ -252,8 +265,8 @@ However, we quickly realized that the performance from multiplying two values an
 </div>
 <p>This <code class="docutils literal notranslate"><span class="pre">FMUL</span></code> (vector) allowed us to multiply several elements simultaneously.
 For the cases where we needed to multiply single elements (<code class="docutils literal notranslate"><span class="pre">arr_spec_t::</span></code>) together, we implemented the following instruction:</p>
-<div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">FMUL</span></code> (scalar) instruction generation</span><a class="headerlink" href="#id2" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">FMUL</span></code> (scalar) instruction generation</span><a class="headerlink" href="#id3" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">constexpr</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="nf">fmulScalar</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="w"> </span><span class="n">reg_dest</span><span class="p">,</span>
 <span class="w">                              </span><span class="n">simd_fp_t</span><span class="w"> </span><span class="n">reg_src1</span><span class="p">,</span>
 <span class="w">                              </span><span class="n">simd_fp_t</span><span class="w"> </span><span class="n">reg_src2</span><span class="p">,</span>
@@ -286,8 +299,8 @@ For the cases where we needed to multiply single elements (<code class="docutils
 </div>
 <p>These instructions allowed us to develop a kernel for the squared primitive.
 The approach for constructing this kernel was similar to the <code class="docutils literal notranslate"><span class="pre">zero</span></code>, <code class="docutils literal notranslate"><span class="pre">ReLU</span></code> or <code class="docutils literal notranslate"><span class="pre">identity</span></code> kernel.</p>
-<div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-text">Calculating iterations and remainder</span><a class="headerlink" href="#id3" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">Calculating iterations and remainder</span><a class="headerlink" href="#id4" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="n">mLoopIterations</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">16</span><span class="p">;</span>
 <span class="kt">int</span><span class="w"> </span><span class="n">mLoopRemainder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">16</span><span class="p">;</span>
 </pre></div>
@@ -295,8 +308,8 @@ The approach for constructing this kernel was similar to the <code class="docuti
 </div>
 <p>As a first step, we would calculate how many iterations we had to perform.
 With this number, we were then able to execute our main kernel accordingly:</p>
-<div class="literal-block-wrapper docutils container" id="id4">
-<div class="code-block-caption"><span class="caption-text">squared primitive main loop calculation</span><a class="headerlink" href="#id4" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text">squared primitive main loop calculation</span><a class="headerlink" href="#id5" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">ldp</span><span class="p">(</span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">x8</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">q</span><span class="p">)</span>
 <span class="n">ldp</span><span class="p">(</span><span class="n">v2</span><span class="p">,</span><span class="w"> </span><span class="n">v3</span><span class="p">,</span><span class="w"> </span><span class="n">x8</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="p">,</span><span class="w"> </span><span class="n">q</span><span class="p">)</span>
 
@@ -312,8 +325,8 @@ With this number, we were then able to execute our main kernel accordingly:</p>
 </div>
 <p>That means, in our main loop we would calculate 16 squared elements in one iteration.
 If there were no iterations left, we had to check if there would be a remainder:</p>
-<div class="literal-block-wrapper docutils container" id="id5">
-<div class="code-block-caption"><span class="caption-text">Squared kernel remainder calculation</span><a class="headerlink" href="#id5" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text">Squared kernel remainder calculation</span><a class="headerlink" href="#id6" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">case</span><span class="w"> </span><span class="mi">8</span><span class="p">:</span>
 <span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">({</span>
 <span class="w">        </span><span class="n">ldp</span><span class="p">(</span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">x8</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">q</span><span class="p">),</span>
@@ -339,8 +352,8 @@ If there were no iterations left, we had to check if there would be a remainder:
 </div>
 <p>We had to calculate the remainder for all of our 15 cases, in order to guarantee a correctly functioning kernel.
 After implementing the kernel, we also verified its correctness for different configurations:</p>
-<div class="literal-block-wrapper docutils container" id="id6">
-<div class="code-block-caption"><span class="caption-text">Testing dimensions</span><a class="headerlink" href="#id6" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text">Testing dimensions</span><a class="headerlink" href="#id7" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">M</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GENERATE</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="mi">9</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">11</span><span class="p">,</span><span class="w"> </span><span class="mi">12</span><span class="p">,</span><span class="w"> </span><span class="mi">13</span><span class="p">,</span><span class="w"> </span><span class="mi">14</span><span class="p">,</span><span class="w"> </span><span class="mi">15</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="p">);</span>
 <span class="kt">uint32_t</span><span class="w"> </span><span class="n">N</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GENERATE</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="mi">9</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">11</span><span class="p">,</span><span class="w"> </span><span class="mi">12</span><span class="p">,</span><span class="w"> </span><span class="mi">13</span><span class="p">,</span><span class="w"> </span><span class="mi">14</span><span class="p">,</span><span class="w"> </span><span class="mi">15</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="p">);</span>
 <span class="n">test_square_primitive</span><span class="p">(</span><span class="n">M</span><span class="p">,</span><span class="w"> </span><span class="n">N</span><span class="p">);</span>
@@ -349,8 +362,8 @@ After implementing the kernel, we also verified its correctness for different co
 </div>
 <p>In order to be universally usable, we have also implemented a transposition square kernel.
 The implementation for this kernel was simple, as we could reuse the <code class="docutils literal notranslate"><span class="pre">ReLU</span></code> kernel and replace the ReLU operation with the square operation:</p>
-<div class="literal-block-wrapper docutils container" id="id7">
-<div class="code-block-caption"><span class="caption-text">Squared transposition primitive main loop calculation</span><a class="headerlink" href="#id7" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id8">
+<div class="code-block-caption"><span class="caption-text">Squared transposition primitive main loop calculation</span><a class="headerlink" href="#id8" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Load 4x4 block of A (input matrix)</span>
 <span class="n">ldr</span><span class="p">(</span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">x7</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">q</span><span class="p">)</span>
 <span class="n">add</span><span class="p">(</span><span class="n">x7</span><span class="p">,</span><span class="w"> </span><span class="n">x7</span><span class="p">,</span><span class="w"> </span><span class="n">x2</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
@@ -395,8 +408,8 @@ The implementation for this kernel was simple, as we could reuse the <code class
 For the transposition kernel, we did not implement any further optimizations.</p>
 <p>On the other hand, for the normal squared kernel we enhanced our initial dimension size from <code class="docutils literal notranslate"><span class="pre">M=8</span></code> to <code class="docutils literal notranslate"><span class="pre">M=16</span></code>.</p>
 <p>Lastly, we performed benchmarks similar to those of the other unary kernels:</p>
-<div class="literal-block-wrapper docutils container" id="id8">
-<div class="code-block-caption"><span class="caption-text">Benchmarking <code class="docutils literal notranslate"><span class="pre">squared</span></code> kernel</span><a class="headerlink" href="#id8" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text">Benchmarking <code class="docutils literal notranslate"><span class="pre">squared</span></code> kernel</span><a class="headerlink" href="#id9" title="Link to this code"></a></div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>--------------------------------------------------
 Running square_primitive 50x50 benchmark
 Total time (s):                       3
@@ -425,8 +438,8 @@ Estimated GFLOPS/sec:                 13.7458
 </pre></div>
 </div>
 </div>
-<div class="literal-block-wrapper docutils container" id="id9">
-<div class="code-block-caption"><span class="caption-text">Benchmarking <code class="docutils literal notranslate"><span class="pre">squared</span></code> transposition kernel</span><a class="headerlink" href="#id9" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id10">
+<div class="code-block-caption"><span class="caption-text">Benchmarking <code class="docutils literal notranslate"><span class="pre">squared</span></code> transposition kernel</span><a class="headerlink" href="#id10" title="Link to this code"></a></div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Running square_trans_primitive 50x50 benchmark
 Total time (s):                       3
 Total reps:                           17201142
@@ -460,8 +473,8 @@ Estimated GFLOPS/sec:                 0.47774
 <h4>7.3.1.2 Reciprocal Primitive<a class="headerlink" href="#reciprocal-primitive" title="Link to this heading"></a></h4>
 <p>The next primitive we implemented is the <code class="docutils literal notranslate"><span class="pre">reciprocal</span></code> operation, which computes <code class="docutils literal notranslate"><span class="pre">1.0</span> <span class="pre">/</span> <span class="pre">x</span></code> for all input values <code class="docutils literal notranslate"><span class="pre">x</span></code>.
 For this, the AArch64 ISA already provides two instructions <code class="docutils literal notranslate"><span class="pre">FRECPE</span></code> and <code class="docutils literal notranslate"><span class="pre">FRECPS</span></code>. <code class="docutils literal notranslate"><span class="pre">FRECPE</span></code> is the <code class="docutils literal notranslate"><span class="pre">floating</span> <span class="pre">point</span> <span class="pre">reciprocal</span> <span class="pre">compute</span> <span class="pre">estimate</span></code> instruction, which computes a first estimate of <code class="docutils literal notranslate"><span class="pre">1.0</span> <span class="pre">/</span> <span class="pre">x</span></code>. However, this estimate is generally not good enough for 32-bit floating point precision. To solve this, we can utilize <code class="docutils literal notranslate"><span class="pre">FRECPS</span></code> (<code class="docutils literal notranslate"><span class="pre">floating</span> <span class="pre">point</span> <span class="pre">reciprocal</span> <span class="pre">compute</span> <span class="pre">step</span></code>) iteratively, which improves the accuracy of the previously calculated estimate. We decided to perform only one step, as this already satisfied our used 32-bit floating point precision.</p>
-<div class="literal-block-wrapper docutils container" id="id10">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">FRECPE</span></code> instruction generation</span><a class="headerlink" href="#id10" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id11">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">FRECPE</span></code> instruction generation</span><a class="headerlink" href="#id11" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">constexpr</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="nf">frecpeVec</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="w"> </span><span class="n">reg_dest</span><span class="p">,</span>
 <span class="w">                             </span><span class="n">simd_fp_t</span><span class="w"> </span><span class="n">reg_src</span><span class="p">,</span>
 <span class="w">                             </span><span class="n">arr_spec_t</span><span class="w"> </span><span class="n">arr_spec</span><span class="p">)</span>
@@ -497,8 +510,8 @@ For this, the AArch64 ISA already provides two instructions <code class="docutil
 </pre></div>
 </div>
 </div>
-<div class="literal-block-wrapper docutils container" id="id11">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">FRECPS</span></code> instruction generation</span><a class="headerlink" href="#id11" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id12">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">FRECPS</span></code> instruction generation</span><a class="headerlink" href="#id12" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">constexpr</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="nf">frecpsVec</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="w"> </span><span class="n">reg_dest</span><span class="p">,</span>
 <span class="w">                             </span><span class="n">simd_fp_t</span><span class="w"> </span><span class="n">reg_src1</span><span class="p">,</span>
 <span class="w">                             </span><span class="n">simd_fp_t</span><span class="w"> </span><span class="n">reg_src2</span><span class="p">,</span>
@@ -547,8 +560,8 @@ For this, the AArch64 ISA already provides two instructions <code class="docutil
 </pre></div>
 </div>
 <p>With these instructions, we began implementing the new kernel. Structurally it is identical to the square primitive. We simply replaced the calculations with the new instructions:</p>
-<div class="literal-block-wrapper docutils container" id="id12">
-<div class="code-block-caption"><span class="caption-text">Reciprocal primitive main loop calculation</span><a class="headerlink" href="#id12" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id13">
+<div class="code-block-caption"><span class="caption-text">Reciprocal primitive main loop calculation</span><a class="headerlink" href="#id13" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">({</span>
 <span class="w">    </span><span class="c1">// load 16 elements from A</span>
 <span class="w">    </span><span class="n">ldp</span><span class="p">(</span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">x8</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">q</span><span class="p">),</span>
@@ -584,8 +597,8 @@ For this, the AArch64 ISA already provides two instructions <code class="docutil
 </pre></div>
 </div>
 </div>
-<div class="literal-block-wrapper docutils container" id="id13">
-<div class="code-block-caption"><span class="caption-text">Reciprocal transposition primitive main loop calculation</span><a class="headerlink" href="#id13" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id14">
+<div class="code-block-caption"><span class="caption-text">Reciprocal transposition primitive main loop calculation</span><a class="headerlink" href="#id14" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">({</span>
 <span class="w">    </span><span class="c1">// working pointer for A and B</span>
 <span class="w">    </span><span class="n">mov</span><span class="p">(</span><span class="n">x7</span><span class="p">,</span><span class="w"> </span><span class="n">x4</span><span class="p">)</span>
@@ -658,8 +671,8 @@ For this, the AArch64 ISA already provides two instructions <code class="docutil
 <p>Similar to the other primitives, we had to first implement a few new instructions.
 Instructions that were directly needed for these primitives are <code class="docutils literal notranslate"><span class="pre">FADD</span></code> and <code class="docutils literal notranslate"><span class="pre">FSUB</span></code>.
 To fully utilize these instructions, we were implementing both a scalar and a vector version for these instructions:</p>
-<div class="literal-block-wrapper docutils container" id="id14">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">FADD</span></code> instruction generation</span><a class="headerlink" href="#id14" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id15">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">FADD</span></code> instruction generation</span><a class="headerlink" href="#id15" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">constexpr</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="nf">faddVec</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="w"> </span><span class="n">reg_dest</span><span class="p">,</span>
 <span class="w">                           </span><span class="n">simd_fp_t</span><span class="w"> </span><span class="n">reg_src1</span><span class="p">,</span>
 <span class="w">                           </span><span class="n">simd_fp_t</span><span class="w"> </span><span class="n">reg_src2</span><span class="p">,</span>
@@ -713,8 +726,8 @@ Implementing the <code class="docutils literal notranslate"><span class="pre">FM
 The main reason for this special behavior is the split of the 8-bit immediate into 1 signed bit, a 3-bit exponent and a 4-bit precision part.
 This unique characteristic changes the use of these 8-bits slightly.</p>
 <p>For example, we have looked at different scenarios for moving a floating point value:</p>
-<table class="docutils align-default" id="id15">
-<caption><span class="caption-text">Different FMOV Floating-Point Movements</span><a class="headerlink" href="#id15" title="Link to this table"></a></caption>
+<table class="docutils align-default" id="id16">
+<caption><span class="caption-text">Different FMOV Floating-Point Movements</span><a class="headerlink" href="#id16" title="Link to this table"></a></caption>
 <colgroup>
 <col style="width: 20.0%" />
 <col style="width: 10.0%" />
@@ -812,8 +825,8 @@ This unique characteristic changes the use of these 8-bits slightly.</p>
 </tbody>
 </table>
 <p>Looking at these examples we were able to find some special cases (e.g. <code class="docutils literal notranslate"><span class="pre">1</span></code>), but also patterns, that we were trying to apply to our implementation:</p>
-<div class="literal-block-wrapper docutils container" id="id16">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">FMOV</span></code> (vector, immediate) instruction generation</span><a class="headerlink" href="#id16" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id17">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">FMOV</span></code> (vector, immediate) instruction generation</span><a class="headerlink" href="#id17" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">constexpr</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="nf">fmovVec</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="w"> </span><span class="n">reg_dest</span><span class="p">,</span>
 <span class="w">                           </span><span class="kt">int32_t</span><span class="w"> </span><span class="n">imm8</span><span class="p">,</span>
 <span class="w">                           </span><span class="n">arr_spec_t</span><span class="w"> </span><span class="n">arr_spec</span><span class="p">)</span>
@@ -887,8 +900,8 @@ This unique characteristic changes the use of these 8-bits slightly.</p>
 </div>
 <p>In practice, we would need the <code class="docutils literal notranslate"><span class="pre">FMOV</span></code> instruction to transfer the <code class="docutils literal notranslate"><span class="pre">1.0f</span></code> into a vector, in order to be able to execute vector addition and subtraction operations.</p>
 <p>After implementing the instructions we simply took our <code class="docutils literal notranslate"><span class="pre">square</span></code> kernel and replaced all multiplication operations with a <code class="docutils literal notranslate"><span class="pre">FADD</span></code> or a <code class="docutils literal notranslate"><span class="pre">FSUB</span></code> operation:</p>
-<div class="literal-block-wrapper docutils container" id="id17">
-<div class="code-block-caption"><span class="caption-text">square calculation in main loop</span><a class="headerlink" href="#id17" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id18">
+<div class="code-block-caption"><span class="caption-text">square calculation in main loop</span><a class="headerlink" href="#id18" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Set register with value 1</span>
 <span class="n">fmovVec</span><span class="p">(</span><span class="n">v19</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">)</span>
 
@@ -934,8 +947,8 @@ We implemented the kernels in the following order:</p>
 <p>The first binary primitive which we implemented is the element-wise addition and the subtraction of two matrices. Fortunately, the required instructions <code class="docutils literal notranslate"><span class="pre">FADD</span></code> and <code class="docutils literal notranslate"><span class="pre">FSUB</span></code> were already implemented in <a class="reference internal" href="#increment-decrement"><span class="std std-ref">7.3.1.3 Increment and Decrement Primitive</span></a>.
 Since the subtraction kernel is fundamentally the same as the addition kernel, we will only consider the addition kernel in this section.</p>
 <p>Similar to previous kernels, we first implemented a main loop for 16 elements in the <code class="docutils literal notranslate"><span class="pre">M</span></code> dimension and 1 element in the <code class="docutils literal notranslate"><span class="pre">N</span></code> dimension.</p>
-<div class="literal-block-wrapper docutils container" id="id18">
-<div class="code-block-caption"><span class="caption-text">Addition kernel: main loop</span><a class="headerlink" href="#id18" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id19">
+<div class="code-block-caption"><span class="caption-text">Addition kernel: main loop</span><a class="headerlink" href="#id19" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">kernel</span><span class="p">.</span><span class="n">add_label</span><span class="p">(</span><span class="s">&quot;m_16_loop&quot;</span><span class="p">);</span>
 <span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">({</span>
 <span class="w">    </span><span class="c1">// load 16 elements from A</span>
@@ -970,8 +983,8 @@ Since the subtraction kernel is fundamentally the same as the addition kernel, w
 </div>
 </div>
 <p>If there is a remainder that is smaller than 16, we execute special cases, for example:</p>
-<div class="literal-block-wrapper docutils container" id="id19">
-<div class="code-block-caption"><span class="caption-text">Addition kernel: special cases for M = 1…4</span><a class="headerlink" href="#id19" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id20">
+<div class="code-block-caption"><span class="caption-text">Addition kernel: special cases for M = 1…4</span><a class="headerlink" href="#id20" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">mLoopRemainder</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
 <span class="p">{</span>
 <span class="w">    </span><span class="k">switch</span><span class="w"> </span><span class="p">(</span><span class="n">mLoopRemainder</span><span class="p">)</span>
@@ -1029,8 +1042,8 @@ Since the subtraction kernel is fundamentally the same as the addition kernel, w
 matrices (not element-wise) could be achieved by taking the reciprocal of one of the inputs and multiplying it by the second input.</p>
 <p>The implementation for the element-wise multiplication and division was again straight forward, as we could take our <code class="docutils literal notranslate"><span class="pre">ADD</span></code> and <code class="docutils literal notranslate"><span class="pre">SUB</span></code> kernels,
 and replace the <code class="docutils literal notranslate"><span class="pre">FADD</span></code> and <code class="docutils literal notranslate"><span class="pre">FSUB</span></code> operations with <code class="docutils literal notranslate"><span class="pre">FMUL</span></code> and <code class="docutils literal notranslate"><span class="pre">FDIV</span></code> respectively:</p>
-<div class="literal-block-wrapper docutils container" id="id20">
-<div class="code-block-caption"><span class="caption-text">Mul primitive main loop calculation</span><a class="headerlink" href="#id20" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id21">
+<div class="code-block-caption"><span class="caption-text">Mul primitive main loop calculation</span><a class="headerlink" href="#id21" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// load 16 elements from A</span>
 <span class="n">ldp</span><span class="p">(</span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">x11</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">q</span><span class="p">)</span>
 <span class="n">ldp</span><span class="p">(</span><span class="n">v2</span><span class="p">,</span><span class="w"> </span><span class="n">v3</span><span class="p">,</span><span class="w"> </span><span class="n">x11</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="p">,</span><span class="w"> </span><span class="n">q</span><span class="p">)</span>
@@ -1063,8 +1076,8 @@ and replace the <code class="docutils literal notranslate"><span class="pre">FAD
 <section id="max-and-min-primitive">
 <h4>7.3.2.3 Max and Min Primitive<a class="headerlink" href="#max-and-min-primitive" title="Link to this heading"></a></h4>
 <p>As we had already implemented the <code class="docutils literal notranslate"><span class="pre">FMAX</span></code> instruction for our <a class="reference internal" href="04_code_gen.html#relu-primitive"><span class="std std-ref">4.2.3 ReLU Primitive</span></a>, we only needed to implement the <code class="docutils literal notranslate"><span class="pre">FMIN</span></code> instruction generation:</p>
-<div class="literal-block-wrapper docutils container" id="id21">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">FMIN</span></code> instruction generation</span><a class="headerlink" href="#id21" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id22">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">FMIN</span></code> instruction generation</span><a class="headerlink" href="#id22" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">constexpr</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="nf">fminScalar</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="w"> </span><span class="n">reg_dest</span><span class="p">,</span>
 <span class="w">                              </span><span class="n">simd_fp_t</span><span class="w"> </span><span class="n">reg_src1</span><span class="p">,</span>
 <span class="w">                              </span><span class="n">simd_fp_t</span><span class="w"> </span><span class="n">reg_src2</span><span class="p">,</span>
@@ -1111,8 +1124,8 @@ and replace the <code class="docutils literal notranslate"><span class="pre">FAD
 </div>
 </div>
 <p>The final primitive is almost identical to the previous kernels, except that we now make calls to the <code class="docutils literal notranslate"><span class="pre">FMIN</span></code> and <code class="docutils literal notranslate"><span class="pre">FMAX</span></code> instructions:</p>
-<div class="literal-block-wrapper docutils container" id="id22">
-<div class="code-block-caption"><span class="caption-text">Max primitive main loop calculation</span><a class="headerlink" href="#id22" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id23">
+<div class="code-block-caption"><span class="caption-text">Max primitive main loop calculation</span><a class="headerlink" href="#id23" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">kernel</span><span class="p">.</span><span class="n">add_label</span><span class="p">(</span><span class="s">&quot;m_16_loop&quot;</span><span class="p">);</span>
 <span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">({</span>
 <span class="w">    </span><span class="c1">// load 16 elements from A</span>
@@ -1153,8 +1166,8 @@ and replace the <code class="docutils literal notranslate"><span class="pre">FAD
 <h3>7.3.3 Integration in Framework<a class="headerlink" href="#integration-in-framework" title="Link to this heading"></a></h3>
 <p>After implementing our unary and binary kernels, we needed to integrate them into our TensorOperation backend.
 We started by adjusting our allowed main primitives, and our first and last touches.</p>
-<div class="literal-block-wrapper docutils container" id="id23">
-<div class="code-block-caption"><span class="caption-text">allowed primitive types in a TensorOperation</span><a class="headerlink" href="#id23" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id24">
+<div class="code-block-caption"><span class="caption-text">allowed primitive types in a TensorOperation</span><a class="headerlink" href="#id24" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">/////////////////////////////////////////////////////////////////////</span>
 <span class="c1">// Check allowed primitive types</span>
 <span class="c1">/////////////////////////////////////////////////////////////////////</span>
@@ -1193,8 +1206,8 @@ We started by adjusting our allowed main primitives, and our first and last touc
 <p>As we had already implemented our <code class="docutils literal notranslate"><span class="pre">Unary</span></code> endpoint, which connects the unary primitives to the <code class="docutils literal notranslate"><span class="pre">TensorOperation</span></code>, this was all we had to do for these primitives.
 For the <code class="docutils literal notranslate"><span class="pre">Binary</span></code> primitives the situation was slightly different. First we had to set up our binary primitives.
 We did that by implementing a <code class="docutils literal notranslate"><span class="pre">Binary</span></code> endpoint, which makes calls the new binary primitives based on the input parameters:</p>
-<div class="literal-block-wrapper docutils container" id="id24">
-<div class="code-block-caption"><span class="caption-text">Binary kernel interface</span><a class="headerlink" href="#id24" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id25">
+<div class="code-block-caption"><span class="caption-text">Binary kernel interface</span><a class="headerlink" href="#id25" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">switch</span><span class="w"> </span><span class="p">(</span><span class="n">ptype</span><span class="p">)</span>
 <span class="p">{</span>
 <span class="k">case</span><span class="w"> </span><span class="no">ptype_t</span><span class="o">::</span><span class="no">add</span><span class="p">:</span>
@@ -1271,8 +1284,8 @@ We did that by implementing a <code class="docutils literal notranslate"><span c
 </div>
 </div>
 <p>Inside our TensorOperation, we now also check if there are exactly two primitive dimensions for the new binary primitives:</p>
-<div class="literal-block-wrapper docutils container" id="id25">
-<div class="code-block-caption"><span class="caption-text">Checking the number of primitive dimensions for binary primitives</span><a class="headerlink" href="#id25" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id26">
+<div class="code-block-caption"><span class="caption-text">Checking the number of primitive dimensions for binary primitives</span><a class="headerlink" href="#id26" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">prim_main</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ptype_t</span><span class="o">::</span><span class="n">add</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">prim_main</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ptype_t</span><span class="o">::</span><span class="n">sub</span><span class="w"> </span><span class="o">||</span>
 <span class="w">         </span><span class="n">prim_main</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ptype_t</span><span class="o">::</span><span class="n">mul</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">prim_main</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ptype_t</span><span class="o">::</span><span class="n">div</span><span class="w"> </span><span class="o">||</span>
 <span class="w">         </span><span class="n">prim_main</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ptype_t</span><span class="o">::</span><span class="n">min</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">prim_main</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ptype_t</span><span class="o">::</span><span class="n">max</span><span class="p">)</span>
@@ -1286,8 +1299,8 @@ We did that by implementing a <code class="docutils literal notranslate"><span c
 </div>
 </div>
 <p>Next, we call the generate function of our <code class="docutils literal notranslate"><span class="pre">Binary</span></code> endpoint:</p>
-<div class="literal-block-wrapper docutils container" id="id26">
-<div class="code-block-caption"><span class="caption-text">Generating the binary kernels</span><a class="headerlink" href="#id26" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id27">
+<div class="code-block-caption"><span class="caption-text">Generating the binary kernels</span><a class="headerlink" href="#id27" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">prim_main</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ptype_t</span><span class="o">::</span><span class="n">add</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">prim_main</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ptype_t</span><span class="o">::</span><span class="n">sub</span><span class="w"> </span><span class="o">||</span>
 <span class="w">         </span><span class="n">prim_main</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ptype_t</span><span class="o">::</span><span class="n">mul</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">prim_main</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ptype_t</span><span class="o">::</span><span class="n">div</span><span class="w"> </span><span class="o">||</span>
 <span class="w">         </span><span class="n">prim_main</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ptype_t</span><span class="o">::</span><span class="n">min</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">prim_main</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ptype_t</span><span class="o">::</span><span class="n">max</span><span class="p">)</span>
@@ -1304,8 +1317,8 @@ We did that by implementing a <code class="docutils literal notranslate"><span c
 </div>
 </div>
 <p>And lastly, we just need to execute the generated binary kernels:</p>
-<div class="literal-block-wrapper docutils container" id="id27">
-<div class="code-block-caption"><span class="caption-text">Executing the binary kernels</span><a class="headerlink" href="#id27" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id28">
+<div class="code-block-caption"><span class="caption-text">Executing the binary kernels</span><a class="headerlink" href="#id28" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">m_kernel_main_type</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ptype_t</span><span class="o">::</span><span class="n">add</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">m_kernel_main_type</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ptype_t</span><span class="o">::</span><span class="n">sub</span><span class="w"> </span><span class="o">||</span>
 <span class="w">         </span><span class="n">m_kernel_main_type</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ptype_t</span><span class="o">::</span><span class="n">mul</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">m_kernel_main_type</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ptype_t</span><span class="o">::</span><span class="n">div</span><span class="w"> </span><span class="o">||</span>
 <span class="w">         </span><span class="n">m_kernel_main_type</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ptype_t</span><span class="o">::</span><span class="n">min</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">m_kernel_main_type</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ptype_t</span><span class="o">::</span><span class="n">max</span><span class="p">)</span>
@@ -1323,6 +1336,781 @@ We did that by implementing a <code class="docutils literal notranslate"><span c
 <p>As for the new unary primitives, no major changes needed to be done.
 Our TensorOperation backend already supported unary operations such as <code class="docutils literal notranslate"><span class="pre">zero</span></code> and <code class="docutils literal notranslate"><span class="pre">relu</span></code>, so simply extending it with the new primitives was a trivial task.</p>
 </section>
+</section>
+<section id="progress-of-week-2">
+<span id="project-week-2"></span><h2>7.4 Progress of Week 2<a class="headerlink" href="#progress-of-week-2" title="Link to this heading"></a></h2>
+<section id="optimizations">
+<h3>7.4.1 Optimizations<a class="headerlink" href="#optimizations" title="Link to this heading"></a></h3>
+<p>The first task on our TODO list was to improve our <code class="docutils literal notranslate"><span class="pre">IR</span> <span class="pre">Optimizer</span></code>. Specifically, it did not yet have the capability of fusing dimensions.
+Furthermore, the previous implementation for splitting dimensions was suboptimal in some cases. We introduced a new parameter <code class="docutils literal notranslate"><span class="pre">min_kernel_size</span></code>
+which specifies the minimum size a dimension should have. If a dimension with a smaller size is found, the optimizer will try to fuse it with
+another dimension. Additionally, this minimum kernel size is now also taken into account during the splitting of dimensions, where a split is only
+performed if both new dimensions are at least of size <code class="docutils literal notranslate"><span class="pre">min_kernel_size</span></code>.</p>
+<p>To read more about this topic, please refer to the detailed chapter <a class="reference internal" href="05_tensor_op.html#dimension-fusion"><span class="std std-ref">5.5.4 Dimension Fusion</span></a>.</p>
+<p>The second optimization we applied was in some unary kernels that support transposition. Previously, we always performed the respective unary operation before transposing.
+In some cases however, it is more efficient to perform the respective operation after transposing, because of a better fitting memory layout.
+To illustrate this, we will look at the following example of the reciprocal with transposition kernel:</p>
+<div class="literal-block-wrapper docutils container" id="id29">
+<div class="code-block-caption"><span class="caption-text">Unoptimized Reciprocal Transposition Kernel: case M=1 and N=4</span><a class="headerlink" href="#id29" title="Link to this code"></a></div>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">mini_jit::kernels::unary::internal::reciprocalM1N4</span><span class="p">(</span><span class="w"> </span><span class="n">mini_jit</span><span class="o">::</span><span class="n">Kernel</span><span class="w"> </span><span class="o">&amp;</span><span class="n">kernel</span><span class="w"> </span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">({</span>
+<span class="w">        </span><span class="c1">// working pointer for A and B</span>
+<span class="w">        </span><span class="n">mov</span><span class="p">(</span><span class="n">x7</span><span class="p">,</span><span class="w"> </span><span class="n">x4</span><span class="p">),</span>
+<span class="w">        </span><span class="n">mov</span><span class="p">(</span><span class="n">x8</span><span class="p">,</span><span class="w"> </span><span class="n">x5</span><span class="p">),</span>
+
+<span class="w">        </span><span class="c1">// Load 1x4 block of A (input matrix)</span>
+<span class="w">        </span><span class="n">ldr</span><span class="p">(</span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">x7</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">),</span>
+<span class="w">        </span><span class="n">add</span><span class="p">(</span><span class="n">x7</span><span class="p">,</span><span class="w"> </span><span class="n">x7</span><span class="p">,</span><span class="w"> </span><span class="n">x2</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">),</span>
+
+<span class="w">        </span><span class="n">ldr</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">x7</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">),</span>
+<span class="w">        </span><span class="n">add</span><span class="p">(</span><span class="n">x7</span><span class="p">,</span><span class="w"> </span><span class="n">x7</span><span class="p">,</span><span class="w"> </span><span class="n">x2</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">),</span>
+
+<span class="w">        </span><span class="n">ldr</span><span class="p">(</span><span class="n">v2</span><span class="p">,</span><span class="w"> </span><span class="n">x7</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">),</span>
+<span class="w">        </span><span class="n">add</span><span class="p">(</span><span class="n">x7</span><span class="p">,</span><span class="w"> </span><span class="n">x7</span><span class="p">,</span><span class="w"> </span><span class="n">x2</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">),</span>
+
+<span class="w">        </span><span class="n">ldr</span><span class="p">(</span><span class="n">v3</span><span class="p">,</span><span class="w"> </span><span class="n">x7</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">),</span>
+
+<span class="w">        </span><span class="n">frecpeScalar</span><span class="p">(</span><span class="n">v16</span><span class="p">,</span><span class="w"> </span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">),</span>
+<span class="w">        </span><span class="n">frecpsScalar</span><span class="p">(</span><span class="n">v17</span><span class="p">,</span><span class="w"> </span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">v16</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">),</span>
+<span class="w">        </span><span class="n">fmulScalar</span><span class="p">(</span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">v16</span><span class="p">,</span><span class="w"> </span><span class="n">v17</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">),</span>
+
+<span class="w">        </span><span class="n">frecpeScalar</span><span class="p">(</span><span class="n">v16</span><span class="p">,</span><span class="w"> </span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">),</span>
+<span class="w">        </span><span class="n">frecpsScalar</span><span class="p">(</span><span class="n">v17</span><span class="p">,</span><span class="w"> </span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">v16</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">),</span>
+<span class="w">        </span><span class="n">fmulScalar</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">v16</span><span class="p">,</span><span class="w"> </span><span class="n">v17</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">),</span>
+
+<span class="w">        </span><span class="n">frecpeScalar</span><span class="p">(</span><span class="n">v16</span><span class="p">,</span><span class="w"> </span><span class="n">v2</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">),</span>
+<span class="w">        </span><span class="n">frecpsScalar</span><span class="p">(</span><span class="n">v17</span><span class="p">,</span><span class="w"> </span><span class="n">v2</span><span class="p">,</span><span class="w"> </span><span class="n">v16</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">),</span>
+<span class="w">        </span><span class="n">fmulScalar</span><span class="p">(</span><span class="n">v2</span><span class="p">,</span><span class="w"> </span><span class="n">v16</span><span class="p">,</span><span class="w"> </span><span class="n">v17</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">),</span>
+
+<span class="w">        </span><span class="n">frecpeScalar</span><span class="p">(</span><span class="n">v16</span><span class="p">,</span><span class="w"> </span><span class="n">v3</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">),</span>
+<span class="w">        </span><span class="n">frecpsScalar</span><span class="p">(</span><span class="n">v17</span><span class="p">,</span><span class="w"> </span><span class="n">v3</span><span class="p">,</span><span class="w"> </span><span class="n">v16</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">),</span>
+<span class="w">        </span><span class="n">fmulScalar</span><span class="p">(</span><span class="n">v3</span><span class="p">,</span><span class="w"> </span><span class="n">v16</span><span class="p">,</span><span class="w"> </span><span class="n">v17</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">),</span>
+
+<span class="w">        </span><span class="c1">// Transpose 1x4 block</span>
+<span class="w">        </span><span class="c1">// TRN</span>
+<span class="w">        </span><span class="n">trn1</span><span class="p">(</span><span class="n">v4</span><span class="p">,</span><span class="w"> </span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">v2</span><span class="p">,</span><span class="w"> </span><span class="n">s2</span><span class="p">),</span>
+<span class="w">        </span><span class="n">trn1</span><span class="p">(</span><span class="n">v5</span><span class="p">,</span><span class="w"> </span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">v3</span><span class="p">,</span><span class="w"> </span><span class="n">s2</span><span class="p">),</span>
+
+<span class="w">        </span><span class="c1">// ZIP</span>
+<span class="w">        </span><span class="n">zip1</span><span class="p">(</span><span class="n">v6</span><span class="p">,</span><span class="w"> </span><span class="n">v4</span><span class="p">,</span><span class="w"> </span><span class="n">v5</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+
+<span class="w">        </span><span class="c1">// Store 1x4 Block of B</span>
+<span class="w">        </span><span class="n">str</span><span class="p">(</span><span class="n">v6</span><span class="p">,</span><span class="w"> </span><span class="n">x8</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">q</span><span class="p">)</span>
+<span class="w">    </span><span class="p">});</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id30">
+<div class="code-block-caption"><span class="caption-text">Optimized Reciprocal Transposition Kernel: case M=1 and N=4</span><a class="headerlink" href="#id30" title="Link to this code"></a></div>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">mini_jit::kernels::unary::internal::reciprocalM1N4</span><span class="p">(</span><span class="w"> </span><span class="n">mini_jit</span><span class="o">::</span><span class="n">Kernel</span><span class="w"> </span><span class="o">&amp;</span><span class="n">kernel</span><span class="w"> </span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">({</span>
+<span class="w">        </span><span class="c1">// working pointer for A and B</span>
+<span class="w">        </span><span class="n">mov</span><span class="p">(</span><span class="n">x7</span><span class="p">,</span><span class="w"> </span><span class="n">x4</span><span class="p">),</span>
+<span class="w">        </span><span class="n">mov</span><span class="p">(</span><span class="n">x8</span><span class="p">,</span><span class="w"> </span><span class="n">x5</span><span class="p">),</span>
+
+<span class="w">        </span><span class="c1">// Load 1x4 block of A (input matrix)</span>
+<span class="w">        </span><span class="n">ldr</span><span class="p">(</span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">x7</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">),</span>
+<span class="w">        </span><span class="n">add</span><span class="p">(</span><span class="n">x7</span><span class="p">,</span><span class="w"> </span><span class="n">x7</span><span class="p">,</span><span class="w"> </span><span class="n">x2</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">),</span>
+
+<span class="w">        </span><span class="n">ldr</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">x7</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">),</span>
+<span class="w">        </span><span class="n">add</span><span class="p">(</span><span class="n">x7</span><span class="p">,</span><span class="w"> </span><span class="n">x7</span><span class="p">,</span><span class="w"> </span><span class="n">x2</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">),</span>
+
+<span class="w">        </span><span class="n">ldr</span><span class="p">(</span><span class="n">v2</span><span class="p">,</span><span class="w"> </span><span class="n">x7</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">),</span>
+<span class="w">        </span><span class="n">add</span><span class="p">(</span><span class="n">x7</span><span class="p">,</span><span class="w"> </span><span class="n">x7</span><span class="p">,</span><span class="w"> </span><span class="n">x2</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">),</span>
+
+<span class="w">        </span><span class="n">ldr</span><span class="p">(</span><span class="n">v3</span><span class="p">,</span><span class="w"> </span><span class="n">x7</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">),</span>
+
+<span class="w">        </span><span class="c1">// Transpose 1x4 block</span>
+<span class="w">        </span><span class="c1">// TRN</span>
+<span class="w">        </span><span class="n">trn1</span><span class="p">(</span><span class="n">v4</span><span class="p">,</span><span class="w"> </span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">v2</span><span class="p">,</span><span class="w"> </span><span class="n">s2</span><span class="p">),</span>
+<span class="w">        </span><span class="n">trn1</span><span class="p">(</span><span class="n">v5</span><span class="p">,</span><span class="w"> </span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">v3</span><span class="p">,</span><span class="w"> </span><span class="n">s2</span><span class="p">),</span>
+
+<span class="w">        </span><span class="c1">// ZIP</span>
+<span class="w">        </span><span class="n">zip1</span><span class="p">(</span><span class="n">v6</span><span class="p">,</span><span class="w"> </span><span class="n">v4</span><span class="p">,</span><span class="w"> </span><span class="n">v5</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+
+<span class="w">        </span><span class="n">frecpeVec</span><span class="p">(</span><span class="n">v16</span><span class="p">,</span><span class="w"> </span><span class="n">v6</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+<span class="w">        </span><span class="n">frecpsVec</span><span class="p">(</span><span class="n">v17</span><span class="p">,</span><span class="w"> </span><span class="n">v6</span><span class="p">,</span><span class="w"> </span><span class="n">v16</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+<span class="w">        </span><span class="n">fmulVec</span><span class="p">(</span><span class="n">v6</span><span class="p">,</span><span class="w"> </span><span class="n">v16</span><span class="p">,</span><span class="w"> </span><span class="n">v17</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+
+<span class="w">        </span><span class="c1">// Store 1x4 Block of B</span>
+<span class="w">        </span><span class="n">str</span><span class="p">(</span><span class="n">v6</span><span class="p">,</span><span class="w"> </span><span class="n">x8</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">q</span><span class="p">)</span>
+<span class="w">    </span><span class="p">});</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p>The reason the optimized code is more efficient is because instead of four scalar operations, it suffices to perform one full vector operation which was enabled by the transposition.</p>
+</section>
+<section id="sigmoid">
+<h3>7.4.2 Sigmoid<a class="headerlink" href="#sigmoid" title="Link to this heading"></a></h3>
+<p>After presenting our results of the first week, we made the decision to extend <a class="reference internal" href="#roadmap"><span class="std std-ref">our original roadmap</span></a> by a new primitive operator: <strong>Sigmoid</strong>.</p>
+<p>The sigmoid function is a mathematical function defined by the formula:</p>
+<div class="math notranslate nohighlight">
+\[\sigma(x) = \frac{1}{1 + e^{-x}}\]</div>
+<p>It maps any real-valued number to a value between 0 and 1, producing an S-shaped curve.
+The sigmoid function is commonly used in machine learning and statistics, especially in logistic regression and neural networks, as an activation function that introduces non-linearity and helps in probability estimation.</p>
+<p>While it might not be obvious at first glance, the sigmoid function is much more complex than the previous primitives we implemented. Without caution, a simple implementation could lead to poor performance and numerical instability. In the following sections, we will discuss three different approaches to implement the sigmoid function, each with its own advantages and disadvantages.</p>
+<section id="fast-sigmoid">
+<h4>7.4.2.1 Fast Sigmoid<a class="headerlink" href="#fast-sigmoid" title="Link to this heading"></a></h4>
+<p>The first approach we considered was a fast sigmoid approximation.
+This method is based on the observation that the sigmoid function can be approximated by a simple linear function:</p>
+<div class="math notranslate nohighlight">
+\[f(x) = 0.5 \left( \frac{x}{1 + |x|} + 1 \right)\]</div>
+<p>The following two graphs compare the true sigmoid function to the faster approximation:</p>
+<img alt="Sigmoid function comparison on a smaller scale" class="align-center" src="../_images/fast_sig_small.png" />
+<img alt="Sigmoid function comparison on a larger scale" class="align-center" src="../_images/fast_sig_large.png" />
+<p>This function produces a similar S-shaped curve but avoids the exponential calculation, making it faster to compute while maintaining similar properties for many practical applications, especially in neural networks.</p>
+<p>To implement this approximation, we first had to implement the <code class="docutils literal notranslate"><span class="pre">FABS</span></code> instruction to get the absolute value for each input element. Since it is conceptually the same as other instructions, we won’t go into detail here.
+Having gained <code class="docutils literal notranslate"><span class="pre">FABS</span></code> as a new tool, we then implemented the fast sigmoid kernel. The following code snippet will show the computation for a block with dimensions <strong>M=16</strong> and <strong>N=1</strong>.</p>
+<div class="literal-block-wrapper docutils container" id="id31">
+<div class="code-block-caption"><span class="caption-text">Fast sigmoid for M=16 and N=1</span><a class="headerlink" href="#id31" title="Link to this code"></a></div>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">kernel</span><span class="p">.</span><span class="n">add_label</span><span class="p">(</span><span class="s">&quot;m_16_loop&quot;</span><span class="p">);</span>
+<span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">({</span>
+<span class="w">    </span><span class="c1">// load 16 elements from A</span>
+<span class="w">    </span><span class="n">ldp</span><span class="p">(</span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">x8</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">q</span><span class="p">),</span>
+<span class="w">    </span><span class="n">ldp</span><span class="p">(</span><span class="n">v2</span><span class="p">,</span><span class="w"> </span><span class="n">v3</span><span class="p">,</span><span class="w"> </span><span class="n">x8</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="p">,</span><span class="w"> </span><span class="n">q</span><span class="p">),</span>
+
+<span class="w">    </span><span class="c1">////////////////////////////////////////////</span>
+<span class="w">    </span><span class="c1">// Compute B = 0.5 * (A / (1 + abs(A)) + 1)</span>
+<span class="w">    </span><span class="c1">////////////////////////////////////////////</span>
+<span class="w">    </span><span class="c1">// abs(A)</span>
+<span class="w">    </span><span class="n">fabsVec</span><span class="p">(</span><span class="n">v4</span><span class="p">,</span><span class="w"> </span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+<span class="w">    </span><span class="n">fabsVec</span><span class="p">(</span><span class="n">v5</span><span class="p">,</span><span class="w"> </span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+<span class="w">    </span><span class="n">fabsVec</span><span class="p">(</span><span class="n">v6</span><span class="p">,</span><span class="w"> </span><span class="n">v2</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+<span class="w">    </span><span class="n">fabsVec</span><span class="p">(</span><span class="n">v7</span><span class="p">,</span><span class="w"> </span><span class="n">v3</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+
+<span class="w">    </span><span class="c1">// 1 + abs(A)</span>
+<span class="w">    </span><span class="n">faddVec</span><span class="p">(</span><span class="n">v4</span><span class="p">,</span><span class="w"> </span><span class="n">v4</span><span class="p">,</span><span class="w"> </span><span class="n">v30</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+<span class="w">    </span><span class="n">faddVec</span><span class="p">(</span><span class="n">v5</span><span class="p">,</span><span class="w"> </span><span class="n">v5</span><span class="p">,</span><span class="w"> </span><span class="n">v30</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+<span class="w">    </span><span class="n">faddVec</span><span class="p">(</span><span class="n">v6</span><span class="p">,</span><span class="w"> </span><span class="n">v6</span><span class="p">,</span><span class="w"> </span><span class="n">v30</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+<span class="w">    </span><span class="n">faddVec</span><span class="p">(</span><span class="n">v7</span><span class="p">,</span><span class="w"> </span><span class="n">v7</span><span class="p">,</span><span class="w"> </span><span class="n">v30</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+
+<span class="w">    </span><span class="c1">// A / (1 + abs(A))</span>
+<span class="w">    </span><span class="n">fdivVec</span><span class="p">(</span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">v4</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+<span class="w">    </span><span class="n">fdivVec</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">v5</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+<span class="w">    </span><span class="n">fdivVec</span><span class="p">(</span><span class="n">v2</span><span class="p">,</span><span class="w"> </span><span class="n">v2</span><span class="p">,</span><span class="w"> </span><span class="n">v6</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+<span class="w">    </span><span class="n">fdivVec</span><span class="p">(</span><span class="n">v3</span><span class="p">,</span><span class="w"> </span><span class="n">v3</span><span class="p">,</span><span class="w"> </span><span class="n">v7</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+
+<span class="w">    </span><span class="c1">// A / (1 + abs(A)) + 1</span>
+<span class="w">    </span><span class="n">faddVec</span><span class="p">(</span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">v30</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+<span class="w">    </span><span class="n">faddVec</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">v30</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+<span class="w">    </span><span class="n">faddVec</span><span class="p">(</span><span class="n">v2</span><span class="p">,</span><span class="w"> </span><span class="n">v2</span><span class="p">,</span><span class="w"> </span><span class="n">v30</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+<span class="w">    </span><span class="n">faddVec</span><span class="p">(</span><span class="n">v3</span><span class="p">,</span><span class="w"> </span><span class="n">v3</span><span class="p">,</span><span class="w"> </span><span class="n">v30</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+
+<span class="w">    </span><span class="c1">// 0.5 * (A / (1 + abs(A)) + 1)</span>
+<span class="w">    </span><span class="n">fmulVec</span><span class="p">(</span><span class="n">v4</span><span class="p">,</span><span class="w"> </span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">v31</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+<span class="w">    </span><span class="n">fmulVec</span><span class="p">(</span><span class="n">v5</span><span class="p">,</span><span class="w"> </span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">v31</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+<span class="w">    </span><span class="n">fmulVec</span><span class="p">(</span><span class="n">v6</span><span class="p">,</span><span class="w"> </span><span class="n">v2</span><span class="p">,</span><span class="w"> </span><span class="n">v31</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+<span class="w">    </span><span class="n">fmulVec</span><span class="p">(</span><span class="n">v7</span><span class="p">,</span><span class="w"> </span><span class="n">v3</span><span class="p">,</span><span class="w"> </span><span class="n">v31</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+<span class="w">    </span><span class="c1">////////////////////////////////////////////</span>
+
+<span class="w">    </span><span class="c1">// store 16 elements to B</span>
+<span class="w">    </span><span class="n">stp</span><span class="p">(</span><span class="n">v4</span><span class="p">,</span><span class="w"> </span><span class="n">v5</span><span class="p">,</span><span class="w"> </span><span class="n">x9</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">q</span><span class="p">),</span>
+<span class="w">    </span><span class="n">stp</span><span class="p">(</span><span class="n">v6</span><span class="p">,</span><span class="w"> </span><span class="n">v7</span><span class="p">,</span><span class="w"> </span><span class="n">x9</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="p">,</span><span class="w"> </span><span class="n">q</span><span class="p">),</span>
+
+<span class="w">    </span><span class="c1">// jump by 16 rows</span>
+<span class="w">    </span><span class="n">add</span><span class="p">(</span><span class="n">x8</span><span class="p">,</span><span class="w"> </span><span class="n">x8</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="o">*</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">),</span>
+<span class="w">    </span><span class="n">add</span><span class="p">(</span><span class="n">x9</span><span class="p">,</span><span class="w"> </span><span class="n">x9</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="o">*</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">),</span>
+
+<span class="w">    </span><span class="c1">// decrement m loop counter</span>
+<span class="w">    </span><span class="n">sub</span><span class="p">(</span><span class="n">x7</span><span class="p">,</span><span class="w"> </span><span class="n">x7</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">),</span>
+<span class="p">});</span>
+<span class="c1">// check if loop counter is zero</span>
+<span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="n">cbnz</span><span class="p">(</span><span class="n">x7</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="n">kernel</span><span class="p">.</span><span class="n">getInstrCountFromLabel</span><span class="p">(</span><span class="s">&quot;m_16_loop&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">4</span><span class="p">));</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="sigmoid-using-the-taylor-series">
+<h4>7.4.2.2 Sigmoid using the Taylor Series<a class="headerlink" href="#sigmoid-using-the-taylor-series" title="Link to this heading"></a></h4>
+<p>Our second approach was to slightly enhance the precision of our sigmoid implementation for x values in the range <code class="docutils literal notranslate"><span class="pre">[-2.0,2.0]</span></code>.
+For this approach an approximation with the taylor series was suitable, as with this approach we could
+achieve a better precision, with relatively little additional effort. The approximation of the sigmoid function using this
+approach can be mathematically expressed with the following formula:</p>
+<div class="math notranslate nohighlight">
+\[\sigma(x) = \frac{1}{2} + \frac{x}{4} - \frac{x^3}{48} + \frac{x^5}{480} - \frac{17x^7}{80640}+...\]</div>
+<p>In order to not overcomplicate the calculation and to keep the necessary calculations as minimal
+as possible, we decided to approximate the sigmoid function by using the 5th taylor polynomial:</p>
+<div class="math notranslate nohighlight">
+\[\sigma(x) \approx 0.5 + 0.25x - 0.020833 x^3 + 0.002083 x^5\]</div>
+<p>Our approach would be to load the constant values (<code class="docutils literal notranslate"><span class="pre">0.5</span></code>, <code class="docutils literal notranslate"><span class="pre">0.25</span></code>, …) as an additional parameter into our kernel.</p>
+<div class="literal-block-wrapper docutils container" id="id32">
+<div class="code-block-caption"><span class="caption-text">Taylor series constant values</span><a class="headerlink" href="#id32" title="Link to this code"></a></div>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">sig_taylor_values</span><span class="p">[</span><span class="mi">16</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="mf">0.5f</span><span class="p">,</span><span class="w">       </span><span class="mf">0.5f</span><span class="p">,</span><span class="w">       </span><span class="mf">0.5f</span><span class="p">,</span><span class="w">       </span><span class="mf">0.5f</span><span class="p">,</span>
+<span class="w">         </span><span class="mf">0.25f</span><span class="p">,</span><span class="w">      </span><span class="mf">0.25f</span><span class="p">,</span><span class="w">      </span><span class="mf">0.25f</span><span class="p">,</span><span class="w">      </span><span class="mf">0.25f</span><span class="p">,</span>
+<span class="w">    </span><span class="mf">-0.020833f</span><span class="p">,</span><span class="w"> </span><span class="mf">-0.020833f</span><span class="p">,</span><span class="w"> </span><span class="mf">-0.020833f</span><span class="p">,</span><span class="w"> </span><span class="mf">-0.020833f</span><span class="p">,</span>
+<span class="w">     </span><span class="mf">0.002083f</span><span class="p">,</span><span class="w">  </span><span class="mf">0.002083f</span><span class="p">,</span><span class="w">  </span><span class="mf">0.002083f</span><span class="p">,</span><span class="w">  </span><span class="mf">0.002083f</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</div>
+<p>That meant, to be able to process this table we needed an additional parameter in the kernel type in our <code class="docutils literal notranslate"><span class="pre">Unary</span></code> class,
+that would allow us to handle these values:</p>
+<div class="literal-block-wrapper docutils container" id="id33">
+<div class="code-block-caption"><span class="caption-text">New kernel type signature</span><a class="headerlink" href="#id33" title="Link to this code"></a></div>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/*</span>
+<span class="cm"> * Generalized kernel type.</span>
+<span class="cm"> * The kernel is a function that takes the following parameters:</span>
+<span class="cm"> * - a:    Pointer to column-major matrix A, nullptr if zero kernel.</span>
+<span class="cm"> * - b:    Pointer to matrix B.</span>
+<span class="cm"> * - ld_a: Leading dimension of A.</span>
+<span class="cm"> * - ld_b: Leading dimension of B.</span>
+<span class="cm"> * - extra: Optional pointer to extra/context data (e.g., lookup table).</span>
+<span class="cm"> */</span>
+<span class="k">using</span><span class="w"> </span><span class="n">kernel_t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="p">)(</span><span class="kt">void</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">*</span><span class="n">a</span><span class="p">,</span>
+<span class="w">                          </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">b</span><span class="p">,</span>
+<span class="w">                          </span><span class="kt">int64_t</span><span class="w"> </span><span class="n">ld_a</span><span class="p">,</span>
+<span class="w">                          </span><span class="kt">int64_t</span><span class="w"> </span><span class="n">ld_b</span><span class="p">,</span>
+<span class="w">                          </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">extra</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<p>Now we have the option to specify a pointer to extra data that can be used inside the kernel. After setting up the entry point for this primitive, we developed the kernel for the taylor approximation sigmoid kernel.
+Apart from loading the constant sigmoid values into our kernel, there were no special things that we needed to consider.
+The approach was to:</p>
+<ol class="arabic simple">
+<li><p>Calculate <span class="math notranslate nohighlight">\(x^2, x^3,\)</span> and <span class="math notranslate nohighlight">\(x^5\)</span></p></li>
+<li><p>Calculate the polynonmials separately</p></li>
+<li><p>Combine the polynomials into the approximation</p></li>
+</ol>
+<p>Just as for the fast sigmoid kernel, our base kernel is able to compute blocks of <strong>M=16</strong> and <strong>N=1</strong>:</p>
+<div class="literal-block-wrapper docutils container" id="id34">
+<div class="code-block-caption"><span class="caption-text">Taylor approximation sigmoid for M=16 and N=1</span><a class="headerlink" href="#id34" title="Link to this code"></a></div>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Load fixed values</span>
+<span class="n">ldp</span><span class="p">(</span><span class="n">v31</span><span class="p">,</span><span class="w"> </span><span class="n">v30</span><span class="p">,</span><span class="w"> </span><span class="n">x4</span><span class="p">,</span><span class="w">  </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">q</span><span class="p">),</span>
+<span class="n">ldp</span><span class="p">(</span><span class="n">v29</span><span class="p">,</span><span class="w"> </span><span class="n">v28</span><span class="p">,</span><span class="w"> </span><span class="n">x4</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="p">,</span><span class="w"> </span><span class="n">q</span><span class="p">),</span>
+
+<span class="p">...</span>
+
+<span class="c1">// Load 16 elements from A</span>
+<span class="n">ldp</span><span class="p">(</span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">x9</span><span class="p">,</span><span class="w">  </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">q</span><span class="p">),</span>
+<span class="n">ldp</span><span class="p">(</span><span class="n">v2</span><span class="p">,</span><span class="w"> </span><span class="n">v3</span><span class="p">,</span><span class="w"> </span><span class="n">x9</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="p">,</span><span class="w"> </span><span class="n">q</span><span class="p">),</span>
+
+<span class="c1">// Step 1:</span>
+<span class="c1">// x^2 = x * x</span>
+<span class="n">fmulVec</span><span class="p">(</span><span class="n">v4</span><span class="p">,</span><span class="w"> </span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+<span class="n">fmulVec</span><span class="p">(</span><span class="n">v5</span><span class="p">,</span><span class="w"> </span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+<span class="n">fmulVec</span><span class="p">(</span><span class="n">v6</span><span class="p">,</span><span class="w"> </span><span class="n">v2</span><span class="p">,</span><span class="w"> </span><span class="n">v2</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+<span class="n">fmulVec</span><span class="p">(</span><span class="n">v7</span><span class="p">,</span><span class="w"> </span><span class="n">v3</span><span class="p">,</span><span class="w"> </span><span class="n">v3</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+
+<span class="c1">// x^3 = x^2 * x</span>
+<span class="n">fmulVec</span><span class="p">(</span><span class="n">v12</span><span class="p">,</span><span class="w"> </span><span class="n">v4</span><span class="p">,</span><span class="w"> </span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+<span class="n">fmulVec</span><span class="p">(</span><span class="n">v13</span><span class="p">,</span><span class="w"> </span><span class="n">v5</span><span class="p">,</span><span class="w"> </span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+<span class="n">fmulVec</span><span class="p">(</span><span class="n">v14</span><span class="p">,</span><span class="w"> </span><span class="n">v6</span><span class="p">,</span><span class="w"> </span><span class="n">v2</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+<span class="n">fmulVec</span><span class="p">(</span><span class="n">v15</span><span class="p">,</span><span class="w"> </span><span class="n">v7</span><span class="p">,</span><span class="w"> </span><span class="n">v3</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+
+<span class="c1">// x^5 = x^3 * x^2</span>
+<span class="n">fmulVec</span><span class="p">(</span><span class="n">v16</span><span class="p">,</span><span class="w"> </span><span class="n">v12</span><span class="p">,</span><span class="w"> </span><span class="n">v4</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+<span class="n">fmulVec</span><span class="p">(</span><span class="n">v17</span><span class="p">,</span><span class="w"> </span><span class="n">v13</span><span class="p">,</span><span class="w"> </span><span class="n">v5</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+<span class="n">fmulVec</span><span class="p">(</span><span class="n">v18</span><span class="p">,</span><span class="w"> </span><span class="n">v14</span><span class="p">,</span><span class="w"> </span><span class="n">v6</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+<span class="n">fmulVec</span><span class="p">(</span><span class="n">v19</span><span class="p">,</span><span class="w"> </span><span class="n">v15</span><span class="p">,</span><span class="w"> </span><span class="n">v7</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+
+<span class="c1">// Step 2:</span>
+<span class="c1">// 0.25 * x</span>
+<span class="n">fmulVec</span><span class="p">(</span><span class="n">v4</span><span class="p">,</span><span class="w"> </span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">v30</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+<span class="n">fmulVec</span><span class="p">(</span><span class="n">v5</span><span class="p">,</span><span class="w"> </span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">v30</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+<span class="n">fmulVec</span><span class="p">(</span><span class="n">v6</span><span class="p">,</span><span class="w"> </span><span class="n">v2</span><span class="p">,</span><span class="w"> </span><span class="n">v30</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+<span class="n">fmulVec</span><span class="p">(</span><span class="n">v7</span><span class="p">,</span><span class="w"> </span><span class="n">v3</span><span class="p">,</span><span class="w"> </span><span class="n">v30</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+
+<span class="c1">// -0.020833 * x^3</span>
+<span class="n">fmulVec</span><span class="p">(</span><span class="n">v12</span><span class="p">,</span><span class="w"> </span><span class="n">v12</span><span class="p">,</span><span class="w"> </span><span class="n">v29</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+<span class="n">fmulVec</span><span class="p">(</span><span class="n">v13</span><span class="p">,</span><span class="w"> </span><span class="n">v13</span><span class="p">,</span><span class="w"> </span><span class="n">v29</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+<span class="n">fmulVec</span><span class="p">(</span><span class="n">v14</span><span class="p">,</span><span class="w"> </span><span class="n">v14</span><span class="p">,</span><span class="w"> </span><span class="n">v29</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+<span class="n">fmulVec</span><span class="p">(</span><span class="n">v15</span><span class="p">,</span><span class="w"> </span><span class="n">v15</span><span class="p">,</span><span class="w"> </span><span class="n">v29</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+
+<span class="c1">// +0.002083 * x^5</span>
+<span class="n">fmulVec</span><span class="p">(</span><span class="n">v16</span><span class="p">,</span><span class="w"> </span><span class="n">v16</span><span class="p">,</span><span class="w"> </span><span class="n">v28</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+<span class="n">fmulVec</span><span class="p">(</span><span class="n">v17</span><span class="p">,</span><span class="w"> </span><span class="n">v17</span><span class="p">,</span><span class="w"> </span><span class="n">v28</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+<span class="n">fmulVec</span><span class="p">(</span><span class="n">v18</span><span class="p">,</span><span class="w"> </span><span class="n">v18</span><span class="p">,</span><span class="w"> </span><span class="n">v28</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+<span class="n">fmulVec</span><span class="p">(</span><span class="n">v19</span><span class="p">,</span><span class="w"> </span><span class="n">v19</span><span class="p">,</span><span class="w"> </span><span class="n">v28</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+
+<span class="c1">// Step 3:</span>
+<span class="c1">// 0.5 + 0.25*x</span>
+<span class="n">faddVec</span><span class="p">(</span><span class="n">v4</span><span class="p">,</span><span class="w"> </span><span class="n">v31</span><span class="p">,</span><span class="w"> </span><span class="n">v4</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+<span class="n">faddVec</span><span class="p">(</span><span class="n">v5</span><span class="p">,</span><span class="w"> </span><span class="n">v31</span><span class="p">,</span><span class="w"> </span><span class="n">v5</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+<span class="n">faddVec</span><span class="p">(</span><span class="n">v6</span><span class="p">,</span><span class="w"> </span><span class="n">v31</span><span class="p">,</span><span class="w"> </span><span class="n">v6</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+<span class="n">faddVec</span><span class="p">(</span><span class="n">v7</span><span class="p">,</span><span class="w"> </span><span class="n">v31</span><span class="p">,</span><span class="w"> </span><span class="n">v7</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+
+<span class="c1">// + (-0.020833*x^3)</span>
+<span class="n">faddVec</span><span class="p">(</span><span class="n">v4</span><span class="p">,</span><span class="w"> </span><span class="n">v4</span><span class="p">,</span><span class="w"> </span><span class="n">v12</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+<span class="n">faddVec</span><span class="p">(</span><span class="n">v5</span><span class="p">,</span><span class="w"> </span><span class="n">v5</span><span class="p">,</span><span class="w"> </span><span class="n">v13</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+<span class="n">faddVec</span><span class="p">(</span><span class="n">v6</span><span class="p">,</span><span class="w"> </span><span class="n">v6</span><span class="p">,</span><span class="w"> </span><span class="n">v14</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+<span class="n">faddVec</span><span class="p">(</span><span class="n">v7</span><span class="p">,</span><span class="w"> </span><span class="n">v7</span><span class="p">,</span><span class="w"> </span><span class="n">v15</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+
+<span class="c1">// + (+0.002083*x^5)</span>
+<span class="n">faddVec</span><span class="p">(</span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">v4</span><span class="p">,</span><span class="w"> </span><span class="n">v16</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+<span class="n">faddVec</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">v5</span><span class="p">,</span><span class="w"> </span><span class="n">v17</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+<span class="n">faddVec</span><span class="p">(</span><span class="n">v2</span><span class="p">,</span><span class="w"> </span><span class="n">v6</span><span class="p">,</span><span class="w"> </span><span class="n">v18</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+<span class="n">faddVec</span><span class="p">(</span><span class="n">v3</span><span class="p">,</span><span class="w"> </span><span class="n">v7</span><span class="p">,</span><span class="w"> </span><span class="n">v19</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+
+<span class="c1">// Store 16 elements to B</span>
+<span class="n">stp</span><span class="p">(</span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">x10</span><span class="p">,</span><span class="w">  </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">q</span><span class="p">),</span>
+<span class="n">stp</span><span class="p">(</span><span class="n">v2</span><span class="p">,</span><span class="w"> </span><span class="n">v3</span><span class="p">,</span><span class="w"> </span><span class="n">x10</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="p">,</span><span class="w"> </span><span class="n">q</span><span class="p">),</span>
+</pre></div>
+</div>
+</div>
+<p>However, the caveat with this approximation is, that it only works in the range from <code class="docutils literal notranslate"><span class="pre">[-2.0,2.0]</span></code>.
+Within this range we achieve results that are within an error margin of <span class="math notranslate nohighlight">\(1e-5\)</span>, which we consider pretty close to the original.
+Outside this range we quickly get big differences compared to the correct result of the true sigmoid function.</p>
+</section>
+<section id="sigmoid-using-the-linear-interpolation">
+<h4>7.4.2.3 Sigmoid using the Linear Interpolation<a class="headerlink" href="#sigmoid-using-the-linear-interpolation" title="Link to this heading"></a></h4>
+<p>As our goal was to be able to process values outside the range <code class="docutils literal notranslate"><span class="pre">[-2.0,2.0]</span></code>, the taylor approximation would not suffice us to achieve our goal.
+However, we would only need to consider values in the range of <code class="docutils literal notranslate"><span class="pre">[-8.0,-2.0]</span></code> and <code class="docutils literal notranslate"><span class="pre">[2.0,8.0]</span></code>, as the sigmoid function would assign
+the value <code class="docutils literal notranslate"><span class="pre">1</span></code> to all values outside this range.</p>
+<p>For this reason we decided to linearly interpolate the true sigmoid function. The idea with this interpolation was to
+be as close as possible to the true sigmoid function and at the same time minimize the effort of the calculations as much as possible.
+To get an idea how close each function gets in comparison to the true sigmoid function, we put the different approaches together in a single plot:</p>
+<img alt="Sigmoid function comparison (fast, taylor, linear, true)" class="align-center" src="../_images/sigmoid_comparison.png" />
+<p>However, the linear interpolation approach would quickly turn out to be more complex than we initially assumed.</p>
+<p>To make the approach possible, we would again need to pre calculate values in a lookup table.
+As we wanted to keep it simple, we decided for a table consisting of <code class="docutils literal notranslate"><span class="pre">33</span></code> values:</p>
+<div class="literal-block-wrapper docutils container" id="id35">
+<div class="code-block-caption"><span class="caption-text">Linear interpolation lookup table</span><a class="headerlink" href="#id35" title="Link to this code"></a></div>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">sig_table</span><span class="p">[</span><span class="mi">33</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// -8.0, -7.5, ..., -5.0</span>
+<span class="w">    </span><span class="mf">0.000335f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.000553f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.000911f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.001503f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.002473f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.004070f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.006693f</span><span class="p">,</span>
+<span class="w">    </span><span class="c1">// -4.5, ..., -1.5</span>
+<span class="w">    </span><span class="mf">0.011109f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.017986f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.029312f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.047426f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.075858f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.119203f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.182426f</span><span class="p">,</span>
+<span class="w">    </span><span class="c1">// -1.0, ... 0.0, ..., 2.0</span>
+<span class="w">    </span><span class="mf">0.268941f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.377541f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.500000f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.622459f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.731059f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.817574f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.880797f</span><span class="p">,</span>
+<span class="w">    </span><span class="c1">// 2.5, ..., 5.5</span>
+<span class="w">    </span><span class="mf">0.924142f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.952574f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.970688f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.982014f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.988891f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.993307f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.995930f</span><span class="p">,</span>
+<span class="w">    </span><span class="c1">// 6.0, ..., 8.0</span>
+<span class="w">    </span><span class="mf">0.997527f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.998497f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.999089f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.999447f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.999665f</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</div>
+<p>The number <code class="docutils literal notranslate"><span class="pre">33</span></code> comes from looking at values in the range from <code class="docutils literal notranslate"><span class="pre">[-8.0,8.0]</span></code> and separating this range by <code class="docutils literal notranslate"><span class="pre">0.5</span></code> steps (<code class="docutils literal notranslate"><span class="pre">-8.0</span></code>, <code class="docutils literal notranslate"><span class="pre">-7.5</span></code>, …).
+That means the first <code class="docutils literal notranslate"><span class="pre">16</span></code> values in the table are from the range <code class="docutils literal notranslate"><span class="pre">[-8.0,0.0)</span></code>, value <code class="docutils literal notranslate"><span class="pre">17</span></code> is the one corresponding to <code class="docutils literal notranslate"><span class="pre">0.0</span></code>, and the last <code class="docutils literal notranslate"><span class="pre">16</span></code> values correspond to those in the range <code class="docutils literal notranslate"><span class="pre">(0.0,8.0]</span></code>.</p>
+<p>It is important to clarify the steps before starting the calculation, as the index calculation inside the kernel is dependent on the steps and the value range.</p>
+<p>After defining the table we could think about the how we would like to construct our kernel.
+The creation of our kernel would be separated in 7 consecutive steps. For most of the steps we would again need to create new instructions that would allow us to perform some special operations inside of our kernel.
+But let us go about it step by step.</p>
+<p>After loading our first few values into the kernel, the <strong>first step</strong> is to clamp our values.
+Clamping means, that we only consider values that are within in our specified range from <code class="docutils literal notranslate"><span class="pre">[-8.0,8.0]</span></code>.
+All other values, that are above or below this range are simply mapped to either <code class="docutils literal notranslate"><span class="pre">-8.0</span></code> or <code class="docutils literal notranslate"><span class="pre">8.0</span></code>:</p>
+<div class="literal-block-wrapper docutils container" id="id36">
+<div class="code-block-caption"><span class="caption-text">Clamping values in range <code class="docutils literal notranslate"><span class="pre">[-8.0,8.0]</span></code></span><a class="headerlink" href="#id36" title="Link to this code"></a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">fmovIntVec</span><span class="p">(</span><span class="n">v31</span><span class="p">,</span><span class="w"> </span><span class="mi">-8</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">)</span>
+<span class="n">fmovIntVec</span><span class="p">(</span><span class="n">v30</span><span class="p">,</span><span class="w">  </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">)</span>
+
+<span class="p">...</span>
+
+<span class="n">fmaxVec</span><span class="p">(</span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">v31</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">)</span>
+<span class="n">fminVec</span><span class="p">(</span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">v30</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>The <strong>second step</strong> would be to pre-calculate our table indices. The formular for this calculation is:</p>
+<div class="math notranslate nohighlight">
+\[i = 2 * (x + 8.0)\]</div>
+<p>The correctness of this formular can be easily confirmed by looking at the extreme values:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}x = -8.0 \rightarrow 2 * (-8.0 + 8.0) =  0 = i \\
+x =  8.0 \rightarrow 2 * ( 8.0 + 8.0) = 32 = i\end{split}\]</div>
+<p>However, there is another important detail that we need to consider, which is that our highest allowed value for this calculation is actually <code class="docutils literal notranslate"><span class="pre">31</span></code>.
+This is the case, as for the interpolation we look at the current index <code class="docutils literal notranslate"><span class="pre">i</span></code>, and at the following index <code class="docutils literal notranslate"><span class="pre">i+1</span></code>.
+To ensure, that we do not go out of bounds we need to clamp again with the value <code class="docutils literal notranslate"><span class="pre">31</span></code>:</p>
+<div class="literal-block-wrapper docutils container" id="id37">
+<div class="code-block-caption"><span class="caption-text">Index calculation and index clamping</span><a class="headerlink" href="#id37" title="Link to this code"></a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">fmovIntVec</span><span class="p">(</span><span class="n">v30</span><span class="p">,</span><span class="w">  </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+<span class="n">fmovIntVec</span><span class="p">(</span><span class="n">v29</span><span class="p">,</span><span class="w">  </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+<span class="n">fmovIntVec</span><span class="p">(</span><span class="n">v28</span><span class="p">,</span><span class="w"> </span><span class="mi">31</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
+
+<span class="p">...</span>
+
+<span class="n">faddVec</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">v30</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">)</span>
+<span class="n">fmulVec</span><span class="p">(</span><span class="n">v2</span><span class="p">,</span><span class="w"> </span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">v29</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">)</span>
+
+<span class="n">fminVec</span><span class="p">(</span><span class="n">v2</span><span class="p">,</span><span class="w"> </span><span class="n">v2</span><span class="p">,</span><span class="w"> </span><span class="n">v28</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>After pre-calculating, we can move on to the <strong>third step</strong>, which is to prepare the load of the correct lookup table values.
+However, in order to be able do that, we first needed to implement some new instructions.</p>
+<p>The first instruction that we needed to implement was the <code class="docutils literal notranslate"><span class="pre">FCVTMS</span></code> instruction.
+This instruction does two things:</p>
+<ul class="simple">
+<li><p>Firstly, <code class="docutils literal notranslate"><span class="pre">FCVTMS</span></code> floors our calculated index value.
+The flooring is important, as in an interpolation setting the value before the decimal dot describes the correct table index (for positive numbers).
+If we would ceil (round to nearest), we would potentially use a wrong value out of our lookup table and therefore increase the difference to the correct sigmoid value.
+And as we already have values in the range <code class="docutils literal notranslate"><span class="pre">[0,31]</span></code> we can use this instruction.</p></li>
+<li><p>Secondly, <code class="docutils literal notranslate"><span class="pre">FCVTMS</span></code> transforms the floating point value to a signed integer (<code class="docutils literal notranslate"><span class="pre">5</span></code>).
+This is also very important, as we want to use the index to load from the correct address.
+To perform this address calculation we use <code class="docutils literal notranslate"><span class="pre">UMOV</span></code>, which expects and signed integer and moves the value from the SIMD&amp;FP register into a general purpose register.</p></li>
+</ul>
+<p>The second instruction that is necessary for later calculations is <code class="docutils literal notranslate"><span class="pre">FRINTM</span></code>.
+<code class="docutils literal notranslate"><span class="pre">FRINTM</span></code> stands for floating-point round to integer toward minus infinity, which means, it works similarly to <code class="docutils literal notranslate"><span class="pre">FCVTMS</span></code>.
+However, this time the result stays in floating-point format, but as a clean / integral integer (<code class="docutils literal notranslate"><span class="pre">5.0</span></code>).
+That is important, as we can still use the value for floating-point calculations.
+This detail justifies the use of both <code class="docutils literal notranslate"><span class="pre">FCVTMS</span></code> and <code class="docutils literal notranslate"><span class="pre">FRINTM</span></code>, which otherwise seem to do similar things.</p>
+<p>The result from <code class="docutils literal notranslate"><span class="pre">FRINTM</span></code> is then used to calculate the fractional part of our pre-calculated indix.
+The fractional part is defined as the difference from the real table index minus the clean integer.
+This fractional part will later help us calculate the correct interpolated value:</p>
+<div class="literal-block-wrapper docutils container" id="id38">
+<div class="code-block-caption"><span class="caption-text">prepare table lookup and interpolation calculation</span><a class="headerlink" href="#id38" title="Link to this code"></a></div>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// v2 = pre-calculated floating-point index</span>
+<span class="n">frintmVec</span><span class="p">(</span><span class="n">v3</span><span class="p">,</span><span class="w"> </span><span class="n">v2</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">)</span>
+<span class="n">fsubVec</span><span class="p">(</span><span class="n">v5</span><span class="p">,</span><span class="w"> </span><span class="n">v2</span><span class="p">,</span><span class="w"> </span><span class="n">v3</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">)</span>
+<span class="n">fcvtmsVec</span><span class="p">(</span><span class="n">v4</span><span class="p">,</span><span class="w"> </span><span class="n">v3</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>As shortly described before, we then use the value from our <code class="docutils literal notranslate"><span class="pre">FCVTMS</span></code> instruction and move the value into a general purpose register using <code class="docutils literal notranslate"><span class="pre">UMOV</span></code>.
+This means, our <strong>fourth step</strong> uses the calculated values from step three and makes the last preparation for our lookup table loads:</p>
+<div class="literal-block-wrapper docutils container" id="id39">
+<div class="code-block-caption"><span class="caption-text">calculate offset</span><a class="headerlink" href="#id39" title="Link to this code"></a></div>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">umov</span><span class="p">(</span><span class="n">w10</span><span class="p">,</span><span class="w"> </span><span class="n">v4</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">)</span><span class="w"> </span><span class="c1">// s4[0]</span>
+<span class="n">umov</span><span class="p">(</span><span class="n">w11</span><span class="p">,</span><span class="w"> </span><span class="n">v4</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">)</span><span class="w"> </span><span class="c1">// s4[1]</span>
+<span class="n">umov</span><span class="p">(</span><span class="n">w12</span><span class="p">,</span><span class="w"> </span><span class="n">v4</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">)</span><span class="w"> </span><span class="c1">// s4[2]</span>
+<span class="n">umov</span><span class="p">(</span><span class="n">w13</span><span class="p">,</span><span class="w"> </span><span class="n">v4</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">)</span><span class="w"> </span><span class="c1">// s4[3]</span>
+
+<span class="c1">// Multiply with datatype</span>
+<span class="n">lsl</span><span class="p">(</span><span class="n">w10</span><span class="p">,</span><span class="w"> </span><span class="n">w10</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="n">lsl</span><span class="p">(</span><span class="n">w11</span><span class="p">,</span><span class="w"> </span><span class="n">w11</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="n">lsl</span><span class="p">(</span><span class="n">w12</span><span class="p">,</span><span class="w"> </span><span class="n">w12</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="n">lsl</span><span class="p">(</span><span class="n">w13</span><span class="p">,</span><span class="w"> </span><span class="n">w13</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>The detail for this step is that we need to load the our values into separate registers.
+This separation is needed, in order to be able to load from the correct table index.</p>
+<p>In <strong>step five</strong> we proceed to load the values. As we don’t have a real offset this time, but
+rather all table information are located in a register, we needed to implement <code class="docutils literal notranslate"><span class="pre">LDR</span></code> (register, SIMD&amp;FP).
+The critical thing about this instruction is that in order to load from a register as an offset, you need to set the <code class="docutils literal notranslate"><span class="pre">UXTW</span></code> option.
+<code class="docutils literal notranslate"><span class="pre">UXTW</span></code> stands for unsigned extend word and is generally used for register addressing mode extensions.
+This means internally, we take a 32-bit register like <code class="docutils literal notranslate"><span class="pre">w10</span></code> as our offset and zero-extend it to 64 bits before adding it to the base address:</p>
+<div class="literal-block-wrapper docutils container" id="id40">
+<div class="code-block-caption"><span class="caption-text">load from the lookup table</span><a class="headerlink" href="#id40" title="Link to this code"></a></div>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">ldrReg</span><span class="p">(</span><span class="w"> </span><span class="n">v6</span><span class="p">,</span><span class="w"> </span><span class="n">x2</span><span class="p">,</span><span class="w"> </span><span class="n">w10</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">)</span>
+<span class="n">ldrReg</span><span class="p">(</span><span class="w"> </span><span class="n">v7</span><span class="p">,</span><span class="w"> </span><span class="n">x2</span><span class="p">,</span><span class="w"> </span><span class="n">w11</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">)</span>
+<span class="n">ldrReg</span><span class="p">(</span><span class="n">v16</span><span class="p">,</span><span class="w"> </span><span class="n">x2</span><span class="p">,</span><span class="w"> </span><span class="n">w12</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">)</span>
+<span class="n">ldrReg</span><span class="p">(</span><span class="n">v17</span><span class="p">,</span><span class="w"> </span><span class="n">x2</span><span class="p">,</span><span class="w"> </span><span class="n">w13</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p><strong>Step six</strong> reassembles the values that we just loaded from our lookup table into a single SIMD&amp;FP register.
+To do that, we use the <code class="docutils literal notranslate"><span class="pre">INS</span></code> instruction, that lets us specify the indices from which we want to load and where to load to:</p>
+<div class="literal-block-wrapper docutils container" id="id41">
+<div class="code-block-caption"><span class="caption-text">reassembling of the table index values</span><a class="headerlink" href="#id41" title="Link to this code"></a></div>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">ins</span><span class="p">(</span><span class="n">v18</span><span class="p">,</span><span class="w">  </span><span class="n">v6</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">)</span>
+<span class="n">ins</span><span class="p">(</span><span class="n">v18</span><span class="p">,</span><span class="w">  </span><span class="n">v7</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">)</span>
+<span class="n">ins</span><span class="p">(</span><span class="n">v18</span><span class="p">,</span><span class="w"> </span><span class="n">v16</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">)</span>
+<span class="n">ins</span><span class="p">(</span><span class="n">v18</span><span class="p">,</span><span class="w"> </span><span class="n">v17</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>At this point we are finished for our first table index. But as we described before, we now need to do the same thing for our index at position <code class="docutils literal notranslate"><span class="pre">i</span> <span class="pre">+</span> <span class="pre">1</span></code>.
+This means, we increase our pointer by <code class="docutils literal notranslate"><span class="pre">4</span></code> and to the exact same thing for our table at <code class="docutils literal notranslate"><span class="pre">i+1</span></code>:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// increase offset</span>
+<span class="n">add</span><span class="p">(</span><span class="n">w10</span><span class="p">,</span><span class="w"> </span><span class="n">w10</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+<span class="n">add</span><span class="p">(</span><span class="n">w11</span><span class="p">,</span><span class="w"> </span><span class="n">w11</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+<span class="n">add</span><span class="p">(</span><span class="n">w12</span><span class="p">,</span><span class="w"> </span><span class="n">w12</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+<span class="n">add</span><span class="p">(</span><span class="n">w13</span><span class="p">,</span><span class="w"> </span><span class="n">w13</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c1">// Load from lookup table</span>
+<span class="n">ldrReg</span><span class="p">(</span><span class="n">v19</span><span class="p">,</span><span class="w"> </span><span class="n">x2</span><span class="p">,</span><span class="w"> </span><span class="n">w10</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">)</span>
+<span class="n">ldrReg</span><span class="p">(</span><span class="n">v20</span><span class="p">,</span><span class="w"> </span><span class="n">x2</span><span class="p">,</span><span class="w"> </span><span class="n">w11</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">)</span>
+<span class="n">ldrReg</span><span class="p">(</span><span class="n">v21</span><span class="p">,</span><span class="w"> </span><span class="n">x2</span><span class="p">,</span><span class="w"> </span><span class="n">w12</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">)</span>
+<span class="n">ldrReg</span><span class="p">(</span><span class="n">v22</span><span class="p">,</span><span class="w"> </span><span class="n">x2</span><span class="p">,</span><span class="w"> </span><span class="n">w13</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">)</span>
+
+<span class="c1">// Reassemble</span>
+<span class="n">ins</span><span class="p">(</span><span class="n">v23</span><span class="p">,</span><span class="w"> </span><span class="n">v19</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">)</span>
+<span class="n">ins</span><span class="p">(</span><span class="n">v23</span><span class="p">,</span><span class="w"> </span><span class="n">v20</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">)</span>
+<span class="n">ins</span><span class="p">(</span><span class="n">v23</span><span class="p">,</span><span class="w"> </span><span class="n">v21</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">)</span>
+<span class="n">ins</span><span class="p">(</span><span class="n">v23</span><span class="p">,</span><span class="w"> </span><span class="n">v22</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Our <strong>last step</strong> is to calculate the interpolate value for our input.
+For the calculation we need:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">v5</span></code>  fractional difference between float index and rounded index (<span class="math notranslate nohighlight">\(5.89 - 5.0 = 0.89\)</span>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">v18</span></code> SIMD&amp;FP register (4 values) for table at index <code class="docutils literal notranslate"><span class="pre">T[i]</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">v23</span></code> SIMD&amp;FP register (4 values) for table at index <code class="docutils literal notranslate"><span class="pre">T[i+1]</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">v24</span></code> Difference between the table index values (<code class="docutils literal notranslate"><span class="pre">T[i+1]</span> <span class="pre">-</span> <span class="pre">T[i]</span></code>)</p></li>
+</ul>
+<p>Given these values the following formula can be derived:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}v24 = v23 - v18 \\
+\sigma(x) = v18 + v5 * v24 \\\end{split}\]</div>
+<div class="math notranslate nohighlight">
+\[\begin{split}\sigma(x) = v18 + v5 * (v23 - v18) \\\end{split}\]</div>
+<p>The last step is to store our results back at the correct position:</p>
+<div class="literal-block-wrapper docutils container" id="id42">
+<div class="code-block-caption"><span class="caption-text">store interpolated values</span><a class="headerlink" href="#id42" title="Link to this code"></a></div>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">str</span><span class="p">(</span><span class="n">v18</span><span class="p">,</span><span class="w"> </span><span class="n">x17</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">q</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>With this interpolation approach, we are now able to achieve an approximation of about <code class="docutils literal notranslate"><span class="pre">0.01</span></code> for the whole range of floating-point values.
+The interpolation approach itself is not so good for values in the range of <code class="docutils literal notranslate"><span class="pre">[-2.0,2.0]</span></code>.
+Here the taylor approximation delivers better results.
+However, considering the range outside of this interval <code class="docutils literal notranslate"><span class="pre">x&lt;-2.0</span></code> and <code class="docutils literal notranslate"><span class="pre">x&gt;2.0</span></code> we achieve an approximation error of about <code class="docutils literal notranslate"><span class="pre">0.005</span></code>.
+This error could be decreased by simply using a larger lookup table.</p>
+</section>
+<section id="benchmarks-and-approach-comparison">
+<h4>7.4.2.4 Benchmarks and approach comparison<a class="headerlink" href="#benchmarks-and-approach-comparison" title="Link to this heading"></a></h4>
+<p>To compare the errors of the different approaches, we have created a small overview for different input values:</p>
+<div class="literal-block-wrapper docutils container" id="id43">
+<div class="code-block-caption"><span class="caption-text">sigmoid error margin comparison</span><a class="headerlink" href="#id43" title="Link to this code"></a></div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>=== Sigmoid Comparison Results ===
+ Input     | True Sigmoid | Approx (Interp) | Approx (Taylor) | Difference (Interp - True)
+-----------|--------------|-----------------|-----------------|----------------------------
+ -8.385845 |     0.000228 |        0.000335 |      -75.706642 |                   0.000107
+  4.183819 |     0.984989 |        0.984542 |        2.690914 |                   0.000446
+  8.511618 |     0.999799 |        0.999447 |       82.853134 |                   0.000352
+  7.161157 |     0.999224 |        0.999204 |       33.874561 |                   0.000020
+  9.914986 |     0.999951 |        0.999447 |      182.299164 |                   0.000504
+ -2.115196 |     0.107629 |        0.109217 |        0.080149 |                   0.001588
+  5.688729 |     0.996628 |        0.996533 |       10.498644 |                   0.000095
+ -1.417207 |     0.195100 |        0.196752 |        0.193088 |                   0.001652
+</pre></div>
+</div>
+</div>
+<p>The overview clearly shows that the interpolation approach is pretty close over the whole range of values, whereas the taylor approximation has pretty big errors outside the <code class="docutils literal notranslate"><span class="pre">[-2,2]</span></code> range.</p>
+<p>Apart from that we also created benchmarks for the different sigmoid approaches:</p>
+<div class="literal-block-wrapper docutils container" id="id44">
+<div class="code-block-caption"><span class="caption-text">sigmoid function benchmarks</span><a class="headerlink" href="#id44" title="Link to this code"></a></div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Running FastSigmoidPrimitiveBench 50x50 benchmark
+Total time (s):                       3
+Total reps:                           9493261
+Total number of elements:             23733152500
+Total amount of processed data (GiB): 176.826
+Bandwidth (GiB/s)                     58.9419
+--------------------------------------------------
+Running FastSigmoidPrimitiveBench 64x64 benchmark
+Total time (s):                       3
+Total reps:                           6447430
+Total number of elements:             26408673280
+Total amount of processed data (GiB): 196.76
+Bandwidth (GiB/s)                     65.5866
+--------------------------------------------------
+Running FastSigmoidPrimitiveBench 512x512 benchmark
+Total time (s):                       3.00001
+Total reps:                           107222
+Total number of elements:             28107603968
+Total amount of processed data (GiB): 209.418
+Bandwidth (GiB/s)                     69.8058
+--------------------------------------------------
+Running FastSigmoidPrimitiveBench 2048x2048 benchmark
+Total time (s):                       3.00006
+Total reps:                           6663
+Total number of elements:             27946647552
+Total amount of processed data (GiB): 208.219
+Bandwidth (GiB/s)                     69.4048
+--------------------------------------------------
+Running SigmoidTaylorPrimitiveBench 50x50 benchmark
+Total time (s):                       3
+Total reps:                           7591820
+Total number of elements:             18979550000
+Total amount of processed data (GiB): 141.409
+Bandwidth (GiB/s)                     47.1362
+--------------------------------------------------
+Running SigmoidTaylorPrimitiveBench 64x64 benchmark
+Total time (s):                       3
+Total reps:                           5008049
+Total number of elements:             20512968704
+Total amount of processed data (GiB): 152.834
+Bandwidth (GiB/s)                     50.9445
+--------------------------------------------------
+Running SigmoidTaylorPrimitiveBench 512x512 benchmark
+Total time (s):                       3.00004
+Total reps:                           80699
+Total number of elements:             21154758656
+Total amount of processed data (GiB): 157.615
+Bandwidth (GiB/s)                     52.5377
+--------------------------------------------------
+Running SigmoidTaylorPrimitiveBench 2048x2048 benchmark
+Total time (s):                       3.00036
+Total reps:                           5024
+Total number of elements:             21072183296
+Total amount of processed data (GiB): 157
+Bandwidth (GiB/s)                     52.327
+--------------------------------------------------
+Running SigmoidInterpolationPrimitiveBench 50x50 benchmark
+Total time (s):                       3
+Total reps:                           2255744
+Total number of elements:             5639360000
+Total amount of processed data (GiB): 42.0165
+Bandwidth (GiB/s)                     14.0055
+--------------------------------------------------
+Running SigmoidInterpolationPrimitiveBench 64x64 benchmark
+Total time (s):                       3
+Total reps:                           862531
+Total number of elements:             3532926976
+Total amount of processed data (GiB): 26.3224
+Bandwidth (GiB/s)                     8.77411
+--------------------------------------------------
+Running SigmoidInterpolationPrimitiveBench 512x512 benchmark
+Total time (s):                       3.00022
+Total reps:                           13549
+Total number of elements:             3551789056
+Total amount of processed data (GiB): 26.4629
+Bandwidth (GiB/s)                     8.82033
+--------------------------------------------------
+Running SigmoidInterpolationPrimitiveBench 2048x2048 benchmark
+Total time (s):                       3.00054
+Total reps:                           842
+Total number of elements:             3531603968
+Total amount of processed data (GiB): 26.3125
+Bandwidth (GiB/s)                     8.76926
+--------------------------------------------------
+</pre></div>
+</div>
+</div>
+<p>The benchmarks show that our fast sigmoid has the best bandwidth usage out of the three approaches.
+However, the taylor approximation comes pretty close to these values as well.
+The linear interpolation approach on the other side has the weakest performance of the three approaches.</p>
+<p>This comparison shows, that with these three approaches we have a trade off between the precision compared to the true sigmoid function and the amount of data we can transfer per second.</p>
+<p>We also wrote a python script, that benchmarks the bandwidth performance of the sigmoid function from torch:</p>
+<div class="literal-block-wrapper docutils container" id="id45">
+<div class="code-block-caption"><span class="caption-text">torch sigmoid benchmarks</span><a class="headerlink" href="#id45" title="Link to this code"></a></div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Running benchmarks on: CPU
+PyTorch version: 2.7.1
+==================================================
+
+RealSigmoid Benchmarks:
+--------------------------------------------------
+Running RealSigmoid 50x50 benchmark
+Total time (s):                       3.000001
+Total reps:                           933708
+Total number of elements:             2334270000
+Total amount of processed data (GiB): 17.391667
+Bandwidth (GiB/s)                     5.797220
+--------------------------------------------------
+Running RealSigmoid 64x64 benchmark
+Total time (s):                       3.000001
+Total reps:                           624515
+Total number of elements:             2558013440
+Total amount of processed data (GiB): 19.058685
+Bandwidth (GiB/s)                     6.352893
+--------------------------------------------------
+Running RealSigmoid 512x512 benchmark
+Total time (s):                       3.000091
+Total reps:                           31765
+Total number of elements:             8327004160
+Total amount of processed data (GiB): 62.041016
+Bandwidth (GiB/s)                     20.679711
+--------------------------------------------------
+Running RealSigmoid 2048x2048 benchmark
+Total time (s):                       3.000116
+Total reps:                           3140
+Total number of elements:             13170114560
+Total amount of processed data (GiB): 98.125000
+Bandwidth (GiB/s)                     32.707067
+--------------------------------------------------
+
+FastSigmoid Benchmarks:
+--------------------------------------------------
+Running FastSigmoid 50x50 benchmark
+Total time (s):                       3.000000
+Total reps:                           314311
+Total number of elements:             785777500
+Total amount of processed data (GiB): 5.854499
+Bandwidth (GiB/s)                     1.951500
+--------------------------------------------------
+Running FastSigmoid 64x64 benchmark
+Total time (s):                       3.000002
+Total reps:                           293904
+Total number of elements:             1203830784
+Total amount of processed data (GiB): 8.969238
+Bandwidth (GiB/s)                     2.989744
+--------------------------------------------------
+Running FastSigmoid 512x512 benchmark
+Total time (s):                       3.000216
+Total reps:                           12922
+Total number of elements:             3387424768
+Total amount of processed data (GiB): 25.238281
+Bandwidth (GiB/s)                     8.412155
+--------------------------------------------------
+Running FastSigmoid 2048x2048 benchmark
+Total time (s):                       3.001163
+Total reps:                           2329
+Total number of elements:             9768534016
+Total amount of processed data (GiB): 72.781250
+Bandwidth (GiB/s)                     24.251015
+--------------------------------------------------
+
+TaylorSigmoid Benchmarks:
+--------------------------------------------------
+Running TaylorSigmoid 50x50 benchmark
+Total time (s):                       3.000014
+Total reps:                           206219
+Total number of elements:             515547500
+Total amount of processed data (GiB): 3.841128
+Bandwidth (GiB/s)                     1.280370
+--------------------------------------------------
+Running TaylorSigmoid 64x64 benchmark
+Total time (s):                       3.000003
+Total reps:                           183858
+Total number of elements:             753082368
+Total amount of processed data (GiB): 5.610901
+Bandwidth (GiB/s)                     1.870298
+--------------------------------------------------
+Running TaylorSigmoid 512x512 benchmark
+Total time (s):                       3.000397
+Total reps:                           6377
+Total number of elements:             1671692288
+Total amount of processed data (GiB): 12.455078
+Bandwidth (GiB/s)                     4.151143
+--------------------------------------------------
+Running TaylorSigmoid 2048x2048 benchmark
+Total time (s):                       3.003952
+Total reps:                           720
+Total number of elements:             3019898880
+Total amount of processed data (GiB): 22.500000
+Bandwidth (GiB/s)                     7.490133
+--------------------------------------------------
+</pre></div>
+</div>
+</div>
+<p>In the script we compare the performance of <code class="docutils literal notranslate"><span class="pre">torch.sigmoid</span></code>, with a custom implementation of the fast sigmoid using <code class="docutils literal notranslate"><span class="pre">torch.abs</span></code>, and a normal implementation of the taylor approximation (without torch).
+The benchmark shows, that torch’s sigmoid is still has a higher bandwidth than the implementations with additional python code.
+However, our kernels still achieve a higher bandwidth than torch’s sigmoid implementation, neglecting our linear interpolation which is still worse for larger matrices.</p>
+</section>
+</section>
+</section>
+<section id="wrap-up">
+<h2>7.5 Wrap-Up<a class="headerlink" href="#wrap-up" title="Link to this heading"></a></h2>
+<p>To end our project report, we will use this section for a quick recap of the last 2 weeks.</p>
+<p>In the first week, we successfully implemented all planned primitive operations, specifically:</p>
+<ul>
+<li><p>Unary Primitives</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Square</p></li>
+<li><p>Reciprocal</p></li>
+<li><p>Increment &amp; Decrement</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>Binary Primitives</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Add &amp; Sub</p></li>
+<li><p>Mul &amp; Div</p></li>
+<li><p>Max &amp; Min</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+<p>We incorporated them into our <code class="docutils literal notranslate"><span class="pre">TensorOperation</span></code> backend and implemented thorough unit tests.
+Some unforseen issues were the implementation of many new instructions, for example <code class="docutils literal notranslate"><span class="pre">FRECPE</span></code> and <code class="docutils literal notranslate"><span class="pre">FRECPS</span></code> for the reciprocal primitive,
+as well as the complex <code class="docutils literal notranslate"><span class="pre">FMOV</span></code> instruction for the increment and decrement primitives. Nontheless we were able to achieve all planned goals.</p>
+<p>In the second week, we first put our focus on optimizations. We implemented dimension fusion and also discovered suboptimal behaviour in our dimension splitting algorithm.
+We were able to resolve both tasks without further issues. Next, we extended our original roadmap by the sigmoid operation. Here, we implemented three different approaches
+with their own advantages and disadvantages. Furthermore, we benchmarked and compared the implemented approaches. Lastly, we had to incorporate the new sigmoid primitive
+into our <code class="docutils literal notranslate"><span class="pre">TensorOperation</span></code> backend, which came with an unexpected change we had to make. The kernel type which we previously used had to be extended by an extra parameter,
+allowing us to pass extra data such as lookup tables and constants. Changing the kernel type meant that we had to adjust all test cases and benchmarks as well.</p>
+<p>Finally, we can say that we fully achieved our goal of diversifying our tensor compiler with new primitive operations.
+We were able to substantially extend the capabilities of our IR Optimizer with dimension fusion and an enhanced dimension splitting algorithm.
+As a bonus, we implemented the complex sigmoid function using multiple approaches, ranging from precision-based to efficiency-based computations.</p>
 </section>
 </section>
 

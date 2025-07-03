@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['parse_5feinsum_5fexpression_0',['parse_einsum_expression',['../classmini__jit_1_1einsum_1_1EinsumTree.html#a5dd37d342ac87c0bd4dded53ab7432cd',1,'mini_jit::einsum::EinsumTree']]]
+  ['matmulbrmnkbench_0',['MatmulBrMNKBench',['../classmini__jit_1_1benchmarks_1_1MatmulBrMNKBench.html#a76ea22f7f6f964ada3b869a0bfa04b6f',1,'mini_jit::benchmarks::MatmulBrMNKBench']]],
+  ['matmulmnkbench_1',['MatmulMNKBench',['../classmini__jit_1_1benchmarks_1_1MatmulMNKBench.html#aab94cec9cfa7d30024032cfa96925bf7',1,'mini_jit::benchmarks::MatmulMNKBench']]]
 ];
