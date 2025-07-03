@@ -447,8 +447,6 @@ For the more curious reader, the implementation of ``findLargestMultipleOfDiviso
                                                                int64_t &o_size_0,
                                                                int64_t &o_size_1)
     {
-        o_size_0 = 1;
-        o_size_1 = i_size;
         if (i_divisor <= 0 || i_size <= 0 || i_max_size <= 0 || i_divisor > i_max_size)
         {
             return;
@@ -461,8 +459,8 @@ For the more curious reader, the implementation of ``findLargestMultipleOfDiviso
             // we found an m that divides i_size! it is also the largest
             if (i_size % l_m == 0)
             {
-                o_size_1 = l_m;
                 o_size_0 = i_size / l_m;
+                o_size_1 = l_m;
                 return;
             }
         }
@@ -501,6 +499,7 @@ As a last step we move all our ``shared`` loops to the front of the order:
     :dedent:
 
 
+.. _dimension-fusion:
 
 5.5.4 Dimension Fusion
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -592,9 +591,6 @@ Consequently, ``findLargestMultipleOfDivisor`` had to be adjusted as well, with 
                                                               int64_t &o_size_0,
                                                               int64_t &o_size_1)
     {
-        o_size_0 = 1;
-        o_size_1 = i_size;
-
         if (i_divisor <= 0 || i_size <= 0 || i_max_size <= 0 || i_min_size <= 0 ||
             i_divisor > i_max_size || i_size < i_min_size)
         {
@@ -608,12 +604,12 @@ Consequently, ``findLargestMultipleOfDivisor`` had to be adjusted as well, with 
             // we found an m that divides i_size! it is also the largest
             if (i_size % l_m == 0)
             {
-                int64_t candidate_size_1 = l_m;
                 int64_t candidate_size_0 = i_size / l_m;
+                int64_t candidate_size_1 = l_m;
                 if (candidate_size_0 >= i_min_size && candidate_size_1 >= i_min_size)
                 {
-                    o_size_1 = candidate_size_1;
                     o_size_0 = candidate_size_0;
+                    o_size_1 = candidate_size_1;
                     return;
                 }
             }

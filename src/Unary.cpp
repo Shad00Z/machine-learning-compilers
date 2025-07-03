@@ -82,6 +82,59 @@ mini_jit::error_t mini_jit::Unary::generate(uint32_t m,
             mini_jit::kernels::unary::reciprocal_trans(*m_kernel, m, n);
         }
         break;
+    case ptype_t::increment:
+        if (0 == trans_b)
+        {
+            mini_jit::kernels::unary::increment(*m_kernel, m, n);
+        }
+        else
+        {
+            mini_jit::kernels::unary::increment_trans(*m_kernel, m, n);
+        }
+        break;
+    case ptype_t::decrement:
+        if (0 == trans_b)
+        {
+            mini_jit::kernels::unary::decrement(*m_kernel, m, n);
+        }
+        else
+        {
+            mini_jit::kernels::unary::decrement(*m_kernel, m, n);
+        }
+        break;
+    case ptype_t::fast_sigmoid:
+        if (0 == trans_b)
+        {
+            mini_jit::kernels::unary::fast_sigmoid(*m_kernel, m, n);
+        }
+        else
+        {
+            std::cout << "Transposition is not supported for fast sigmoid" << std::endl;
+            return error_t::operation_not_supported;
+        }
+        break;
+    case ptype_t::sigmoid_interp:
+        if (0 == trans_b)
+        {
+            mini_jit::kernels::unary::sigmoid_interpolation(*m_kernel, m, n);
+        }
+        else
+        {
+            std::cout << "Transposition is not supported for sigmoid interpolation" << std::endl;
+            return error_t::operation_not_supported;
+        }
+        break;
+    case ptype_t::sigmoid_taylor:
+        if (0 == trans_b)
+        {
+            mini_jit::kernels::unary::sigmoid_taylor(*m_kernel, m, n);
+        }
+        else
+        {
+            std::cout << "Transposition is not supported for sigmoid taylor" << std::endl;
+            return error_t::operation_not_supported;
+        }
+        break;
     default:
         std::cout << ("Invalid primitive type") << std::endl;
         return error_t::wrong_ptype;

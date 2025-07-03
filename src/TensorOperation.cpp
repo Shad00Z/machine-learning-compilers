@@ -89,7 +89,10 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
         ptype_t::square, 
         ptype_t::reciprocal,
         ptype_t::increment,
-        ptype_t::decrement
+        ptype_t::decrement,
+        ptype_t::fast_sigmoid,
+        ptype_t::sigmoid_interp,
+        ptype_t::sigmoid_taylor,
     };
 
     if (std::find(allowed_first_touch_types.begin(), allowed_first_touch_types.end(), prim_first_touch) == allowed_first_touch_types.end())
@@ -629,7 +632,9 @@ void mini_jit::TensorOperation::execute_kernel_last_touch(char *ptr_out,
              m_kernel_last_touch_type == ptype_t::square || 
              m_kernel_last_touch_type == ptype_t::reciprocal ||
              m_kernel_last_touch_type == ptype_t::increment ||
-             m_kernel_last_touch_type == ptype_t::decrement)
+             m_kernel_last_touch_type == ptype_t::decrement ||
+             m_kernel_last_touch_type == ptype_t::fast_sigmoid ||
+             m_kernel_last_touch_type == ptype_t::sigmoid_taylor)
     {
         m_kernel_last_touch(ptr_out,
                             ptr_out,

@@ -599,9 +599,6 @@ void mini_jit::ir::Optimizer::findLargestMultipleOfDivisor(int64_t i_divisor,
                                                            int64_t &o_size_0,
                                                            int64_t &o_size_1)
 {
-    o_size_0 = 1;
-    o_size_1 = i_size;
-
     if (i_divisor <= 0 || i_size <= 0 || i_max_size <= 0 || i_min_size <= 0 ||
         i_divisor > i_max_size || i_size < i_min_size)
     {
@@ -615,12 +612,12 @@ void mini_jit::ir::Optimizer::findLargestMultipleOfDivisor(int64_t i_divisor,
         // we found an m that divides i_size! it is also the largest
         if (i_size % l_m == 0)
         {
-            int64_t candidate_size_1 = l_m;
             int64_t candidate_size_0 = i_size / l_m;
+            int64_t candidate_size_1 = l_m;
             if (candidate_size_0 >= i_min_size && candidate_size_1 >= i_min_size)
             {
-                o_size_1 = candidate_size_1;
                 o_size_0 = candidate_size_0;
+                o_size_1 = candidate_size_1;
                 return;
             }
         }

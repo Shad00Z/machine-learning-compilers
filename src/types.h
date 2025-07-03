@@ -43,6 +43,9 @@ namespace mini_jit
         div = 12,
         min = 13,
         max = 14,
+        fast_sigmoid = 15,
+        sigmoid_interp = 16,
+        sigmoid_taylor = 17,
         none = 99
     };
 
@@ -63,6 +66,9 @@ namespace mini_jit
             case ptype_t::div: return "div";
             case ptype_t::min: return "min";
             case ptype_t::max: return "max";
+            case ptype_t::fast_sigmoid: return "fast_sigmoid";
+            case ptype_t::sigmoid_interp: return "sigmoid_interpolation";
+            case ptype_t::sigmoid_taylor: return "sigmoid_taylor";
             case ptype_t::none: return "none";
             default: return "unknown";
         }

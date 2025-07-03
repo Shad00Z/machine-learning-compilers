@@ -8,6 +8,8 @@ After following the given steps for the first couple of weeks, we were given the
 7.1 Our Pitch
 **********************************
 
+.. _roadmap:
+
 7.1.1 Roadmap
 ====================================
 
@@ -1201,3 +1203,224 @@ Our TensorOperation backend already supported unary operations such as ``zero`` 
 **********************************
 7.4 Progress of Week 2
 **********************************
+
+
+7.4.1 Optimizations
+=====================
+
+The first task on our TODO list was to improve our ``IR Optimizer``. Specifically, it did not yet have the capability of fusing dimensions. 
+Furthermore, the previous implementation for splitting dimensions was suboptimal in some cases. We introduced a new parameter ``min_kernel_size``
+which specifies the minimum size a dimension should have. If a dimension with a smaller size is found, the optimizer will try to fuse it with
+another dimension. Additionally, this minimum kernel size is now also taken into account during the splitting of dimensions, where a split is only
+performed if both new dimensions are at least of size ``min_kernel_size``.
+
+To read more about this topic, please refer to the detailed chapter :ref:`dimension-fusion`.
+
+The second optimization we applied was in some unary kernels that support transposition. Previously, we always performed the respective unary operation before transposing.
+In some cases however, it is more efficient to perform the respective operation after transposing, because of a better fitting memory layout.
+To illustrate this, we will look at the following example of the reciprocal with transposition kernel:
+
+.. code-block:: cpp
+    :caption: Unoptimized Reciprocal Transposition Kernel: case M=1 and N=4
+
+    void mini_jit::kernels::unary::internal::reciprocalM1N4( mini_jit::Kernel &kernel )
+    {
+        kernel.add_instr({
+            // working pointer for A and B
+            mov(x7, x4),
+            mov(x8, x5),
+            
+            // Load 1x4 block of A (input matrix)
+            ldr(v0, x7, 0, s),
+            add(x7, x7, x2, 0, 0),
+
+            ldr(v1, x7, 0, s),
+            add(x7, x7, x2, 0, 0),
+
+            ldr(v2, x7, 0, s),
+            add(x7, x7, x2, 0, 0),
+
+            ldr(v3, x7, 0, s),
+
+            frecpeScalar(v16, v0, s),
+            frecpsScalar(v17, v0, v16, s),
+            fmulScalar(v0, v16, v17, s),
+
+            frecpeScalar(v16, v1, s),
+            frecpsScalar(v17, v1, v16, s),
+            fmulScalar(v1, v16, v17, s),
+
+            frecpeScalar(v16, v2, s),
+            frecpsScalar(v17, v2, v16, s),
+            fmulScalar(v2, v16, v17, s),
+
+            frecpeScalar(v16, v3, s),
+            frecpsScalar(v17, v3, v16, s),
+            fmulScalar(v3, v16, v17, s),
+
+            // Transpose 1x4 block
+            // TRN
+            trn1(v4, v0, v2, s2),
+            trn1(v5, v1, v3, s2),
+
+            // ZIP
+            zip1(v6, v4, v5, s4),
+
+            // Store 1x4 Block of B
+            str(v6, x8, 0, q)
+        });
+    }
+
+.. code-block:: cpp
+    :caption: Optimized Reciprocal Transposition Kernel: case M=1 and N=4
+
+    void mini_jit::kernels::unary::internal::reciprocalM1N4( mini_jit::Kernel &kernel )
+    {
+        kernel.add_instr({
+            // working pointer for A and B
+            mov(x7, x4),
+            mov(x8, x5),
+            
+            // Load 1x4 block of A (input matrix)
+            ldr(v0, x7, 0, s),
+            add(x7, x7, x2, 0, 0),
+
+            ldr(v1, x7, 0, s),
+            add(x7, x7, x2, 0, 0),
+
+            ldr(v2, x7, 0, s),
+            add(x7, x7, x2, 0, 0),
+
+            ldr(v3, x7, 0, s),
+
+            // Transpose 1x4 block
+            // TRN
+            trn1(v4, v0, v2, s2),
+            trn1(v5, v1, v3, s2),
+
+            // ZIP
+            zip1(v6, v4, v5, s4),
+
+            frecpeVec(v16, v6, s4),
+            frecpsVec(v17, v6, v16, s4),
+            fmulVec(v6, v16, v17, s4),
+            
+            // Store 1x4 Block of B
+            str(v6, x8, 0, q)
+        });
+    }
+
+The reason the optimized code is more efficient is because instead of four scalar operations, it suffices to perform one full vector operation which was enabled by the transposition. 
+
+7.4.2 Sigmoid
+=====================
+
+After presenting our results of the first week, we made the decision to extend :ref:`our original roadmap <roadmap>` by a new primitive operator: **Sigmoid**.
+
+The sigmoid function is a mathematical function defined by the formula:
+
+.. math::
+
+   \sigma(x) = \frac{1}{1 + e^{-x}}
+
+It maps any real-valued number to a value between 0 and 1, producing an S-shaped curve. 
+The sigmoid function is commonly used in machine learning and statistics, especially in logistic regression and neural networks, as an activation function that introduces non-linearity and helps in probability estimation.
+
+While it might not be obvious at first glance, the sigmoid function is much more complex than the previous primitives we implemented. Without caution, a simple implementation could lead to poor performance and numerical instability. In the following sections, we will discuss three different approaches to implement the sigmoid function, each with its own advantages and disadvantages.
+
+7.4.2.1 Fast Sigmoid
+---------------------------------
+
+The first approach we considered was a fast sigmoid approximation.
+This method is based on the observation that the sigmoid function can be approximated by a simple linear function:
+
+.. math::
+
+   f(x) = 0.5 \left( \frac{x}{1 + |x|} + 1 \right)
+
+The following two graphs compare the true sigmoid function to the faster approximation:
+
+.. image:: ../_static/fast_sig_small.png
+   :alt: Sigmoid function comparison on a smaller scale
+   :align: center
+
+.. image:: ../_static/fast_sig_large.png
+   :alt: Sigmoid function comparison on a larger scale
+   :align: center
+
+This function produces a similar S-shaped curve but avoids the exponential calculation, making it faster to compute while maintaining similar properties for many practical applications, especially in neural networks.
+
+To implement this approximation, we first had to implement the ``FABS`` instruction to get the absolute value for each input element. Since it is conceptually the same as other instructions, we won't go into detail here.
+Having gained ``FABS`` as a new tool, we then implemented the fast sigmoid kernel. The following code snippet will show the computation for a block with dimensions **M=16** and **N=1**.
+
+.. code-block:: cpp
+    :caption: Fast sigmoid for M=16 and N=1
+
+    kernel.add_label("m_16_loop");
+    kernel.add_instr({
+        // load 16 elements from A
+        ldp(v0, v1, x8, 0, q),
+        ldp(v2, v3, x8, 32, q),
+
+        ////////////////////////////////////////////
+        // Compute B = 0.5 * (A / (1 + abs(A)) + 1)
+        ////////////////////////////////////////////
+        // abs(A)
+        fabsVec(v4, v0, s4),
+        fabsVec(v5, v1, s4),
+        fabsVec(v6, v2, s4),
+        fabsVec(v7, v3, s4),
+
+        // 1 + abs(A)
+        faddVec(v4, v4, v30, s4),
+        faddVec(v5, v5, v30, s4),
+        faddVec(v6, v6, v30, s4),
+        faddVec(v7, v7, v30, s4),
+
+        // A / (1 + abs(A))
+        fdivVec(v0, v0, v4, s4),
+        fdivVec(v1, v1, v5, s4),
+        fdivVec(v2, v2, v6, s4),
+        fdivVec(v3, v3, v7, s4),
+
+        // A / (1 + abs(A)) + 1
+        faddVec(v0, v0, v30, s4),
+        faddVec(v1, v1, v30, s4),
+        faddVec(v2, v2, v30, s4),
+        faddVec(v3, v3, v30, s4),
+
+        // 0.5 * (A / (1 + abs(A)) + 1)
+        fmulVec(v4, v0, v31, s4),
+        fmulVec(v5, v1, v31, s4),
+        fmulVec(v6, v2, v31, s4),
+        fmulVec(v7, v3, v31, s4),
+        ////////////////////////////////////////////
+
+        // store 16 elements to B
+        stp(v4, v5, x9, 0, q),
+        stp(v6, v7, x9, 32, q),
+
+        // jump by 16 rows
+        add(x8, x8, 16*4, 0),
+        add(x9, x9, 16*4, 0),
+
+        // decrement m loop counter
+        sub(x7, x7, 1, 0),
+    });
+    // check if loop counter is zero
+    kernel.add_instr(cbnz(x7, -kernel.getInstrCountFromLabel("m_16_loop") * 4));
+
+7.4.2.2 Sigmoid using the Taylor Series
+----------------------------------------
+
+7.4.2.3 Sigmoid using the Linear Interpolation
+------------------------------------------------
+
+7.4.2.4 Benchmarks and approach comparison
+------------------------------------------------
+
+**********************************
+7.5 Wrap-Up
+**********************************
+
+Haben wir unsere Ziele erreicht? etc
