@@ -17,7 +17,10 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
     /////////////////////////////////////////////////////////////////////
     // Check the number of dimensions
     /////////////////////////////////////////////////////////////////////
-    if (dim_types.size() != dim_sizes.size() || dim_types.size() != strides_in0.size() || dim_types.size() != strides_in1.size() || dim_types.size() != strides_out.size())
+    if (dim_types.size() != dim_sizes.size() ||
+        dim_types.size() != strides_in0.size() ||
+        dim_types.size() != strides_in1.size() ||
+        dim_types.size() != strides_out.size())
     {
         return error_t::wrong_dimension;
     }

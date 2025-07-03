@@ -341,33 +341,132 @@ We did the 'identification' process in the order ``K2, M, N, K1``.
 The reason for this order was that after the identification, we would rotate the respective dimension to the end of the order.
 This would then ultimately lead to the structure: ``..., K2, M, N, K1`` for our 'identified' primitive dimensions.
 
-5.5.2 Splitting Dimensions
+5.5.2 Dimension Splitting
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-For our second optimization pass we decided to look at the dimension sizes of our loops. 
-That means for the case that a ``prim`` dimension would be larger than ``1024`` we would decide to split it in two dimensions:
+For our second optimization pass we decided to look at the dimension sizes of our loops. We introduced a ``max_kernel_size`` parameter,
+which specifies the maximum allowed size for a dimension. If a dimension with a size larger than the maximum is found, the dimension splitter
+will try to split it into new dimensions with optimized sizes. The entry point for this optimization is the ``splitDimensions`` function:
 
-.. literalinclude:: ../../src/ir/Optimizer.cpp
-    :language: cpp
-    :lines: 327-355
-    :lineno-match:
-    :caption: split large ``prim`` dimensions
-    :dedent:
+.. code-block:: cpp
+    :caption: splitDimensions function of the Optimizer
 
-If a ``prim`` dimension would be large enough, we would call our ``findBestSplit`` function. 
-Our ``findBestSplit`` function is designed after the dimensions in our ``matmul_m_n_k`` kernel. 
-Depending on the dimension we want to split we are here selecting the ideal sizes. 
+    void mini_jit::ir::Optimizer::splitDimensions(std::vector<mini_jit::ir::Dimension> &dimensions,
+                                                  int64_t max_kernel_size)
+    {
+        // Dimensions should be split if they are too large (> max_kernel_size)
+        for (size_t i = 0; i < dimensions.size(); i++)
+        {
+            if (dimensions[i].size > max_kernel_size)
+            {
+                int64_t l_size_dim_0 = 0;
+                int64_t l_size_dim_1 = 0;
+                findBestSplit(dimensions[i].size,
+                              max_kernel_size,
+                              dimensions[i].type,
+                              l_size_dim_0,
+                              l_size_dim_1);
+                if (l_size_dim_0 > 1)
+                {
+                    // create a new seq dimension
+                    mini_jit::ir::Dimension l_dim_new(dimensions[i].type,
+                                                      exec_t::seq,
+                                                      l_size_dim_0,
+                                                      dimensions[i].stride_in0 * l_size_dim_1,
+                                                      dimensions[i].stride_in1 * l_size_dim_1,
+                                                      dimensions[i].stride_out * l_size_dim_1);
+                    // update the original dimension size
+                    dimensions[i].size = l_size_dim_1;
+                    // insert the new dimension at the back, so it will be checked for a split again
+                    dimensions.push_back(l_dim_new);
+                }
+            }
+        }
+    }
 
-That means we start with the ``M`` dimension to find an appropriate match: 
+For each dimension, it finds the bets split for our kernels if the dimension size is too large and creates a new dimension. The size of the original dimension is updated to ``l_size_dim_1``, and it will be smaller than or equal to ``max_kernel_size``. However, the new dimension ``l_dim_new`` might still have a larger dimension size than ``max_kernel_size``, which is why it is inserted at the end of the dimensions vector, where it will be checked for a possible split in a later iteration.
 
-.. literalinclude:: ../../src/ir/Optimizer.cpp
-    :language: cpp
-    :lines: 421-438
-    :lineno-match:
-    :caption: ``M`` dimension split
-    :dedent:
+But what does ``findBestSplit`` do?
 
-Similarly, we do the same for the ``N`` dimension, where we want multiples of ``4`` and for ``K`` we are flexible.
+The way our kernels were implemented makes their execution more efficient for specific dimension sizes. Considering the **M** dimension, a size that is a multiple of **16** is optimal for most kernels, since we manually optimized the kernels for this case. As for the **N** dimension size, a multiple of **4** is optimal for most kernels. 
+In the **K** dimension, we do not have such optimizations and the dimension size can be chosen freely, as long as it is smaller than ``max_kernel_size``. 
+The following code snippet shows the implementation of ``findBestSplit`` for the **M** and **N** dimensions:
+
+.. code-block:: cpp
+    :caption: findBestSplit function of the Optimizer for M and N
+
+    o_size_0 = 1;
+    o_size_1 = i_size;
+    if (i_type == dim_t::m)
+    {
+        // multiples of (multiples of) 4 are efficient (LDP, STP)
+        for (int64_t i = 16; i > 4; i -= 4)
+        {
+            findLargestMultipleOfDivisor(i, i_size, i_max_kernel_size, o_size_0, o_size_1);
+            if (o_size_0 > 1)
+            {
+                return;
+            }
+        }
+        // split by 2
+        findLargestMultipleOfDivisor(2, i_size, i_max_kernel_size, o_size_0, o_size_1);
+        if (o_size_0 > 1)
+        {
+            return;
+        }
+    }
+    // for n, we want multiples of 4
+    else if (i_type == dim_t::n)
+    {
+        // split by 4
+        findLargestMultipleOfDivisor(4, i_size, i_max_kernel_size, o_size_0, o_size_1);
+        if (o_size_0 > 1)
+        {
+            return;
+        }
+        // split by 2
+        findLargestMultipleOfDivisor(2, i_size, i_max_kernel_size, o_size_0, o_size_1);
+        if (o_size_0 > 1)
+        {
+            return;
+        }
+    }
+
+But what does ``findLargestMultipleOfDivisor`` do?
+
+As the name suggests, this helper function tries to find the largest multiple of a given divisor. Let's say the given divisor is ``16``, the input dimension size is **1600** and the ``i_max_kernel_size`` is **1024**.
+Then, ``findLargestMultipleOfDivisor`` will try to find the largest multiple of **16** which divides **1600** and is smaller than or equal to **1024**. The result of this computation is **2** for ``o_size_0`` and **800** for ``o_size_1``.
+For the more curious reader, the implementation of ``findLargestMultipleOfDivisor`` is given below:
+
+.. code-block:: cpp
+    :caption: ``findLargestMultipleOfDivisor`` function of the Optimizer
+
+    void mini_jit::ir::Optimizer::findLargestMultipleOfDivisor(int64_t i_divisor,
+                                                               int64_t i_size,
+                                                               int64_t i_max_size,
+                                                               int64_t &o_size_0,
+                                                               int64_t &o_size_1)
+    {
+        o_size_0 = 1;
+        o_size_1 = i_size;
+        if (i_divisor <= 0 || i_size <= 0 || i_max_size <= 0 || i_divisor > i_max_size)
+        {
+            return;
+        }
+
+        // start: largest multiple of i_divisor < i_max_size
+        int64_t l_max_divisible = (i_max_size / i_divisor) * i_divisor;
+        for (int64_t l_m = l_max_divisible; l_m >= i_divisor; l_m -= i_divisor)
+        {
+            // we found an m that divides i_size! it is also the largest
+            if (i_size % l_m == 0)
+            {
+                o_size_1 = l_m;
+                o_size_0 = i_size / l_m;
+                return;
+            }
+        }
+    }
 
 5.5.3 Shared Memory Parallelization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -400,6 +499,129 @@ As a last step we move all our ``shared`` loops to the front of the order:
     :lineno-match:
     :caption: move ``shared`` loops to the front
     :dedent:
+
+
+
+5.5.4 Dimension Fusion
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. note::
+
+    This part of the Optimizer was implemented much later, as part of the :ref:`project-week-2` of our final project phase.
+
+The idea behind **Dimension Fusion** is that when certain dimensions have very small sizes, fusing them can improve cache efficiency and simplify tensor expressions. It also enables our existing dimension splitter to operate more effectively, as it can now split the fused dimensions in ways optimized for our kernels, rather than being constrained by the original tensor structure. In other words, **Dimension Fusion** will be the first step in our optimizer, simplifying the tensor expression upfront so it can then be split in an optimized way and finally, have its primitive dimensions identified.
+
+The first step was to introduce a new ``min_kernel_size`` parameter. It allows the user to specify the minimum dimension size a kernel should have. If a dimension is smaller than that, the dimension fuser will try to look for candidates to fuse with. This process happens in the new ``fuseDimensions`` function of the Optimizer.
+
+.. code-block:: cpp
+    :caption: Dimension Fusing in the Optimizer
+
+    void mini_jit::ir::Optimizer::fuseDimensions(std::vector<mini_jit::ir::Dimension> &dimensions,
+                                                 int64_t min_kernel_size)
+    {
+        for (size_t i = 0; i < dimensions.size(); i++)
+        {
+            mini_jit::ir::Dimension &l_dim_0 = dimensions[i];
+            if (l_dim_0.size < min_kernel_size)
+            {
+                // find a dimension that can be fused with the current one
+                for (size_t j = 0; j < dimensions.size(); j++)
+                {
+                    if (i == j) continue; // skip self
+
+                    mini_jit::ir::Dimension &l_dim_1 = dimensions[j];
+                    if (l_dim_0.type == l_dim_1.type &&
+                        (l_dim_0.exec_type == l_dim_1.exec_type ||
+                        l_dim_0.exec_type == exec_t::undefined ||
+                        l_dim_1.exec_type == exec_t::undefined) &&
+                        l_dim_1.stride_in0 == l_dim_0.size * l_dim_0.stride_in0 &&
+                        l_dim_1.stride_in1 == l_dim_0.size * l_dim_0.stride_in1 &&
+                        l_dim_1.stride_out == l_dim_0.size * l_dim_0.stride_out)
+                    {
+                        // fuse the two dimensions
+                        l_dim_0.size *= l_dim_1.size;
+                        // remove the fused dimension
+                        dimensions.erase(dimensions.begin() + j);
+                        j--; // adjust index after erasing
+                    }
+                }
+            }
+        }
+    }
+
+Here, ``l_dim_0`` is the dimension whose size is smaller than ``min_kernel_size``, meaning that we would like to fuse it with another candidate. However, the candidate (``l_dim_1``) the function looks for needs to fulfill some criteria:
+
+#. Same dimension type as ``l_dim_0`` (**M, N, K, C**)
+#. Same execution type as ``l_dim_0``, or either type is undefined
+#. The stride of ``l_dim_1`` needs to equal the product of the stride and size of ``l_dim_0`` (Two dimensions X and Y can be fused can be fused if for all tensors: **stride(X) = |Y| ⨉ stride(Y)**)
+
+If a fitting candidate has been found, ``l_dim_0`` and ``l_dim_1`` can be fused. This involves multiplying the dimension sizes and removing the candidate from the dimensions vector. The strides do not need to be adjusted, as the original stride of the small ``l_dim_0`` is still correct.
+
+After implementing dimension fusion, we also had to make adjustments to the dimension splitter. Previously, we would split dimensions by finding the largest possible split for one dimension. For example, if the given dimension size was **1600** and the maximum kernel size **1024**, the function would have returned **2** for ``o_size_0`` and **800** for ``o_size_1``. This is because **800** is the largest multiple of **16** that is less than or equal to **1024**. This was problematic however, because we then had a dimension of size **2**, which was very small and could have lead to inefficiencies. Our solution to this problem was to also introduce the ``min_kernel_size`` parameter to the dimension splitter as well. Specifically, we adjusted the ``findBestSplit`` function, which now returns a split if the ``minimum_kernel_size`` is reached:
+
+.. code-block:: cpp
+    :caption: Updated findBestSplit function for **M** dimensions
+
+    if (i_type == dim_t::m)
+    {
+        // multiples of (multiples of) 4 are efficient (LDP, STP)
+        for (int64_t i = 16; i > 4; i -= 4)
+        {
+            findLargestMultipleOfDivisor(i, i_size, i_max_kernel_size, i_min_kernel_size, o_size_0, o_size_1);
+            if (o_size_0 >= i_min_kernel_size)
+            {
+                return;
+            }
+        }
+        // split by 2
+        findLargestMultipleOfDivisor(2, i_size, i_max_kernel_size, i_min_kernel_size, o_size_0, o_size_1);
+        if (o_size_0 >= i_min_kernel_size)
+        {
+            return;
+        }
+    }
+
+Consequently, ``findLargestMultipleOfDivisor`` had to be adjusted as well, with a simple if-condition:
+
+.. code-block:: cpp
+    :caption: Updated findLargestMultipleOfDivisor functionalities
+
+    void mini_jit::ir::Optimizer::findLargestMultipleOfDivisor(int64_t i_divisor,
+                                                              int64_t i_size,
+                                                              int64_t i_max_size,
+                                                              int64_t i_min_size,
+                                                              int64_t &o_size_0,
+                                                              int64_t &o_size_1)
+    {
+        o_size_0 = 1;
+        o_size_1 = i_size;
+
+        if (i_divisor <= 0 || i_size <= 0 || i_max_size <= 0 || i_min_size <= 0 ||
+            i_divisor > i_max_size || i_size < i_min_size)
+        {
+            return;
+        }
+
+        // start: largest multiple of i_divisor < i_max_size
+        int64_t l_max_divisible = (i_max_size / i_divisor) * i_divisor;
+        for (int64_t l_m = l_max_divisible; l_m >= i_divisor; l_m -= i_divisor)
+        {
+            // we found an m that divides i_size! it is also the largest
+            if (i_size % l_m == 0)
+            {
+                int64_t candidate_size_1 = l_m;
+                int64_t candidate_size_0 = i_size / l_m;
+                if (candidate_size_0 >= i_min_size && candidate_size_1 >= i_min_size)
+                {
+                    o_size_1 = candidate_size_1;
+                    o_size_0 = candidate_size_0;
+                    return;
+                }
+            }
+        }
+    }
+
+Candidates for splitting are now only chosen if both dimension sizes are at least as large as the specified minimum kernel size. 
+Therefore, the new dimension splitter now outputs **50** and **32** as a split of **1600**, if ``min_kernel_size`` is set to **16**.
 
 .. _5.5.6 Performance Benchmarks:
 

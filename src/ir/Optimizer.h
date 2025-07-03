@@ -120,13 +120,9 @@ private:
 
     /**
      * @brief Finds the largest multiple of a given divisor that divides the dimension 
-     * size without rest and is less than or equal to the maximum kernel size.
-     *
-     * For example, if the divisor is 16, the size is 1600, 
-     * and the maximum kernel size is 1024, the function will set
-     * o_size_0 to 2 and o_size_1 to 800. 800 is the largest multiple
-     * of 16 that is less than or equal to 1024. o_size_0 is then set
-     * to i_size / o_size_1, which is 1600 / 800 = 2.
+     * size without rest and is less than or equal to the maximum kernel size. 
+     * Both the divisor and the multiplicand will * be greater than or equal to the minimum kernel size.
+     * If no such multiple exists, the function will return 1 for o_size_0 and i_size for o_size_1.
      * 
      * @param i_divisor The divisor to find the largest multiple of.
      * @param i_size The size of the dimension to be processed.

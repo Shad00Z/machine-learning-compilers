@@ -79,7 +79,7 @@ If time allows, we would also like to further optimize our tensor operations by 
 Since we already have some other optimizations in place, integrating these should not result in major issues, although we do expect some challenges along the way.
 
 **********************************
-7.3 Implementation
+7.3 Progress of Week 1
 **********************************
 
 As suggested in our sketch, our plan was to implement the new functionalities in the following order:
@@ -1195,3 +1195,9 @@ And lastly, we just need to execute the generated binary kernels:
 
 As for the new unary primitives, no major changes needed to be done. 
 Our TensorOperation backend already supported unary operations such as ``zero`` and ``relu``, so simply extending it with the new primitives was a trivial task.
+
+.. _project-week-2:
+
+**********************************
+7.4 Progress of Week 2
+**********************************

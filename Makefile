@@ -31,6 +31,7 @@ CXXFLAGS += -Wextra
 CXXFLAGS += -Wpedantic
 # Suppress warnings from Catch2 and standard library regex
 CXXFLAGS += -Wno-maybe-uninitialized
+CXXFLAGS += -Wno-unknown-warning-option
 
 # LINKER FLAGS
 LDFLAGS = 

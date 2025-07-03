@@ -445,9 +445,8 @@ void mini_jit::ir::Optimizer::splitDimensions(std::vector<mini_jit::ir::Dimensio
                                                   dimensions[i].stride_out * l_size_dim_1);
                 // update the original dimension size
                 dimensions[i].size = l_size_dim_1;
-                // insert the new dimension at the start
-                dimensions.insert(dimensions.begin(), l_dim_new);
-                i++; // skip over new dimension
+                // insert the new dimension at the back, so it will be checked for a split again
+                dimensions.push_back(l_dim_new);
             }
         }
     }
@@ -653,11 +652,8 @@ void mini_jit::ir::Optimizer::fuseDimensions(std::vector<mini_jit::ir::Dimension
                     l_dim_1.stride_in1 == l_dim_0.size * l_dim_0.stride_in1 &&
                     l_dim_1.stride_out == l_dim_0.size * l_dim_0.stride_out)
                 {
-                    // fuse the two dimensions and keep the smaller stride
+                    // fuse the two dimensions
                     l_dim_0.size *= l_dim_1.size;
-                    l_dim_0.stride_in0 = std::min(l_dim_0.stride_in0, l_dim_1.stride_in0);
-                    l_dim_0.stride_in1 = std::min(l_dim_0.stride_in1, l_dim_1.stride_in1);
-                    l_dim_0.stride_out = std::min(l_dim_0.stride_out, l_dim_1.stride_out);
                     // remove the fused dimension
                     dimensions.erase(dimensions.begin() + j);
                     j--; // adjust index after erasing
