@@ -15,6 +15,7 @@ class mini_jit::Unary
 private:
     /// kernel
     Kernel *m_kernel = nullptr;
+    void *m_extra = nullptr; // pointer to extra/context data
 
     /**
      * @brief Creates a new kernel and deletes the existing one.
@@ -48,37 +49,34 @@ public:
                      mini_jit::ptype_t ptype);
 
     /*
-     * Kernel type.
+     * Generalized kernel type.
      * The kernel is a function that takes the following parameters:
      * - a:    Pointer to column-major matrix A, nullptr if zero kernel.
      * - b:    Pointer to matrix B.
      * - ld_a: Leading dimension of A.
      * - ld_b: Leading dimension of B.
+     * - extra: Optional pointer to extra/context data (e.g., lookup table).
      */
     using kernel_t = void (*)(void const *a,
                               void *b,
                               int64_t ld_a,
-                              int64_t ld_b);
-
-    /*
-     * Kernel type.
-     * The kernel is a function that takes the following parameters:
-     * - a:    Pointer to column-major matrix A, nullptr if zero kernel.
-     * - b:    Pointer to matrix B.
-     * - tab:  Pointer to lookup table.
-     * - ld_a: Leading dimension of A.
-     * - ld_b: Leading dimension of B.
-     */
-    using kernel_t_sig = void (*)(void const *a,
-                                  void *b,
-                                  void *tab,
-                                  int64_t ld_a,
-                                  int64_t ld_b);
+                              int64_t ld_b,
+                              void *extra);
 
     /**
      * @brief Get the generated kernel: B := op(A).
      * @return pointer to the generated kernel.
      **/
     kernel_t get_kernel() const;
+
+    /**
+     * @brief Set extra/context pointer for kernels that need it (e.g., lookup table).
+     */
+    void set_extra(void *extra);
+
+    /**
+     * @brief Get the extra/context pointer.
+     */
+    void* get_extra() const;
 };
 #endif

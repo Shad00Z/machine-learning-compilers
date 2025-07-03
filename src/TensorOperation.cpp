@@ -552,7 +552,8 @@ void mini_jit::TensorOperation::execute_kernel_first_touch(char *ptr_out,
         m_kernel_first_touch(nullptr,
                              ptr_out,
                              0,
-                             ldOut);
+                             ldOut,
+                             m_unary_first_touch.get_extra());
     }
     else if (m_kernel_first_touch_type == ptype_t::relu || 
              m_kernel_first_touch_type == ptype_t::square || 
@@ -563,7 +564,8 @@ void mini_jit::TensorOperation::execute_kernel_first_touch(char *ptr_out,
         m_kernel_first_touch(ptr_out,
                              ptr_out,
                              ldOut,
-                             ldOut);
+                             ldOut,
+                             m_unary_first_touch.get_extra());
     }
 }
 
@@ -603,7 +605,8 @@ void mini_jit::TensorOperation::execute_kernel_main(char const *ptr_in0,
         m_kernel_unary_main(ptr_in0,
                             ptr_out,
                             ldA,
-                            ldC);
+                            ldC,
+                            m_unary_main.get_extra());
     }
     else if (m_kernel_main_type == ptype_t::add || m_kernel_main_type == ptype_t::sub ||
              m_kernel_main_type == ptype_t::mul || m_kernel_main_type == ptype_t::div ||
@@ -626,7 +629,8 @@ void mini_jit::TensorOperation::execute_kernel_last_touch(char *ptr_out,
         m_kernel_last_touch(nullptr,
                             ptr_out,
                             0,
-                            ldOut);
+                            ldOut,
+                            m_unary_last_touch.get_extra());
     }
     else if (m_kernel_last_touch_type == ptype_t::relu || 
              m_kernel_last_touch_type == ptype_t::square || 
@@ -639,6 +643,7 @@ void mini_jit::TensorOperation::execute_kernel_last_touch(char *ptr_out,
         m_kernel_last_touch(ptr_out,
                             ptr_out,
                             ldOut,
-                            ldOut);
+                            ldOut,
+                            m_unary_last_touch.get_extra());
     }
 }

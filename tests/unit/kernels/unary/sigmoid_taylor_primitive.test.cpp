@@ -40,8 +40,8 @@ void test_sigmoid_taylor_primitive(uint32_t M,
 
     mini_jit::Kernel l_kernel;
     mini_jit::kernels::unary::sigmoid_taylor(l_kernel, M, N);
-    mini_jit::Unary::kernel_t_sig l_kernel_t = reinterpret_cast<mini_jit::Unary::kernel_t_sig>(const_cast<void *>(l_kernel.get_kernel()));
-    l_kernel_t(A, B, const_cast<void*>(static_cast<const void*>(sig_taylor_values)), M, M);
+    mini_jit::Unary::kernel_t l_kernel_t = reinterpret_cast<mini_jit::Unary::kernel_t>(const_cast<void *>(l_kernel.get_kernel()));
+    l_kernel_t(A, B, M, M, const_cast<void*>(static_cast<const void*>(sig_taylor_values)));
 
     for (u_int32_t i = 0; i < M * N; i++)
     {

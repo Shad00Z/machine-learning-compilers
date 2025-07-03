@@ -31,7 +31,7 @@ void test_square_primitive(uint32_t M,
     mini_jit::Kernel l_kernel;
     mini_jit::kernels::unary::square(l_kernel, M, N);
     mini_jit::Unary::kernel_t l_kernel_t = reinterpret_cast<mini_jit::Unary::kernel_t>(const_cast<void *>(l_kernel.get_kernel()));
-    l_kernel_t(A, B, M, M);
+    l_kernel_t(A, B, M, M, nullptr);
 
     for (u_int32_t i = 0; i < M * N; i++)
     {

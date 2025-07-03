@@ -38,14 +38,16 @@ private:
     void (*m_kernel_first_touch)(void const *,
                                  void *,
                                  int64_t,
-                                 int64_t);
+                                 int64_t,
+                                 void *);
     /// main kernel type
     mini_jit::ptype_t m_kernel_main_type;
     /// main unary kernel
     void (*m_kernel_unary_main)(void const *,
                                 void *,
                                 int64_t,
-                                int64_t);
+                                int64_t,
+                                void *);
 
     /// main binary kernel
     void (*m_kernel_binary_main)(void const *,
@@ -71,7 +73,8 @@ private:
     void (*m_kernel_last_touch)(void const *,
                                 void *,
                                 int64_t,
-                                int64_t);
+                                int64_t,
+                                void *);
 
     /// dimension types of the loops (m, n, k)
     std::vector<dim_t> m_dim_types;

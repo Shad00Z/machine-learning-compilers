@@ -7,7 +7,7 @@
 #include "constants.h"
 
 void test_square_trans_primitive(uint32_t M,
-                               uint32_t N)
+                                 uint32_t N)
 {
     float *A = new float[M * N];
     float *B = new float[N * M];
@@ -38,7 +38,7 @@ void test_square_trans_primitive(uint32_t M,
     mini_jit::Kernel l_kernel;
     mini_jit::kernels::unary::square_trans(l_kernel, M, N);
     mini_jit::Unary::kernel_t l_kernel_t = reinterpret_cast<mini_jit::Unary::kernel_t>(const_cast<void *>(l_kernel.get_kernel()));
-    l_kernel_t(A, B, M, N);
+    l_kernel_t(A, B, M, N, nullptr);
 
     for (u_int32_t i = 0; i < M * N; i++)
     {

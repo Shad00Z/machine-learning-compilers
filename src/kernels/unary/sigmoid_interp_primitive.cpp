@@ -22,9 +22,9 @@ void mini_jit::kernels::unary::sigmoid_interpolation(mini_jit::Kernel &kernel,
     // Inputs:
     // x0: pointer to A (input)
     // x1: pointer to B (output)
-    // x2: pointer to Lookup Table 
-    // x3: leading dimension of A
-    // x4: leading dimension of B
+    // x2: leading dimension of A
+    // x3: leading dimension of B
+    // x4: pointer to Lookup Table
 
     // Prepare the kernel
     int mLoopIterations = m / 4;
@@ -36,8 +36,8 @@ void mini_jit::kernels::unary::sigmoid_interpolation(mini_jit::Kernel &kernel,
         movSP(x29, sp),
 
         // Compute stride (convert to bytes)
-        lsl(x3, x3, 2),  // x3 = ldA * 4 (stride in bytes)
-        lsl(x4, x4, 2),  // x4 = ldB * 4 (stride in bytes)
+        lsl(x2, x2, 2),  // x2 = ldA * 4 (stride in bytes)
+        lsl(x3, x3, 2),  // x3 = ldB * 4 (stride in bytes)
 
         // Save base matrix pointers
         mov(x5, x0), // A (input)
@@ -102,10 +102,10 @@ void mini_jit::kernels::unary::sigmoid_interpolation(mini_jit::Kernel &kernel,
             lsl(w13, w13, 2),
 
             // 5. Load values from table at index i
-            ldrReg( v6, x2, w10, 0, s),
-            ldrReg( v7, x2, w11, 0, s),
-            ldrReg(v16, x2, w12, 0, s),
-            ldrReg(v17, x2, w13, 0, s),
+            ldrReg( v6, x4, w10, 0, s),
+            ldrReg( v7, x4, w11, 0, s),
+            ldrReg(v16, x4, w12, 0, s),
+            ldrReg(v17, x4, w13, 0, s),
 
             // 6. Calculate first vector
             ins(v18,  v6, 0, 0, s),
@@ -121,10 +121,10 @@ void mini_jit::kernels::unary::sigmoid_interpolation(mini_jit::Kernel &kernel,
             add(w13, w13, 4, 0),
 
             // 5.1 Load values from table at index i+1
-            ldrReg(v19, x2, w10, 0, s),
-            ldrReg(v20, x2, w11, 0, s),
-            ldrReg(v21, x2, w12, 0, s),
-            ldrReg(v22, x2, w13, 0, s),
+            ldrReg(v19, x4, w10, 0, s),
+            ldrReg(v20, x4, w11, 0, s),
+            ldrReg(v21, x4, w12, 0, s),
+            ldrReg(v22, x4, w13, 0, s),
 
             // 6.1 Calculate second vector
             ins(v23, v19, 0, 0, s),
@@ -185,14 +185,14 @@ void mini_jit::kernels::unary::sigmoid_interpolation(mini_jit::Kernel &kernel,
                     lsl(w10, w10, 2),
 
                     // 5. & 6. Load values from table at index i
-                    ldrReg(v6, x2, w10, 0, s),
+                    ldrReg(v6, x4, w10, 0, s),
 
                     // Table[i+1]
                     // 4.1 Update Lanes in GPRs
                     add(w10, w10, 4, 0),
 
                     // 5.1 & 6.1 Load values from table at index i+1
-                    ldrReg(v7, x2, w10, 0, s),
+                    ldrReg(v7, x4, w10, 0, s),
 
                     // 7. Vectorized Interpolation
                     fsubScalar(v16, v7, v6, s), // v16 = diff
@@ -233,8 +233,8 @@ void mini_jit::kernels::unary::sigmoid_interpolation(mini_jit::Kernel &kernel,
                     lsl(w11, w11, 2),
 
                     // 5. Load values from table at index i
-                    ldrReg(v6, x2, w10, 0, s),
-                    ldrReg(v7, x2, w11, 0, s),
+                    ldrReg(v6, x4, w10, 0, s),
+                    ldrReg(v7, x4, w11, 0, s),
 
                     // 6. Calculate first vector
                     ins(v16, v6, 0, 0, s),
@@ -246,8 +246,8 @@ void mini_jit::kernels::unary::sigmoid_interpolation(mini_jit::Kernel &kernel,
                     add(w11, w11, 4, 0),
 
                     // 5.1 Load values from table at index i+1
-                    ldrReg(v17, x2, w10, 0, s),
-                    ldrReg(v18, x2, w11, 0, s),
+                    ldrReg(v17, x4, w10, 0, s),
+                    ldrReg(v18, x4, w11, 0, s),
 
                     // 6.1 Calculate second vector
                     ins(v19, v17, 0, 0, s),
@@ -307,9 +307,9 @@ void mini_jit::kernels::unary::sigmoid_interpolation(mini_jit::Kernel &kernel,
                     lsl(w12, w12, 2),
 
                     // 5. Load values from table at index i
-                    ldrReg(v20, x2, w10, 0, s),
-                    ldrReg(v21, x2, w11, 0, s),
-                    ldrReg(v22, x2, w12, 0, s),
+                    ldrReg(v20, x4, w10, 0, s),
+                    ldrReg(v21, x4, w11, 0, s),
+                    ldrReg(v22, x4, w12, 0, s),
 
                     // 6. Calculate first vector
                     ins(v23, v20, 0, 0, s),
@@ -322,9 +322,9 @@ void mini_jit::kernels::unary::sigmoid_interpolation(mini_jit::Kernel &kernel,
                     add(w12, w12, 4, 0),
 
                     // 5.1 Load values from table at index i+1
-                    ldrReg(v24, x2, w10, 0, s),
-                    ldrReg(v25, x2, w11, 0, s),
-                    ldrReg(v26, x2, w12, 0, s),
+                    ldrReg(v24, x4, w10, 0, s),
+                    ldrReg(v25, x4, w11, 0, s),
+                    ldrReg(v26, x4, w12, 0, s),
 
                     // 6.1 Calculate second vector
                     ins(v27, v24, 0, 0, s),
@@ -350,8 +350,8 @@ void mini_jit::kernels::unary::sigmoid_interpolation(mini_jit::Kernel &kernel,
 
     kernel.add_instr({
         // Jump to next column
-        add(x5, x5, x3, 0, 0),    // input pointer += stride
-        add(x6, x6, x4, 0, 0),    // output pointer += stride
+        add(x5, x5, x2, 0, 0),    // input pointer += stride
+        add(x6, x6, x3, 0, 0),    // output pointer += stride
 
         // Decrement n loop counter
         sub(x7, x7, 1, 0)

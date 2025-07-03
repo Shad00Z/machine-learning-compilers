@@ -43,7 +43,7 @@ void mini_jit::benchmarks::IdentityTransPrimitiveBench::run()
     double l_runTimeMs = m_runTime * 1e6;
     do
     {
-        l_kernel_t(m_A, m_B, m_M, m_N);
+        l_kernel_t(m_A, m_B, m_M, m_N, nullptr);
         ++l_num_reps;
         auto l_now = std::chrono::high_resolution_clock::now();
         l_elapsed = std::chrono::duration_cast<std::chrono::microseconds>(l_now - l_start_time).count();

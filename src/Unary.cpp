@@ -2,6 +2,7 @@
 #include "Unary.h"
 #include "kernels/unary/all_unary_primitives.h"
 #include <iostream>
+#include "constants.h"
 
 mini_jit::error_t mini_jit::Unary::generate(uint32_t m,
                                             uint32_t n,
@@ -36,6 +37,7 @@ mini_jit::error_t mini_jit::Unary::generate(uint32_t m,
     }
 
     reset_kernel();
+    m_extra = nullptr; // reset extra/context pointer
 
     switch (ptype)
     {
@@ -117,6 +119,7 @@ mini_jit::error_t mini_jit::Unary::generate(uint32_t m,
         if (0 == trans_b)
         {
             mini_jit::kernels::unary::sigmoid_interpolation(*m_kernel, m, n);
+            m_extra = (void*) sig_table;
         }
         else
         {
@@ -128,6 +131,7 @@ mini_jit::error_t mini_jit::Unary::generate(uint32_t m,
         if (0 == trans_b)
         {
             mini_jit::kernels::unary::sigmoid_taylor(*m_kernel, m, n);
+            m_extra = (void*) sig_taylor_values;
         }
         else
         {
@@ -146,6 +150,16 @@ mini_jit::error_t mini_jit::Unary::generate(uint32_t m,
 mini_jit::Unary::kernel_t mini_jit::Unary::get_kernel() const
 {
     return reinterpret_cast<kernel_t>(const_cast<void *>(m_kernel->get_kernel()));
+}
+
+void mini_jit::Unary::set_extra(void *extra)
+{
+    m_extra = extra;
+}
+
+void* mini_jit::Unary::get_extra() const
+{
+    return m_extra;
 }
 
 void mini_jit::Unary::reset_kernel()

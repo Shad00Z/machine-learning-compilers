@@ -21,9 +21,9 @@ void mini_jit::kernels::unary::sigmoid_taylor(mini_jit::Kernel &kernel,
     // Inputs:
     // x0: pointer to A (input)
     // x1: pointer to B (output)
-    // x2: taylor values
-    // x3: leading dimension of A
-    // x4: leading dimension of B
+    // x2: leading dimension of A
+    // x3: leading dimension of B
+    // x4: taylor values
 
     // Prepare the kernel
     int mLoopIterations = m / 16;
@@ -41,8 +41,8 @@ void mini_jit::kernels::unary::sigmoid_taylor(mini_jit::Kernel &kernel,
         stpPre(v14, v15, sp, -16, d),
         
         // Compute stride
+        lsl(x2, x2, 2),
         lsl(x3, x3, 2),
-        lsl(x4, x4, 2),
 
         // Save base matrix pointers
         mov(x5, x0), // A (input)
@@ -52,8 +52,8 @@ void mini_jit::kernels::unary::sigmoid_taylor(mini_jit::Kernel &kernel,
         mov(x7, n),
 
         // Load fixed values
-        ldp(v31, v30, x2,  0, q),
-        ldp(v29, v28, x2, 32, q),
+        ldp(v31, v30, x4,  0, q),
+        ldp(v29, v28, x4, 32, q),
     });
 
     // Start n loop (1 column)
@@ -1155,8 +1155,8 @@ void mini_jit::kernels::unary::sigmoid_taylor(mini_jit::Kernel &kernel,
 
     kernel.add_instr({
         // Jump to next column
-        add(x5, x5, x3, 0, 0),
-        add(x6, x6, x4, 0, 0),
+        add(x5, x5, x2, 0, 0),
+        add(x6, x6, x3, 0, 0),
 
         // Decrement n loop counter
         sub(x7, x7, 1, 0)

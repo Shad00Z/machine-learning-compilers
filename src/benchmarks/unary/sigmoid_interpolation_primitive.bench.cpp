@@ -35,7 +35,7 @@ void mini_jit::benchmarks::SigmoidInterpolationPrimitiveBench::run()
     // Generate and get the kernel function
     mini_jit::Kernel l_kernel;
     mini_jit::kernels::unary::sigmoid_interpolation(l_kernel, m_M, m_N);
-    mini_jit::Unary::kernel_t_sig l_kernel_t = reinterpret_cast<mini_jit::Unary::kernel_t_sig>(const_cast<void *>(l_kernel.get_kernel()));
+    mini_jit::Unary::kernel_t l_kernel_t = reinterpret_cast<mini_jit::Unary::kernel_t>(const_cast<void *>(l_kernel.get_kernel()));
 
     // RUN
     long l_num_reps = 0;
@@ -44,7 +44,7 @@ void mini_jit::benchmarks::SigmoidInterpolationPrimitiveBench::run()
     double l_runTimeMs = m_runTime * 1e6;
     do
     {
-        l_kernel_t(m_A, m_B, const_cast<void*>(static_cast<const void*>(sig_table)), m_M, m_M);
+        l_kernel_t(m_A, m_B, m_M, m_M, const_cast<void*>(static_cast<const void*>(sig_table)));
         ++l_num_reps;
         auto l_now = std::chrono::high_resolution_clock::now();
         l_elapsed = std::chrono::duration_cast<std::chrono::microseconds>(l_now - l_start_time).count();
