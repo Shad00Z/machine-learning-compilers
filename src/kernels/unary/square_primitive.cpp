@@ -5,31 +5,13 @@
 #include "registers/simd_fp_registers.h"
 #include "instructions/all_instructions.h"
 
-namespace inst = mini_jit::instructions;
-namespace base = inst::base;
-namespace simd_fp = inst::simd_fp;
-
 using enum gpr_t;
 using enum simd_fp_t;
 using enum neon_size_spec_t;
 using enum arr_spec_t;
 
-using base::stpPre;
-using base::movSP;
-using base::lsl;
-using base::mov;
-using base::add;
-using base::sub;
-using base::cbnz;
-using base::ldpPost;
-using simd_fp::ldp;
-using simd_fp::ldpPost;
-using simd_fp::stp;
-using simd_fp::stpPre;
-using simd_fp::ldr;
-using simd_fp::str;
-using simd_fp::fmulVec;
-using simd_fp::fmulScalar;
+using namespace mini_jit::instructions::base;
+using namespace mini_jit::instructions::simd_fp;
 
 void mini_jit::kernels::unary::square(mini_jit::Kernel &kernel,
                                       u_int32_t m,
@@ -51,7 +33,7 @@ void mini_jit::kernels::unary::square(mini_jit::Kernel &kernel,
         movSP(x29, sp),
 
         // Save callee-saved registers
-        simd_fp::stpPre(v8, v9, sp, -16, d),
+        stpPre(v8, v9, sp, -16, d),
         
         // Compute strides (* 4, because of 4 bytes per fp32 element)
         lsl(x2, x2, 2),
@@ -325,12 +307,12 @@ void mini_jit::kernels::unary::square(mini_jit::Kernel &kernel,
 
     kernel.add_instr({
         // Restore callee-saved registers
-        simd_fp::ldpPost(v8, v9, sp, 16, d),
+        ldpPost(v8, v9, sp, 16, d),
 
         // Restore stack pointer
         ldpPost(x29, x30, sp, 16),
 
-        inst::ret()
+        ret()
     });
 
     kernel.write("square_primitive.bin");

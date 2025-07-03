@@ -215,7 +215,7 @@ void mini_jit::kernels::matmul::matmul_br_m_n_k(mini_jit::Kernel &kernel,
     // Restore stack pointer
     kernel.add_instr(base::ldpPost(gpr_t::x29, gpr_t::x30, gpr_t::sp, 16));
 
-    kernel.add_instr(inst::ret());
+    kernel.add_instr(base::ret());
 
     kernel.write("matmul_br_m_n_k.bin");
     kernel.set_kernel();

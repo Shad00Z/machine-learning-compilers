@@ -10,24 +10,8 @@ using enum simd_fp_t;
 using enum neon_size_spec_t;
 using enum arr_spec_t;
 
-using namespace mini_jit::instructions;
-
-using base::stpPre;
-using base::movSP;
-using base::lsl;
-using base::mov;
-using base::add;
-using base::sub;
-using base::cbnz;
-using base::ldpPost;
-using simd_fp::ldp;
-using simd_fp::ldpPost;
-using simd_fp::stp;
-using simd_fp::stpPre;
-using simd_fp::ldr;
-using simd_fp::str;
-using simd_fp::fdivVec;
-using simd_fp::fdivScalar;
+using namespace mini_jit::instructions::base;
+using namespace mini_jit::instructions::simd_fp;
 
 void mini_jit::kernels::binary::div(mini_jit::Kernel &kernel,
                                     u_int32_t m,

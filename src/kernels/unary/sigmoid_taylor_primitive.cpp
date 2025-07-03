@@ -6,45 +6,13 @@
 #include "instructions/all_instructions.h"
 #include <iostream>
 
-namespace inst = mini_jit::instructions;
-namespace base = inst::base;
-namespace simd_fp = inst::simd_fp;
-
 using enum gpr_t;
 using enum simd_fp_t;
 using enum neon_size_spec_t;
 using enum arr_spec_t;
 
-using base::stpPre;
-using base::movSP;
-using base::lsl;
-using base::mov;
-using base::movz;
-using base::movk;
-using base::add;
-using base::sub;
-using base::str;
-using base::cbnz;
-using base::ldpPost;
-using simd_fp::mov;
-using simd_fp::ldp;
-using simd_fp::ldpPost;
-using simd_fp::stp;
-using simd_fp::stpPre;
-using simd_fp::ldr;
-using simd_fp::str;
-using simd_fp::faddVec;
-using simd_fp::faddScalar;
-using simd_fp::fsubVec;
-using simd_fp::fsubScalar;
-using simd_fp::fmulVec;
-using simd_fp::fmulScalar;
-using simd_fp::fdivVec;
-using simd_fp::fdivScalar;
-using simd_fp::fmovVec;
-using simd_fp::fmovScalar;
-using simd_fp::fminVec;
-using simd_fp::fminScalar;
+using namespace mini_jit::instructions::base;
+using namespace mini_jit::instructions::simd_fp;
 
 void mini_jit::kernels::unary::sigmoid_taylor(mini_jit::Kernel &kernel,
                                               u_int32_t m,
@@ -1208,7 +1176,7 @@ void mini_jit::kernels::unary::sigmoid_taylor(mini_jit::Kernel &kernel,
         // Restore stack pointer
         ldpPost(x29, x30, sp, 16),
 
-        inst::ret()
+        ret()
     });
 
     kernel.write("sigmoid_taylor_primitive.bin");

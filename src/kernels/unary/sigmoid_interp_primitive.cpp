@@ -7,10 +7,6 @@
 #include "instructions/all_instructions.h"
 #include <iostream>
 
-namespace inst = mini_jit::instructions;
-namespace base = inst::base;
-namespace simd_fp = inst::simd_fp;
-
 using enum gpr_t;
 using enum simd_fp_t;
 using enum neon_size_spec_t;
@@ -374,7 +370,7 @@ void mini_jit::kernels::unary::sigmoid_interpolation(mini_jit::Kernel &kernel,
         // Restore stack pointer
         ldpPost(x29, x30, sp, 16),
 
-        inst::ret()
+        ret()
     });
 
     kernel.write("sigmoid_interp_primitive.bin");

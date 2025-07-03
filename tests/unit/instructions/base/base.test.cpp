@@ -14,7 +14,7 @@ namespace base = inst::base;
 
 TEST_CASE("Tests the ret instruction generation", "[RET]")
 {
-    uint32_t l_ins = inst::ret();
+    uint32_t l_ins = base::ret();
     std::string l_hex = to_string_hex(l_ins);
     REQUIRE(l_hex == "0xd65f03c0");
 }

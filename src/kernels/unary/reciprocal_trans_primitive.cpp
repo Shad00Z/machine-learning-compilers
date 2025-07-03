@@ -208,7 +208,7 @@ void mini_jit::kernels::unary::reciprocal_trans(mini_jit::Kernel &kernel,
         // Restore stack pointer
         ldpPost(x29, x30, sp, 16),
 
-        mini_jit::instructions::ret()
+        ret()
     });
 
     kernel.write("reciprocal_trans_primitive.bin");

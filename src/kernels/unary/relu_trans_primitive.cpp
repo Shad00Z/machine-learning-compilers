@@ -5,13 +5,13 @@
 #include "registers/simd_fp_registers.h"
 #include "instructions/all_instructions.h"
 
-using simd_fp_t = mini_jit::registers::simd_fp_t;
-using arr_spec_t = mini_jit::registers::arr_spec_t;
-using neon_size_spec_t = mini_jit::registers::neon_size_spec_t;
+using enum gpr_t;
+using enum simd_fp_t;
+using enum neon_size_spec_t;
+using enum arr_spec_t;
 
-namespace inst = mini_jit::instructions;
-namespace base = inst::base;
-namespace simd_fp = inst::simd_fp;
+using namespace mini_jit::instructions::base;
+using namespace mini_jit::instructions::simd_fp;
 namespace internal_subkernels = mini_jit::kernels::unary::internal;
 
 void mini_jit::kernels::unary::relu_trans(mini_jit::Kernel &kernel,
@@ -26,45 +26,45 @@ void mini_jit::kernels::unary::relu_trans(mini_jit::Kernel &kernel,
     int nLoopRemainder = n % 4;
 
     // PCS
-    kernel.add_instr(base::stpPre(gpr_t::x29, gpr_t::x30, gpr_t::sp, -16));
-    kernel.add_instr(base::movSP(gpr_t::x29, gpr_t::sp));
+    kernel.add_instr(stpPre(x29, x30, sp, -16));
+    kernel.add_instr(movSP(x29, sp));
 
     // Save callee-saved registers
-    kernel.add_instr(base::stpPre(gpr_t::x25, gpr_t::x26, gpr_t::sp, -16));
-    kernel.add_instr(base::stpPre(gpr_t::x27, gpr_t::x28, gpr_t::sp, -16));
+    kernel.add_instr(stpPre(x25, x26, sp, -16));
+    kernel.add_instr(stpPre(x27, x28, sp, -16));
 
-    kernel.add_instr(simd_fp::stpPre(simd_fp_t::v8, simd_fp_t::v9, gpr_t::sp, -16, neon_size_spec_t::d));
-    kernel.add_instr(simd_fp::stpPre(simd_fp_t::v10, simd_fp_t::v11, gpr_t::sp, -16, neon_size_spec_t::d));
-    kernel.add_instr(simd_fp::stpPre(simd_fp_t::v12, simd_fp_t::v13, gpr_t::sp, -16, neon_size_spec_t::d));
-    kernel.add_instr(simd_fp::stpPre(simd_fp_t::v14, simd_fp_t::v15, gpr_t::sp, -16, neon_size_spec_t::d));
+    kernel.add_instr(stpPre(v8, v9, sp, -16, d));
+    kernel.add_instr(stpPre(v10, v11, sp, -16, d));
+    kernel.add_instr(stpPre(v12, v13, sp, -16, d));
+    kernel.add_instr(stpPre(v14, v15, sp, -16, d));
 
     // Save base matrix pointer
-    kernel.add_instr(base::mov(gpr_t::x4, gpr_t::x0)); // A
-    kernel.add_instr(base::mov(gpr_t::x5, gpr_t::x1)); // B
+    kernel.add_instr(mov(x4, x0)); // A
+    kernel.add_instr(mov(x5, x1)); // B
 
     // Compute stride for A and B
-    kernel.add_instr(base::lsl(gpr_t::x2, gpr_t::x2, 2));
-    kernel.add_instr(base::lsl(gpr_t::x3, gpr_t::x3, 2));
+    kernel.add_instr(lsl(x2, x2, 2));
+    kernel.add_instr(lsl(x3, x3, 2));
 
     // Set n loop counter
-    kernel.add_instr(base::mov(gpr_t::x9, nLoopIterations));
+    kernel.add_instr(mov(x9, nLoopIterations));
 
     // Create zero register
-    kernel.add_instr(simd_fp::zero(simd_fp_t::v31, arr_spec_t::b16));
+    kernel.add_instr(zero(v31, b16));
 
     // Row and column Pointer for A and B
-    kernel.add_instr(base::mov(gpr_t::x12, 0)); // Columns of A
-    kernel.add_instr(base::mov(gpr_t::x13, 0)); // Rows of B
+    kernel.add_instr(mov(x12, 0)); // Columns of A
+    kernel.add_instr(mov(x13, 0)); // Rows of B
 
     // Some constant values:
     // Jumping 4 rows in A | B      - (x25)
-    kernel.add_instr(base::mov(gpr_t::x25, 4*4)); 
+    kernel.add_instr(mov(x25, 4*4)); 
 
     // Jumping 4 columns in A       - (x26)
-    kernel.add_instr(base::lsl(gpr_t::x26, gpr_t::x2, 2));
+    kernel.add_instr(lsl(x26, x2, 2));
 
     // Jumping 4 columns in B       - (x27)
-    kernel.add_instr(base::lsl(gpr_t::x27, gpr_t::x3, 2));
+    kernel.add_instr(lsl(x27, x3, 2));
 
     if ( nLoopIterations > 0)
     {
@@ -95,24 +95,24 @@ void mini_jit::kernels::unary::relu_trans(mini_jit::Kernel &kernel,
         }
         
         // Restore positions
-        kernel.add_instr(base::mov(gpr_t::x4, gpr_t::x0));
-        kernel.add_instr(base::mov(gpr_t::x5, gpr_t::x1));
+        kernel.add_instr(mov(x4, x0));
+        kernel.add_instr(mov(x5, x1));
     
         // Update Columns of A
-        kernel.add_instr(base::add(gpr_t::x12, gpr_t::x12, gpr_t::x26, 0, 0));
+        kernel.add_instr(add(x12, x12, x26, 0, 0));
     
         // Update Rows of B
-        kernel.add_instr(base::add(gpr_t::x13, gpr_t::x13, gpr_t::x25, 0, 0));
+        kernel.add_instr(add(x13, x13, x25, 0, 0));
     
         // Apply the updates:
-        kernel.add_instr(base::add(gpr_t::x4, gpr_t::x4, gpr_t::x12, 0, 0));
-        kernel.add_instr(base::add(gpr_t::x5, gpr_t::x5, gpr_t::x13, 0, 0));
+        kernel.add_instr(add(x4, x4, x12, 0, 0));
+        kernel.add_instr(add(x5, x5, x13, 0, 0));
     
         // decrement n loop counter
-        kernel.add_instr(base::sub(gpr_t::x9, gpr_t::x9, 1, 0));
+        kernel.add_instr(sub(x9, x9, 1, 0));
         // check if loop counter is zero
         int l_nLoopInstrCount = kernel.getInstrCountFromLabel("n_loop");
-        kernel.add_instr(base::cbnz(gpr_t::x9, -l_nLoopInstrCount * 4));
+        kernel.add_instr(cbnz(x9, -l_nLoopInstrCount * 4));
     }
 
     // All iterations in the n dimension have been performed, only possibilities are now:
@@ -190,18 +190,18 @@ void mini_jit::kernels::unary::relu_trans(mini_jit::Kernel &kernel,
     }
 
     // Restore callee-saved registers
-    kernel.add_instr(simd_fp::ldpPost(simd_fp_t::v14, simd_fp_t::v15, gpr_t::sp, 16, neon_size_spec_t::d));
-    kernel.add_instr(simd_fp::ldpPost(simd_fp_t::v12, simd_fp_t::v13, gpr_t::sp, 16, neon_size_spec_t::d));
-    kernel.add_instr(simd_fp::ldpPost(simd_fp_t::v10, simd_fp_t::v11, gpr_t::sp, 16, neon_size_spec_t::d));
-    kernel.add_instr(simd_fp::ldpPost(simd_fp_t::v8, simd_fp_t::v9, gpr_t::sp, 16, neon_size_spec_t::d));
+    kernel.add_instr(ldpPost(v14, v15, sp, 16, d));
+    kernel.add_instr(ldpPost(v12, v13, sp, 16, d));
+    kernel.add_instr(ldpPost(v10, v11, sp, 16, d));
+    kernel.add_instr(ldpPost(v8, v9, sp, 16, d));
 
-    kernel.add_instr(base::ldpPost(gpr_t::x27, gpr_t::x28, gpr_t::sp, 16));
-    kernel.add_instr(base::ldpPost(gpr_t::x25, gpr_t::x26, gpr_t::sp, 16));
+    kernel.add_instr(ldpPost(x27, x28, sp, 16));
+    kernel.add_instr(ldpPost(x25, x26, sp, 16));
 
     // Restore stack pointer
-    kernel.add_instr(base::ldpPost(gpr_t::x29, gpr_t::x30, gpr_t::sp, 16));
+    kernel.add_instr(ldpPost(x29, x30, sp, 16));
 
-    kernel.add_instr(inst::ret());
+    kernel.add_instr(ret());
     kernel.write("relu_trans_primitive.bin");
     kernel.set_kernel();
 }
@@ -209,675 +209,675 @@ void mini_jit::kernels::unary::relu_trans(mini_jit::Kernel &kernel,
 void mini_jit::kernels::unary::internal::reluM4N4( mini_jit::Kernel &kernel,
                                                        int mLoopIterations )
 {
-    kernel.add_instr(base::mov(gpr_t::x6, mLoopIterations));
+    kernel.add_instr(mov(x6, mLoopIterations));
 
     kernel.add_label("m_4_n_4_loop");
 
     // working pointer for A and B
-    kernel.add_instr(base::mov(gpr_t::x7, gpr_t::x4));
-    kernel.add_instr(base::mov(gpr_t::x8, gpr_t::x5));
+    kernel.add_instr(mov(x7, x4));
+    kernel.add_instr(mov(x8, x5));
     
     // Load 4x4 block of A (input matrix)
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v0, gpr_t::x7, 0, neon_size_spec_t::q));
-    kernel.add_instr(base::add(gpr_t::x7, gpr_t::x7, gpr_t::x2, 0, 0));
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v1, gpr_t::x7, 0, neon_size_spec_t::q));
-    kernel.add_instr(base::add(gpr_t::x7, gpr_t::x7, gpr_t::x2, 0, 0));
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v2, gpr_t::x7, 0, neon_size_spec_t::q));
-    kernel.add_instr(base::add(gpr_t::x7, gpr_t::x7, gpr_t::x2, 0, 0));
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v3, gpr_t::x7, 0, neon_size_spec_t::q));
+    kernel.add_instr(ldr(v0, x7, 0, q));
+    kernel.add_instr(add(x7, x7, x2, 0, 0));
+    kernel.add_instr(ldr(v1, x7, 0, q));
+    kernel.add_instr(add(x7, x7, x2, 0, 0));
+    kernel.add_instr(ldr(v2, x7, 0, q));
+    kernel.add_instr(add(x7, x7, x2, 0, 0));
+    kernel.add_instr(ldr(v3, x7, 0, q));
 
     // Compute ReLU
-    kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, arr_spec_t::s4));
-    kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v31, arr_spec_t::s4));
-    kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v2, simd_fp_t::v2, simd_fp_t::v31, arr_spec_t::s4));
-    kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v3, simd_fp_t::v3, simd_fp_t::v31, arr_spec_t::s4));
+    kernel.add_instr(fmaxVec(v0, v0, v31, s4));
+    kernel.add_instr(fmaxVec(v1, v1, v31, s4));
+    kernel.add_instr(fmaxVec(v2, v2, v31, s4));
+    kernel.add_instr(fmaxVec(v3, v3, v31, s4));
 
     // Transpose 4x4 block
     // TRN
-    kernel.add_instr(simd_fp::trn1(simd_fp_t::v4, simd_fp_t::v0, simd_fp_t::v2, arr_spec_t::s4));
-    kernel.add_instr(simd_fp::trn1(simd_fp_t::v5, simd_fp_t::v1, simd_fp_t::v3, arr_spec_t::s4));
-    kernel.add_instr(simd_fp::trn2(simd_fp_t::v6, simd_fp_t::v0, simd_fp_t::v2, arr_spec_t::s4));
-    kernel.add_instr(simd_fp::trn2(simd_fp_t::v7, simd_fp_t::v1, simd_fp_t::v3, arr_spec_t::s4));
+    kernel.add_instr(trn1(v4, v0, v2, s4));
+    kernel.add_instr(trn1(v5, v1, v3, s4));
+    kernel.add_instr(trn2(v6, v0, v2, s4));
+    kernel.add_instr(trn2(v7, v1, v3, s4));
 
     // ZIP
-    kernel.add_instr(simd_fp::zip1(simd_fp_t::v8, simd_fp_t::v4, simd_fp_t::v5, arr_spec_t::s4));
-    kernel.add_instr(simd_fp::zip1(simd_fp_t::v9, simd_fp_t::v6, simd_fp_t::v7, arr_spec_t::s4));
+    kernel.add_instr(zip1(v8, v4, v5, s4));
+    kernel.add_instr(zip1(v9, v6, v7, s4));
 
-    kernel.add_instr(simd_fp::zip2(simd_fp_t::v10, simd_fp_t::v4, simd_fp_t::v5, arr_spec_t::s4));
-    kernel.add_instr(simd_fp::zip2(simd_fp_t::v11, simd_fp_t::v6, simd_fp_t::v7, arr_spec_t::s4));
+    kernel.add_instr(zip2(v10, v4, v5, s4));
+    kernel.add_instr(zip2(v11, v6, v7, s4));
 
     // Store 4x4 Block of B
-    kernel.add_instr(simd_fp::str(simd_fp_t::v8, gpr_t::x8, 0, neon_size_spec_t::q));
-    kernel.add_instr(base::add(gpr_t::x8, gpr_t::x8, gpr_t::x3, 0, 0));
-    kernel.add_instr(simd_fp::str(simd_fp_t::v9, gpr_t::x8, 0, neon_size_spec_t::q));
-    kernel.add_instr(base::add(gpr_t::x8, gpr_t::x8, gpr_t::x3, 0, 0));
-    kernel.add_instr(simd_fp::str(simd_fp_t::v10, gpr_t::x8, 0, neon_size_spec_t::q));
-    kernel.add_instr(base::add(gpr_t::x8, gpr_t::x8, gpr_t::x3, 0, 0));
-    kernel.add_instr(simd_fp::str(simd_fp_t::v11, gpr_t::x8, 0, neon_size_spec_t::q));
+    kernel.add_instr(str(v8, x8, 0, q));
+    kernel.add_instr(add(x8, x8, x3, 0, 0));
+    kernel.add_instr(str(v9, x8, 0, q));
+    kernel.add_instr(add(x8, x8, x3, 0, 0));
+    kernel.add_instr(str(v10, x8, 0, q));
+    kernel.add_instr(add(x8, x8, x3, 0, 0));
+    kernel.add_instr(str(v11, x8, 0, q));
 
     // Matrix A next 4 rows
-    kernel.add_instr(base::add(gpr_t::x4, gpr_t::x4, gpr_t::x25, 0, 0));
+    kernel.add_instr(add(x4, x4, x25, 0, 0));
 
     // Matrix B next 4 columns
-    kernel.add_instr(base::add(gpr_t::x5, gpr_t::x5, gpr_t::x27, 0, 0));
+    kernel.add_instr(add(x5, x5, x27, 0, 0));
     
     // decrement m loop counter
-    kernel.add_instr(base::sub(gpr_t::x6, gpr_t::x6, 1, 0));
+    kernel.add_instr(sub(x6, x6, 1, 0));
     // check if loop counter is zero
     int l_mLoopInstrCount = kernel.getInstrCountFromLabel("m_4_n_4_loop");
-    kernel.add_instr(base::cbnz(gpr_t::x6, -l_mLoopInstrCount * 4));
+    kernel.add_instr(cbnz(x6, -l_mLoopInstrCount * 4));
 }
 
 void mini_jit::kernels::unary::internal::reluM3N4( mini_jit::Kernel &kernel )
 {
     // working pointer for A and B
-    kernel.add_instr(base::mov(gpr_t::x7, gpr_t::x4));
-    kernel.add_instr(base::mov(gpr_t::x8, gpr_t::x5));
+    kernel.add_instr(mov(x7, x4));
+    kernel.add_instr(mov(x8, x5));
     
     // Load 3x4 block of A (input matrix)
-    kernel.add_instr(base::mov(gpr_t::x17, gpr_t::x7));
+    kernel.add_instr(mov(x17, x7));
 
-    kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v0, gpr_t::x17, 8, neon_size_spec_t::d));
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v1, gpr_t::x17, 0, neon_size_spec_t::s));
-    kernel.add_instr(base::add(gpr_t::x7, gpr_t::x7, gpr_t::x2, 0, 0));
-    kernel.add_instr(base::mov(gpr_t::x17, gpr_t::x7));
+    kernel.add_instr(ldrPost(v0, x17, 8, d));
+    kernel.add_instr(ldr(v1, x17, 0, s));
+    kernel.add_instr(add(x7, x7, x2, 0, 0));
+    kernel.add_instr(mov(x17, x7));
 
-    kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v2, gpr_t::x17, 8, neon_size_spec_t::d));
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v3, gpr_t::x17, 0, neon_size_spec_t::s));
-    kernel.add_instr(base::add(gpr_t::x7, gpr_t::x7, gpr_t::x2, 0, 0));
-    kernel.add_instr(base::mov(gpr_t::x17, gpr_t::x7));
+    kernel.add_instr(ldrPost(v2, x17, 8, d));
+    kernel.add_instr(ldr(v3, x17, 0, s));
+    kernel.add_instr(add(x7, x7, x2, 0, 0));
+    kernel.add_instr(mov(x17, x7));
 
-    kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v4, gpr_t::x17, 8, neon_size_spec_t::d));
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v5, gpr_t::x17, 0, neon_size_spec_t::s));
-    kernel.add_instr(base::add(gpr_t::x7, gpr_t::x7, gpr_t::x2, 0, 0));
-    kernel.add_instr(base::mov(gpr_t::x17, gpr_t::x7));
+    kernel.add_instr(ldrPost(v4, x17, 8, d));
+    kernel.add_instr(ldr(v5, x17, 0, s));
+    kernel.add_instr(add(x7, x7, x2, 0, 0));
+    kernel.add_instr(mov(x17, x7));
 
-    kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v6, gpr_t::x17, 8, neon_size_spec_t::d));
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v7, gpr_t::x17, 0, neon_size_spec_t::s));
+    kernel.add_instr(ldrPost(v6, x17, 8, d));
+    kernel.add_instr(ldr(v7, x17, 0, s));
 
     // Compute ReLU
-    kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, arr_spec_t::s2));
-    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v31, neon_size_spec_t::s));
+    kernel.add_instr(fmaxVec(v0, v0, v31, s2));
+    kernel.add_instr(fmaxScalar(v1, v1, v31, s));
 
-    kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v2, simd_fp_t::v2, simd_fp_t::v31, arr_spec_t::s2));
-    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v3, simd_fp_t::v3, simd_fp_t::v31, neon_size_spec_t::s));
+    kernel.add_instr(fmaxVec(v2, v2, v31, s2));
+    kernel.add_instr(fmaxScalar(v3, v3, v31, s));
 
-    kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v4, simd_fp_t::v4, simd_fp_t::v31, arr_spec_t::s2));
-    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v5, simd_fp_t::v5, simd_fp_t::v31, neon_size_spec_t::s));
+    kernel.add_instr(fmaxVec(v4, v4, v31, s2));
+    kernel.add_instr(fmaxScalar(v5, v5, v31, s));
 
-    kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v6, simd_fp_t::v6, simd_fp_t::v31, arr_spec_t::s2));
-    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v7, simd_fp_t::v7, simd_fp_t::v31, neon_size_spec_t::s));
+    kernel.add_instr(fmaxVec(v6, v6, v31, s2));
+    kernel.add_instr(fmaxScalar(v7, v7, v31, s));
 
     // Transpose 3x4 block
     // TRN (d)
-    kernel.add_instr(simd_fp::trn1(simd_fp_t::v8, simd_fp_t::v0, simd_fp_t::v4, arr_spec_t::s4));
-    kernel.add_instr(simd_fp::trn1(simd_fp_t::v9, simd_fp_t::v2, simd_fp_t::v6, arr_spec_t::s4));
-    kernel.add_instr(simd_fp::trn2(simd_fp_t::v10, simd_fp_t::v0, simd_fp_t::v4, arr_spec_t::s4));
-    kernel.add_instr(simd_fp::trn2(simd_fp_t::v11, simd_fp_t::v2, simd_fp_t::v6, arr_spec_t::s4));
+    kernel.add_instr(trn1(v8, v0, v4, s4));
+    kernel.add_instr(trn1(v9, v2, v6, s4));
+    kernel.add_instr(trn2(v10, v0, v4, s4));
+    kernel.add_instr(trn2(v11, v2, v6, s4));
 
     // TRN (s)
-    kernel.add_instr(simd_fp::trn1(simd_fp_t::v12, simd_fp_t::v1, simd_fp_t::v5, arr_spec_t::s2));
-    kernel.add_instr(simd_fp::trn1(simd_fp_t::v13, simd_fp_t::v3, simd_fp_t::v7, arr_spec_t::s2));
+    kernel.add_instr(trn1(v12, v1, v5, s2));
+    kernel.add_instr(trn1(v13, v3, v7, s2));
 
     // ZIP
-    kernel.add_instr(simd_fp::zip1(simd_fp_t::v14, simd_fp_t::v8, simd_fp_t::v9, arr_spec_t::s4));
-    kernel.add_instr(simd_fp::zip1(simd_fp_t::v15, simd_fp_t::v10, simd_fp_t::v11, arr_spec_t::s4));
+    kernel.add_instr(zip1(v14, v8, v9, s4));
+    kernel.add_instr(zip1(v15, v10, v11, s4));
 
-    kernel.add_instr(simd_fp::zip1(simd_fp_t::v18, simd_fp_t::v12, simd_fp_t::v13, arr_spec_t::s2));
-    kernel.add_instr(simd_fp::zip2(simd_fp_t::v19, simd_fp_t::v12, simd_fp_t::v13, arr_spec_t::s2));
+    kernel.add_instr(zip1(v18, v12, v13, s2));
+    kernel.add_instr(zip2(v19, v12, v13, s2));
 
     // Store 3x4 Block of B
-    kernel.add_instr(simd_fp::str(simd_fp_t::v14, gpr_t::x8, 0, neon_size_spec_t::q));
-    kernel.add_instr(base::add(gpr_t::x8, gpr_t::x8, gpr_t::x3, 0, 0));
+    kernel.add_instr(str(v14, x8, 0, q));
+    kernel.add_instr(add(x8, x8, x3, 0, 0));
 
-    kernel.add_instr(simd_fp::str(simd_fp_t::v15, gpr_t::x8, 0, neon_size_spec_t::q));
-    kernel.add_instr(base::add(gpr_t::x8, gpr_t::x8, gpr_t::x3, 0, 0));
+    kernel.add_instr(str(v15, x8, 0, q));
+    kernel.add_instr(add(x8, x8, x3, 0, 0));
 
-    kernel.add_instr(simd_fp::strPost(simd_fp_t::v18, gpr_t::x8, 8, neon_size_spec_t::d));
-    kernel.add_instr(simd_fp::str(simd_fp_t::v19, gpr_t::x8, 0, neon_size_spec_t::d));
+    kernel.add_instr(strPost(v18, x8, 8, d));
+    kernel.add_instr(str(v19, x8, 0, d));
 }
 
 void mini_jit::kernels::unary::internal::reluM2N4( mini_jit::Kernel &kernel )
 {
     // working pointer for A and B
-    kernel.add_instr(base::mov(gpr_t::x7, gpr_t::x4));
-    kernel.add_instr(base::mov(gpr_t::x8, gpr_t::x5));
+    kernel.add_instr(mov(x7, x4));
+    kernel.add_instr(mov(x8, x5));
     
     // Load 2x4 block of A (input matrix)
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v0, gpr_t::x7, 0, neon_size_spec_t::d));
-    kernel.add_instr(base::add(gpr_t::x7, gpr_t::x7, gpr_t::x2, 0, 0));
+    kernel.add_instr(ldr(v0, x7, 0, d));
+    kernel.add_instr(add(x7, x7, x2, 0, 0));
 
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v1, gpr_t::x7, 0, neon_size_spec_t::d));
-    kernel.add_instr(base::add(gpr_t::x7, gpr_t::x7, gpr_t::x2, 0, 0));
+    kernel.add_instr(ldr(v1, x7, 0, d));
+    kernel.add_instr(add(x7, x7, x2, 0, 0));
 
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v2, gpr_t::x7, 0, neon_size_spec_t::d));
-    kernel.add_instr(base::add(gpr_t::x7, gpr_t::x7, gpr_t::x2, 0, 0));
+    kernel.add_instr(ldr(v2, x7, 0, d));
+    kernel.add_instr(add(x7, x7, x2, 0, 0));
 
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v3, gpr_t::x7, 0, neon_size_spec_t::d));
+    kernel.add_instr(ldr(v3, x7, 0, d));
 
     // Compute ReLU
-    kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, arr_spec_t::s2));
-    kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v31, arr_spec_t::s2));
-    kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v2, simd_fp_t::v2, simd_fp_t::v31, arr_spec_t::s2));
-    kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v3, simd_fp_t::v3, simd_fp_t::v31, arr_spec_t::s2));
+    kernel.add_instr(fmaxVec(v0, v0, v31, s2));
+    kernel.add_instr(fmaxVec(v1, v1, v31, s2));
+    kernel.add_instr(fmaxVec(v2, v2, v31, s2));
+    kernel.add_instr(fmaxVec(v3, v3, v31, s2));
 
     // Transpose 2x4 block
     // TRN
-    kernel.add_instr(simd_fp::trn1(simd_fp_t::v4, simd_fp_t::v0, simd_fp_t::v2, arr_spec_t::s4));
-    kernel.add_instr(simd_fp::trn1(simd_fp_t::v5, simd_fp_t::v1, simd_fp_t::v3, arr_spec_t::s4));
+    kernel.add_instr(trn1(v4, v0, v2, s4));
+    kernel.add_instr(trn1(v5, v1, v3, s4));
 
-    kernel.add_instr(simd_fp::trn2(simd_fp_t::v6, simd_fp_t::v0, simd_fp_t::v2, arr_spec_t::s4));
-    kernel.add_instr(simd_fp::trn2(simd_fp_t::v7, simd_fp_t::v1, simd_fp_t::v3, arr_spec_t::s4));
+    kernel.add_instr(trn2(v6, v0, v2, s4));
+    kernel.add_instr(trn2(v7, v1, v3, s4));
 
     // ZIP
-    kernel.add_instr(simd_fp::zip1(simd_fp_t::v8, simd_fp_t::v4, simd_fp_t::v5, arr_spec_t::s4));
-    kernel.add_instr(simd_fp::zip1(simd_fp_t::v9, simd_fp_t::v6, simd_fp_t::v7, arr_spec_t::s4));
+    kernel.add_instr(zip1(v8, v4, v5, s4));
+    kernel.add_instr(zip1(v9, v6, v7, s4));
 
     // Store 2x4 Block of B
-    kernel.add_instr(simd_fp::str(simd_fp_t::v8, gpr_t::x8, 0, neon_size_spec_t::q));
-    kernel.add_instr(base::add(gpr_t::x8, gpr_t::x8, gpr_t::x3, 0, 0));
+    kernel.add_instr(str(v8, x8, 0, q));
+    kernel.add_instr(add(x8, x8, x3, 0, 0));
 
-    kernel.add_instr(simd_fp::str(simd_fp_t::v9, gpr_t::x8, 0, neon_size_spec_t::q));
+    kernel.add_instr(str(v9, x8, 0, q));
 }
 
 void mini_jit::kernels::unary::internal::reluM1N4( mini_jit::Kernel &kernel )
 {
     // working pointer for A and B
-    kernel.add_instr(base::mov(gpr_t::x7, gpr_t::x4));
-    kernel.add_instr(base::mov(gpr_t::x8, gpr_t::x5));
+    kernel.add_instr(mov(x7, x4));
+    kernel.add_instr(mov(x8, x5));
     
     // Load 1x4 block of A (input matrix)
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v0, gpr_t::x7, 0, neon_size_spec_t::s));
-    kernel.add_instr(base::add(gpr_t::x7, gpr_t::x7, gpr_t::x2, 0, 0));
+    kernel.add_instr(ldr(v0, x7, 0, s));
+    kernel.add_instr(add(x7, x7, x2, 0, 0));
 
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v1, gpr_t::x7, 0, neon_size_spec_t::s));
-    kernel.add_instr(base::add(gpr_t::x7, gpr_t::x7, gpr_t::x2, 0, 0));
+    kernel.add_instr(ldr(v1, x7, 0, s));
+    kernel.add_instr(add(x7, x7, x2, 0, 0));
 
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v2, gpr_t::x7, 0, neon_size_spec_t::s));
-    kernel.add_instr(base::add(gpr_t::x7, gpr_t::x7, gpr_t::x2, 0, 0));
+    kernel.add_instr(ldr(v2, x7, 0, s));
+    kernel.add_instr(add(x7, x7, x2, 0, 0));
 
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v3, gpr_t::x7, 0, neon_size_spec_t::s));
+    kernel.add_instr(ldr(v3, x7, 0, s));
 
     // Compute ReLU
-    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, neon_size_spec_t::s));
-    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v31, neon_size_spec_t::s));
-    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v2, simd_fp_t::v2, simd_fp_t::v31, neon_size_spec_t::s));
-    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v3, simd_fp_t::v3, simd_fp_t::v31, neon_size_spec_t::s));
+    kernel.add_instr(fmaxScalar(v0, v0, v31, s));
+    kernel.add_instr(fmaxScalar(v1, v1, v31, s));
+    kernel.add_instr(fmaxScalar(v2, v2, v31, s));
+    kernel.add_instr(fmaxScalar(v3, v3, v31, s));
 
     // Transpose 1x4 block
     // TRN
-    kernel.add_instr(simd_fp::trn1(simd_fp_t::v4, simd_fp_t::v0, simd_fp_t::v2, arr_spec_t::s2));
-    kernel.add_instr(simd_fp::trn1(simd_fp_t::v5, simd_fp_t::v1, simd_fp_t::v3, arr_spec_t::s2));
+    kernel.add_instr(trn1(v4, v0, v2, s2));
+    kernel.add_instr(trn1(v5, v1, v3, s2));
 
     // ZIP
-    kernel.add_instr(simd_fp::zip1(simd_fp_t::v6, simd_fp_t::v4, simd_fp_t::v5, arr_spec_t::s4));
+    kernel.add_instr(zip1(v6, v4, v5, s4));
 
     // Store 1x4 Block of B
-    kernel.add_instr(simd_fp::str(simd_fp_t::v6, gpr_t::x8, 0, neon_size_spec_t::q));
+    kernel.add_instr(str(v6, x8, 0, q));
 }
 
 void mini_jit::kernels::unary::internal::reluM4N3( mini_jit::Kernel &kernel,
                                                        int mLoopIterations )
 {
-    kernel.add_instr(base::mov(gpr_t::x6, mLoopIterations));
+    kernel.add_instr(mov(x6, mLoopIterations));
     kernel.add_label("m_4_n_3_loop");
 
     // working pointer for A and B
-    kernel.add_instr(base::mov(gpr_t::x7, gpr_t::x4));
-    kernel.add_instr(base::mov(gpr_t::x8, gpr_t::x5));
+    kernel.add_instr(mov(x7, x4));
+    kernel.add_instr(mov(x8, x5));
     
     // Load 4x3 block of A (input matrix)
-    kernel.add_instr(base::mov(gpr_t::x17, gpr_t::x7));
+    kernel.add_instr(mov(x17, x7));
 
-    kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v0, gpr_t::x17, 8, neon_size_spec_t::d));
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v1, gpr_t::x17, 0, neon_size_spec_t::d));
-    kernel.add_instr(base::add(gpr_t::x7, gpr_t::x7, gpr_t::x2, 0, 0));
-    kernel.add_instr(base::mov(gpr_t::x17, gpr_t::x7));
+    kernel.add_instr(ldrPost(v0, x17, 8, d));
+    kernel.add_instr(ldr(v1, x17, 0, d));
+    kernel.add_instr(add(x7, x7, x2, 0, 0));
+    kernel.add_instr(mov(x17, x7));
 
-    kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v2, gpr_t::x17, 8, neon_size_spec_t::d));
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v3, gpr_t::x17, 0, neon_size_spec_t::d));
-    kernel.add_instr(base::add(gpr_t::x7, gpr_t::x7, gpr_t::x2, 0, 0));
-    kernel.add_instr(base::mov(gpr_t::x17, gpr_t::x7));
+    kernel.add_instr(ldrPost(v2, x17, 8, d));
+    kernel.add_instr(ldr(v3, x17, 0, d));
+    kernel.add_instr(add(x7, x7, x2, 0, 0));
+    kernel.add_instr(mov(x17, x7));
 
-    kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v4, gpr_t::x17, 4, neon_size_spec_t::s));
-    kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v5, gpr_t::x17, 4, neon_size_spec_t::s));
-    kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v6, gpr_t::x17, 4, neon_size_spec_t::s));
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v7, gpr_t::x17, 0, neon_size_spec_t::s));
+    kernel.add_instr(ldrPost(v4, x17, 4, s));
+    kernel.add_instr(ldrPost(v5, x17, 4, s));
+    kernel.add_instr(ldrPost(v6, x17, 4, s));
+    kernel.add_instr(ldr(v7, x17, 0, s));
 
     // Compute ReLU
-    kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, arr_spec_t::s2));
-    kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v31, arr_spec_t::s2));
+    kernel.add_instr(fmaxVec(v0, v0, v31, s2));
+    kernel.add_instr(fmaxVec(v1, v1, v31, s2));
 
-    kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v2, simd_fp_t::v2, simd_fp_t::v31, arr_spec_t::s2));
-    kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v3, simd_fp_t::v3, simd_fp_t::v31, arr_spec_t::s2));
+    kernel.add_instr(fmaxVec(v2, v2, v31, s2));
+    kernel.add_instr(fmaxVec(v3, v3, v31, s2));
 
-    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v4, simd_fp_t::v4, simd_fp_t::v31, neon_size_spec_t::s));
-    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v5, simd_fp_t::v5, simd_fp_t::v31, neon_size_spec_t::s));
-    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v6, simd_fp_t::v6, simd_fp_t::v31, neon_size_spec_t::s));
-    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v7, simd_fp_t::v7, simd_fp_t::v31, neon_size_spec_t::s));
+    kernel.add_instr(fmaxScalar(v4, v4, v31, s));
+    kernel.add_instr(fmaxScalar(v5, v5, v31, s));
+    kernel.add_instr(fmaxScalar(v6, v6, v31, s));
+    kernel.add_instr(fmaxScalar(v7, v7, v31, s));
 
     // Transpose 4x3 matrix
     // TRN
-    kernel.add_instr(simd_fp::trn1(simd_fp_t::v8, simd_fp_t::v0, simd_fp_t::v2, arr_spec_t::s4));
-    kernel.add_instr(simd_fp::trn2(simd_fp_t::v9, simd_fp_t::v0, simd_fp_t::v2, arr_spec_t::s4));
-    kernel.add_instr(simd_fp::trn1(simd_fp_t::v10, simd_fp_t::v1, simd_fp_t::v3, arr_spec_t::s4));
-    kernel.add_instr(simd_fp::trn2(simd_fp_t::v11, simd_fp_t::v1, simd_fp_t::v3, arr_spec_t::s4));
+    kernel.add_instr(trn1(v8, v0, v2, s4));
+    kernel.add_instr(trn2(v9, v0, v2, s4));
+    kernel.add_instr(trn1(v10, v1, v3, s4));
+    kernel.add_instr(trn2(v11, v1, v3, s4));
 
     // Store 4x3 Block of B
-    kernel.add_instr(base::mov(gpr_t::x17, gpr_t::x8));
+    kernel.add_instr(mov(x17, x8));
 
-    kernel.add_instr(simd_fp::strPost(simd_fp_t::v8, gpr_t::x17, 8, neon_size_spec_t::d));
-    kernel.add_instr(simd_fp::str(simd_fp_t::v4, gpr_t::x17, 0, neon_size_spec_t::s));
-    kernel.add_instr(base::add(gpr_t::x8, gpr_t::x8, gpr_t::x3, 0, 0));
-    kernel.add_instr(base::mov(gpr_t::x17, gpr_t::x8));
+    kernel.add_instr(strPost(v8, x17, 8, d));
+    kernel.add_instr(str(v4, x17, 0, s));
+    kernel.add_instr(add(x8, x8, x3, 0, 0));
+    kernel.add_instr(mov(x17, x8));
 
-    kernel.add_instr(simd_fp::strPost(simd_fp_t::v9, gpr_t::x17, 8, neon_size_spec_t::d));
-    kernel.add_instr(simd_fp::str(simd_fp_t::v5, gpr_t::x17, 0, neon_size_spec_t::s));
-    kernel.add_instr(base::add(gpr_t::x8, gpr_t::x8, gpr_t::x3, 0, 0));
-    kernel.add_instr(base::mov(gpr_t::x17, gpr_t::x8));
+    kernel.add_instr(strPost(v9, x17, 8, d));
+    kernel.add_instr(str(v5, x17, 0, s));
+    kernel.add_instr(add(x8, x8, x3, 0, 0));
+    kernel.add_instr(mov(x17, x8));
 
-    kernel.add_instr(simd_fp::strPost(simd_fp_t::v10, gpr_t::x17, 8, neon_size_spec_t::d));
-    kernel.add_instr(simd_fp::str(simd_fp_t::v6, gpr_t::x17, 0, neon_size_spec_t::s));
-    kernel.add_instr(base::add(gpr_t::x8, gpr_t::x8, gpr_t::x3, 0, 0));
-    kernel.add_instr(base::mov(gpr_t::x17, gpr_t::x8));
+    kernel.add_instr(strPost(v10, x17, 8, d));
+    kernel.add_instr(str(v6, x17, 0, s));
+    kernel.add_instr(add(x8, x8, x3, 0, 0));
+    kernel.add_instr(mov(x17, x8));
 
-    kernel.add_instr(simd_fp::strPost(simd_fp_t::v11, gpr_t::x17, 8, neon_size_spec_t::d));
-    kernel.add_instr(simd_fp::str(simd_fp_t::v7, gpr_t::x17, 0, neon_size_spec_t::s));
+    kernel.add_instr(strPost(v11, x17, 8, d));
+    kernel.add_instr(str(v7, x17, 0, s));
 
     // Matrix A next 4 rows
-    kernel.add_instr(base::add(gpr_t::x4, gpr_t::x4, gpr_t::x25, 0, 0));
+    kernel.add_instr(add(x4, x4, x25, 0, 0));
 
     // Matrix B next 1 columns
-    kernel.add_instr(base::add(gpr_t::x5, gpr_t::x5, gpr_t::x27, 0, 0));
+    kernel.add_instr(add(x5, x5, x27, 0, 0));
     
     // decrement m loop counter
-    kernel.add_instr(base::sub(gpr_t::x6, gpr_t::x6, 1, 0));
+    kernel.add_instr(sub(x6, x6, 1, 0));
     // check if loop counter is zero
     int l_mLoopInstrCount = kernel.getInstrCountFromLabel("m_4_n_3_loop");
-    kernel.add_instr(base::cbnz(gpr_t::x6, -l_mLoopInstrCount * 4));
+    kernel.add_instr(cbnz(x6, -l_mLoopInstrCount * 4));
 }
 
 void mini_jit::kernels::unary::internal::reluM4N2( mini_jit::Kernel &kernel,
                                                        int mLoopIterations )
 {
-    kernel.add_instr(base::mov(gpr_t::x6, mLoopIterations));
+    kernel.add_instr(mov(x6, mLoopIterations));
     kernel.add_label("m_4_n_2_loop");
 
     // working pointer for A and B
-    kernel.add_instr(base::mov(gpr_t::x7, gpr_t::x4));
-    kernel.add_instr(base::mov(gpr_t::x8, gpr_t::x5));
+    kernel.add_instr(mov(x7, x4));
+    kernel.add_instr(mov(x8, x5));
     
     // Load 4x2 block of A (input matrix)
-    kernel.add_instr(base::mov(gpr_t::x17, gpr_t::x7));
-    kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v0, gpr_t::x17, 8, neon_size_spec_t::d));
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v1, gpr_t::x17, 0, neon_size_spec_t::d));
-    kernel.add_instr(base::add(gpr_t::x7, gpr_t::x7, gpr_t::x2, 0, 0));
-    kernel.add_instr(base::mov(gpr_t::x17, gpr_t::x7));
+    kernel.add_instr(mov(x17, x7));
+    kernel.add_instr(ldrPost(v0, x17, 8, d));
+    kernel.add_instr(ldr(v1, x17, 0, d));
+    kernel.add_instr(add(x7, x7, x2, 0, 0));
+    kernel.add_instr(mov(x17, x7));
 
-    kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v2, gpr_t::x17, 8, neon_size_spec_t::d));
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v3, gpr_t::x17, 0, neon_size_spec_t::d));
+    kernel.add_instr(ldrPost(v2, x17, 8, d));
+    kernel.add_instr(ldr(v3, x17, 0, d));
 
     // Compute ReLU
-    kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, arr_spec_t::s2));
-    kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v31, arr_spec_t::s2));
-    kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v2, simd_fp_t::v2, simd_fp_t::v31, arr_spec_t::s2));
-    kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v3, simd_fp_t::v3, simd_fp_t::v31, arr_spec_t::s2));
+    kernel.add_instr(fmaxVec(v0, v0, v31, s2));
+    kernel.add_instr(fmaxVec(v1, v1, v31, s2));
+    kernel.add_instr(fmaxVec(v2, v2, v31, s2));
+    kernel.add_instr(fmaxVec(v3, v3, v31, s2));
 
     // Transpose 4x2 matrix
     // TRN
-    kernel.add_instr(simd_fp::trn1(simd_fp_t::v4, simd_fp_t::v0, simd_fp_t::v2, arr_spec_t::s4));
-    kernel.add_instr(simd_fp::trn2(simd_fp_t::v5, simd_fp_t::v0, simd_fp_t::v2, arr_spec_t::s4));
+    kernel.add_instr(trn1(v4, v0, v2, s4));
+    kernel.add_instr(trn2(v5, v0, v2, s4));
 
-    kernel.add_instr(simd_fp::trn1(simd_fp_t::v6, simd_fp_t::v1, simd_fp_t::v3, arr_spec_t::s4));
-    kernel.add_instr(simd_fp::trn2(simd_fp_t::v7, simd_fp_t::v1, simd_fp_t::v3, arr_spec_t::s4));
+    kernel.add_instr(trn1(v6, v1, v3, s4));
+    kernel.add_instr(trn2(v7, v1, v3, s4));
 
     // Store 4x2 Block of B
-    kernel.add_instr(simd_fp::str(simd_fp_t::v4, gpr_t::x8, 0, neon_size_spec_t::d));
-    kernel.add_instr(base::add(gpr_t::x8, gpr_t::x8, gpr_t::x3, 0, 0));
+    kernel.add_instr(str(v4, x8, 0, d));
+    kernel.add_instr(add(x8, x8, x3, 0, 0));
 
-    kernel.add_instr(simd_fp::str(simd_fp_t::v5, gpr_t::x8, 0, neon_size_spec_t::d));
-    kernel.add_instr(base::add(gpr_t::x8, gpr_t::x8, gpr_t::x3, 0, 0));
+    kernel.add_instr(str(v5, x8, 0, d));
+    kernel.add_instr(add(x8, x8, x3, 0, 0));
 
-    kernel.add_instr(simd_fp::str(simd_fp_t::v6, gpr_t::x8, 0, neon_size_spec_t::d));
-    kernel.add_instr(base::add(gpr_t::x8, gpr_t::x8, gpr_t::x3, 0, 0));
+    kernel.add_instr(str(v6, x8, 0, d));
+    kernel.add_instr(add(x8, x8, x3, 0, 0));
 
-    kernel.add_instr(simd_fp::str(simd_fp_t::v7, gpr_t::x8, 0, neon_size_spec_t::d));
+    kernel.add_instr(str(v7, x8, 0, d));
 
     // Matrix A next 4 rows
-    kernel.add_instr(base::add(gpr_t::x4, gpr_t::x4, gpr_t::x25, 0, 0));
+    kernel.add_instr(add(x4, x4, x25, 0, 0));
 
     // Matrix B next 1 columns
-    kernel.add_instr(base::add(gpr_t::x5, gpr_t::x5, gpr_t::x27, 0, 0));
+    kernel.add_instr(add(x5, x5, x27, 0, 0));
     
     // decrement m loop counter
-    kernel.add_instr(base::sub(gpr_t::x6, gpr_t::x6, 1, 0));
+    kernel.add_instr(sub(x6, x6, 1, 0));
     // check if loop counter is zero
     int l_mLoopInstrCount = kernel.getInstrCountFromLabel("m_4_n_2_loop");
-    kernel.add_instr(base::cbnz(gpr_t::x6, -l_mLoopInstrCount * 4));
+    kernel.add_instr(cbnz(x6, -l_mLoopInstrCount * 4));
 }
 
 void mini_jit::kernels::unary::internal::reluM4N1( mini_jit::Kernel &kernel,
                                                        int mLoopIterations )
 {
-    kernel.add_instr(base::mov(gpr_t::x6, mLoopIterations));
+    kernel.add_instr(mov(x6, mLoopIterations));
     kernel.add_label("m_4_n_1_loop");
 
     // working pointer for A and B
-    kernel.add_instr(base::mov(gpr_t::x7, gpr_t::x4));
-    kernel.add_instr(base::mov(gpr_t::x8, gpr_t::x5));
+    kernel.add_instr(mov(x7, x4));
+    kernel.add_instr(mov(x8, x5));
     
     // Load 4x1 block of A (input matrix)
-    kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v0, gpr_t::x7, 4, neon_size_spec_t::s));
-    kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v1, gpr_t::x7, 4, neon_size_spec_t::s));
-    kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v2, gpr_t::x7, 4, neon_size_spec_t::s));
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v3, gpr_t::x7, 0, neon_size_spec_t::s));
+    kernel.add_instr(ldrPost(v0, x7, 4, s));
+    kernel.add_instr(ldrPost(v1, x7, 4, s));
+    kernel.add_instr(ldrPost(v2, x7, 4, s));
+    kernel.add_instr(ldr(v3, x7, 0, s));
 
     // Compute ReLU
-    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, neon_size_spec_t::s));
-    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v31, neon_size_spec_t::s));
-    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v2, simd_fp_t::v2, simd_fp_t::v31, neon_size_spec_t::s));
-    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v3, simd_fp_t::v3, simd_fp_t::v31, neon_size_spec_t::s));
+    kernel.add_instr(fmaxScalar(v0, v0, v31, s));
+    kernel.add_instr(fmaxScalar(v1, v1, v31, s));
+    kernel.add_instr(fmaxScalar(v2, v2, v31, s));
+    kernel.add_instr(fmaxScalar(v3, v3, v31, s));
 
     // Store 4x1 Block of B
-    kernel.add_instr(simd_fp::str(simd_fp_t::v0, gpr_t::x8, 0, neon_size_spec_t::s));
-    kernel.add_instr(base::add(gpr_t::x8, gpr_t::x8, gpr_t::x3, 0, 0));
+    kernel.add_instr(str(v0, x8, 0, s));
+    kernel.add_instr(add(x8, x8, x3, 0, 0));
 
-    kernel.add_instr(simd_fp::str(simd_fp_t::v1, gpr_t::x8, 0, neon_size_spec_t::s));
-    kernel.add_instr(base::add(gpr_t::x8, gpr_t::x8, gpr_t::x3, 0, 0));
+    kernel.add_instr(str(v1, x8, 0, s));
+    kernel.add_instr(add(x8, x8, x3, 0, 0));
 
-    kernel.add_instr(simd_fp::str(simd_fp_t::v2, gpr_t::x8, 0, neon_size_spec_t::s));
-    kernel.add_instr(base::add(gpr_t::x8, gpr_t::x8, gpr_t::x3, 0, 0));
+    kernel.add_instr(str(v2, x8, 0, s));
+    kernel.add_instr(add(x8, x8, x3, 0, 0));
 
-    kernel.add_instr(simd_fp::str(simd_fp_t::v3, gpr_t::x8, 0, neon_size_spec_t::s));
-    kernel.add_instr(base::add(gpr_t::x8, gpr_t::x8, gpr_t::x3, 0, 0));
+    kernel.add_instr(str(v3, x8, 0, s));
+    kernel.add_instr(add(x8, x8, x3, 0, 0));
 
     // Matrix A next 4 rows
-    kernel.add_instr(base::add(gpr_t::x4, gpr_t::x4, gpr_t::x25, 0, 0));
+    kernel.add_instr(add(x4, x4, x25, 0, 0));
 
     // Matrix B next 1 columns
-    kernel.add_instr(base::add(gpr_t::x5, gpr_t::x5, gpr_t::x27, 0, 0));
+    kernel.add_instr(add(x5, x5, x27, 0, 0));
     
     // decrement m loop counter
-    kernel.add_instr(base::sub(gpr_t::x6, gpr_t::x6, 1, 0));
+    kernel.add_instr(sub(x6, x6, 1, 0));
     // check if loop counter is zero
     int l_mLoopInstrCount = kernel.getInstrCountFromLabel("m_4_n_1_loop");
-    kernel.add_instr(base::cbnz(gpr_t::x6, -l_mLoopInstrCount * 4));
+    kernel.add_instr(cbnz(x6, -l_mLoopInstrCount * 4));
 }
 
 void mini_jit::kernels::unary::internal::reluM3N3( mini_jit::Kernel &kernel )
 {
     // working pointer for A and B
-    kernel.add_instr(base::mov(gpr_t::x7, gpr_t::x4));
-    kernel.add_instr(base::mov(gpr_t::x8, gpr_t::x5));
+    kernel.add_instr(mov(x7, x4));
+    kernel.add_instr(mov(x8, x5));
     
     // Load 3x3 block of A (input matrix)
-    kernel.add_instr(base::mov(gpr_t::x17, gpr_t::x7));
+    kernel.add_instr(mov(x17, x7));
 
-    kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v0, gpr_t::x17, 8, neon_size_spec_t::d));
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v1, gpr_t::x17, 0, neon_size_spec_t::s));
-    kernel.add_instr(base::add(gpr_t::x7, gpr_t::x7, gpr_t::x2, 0, 0));
-    kernel.add_instr(base::mov(gpr_t::x17, gpr_t::x7));
+    kernel.add_instr(ldrPost(v0, x17, 8, d));
+    kernel.add_instr(ldr(v1, x17, 0, s));
+    kernel.add_instr(add(x7, x7, x2, 0, 0));
+    kernel.add_instr(mov(x17, x7));
 
-    kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v2, gpr_t::x17, 8, neon_size_spec_t::d));
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v3, gpr_t::x17, 0, neon_size_spec_t::s));
-    kernel.add_instr(base::add(gpr_t::x7, gpr_t::x7, gpr_t::x2, 0, 0));
-    kernel.add_instr(base::mov(gpr_t::x17, gpr_t::x7));
+    kernel.add_instr(ldrPost(v2, x17, 8, d));
+    kernel.add_instr(ldr(v3, x17, 0, s));
+    kernel.add_instr(add(x7, x7, x2, 0, 0));
+    kernel.add_instr(mov(x17, x7));
 
-    kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v4, gpr_t::x17, 4, neon_size_spec_t::s));
-    kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v5, gpr_t::x17, 4, neon_size_spec_t::s));
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v6, gpr_t::x17, 0, neon_size_spec_t::s));
+    kernel.add_instr(ldrPost(v4, x17, 4, s));
+    kernel.add_instr(ldrPost(v5, x17, 4, s));
+    kernel.add_instr(ldr(v6, x17, 0, s));
 
     // Compute ReLU
-    kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, arr_spec_t::s2));
-    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v31, neon_size_spec_t::s));
+    kernel.add_instr(fmaxVec(v0, v0, v31, s2));
+    kernel.add_instr(fmaxScalar(v1, v1, v31, s));
 
-    kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v2, simd_fp_t::v2, simd_fp_t::v31, arr_spec_t::s2));
-    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v3, simd_fp_t::v3, simd_fp_t::v31, neon_size_spec_t::s));
+    kernel.add_instr(fmaxVec(v2, v2, v31, s2));
+    kernel.add_instr(fmaxScalar(v3, v3, v31, s));
 
-    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v4, simd_fp_t::v4, simd_fp_t::v31, neon_size_spec_t::s));
-    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v5, simd_fp_t::v5, simd_fp_t::v31, neon_size_spec_t::s));
-    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v6, simd_fp_t::v6, simd_fp_t::v31, neon_size_spec_t::s));
+    kernel.add_instr(fmaxScalar(v4, v4, v31, s));
+    kernel.add_instr(fmaxScalar(v5, v5, v31, s));
+    kernel.add_instr(fmaxScalar(v6, v6, v31, s));
 
     // Transpose 3x3 matrix
     // TRN
-    kernel.add_instr(simd_fp::trn1(simd_fp_t::v7, simd_fp_t::v0, simd_fp_t::v2, arr_spec_t::s4));
-    kernel.add_instr(simd_fp::trn2(simd_fp_t::v8, simd_fp_t::v0, simd_fp_t::v2, arr_spec_t::s4));
+    kernel.add_instr(trn1(v7, v0, v2, s4));
+    kernel.add_instr(trn2(v8, v0, v2, s4));
 
     // Store 3x3 Block of B
-    kernel.add_instr(base::mov(gpr_t::x17, gpr_t::x8));
+    kernel.add_instr(mov(x17, x8));
 
-    kernel.add_instr(simd_fp::strPost(simd_fp_t::v7, gpr_t::x17, 8, neon_size_spec_t::d));
-    kernel.add_instr(simd_fp::str(simd_fp_t::v4, gpr_t::x17, 0, neon_size_spec_t::s));
-    kernel.add_instr(base::add(gpr_t::x8, gpr_t::x8, gpr_t::x3, 0, 0));
-    kernel.add_instr(base::mov(gpr_t::x17, gpr_t::x8));
+    kernel.add_instr(strPost(v7, x17, 8, d));
+    kernel.add_instr(str(v4, x17, 0, s));
+    kernel.add_instr(add(x8, x8, x3, 0, 0));
+    kernel.add_instr(mov(x17, x8));
 
-    kernel.add_instr(simd_fp::strPost(simd_fp_t::v8, gpr_t::x17, 8, neon_size_spec_t::d));
-    kernel.add_instr(simd_fp::str(simd_fp_t::v5, gpr_t::x17, 0, neon_size_spec_t::s));
-    kernel.add_instr(base::add(gpr_t::x8, gpr_t::x8, gpr_t::x3, 0, 0));
-    kernel.add_instr(base::mov(gpr_t::x17, gpr_t::x8));
+    kernel.add_instr(strPost(v8, x17, 8, d));
+    kernel.add_instr(str(v5, x17, 0, s));
+    kernel.add_instr(add(x8, x8, x3, 0, 0));
+    kernel.add_instr(mov(x17, x8));
 
-    kernel.add_instr(simd_fp::strPost(simd_fp_t::v1, gpr_t::x17, 4, neon_size_spec_t::s));
-    kernel.add_instr(simd_fp::strPost(simd_fp_t::v3, gpr_t::x17, 4, neon_size_spec_t::s));
-    kernel.add_instr(simd_fp::str(simd_fp_t::v6, gpr_t::x17, 0, neon_size_spec_t::s));
+    kernel.add_instr(strPost(v1, x17, 4, s));
+    kernel.add_instr(strPost(v3, x17, 4, s));
+    kernel.add_instr(str(v6, x17, 0, s));
 }
 
 void mini_jit::kernels::unary::internal::reluM3N2( mini_jit::Kernel &kernel )
 {
     // working pointer for A and B
-    kernel.add_instr(base::mov(gpr_t::x7, gpr_t::x4));
-    kernel.add_instr(base::mov(gpr_t::x8, gpr_t::x5));
+    kernel.add_instr(mov(x7, x4));
+    kernel.add_instr(mov(x8, x5));
     
     // Load 3x2 block of A (input matrix)
-    kernel.add_instr(base::mov(gpr_t::x17, gpr_t::x7));
+    kernel.add_instr(mov(x17, x7));
 
-    kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v0, gpr_t::x17, 8, neon_size_spec_t::d));
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v1, gpr_t::x17, 0, neon_size_spec_t::s));
-    kernel.add_instr(base::add(gpr_t::x7, gpr_t::x7, gpr_t::x2, 0, 0));
-    kernel.add_instr(base::mov(gpr_t::x17, gpr_t::x7));
+    kernel.add_instr(ldrPost(v0, x17, 8, d));
+    kernel.add_instr(ldr(v1, x17, 0, s));
+    kernel.add_instr(add(x7, x7, x2, 0, 0));
+    kernel.add_instr(mov(x17, x7));
 
-    kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v2, gpr_t::x17, 8, neon_size_spec_t::d));
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v3, gpr_t::x17, 0, neon_size_spec_t::s));
+    kernel.add_instr(ldrPost(v2, x17, 8, d));
+    kernel.add_instr(ldr(v3, x17, 0, s));
 
     // Compute ReLU
-    kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, arr_spec_t::s2));
-    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v31, neon_size_spec_t::s));
+    kernel.add_instr(fmaxVec(v0, v0, v31, s2));
+    kernel.add_instr(fmaxScalar(v1, v1, v31, s));
 
-    kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v2, simd_fp_t::v2, simd_fp_t::v31, arr_spec_t::s2));
-    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v3, simd_fp_t::v3, simd_fp_t::v31, neon_size_spec_t::s));
+    kernel.add_instr(fmaxVec(v2, v2, v31, s2));
+    kernel.add_instr(fmaxScalar(v3, v3, v31, s));
 
     // Transpose 3x2 matrix
     // TRN
-    kernel.add_instr(simd_fp::trn1(simd_fp_t::v4, simd_fp_t::v0, simd_fp_t::v2, arr_spec_t::s4));
-    kernel.add_instr(simd_fp::trn2(simd_fp_t::v5, simd_fp_t::v0, simd_fp_t::v2, arr_spec_t::s4));
+    kernel.add_instr(trn1(v4, v0, v2, s4));
+    kernel.add_instr(trn2(v5, v0, v2, s4));
 
     // Store 3x2 Block of B
-    kernel.add_instr(simd_fp::str(simd_fp_t::v4, gpr_t::x8, 0, neon_size_spec_t::d));
-    kernel.add_instr(base::add(gpr_t::x8, gpr_t::x8, gpr_t::x3, 0, 0));
+    kernel.add_instr(str(v4, x8, 0, d));
+    kernel.add_instr(add(x8, x8, x3, 0, 0));
 
-    kernel.add_instr(simd_fp::str(simd_fp_t::v5, gpr_t::x8, 0, neon_size_spec_t::d));
-    kernel.add_instr(base::add(gpr_t::x8, gpr_t::x8, gpr_t::x3, 0, 0));
+    kernel.add_instr(str(v5, x8, 0, d));
+    kernel.add_instr(add(x8, x8, x3, 0, 0));
 
-    kernel.add_instr(simd_fp::strPost(simd_fp_t::v1, gpr_t::x8, 4, neon_size_spec_t::s));
-    kernel.add_instr(simd_fp::str(simd_fp_t::v3, gpr_t::x8, 0, neon_size_spec_t::s));
+    kernel.add_instr(strPost(v1, x8, 4, s));
+    kernel.add_instr(str(v3, x8, 0, s));
 }
 
 void mini_jit::kernels::unary::internal::reluM3N1( mini_jit::Kernel &kernel )
 {
     // working pointer for A and B
-    kernel.add_instr(base::mov(gpr_t::x7, gpr_t::x4));
-    kernel.add_instr(base::mov(gpr_t::x8, gpr_t::x5));
+    kernel.add_instr(mov(x7, x4));
+    kernel.add_instr(mov(x8, x5));
     
     // Load 3x2 block of A (input matrix)
-    kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v0, gpr_t::x7, 4, neon_size_spec_t::s));
-    kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v1, gpr_t::x7, 4, neon_size_spec_t::s));
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v2, gpr_t::x7, 0, neon_size_spec_t::s));
+    kernel.add_instr(ldrPost(v0, x7, 4, s));
+    kernel.add_instr(ldrPost(v1, x7, 4, s));
+    kernel.add_instr(ldr(v2, x7, 0, s));
 
     // Compute ReLU
-    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, neon_size_spec_t::s));
-    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v31, neon_size_spec_t::s));
-    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v2, simd_fp_t::v2, simd_fp_t::v31, neon_size_spec_t::s));
+    kernel.add_instr(fmaxScalar(v0, v0, v31, s));
+    kernel.add_instr(fmaxScalar(v1, v1, v31, s));
+    kernel.add_instr(fmaxScalar(v2, v2, v31, s));
 
     // Store 3x2 Block of B
-    kernel.add_instr(simd_fp::str(simd_fp_t::v0, gpr_t::x8, 0, neon_size_spec_t::s));
-    kernel.add_instr(base::add(gpr_t::x8, gpr_t::x8, gpr_t::x3, 0, 0));
+    kernel.add_instr(str(v0, x8, 0, s));
+    kernel.add_instr(add(x8, x8, x3, 0, 0));
 
-    kernel.add_instr(simd_fp::str(simd_fp_t::v1, gpr_t::x8, 0, neon_size_spec_t::s));
-    kernel.add_instr(base::add(gpr_t::x8, gpr_t::x8, gpr_t::x3, 0, 0));
+    kernel.add_instr(str(v1, x8, 0, s));
+    kernel.add_instr(add(x8, x8, x3, 0, 0));
 
-    kernel.add_instr(simd_fp::str(simd_fp_t::v2, gpr_t::x8, 0, neon_size_spec_t::s));
+    kernel.add_instr(str(v2, x8, 0, s));
 }
 
 void mini_jit::kernels::unary::internal::reluM2N3( mini_jit::Kernel &kernel )
 {
     // working pointer for A and B
-    kernel.add_instr(base::mov(gpr_t::x7, gpr_t::x4));
-    kernel.add_instr(base::mov(gpr_t::x8, gpr_t::x5));
+    kernel.add_instr(mov(x7, x4));
+    kernel.add_instr(mov(x8, x5));
     
     // Load 2x3 block of A (input matrix)
-    kernel.add_instr(base::mov(gpr_t::x17, gpr_t::x7));
+    kernel.add_instr(mov(x17, x7));
 
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v0, gpr_t::x17, 0, neon_size_spec_t::d));
-    kernel.add_instr(base::add(gpr_t::x7, gpr_t::x7, gpr_t::x2, 0, 0));
-    kernel.add_instr(base::mov(gpr_t::x17, gpr_t::x7));
+    kernel.add_instr(ldr(v0, x17, 0, d));
+    kernel.add_instr(add(x7, x7, x2, 0, 0));
+    kernel.add_instr(mov(x17, x7));
 
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v1, gpr_t::x17, 0, neon_size_spec_t::d));
-    kernel.add_instr(base::add(gpr_t::x7, gpr_t::x7, gpr_t::x2, 0, 0));
-    kernel.add_instr(base::mov(gpr_t::x17, gpr_t::x7));
+    kernel.add_instr(ldr(v1, x17, 0, d));
+    kernel.add_instr(add(x7, x7, x2, 0, 0));
+    kernel.add_instr(mov(x17, x7));
 
-    kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v2, gpr_t::x17, 4, neon_size_spec_t::s));
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v3, gpr_t::x17, 0, neon_size_spec_t::s));
+    kernel.add_instr(ldrPost(v2, x17, 4, s));
+    kernel.add_instr(ldr(v3, x17, 0, s));
 
     // Compute ReLU
-    kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, arr_spec_t::s2));
-    kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v31, arr_spec_t::s2));
-    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v2, simd_fp_t::v2, simd_fp_t::v31, neon_size_spec_t::s));
-    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v3, simd_fp_t::v3, simd_fp_t::v31, neon_size_spec_t::s));
+    kernel.add_instr(fmaxVec(v0, v0, v31, s2));
+    kernel.add_instr(fmaxVec(v1, v1, v31, s2));
+    kernel.add_instr(fmaxScalar(v2, v2, v31, s));
+    kernel.add_instr(fmaxScalar(v3, v3, v31, s));
 
     // Transpose 2x3 matrix
     // TRN
-    kernel.add_instr(simd_fp::trn1(simd_fp_t::v4, simd_fp_t::v0, simd_fp_t::v1, arr_spec_t::s2));
-    kernel.add_instr(simd_fp::trn2(simd_fp_t::v5, simd_fp_t::v0, simd_fp_t::v1, arr_spec_t::s2));
+    kernel.add_instr(trn1(v4, v0, v1, s2));
+    kernel.add_instr(trn2(v5, v0, v1, s2));
 
     // Store 2x3 Block of B
-    kernel.add_instr(base::mov(gpr_t::x17, gpr_t::x8));
+    kernel.add_instr(mov(x17, x8));
 
-    kernel.add_instr(simd_fp::strPost(simd_fp_t::v4, gpr_t::x17, 8, neon_size_spec_t::d));
-    kernel.add_instr(simd_fp::str(simd_fp_t::v2, gpr_t::x17, 0, neon_size_spec_t::s));
-    kernel.add_instr(base::add(gpr_t::x8, gpr_t::x8, gpr_t::x3, 0, 0));
-    kernel.add_instr(base::mov(gpr_t::x17, gpr_t::x8));
+    kernel.add_instr(strPost(v4, x17, 8, d));
+    kernel.add_instr(str(v2, x17, 0, s));
+    kernel.add_instr(add(x8, x8, x3, 0, 0));
+    kernel.add_instr(mov(x17, x8));
 
-    kernel.add_instr(simd_fp::strPost(simd_fp_t::v5, gpr_t::x17, 8, neon_size_spec_t::d));
-    kernel.add_instr(simd_fp::str(simd_fp_t::v3, gpr_t::x17, 0, neon_size_spec_t::s));
+    kernel.add_instr(strPost(v5, x17, 8, d));
+    kernel.add_instr(str(v3, x17, 0, s));
 }
 
 void mini_jit::kernels::unary::internal::reluM1N3( mini_jit::Kernel &kernel )
 {
     // working pointer for A and B
-    kernel.add_instr(base::mov(gpr_t::x7, gpr_t::x4));
-    kernel.add_instr(base::mov(gpr_t::x8, gpr_t::x5));
+    kernel.add_instr(mov(x7, x4));
+    kernel.add_instr(mov(x8, x5));
     
     // Load 1x3 block of A (input matrix)
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v0, gpr_t::x7, 0, neon_size_spec_t::s));
-    kernel.add_instr(base::add(gpr_t::x7, gpr_t::x7, gpr_t::x2, 0, 0));
+    kernel.add_instr(ldr(v0, x7, 0, s));
+    kernel.add_instr(add(x7, x7, x2, 0, 0));
 
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v1, gpr_t::x7, 0, neon_size_spec_t::s));
-    kernel.add_instr(base::add(gpr_t::x7, gpr_t::x7, gpr_t::x2, 0, 0));
+    kernel.add_instr(ldr(v1, x7, 0, s));
+    kernel.add_instr(add(x7, x7, x2, 0, 0));
 
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v2, gpr_t::x7, 0, neon_size_spec_t::s));
+    kernel.add_instr(ldr(v2, x7, 0, s));
 
     // Compute ReLU
-    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, neon_size_spec_t::s));
-    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v31, neon_size_spec_t::s));
-    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v2, simd_fp_t::v2, simd_fp_t::v31, neon_size_spec_t::s));
+    kernel.add_instr(fmaxScalar(v0, v0, v31, s));
+    kernel.add_instr(fmaxScalar(v1, v1, v31, s));
+    kernel.add_instr(fmaxScalar(v2, v2, v31, s));
 
     // Store 1x3 Block of B
-    kernel.add_instr(simd_fp::strPost(simd_fp_t::v0, gpr_t::x8, 4, neon_size_spec_t::s));
-    kernel.add_instr(simd_fp::strPost(simd_fp_t::v1, gpr_t::x8, 4, neon_size_spec_t::s));
-    kernel.add_instr(simd_fp::str(simd_fp_t::v2, gpr_t::x8, 0, neon_size_spec_t::s));
+    kernel.add_instr(strPost(v0, x8, 4, s));
+    kernel.add_instr(strPost(v1, x8, 4, s));
+    kernel.add_instr(str(v2, x8, 0, s));
 }
 
 void mini_jit::kernels::unary::internal::reluM2N2( mini_jit::Kernel &kernel )
 {
     // working pointer for A and B
-    kernel.add_instr(base::mov(gpr_t::x7, gpr_t::x4));
-    kernel.add_instr(base::mov(gpr_t::x8, gpr_t::x5));
+    kernel.add_instr(mov(x7, x4));
+    kernel.add_instr(mov(x8, x5));
     
     // Load 2x3 block of A (input matrix)
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v0, gpr_t::x7, 0, neon_size_spec_t::d));
-    kernel.add_instr(base::add(gpr_t::x7, gpr_t::x7, gpr_t::x2, 0, 0));
+    kernel.add_instr(ldr(v0, x7, 0, d));
+    kernel.add_instr(add(x7, x7, x2, 0, 0));
 
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v1, gpr_t::x7, 0, neon_size_spec_t::d));
+    kernel.add_instr(ldr(v1, x7, 0, d));
 
     // Compute ReLU
-    kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, arr_spec_t::s2));
-    kernel.add_instr(simd_fp::fmaxVec(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v31, arr_spec_t::s2));
+    kernel.add_instr(fmaxVec(v0, v0, v31, s2));
+    kernel.add_instr(fmaxVec(v1, v1, v31, s2));
 
     // Transpose 2x3 matrix
     // TRN
-    kernel.add_instr(simd_fp::trn1(simd_fp_t::v2, simd_fp_t::v0, simd_fp_t::v1, arr_spec_t::s2));
-    kernel.add_instr(simd_fp::trn2(simd_fp_t::v3, simd_fp_t::v0, simd_fp_t::v1, arr_spec_t::s2));
+    kernel.add_instr(trn1(v2, v0, v1, s2));
+    kernel.add_instr(trn2(v3, v0, v1, s2));
 
     // Store 2x3 Block of B
-    kernel.add_instr(simd_fp::str(simd_fp_t::v2, gpr_t::x8, 0, neon_size_spec_t::d));
-    kernel.add_instr(base::add(gpr_t::x8, gpr_t::x8, gpr_t::x3, 0, 0));
+    kernel.add_instr(str(v2, x8, 0, d));
+    kernel.add_instr(add(x8, x8, x3, 0, 0));
     
-    kernel.add_instr(simd_fp::str(simd_fp_t::v3, gpr_t::x8, 0, neon_size_spec_t::d));
+    kernel.add_instr(str(v3, x8, 0, d));
 }
 
 void mini_jit::kernels::unary::internal::reluM2N1( mini_jit::Kernel &kernel )
 {
     // working pointer for A and B
-    kernel.add_instr(base::mov(gpr_t::x7, gpr_t::x4));
-    kernel.add_instr(base::mov(gpr_t::x8, gpr_t::x5));
+    kernel.add_instr(mov(x7, x4));
+    kernel.add_instr(mov(x8, x5));
     
     // Load 2x1 block of A (input matrix)
-    kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v0, gpr_t::x7, 4, neon_size_spec_t::s));
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v1, gpr_t::x7, 0, neon_size_spec_t::s));
+    kernel.add_instr(ldrPost(v0, x7, 4, s));
+    kernel.add_instr(ldr(v1, x7, 0, s));
 
     // Compute ReLU
-    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, neon_size_spec_t::s));
-    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v31, neon_size_spec_t::s));
+    kernel.add_instr(fmaxScalar(v0, v0, v31, s));
+    kernel.add_instr(fmaxScalar(v1, v1, v31, s));
 
     // Store 2x1 Block of B
-    kernel.add_instr(simd_fp::str(simd_fp_t::v0, gpr_t::x8, 0, neon_size_spec_t::s));
-    kernel.add_instr(base::add(gpr_t::x8, gpr_t::x8, gpr_t::x3, 0, 0));
+    kernel.add_instr(str(v0, x8, 0, s));
+    kernel.add_instr(add(x8, x8, x3, 0, 0));
 
-    kernel.add_instr(simd_fp::strPost(simd_fp_t::v1, gpr_t::x8, 0, neon_size_spec_t::s));
+    kernel.add_instr(strPost(v1, x8, 0, s));
 }
 
 void mini_jit::kernels::unary::internal::reluM1N2( mini_jit::Kernel &kernel )
 {
     // working pointer for A and B
-    kernel.add_instr(base::mov(gpr_t::x7, gpr_t::x4));
-    kernel.add_instr(base::mov(gpr_t::x8, gpr_t::x5));
+    kernel.add_instr(mov(x7, x4));
+    kernel.add_instr(mov(x8, x5));
     
     // Load 1x2 block of A (input matrix)
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v0, gpr_t::x7, 0, neon_size_spec_t::s));
-    kernel.add_instr(base::add(gpr_t::x7, gpr_t::x7, gpr_t::x2, 0, 0));
+    kernel.add_instr(ldr(v0, x7, 0, s));
+    kernel.add_instr(add(x7, x7, x2, 0, 0));
 
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v1, gpr_t::x7, 0, neon_size_spec_t::s));
+    kernel.add_instr(ldr(v1, x7, 0, s));
 
     // Compute ReLU
-    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, neon_size_spec_t::s));
-    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v1, simd_fp_t::v1, simd_fp_t::v31, neon_size_spec_t::s));
+    kernel.add_instr(fmaxScalar(v0, v0, v31, s));
+    kernel.add_instr(fmaxScalar(v1, v1, v31, s));
 
     // Store 1x2 Block of B
-    kernel.add_instr(simd_fp::strPost(simd_fp_t::v0, gpr_t::x8, 4, neon_size_spec_t::s));
-    kernel.add_instr(simd_fp::str(simd_fp_t::v1, gpr_t::x8, 0, neon_size_spec_t::s));
+    kernel.add_instr(strPost(v0, x8, 4, s));
+    kernel.add_instr(str(v1, x8, 0, s));
 }
 
 void mini_jit::kernels::unary::internal::reluM1N1( mini_jit::Kernel &kernel )
 {
     // working pointer for A and B
-    kernel.add_instr(base::mov(gpr_t::x7, gpr_t::x4));
-    kernel.add_instr(base::mov(gpr_t::x8, gpr_t::x5));
+    kernel.add_instr(mov(x7, x4));
+    kernel.add_instr(mov(x8, x5));
 
     // Load 1x1 block of A (input matrix)
-    kernel.add_instr(simd_fp::ldr(simd_fp_t::v0, gpr_t::x7, 0, neon_size_spec_t::s));
+    kernel.add_instr(ldr(v0, x7, 0, s));
 
     // Compute ReLU
-    kernel.add_instr(simd_fp::fmaxScalar(simd_fp_t::v0, simd_fp_t::v0, simd_fp_t::v31, neon_size_spec_t::s));
+    kernel.add_instr(fmaxScalar(v0, v0, v31, s));
 
     // Store 1x1 Block of B
-    kernel.add_instr(simd_fp::str(simd_fp_t::v0, gpr_t::x8, 0, neon_size_spec_t::s));
+    kernel.add_instr(str(v0, x8, 0, s));
 }

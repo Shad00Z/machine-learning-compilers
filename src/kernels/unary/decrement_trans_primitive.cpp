@@ -5,39 +5,14 @@
 #include "registers/simd_fp_registers.h"
 #include "instructions/all_instructions.h"
 
-using simd_fp_t = mini_jit::registers::simd_fp_t;
-using arr_spec_t = mini_jit::registers::arr_spec_t;
-using neon_size_spec_t = mini_jit::registers::neon_size_spec_t;
-
 using enum gpr_t;
 using enum simd_fp_t;
 using enum neon_size_spec_t;
 using enum arr_spec_t;
 
-namespace inst = mini_jit::instructions;
-namespace base = inst::base;
-namespace simd_fp = inst::simd_fp;
+using namespace mini_jit::instructions::base;
+using namespace mini_jit::instructions::simd_fp;
 namespace internal_subkernels = mini_jit::kernels::unary::internal;
-
-using base::stpPre;
-using base::movSP;
-using base::mov;
-using base::lsl;
-using base::add;
-using base::sub;
-using base::ldpPost;
-using simd_fp::ldr;
-using simd_fp::ldrPost;
-using simd_fp::str;
-using simd_fp::strPost;
-using simd_fp::trn1;
-using simd_fp::trn2;
-using simd_fp::zip1;
-using simd_fp::zip2;
-using simd_fp::fmovIntVec;
-using simd_fp::fmovIntScalar;
-using simd_fp::fsubVec;
-using simd_fp::fsubScalar;
 
 void mini_jit::kernels::unary::decrement_trans(mini_jit::Kernel &kernel,
                                                int m,
@@ -62,10 +37,10 @@ void mini_jit::kernels::unary::decrement_trans(mini_jit::Kernel &kernel,
         stpPre(x25, x26, sp, -16),
         stpPre(x27, x28, sp, -16),
 
-        simd_fp::stpPre(v8, v9, sp, -16, d),
-        simd_fp::stpPre(v10, v11, sp, -16, d),
-        simd_fp::stpPre(v12, v13, sp, -16, d),
-        simd_fp::stpPre(v14, v15, sp, -16, d),
+        stpPre(v8, v9, sp, -16, d),
+        stpPre(v10, v11, sp, -16, d),
+        stpPre(v12, v13, sp, -16, d),
+        stpPre(v14, v15, sp, -16, d),
 
         // Save base matrix pointer
         mov(x4, x0), // A
@@ -145,7 +120,7 @@ void mini_jit::kernels::unary::decrement_trans(mini_jit::Kernel &kernel,
         
         // check if loop counter is zero
         int l_nLoopInstrCount = kernel.getInstrCountFromLabel("n_loop");
-        kernel.add_instr(base::cbnz(x9, -l_nLoopInstrCount * 4));
+        kernel.add_instr(cbnz(x9, -l_nLoopInstrCount * 4));
     }
 
     // All iterations in the n dimension have been performed, only possibilities are now:
@@ -224,10 +199,10 @@ void mini_jit::kernels::unary::decrement_trans(mini_jit::Kernel &kernel,
 
     kernel.add_instr({
         // Restore callee-saved registers
-        simd_fp::ldpPost(v14, v15, sp, 16, d),
-        simd_fp::ldpPost(v12, v13, sp, 16, d),
-        simd_fp::ldpPost(v10, v11, sp, 16, d),
-        simd_fp::ldpPost(v8, v9, sp, 16, d),
+        ldpPost(v14, v15, sp, 16, d),
+        ldpPost(v12, v13, sp, 16, d),
+        ldpPost(v10, v11, sp, 16, d),
+        ldpPost(v8, v9, sp, 16, d),
 
         ldpPost(x27, x28, sp, 16),
         ldpPost(x25, x26, sp, 16),
@@ -238,7 +213,7 @@ void mini_jit::kernels::unary::decrement_trans(mini_jit::Kernel &kernel,
         // Restore stack pointer
         ldpPost(x29, x30, sp, 16),
 
-        inst::ret()
+        ret()
     });
 
     kernel.write("decrement_trans_primitive.bin");
@@ -307,7 +282,7 @@ void mini_jit::kernels::unary::internal::decrementM4N4( mini_jit::Kernel &kernel
 
     // check if loop counter is zero
     int l_mLoopInstrCount = kernel.getInstrCountFromLabel("m_4_n_4_loop");
-    kernel.add_instr(base::cbnz(x6, -l_mLoopInstrCount * 4));
+    kernel.add_instr(cbnz(x6, -l_mLoopInstrCount * 4));
 }
 
 void mini_jit::kernels::unary::internal::decrementM3N4( mini_jit::Kernel &kernel )
@@ -531,7 +506,7 @@ void mini_jit::kernels::unary::internal::decrementM4N3( mini_jit::Kernel &kernel
     
     // check if loop counter is zero
     int l_mLoopInstrCount = kernel.getInstrCountFromLabel("m_4_n_3_loop");
-    kernel.add_instr(base::cbnz(x6, -l_mLoopInstrCount * 4));
+    kernel.add_instr(cbnz(x6, -l_mLoopInstrCount * 4));
 }
 
 void mini_jit::kernels::unary::internal::decrementM4N2( mini_jit::Kernel &kernel,
@@ -593,7 +568,7 @@ void mini_jit::kernels::unary::internal::decrementM4N2( mini_jit::Kernel &kernel
 
     // check if loop counter is zero
     int l_mLoopInstrCount = kernel.getInstrCountFromLabel("m_4_n_2_loop");
-    kernel.add_instr(base::cbnz(x6, -l_mLoopInstrCount * 4));
+    kernel.add_instr(cbnz(x6, -l_mLoopInstrCount * 4));
 }
 
 void mini_jit::kernels::unary::internal::decrementM4N1( mini_jit::Kernel &kernel,
@@ -644,7 +619,7 @@ void mini_jit::kernels::unary::internal::decrementM4N1( mini_jit::Kernel &kernel
 
     // check if loop counter is zero
     int l_mLoopInstrCount = kernel.getInstrCountFromLabel("m_4_n_1_loop");
-    kernel.add_instr(base::cbnz(x6, -l_mLoopInstrCount * 4));
+    kernel.add_instr(cbnz(x6, -l_mLoopInstrCount * 4));
 }
 
 void mini_jit::kernels::unary::internal::decrementM3N3( mini_jit::Kernel &kernel )

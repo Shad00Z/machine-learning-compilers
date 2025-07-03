@@ -189,7 +189,7 @@ void mini_jit::kernels::matmul::subkernels::matmul_16_6_k( mini_jit::Kernel &ker
     // Restore stack pointer
     kernel.add_instr( base::ldpPost(gpr_t::x29, gpr_t::x30, gpr_t::sp, 16) );
     
-    kernel.add_instr( inst::ret() );
+    kernel.add_instr( base::ret() );
 
     kernel.write( "matmul_16_6_k.bin" );
     kernel.set_kernel();

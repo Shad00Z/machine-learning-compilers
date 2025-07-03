@@ -11,6 +11,7 @@
 #include "movz.h"
 #include "mul.h"
 #include "orr.h"
+#include "ret.h"
 #include "stp.h"
 #include "str.h"
 #include "sub.h"

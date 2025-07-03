@@ -588,7 +588,7 @@ void mini_jit::kernels::unary::fast_sigmoid(mini_jit::Kernel &kernel,
         // Restore stack pointer
         ldpPost(x29, x30, sp, 16),
 
-        mini_jit::instructions::ret()
+        ret()
     });
     kernel.write("reciprocal_primitive.bin");
     kernel.set_kernel();
