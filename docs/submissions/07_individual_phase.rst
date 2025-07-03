@@ -1446,6 +1446,7 @@ that would allow us to handle these values:
 
 .. code-block:: cpp
     :caption: New kernel type signature
+    
     /*
      * Generalized kernel type.
      * The kernel is a function that takes the following parameters:
@@ -1796,8 +1797,51 @@ The linear interpolation approach on the other side has the weakest performance 
 
 This comparison shows, that with these three approaches we have a trade off between the precision compared to the true sigmoid function and the amount of data we can transfer per second. 
 
+
+We also wrote a python script, that benchmarks the bandwidth performance of the sigmoid function from torch:
+
+.. literalinclude:: ../../benchmarks/pytorch/pytorch_sigmoid_benchmark.txt
+    :language: text
+    :caption: torch sigmoid benchmarks
+
+In the script we compare the performance of ``torch.sigmoid``, with a custom implementation of the fast sigmoid using ``torch.abs``, and a normal implementation of the taylor approximation (without torch).
+The benchmark shows, that torch's sigmoid is still has a higher bandwidth than the implementations with additional python code.
+However, our kernels still achieve a higher bandwidth than torch's sigmoid implementation, neglecting our linear interpolation which is still worse for larger matrices.
+
 **********************************
 7.5 Wrap-Up
 **********************************
 
-Haben wir unsere Ziele erreicht? etc
+To end our project report, we will use this section for a quick recap of the last 2 weeks.
+
+In the first week, we successfully implemented all planned primitive operations, specifically:
+
+* Unary Primitives
+
+    * Square
+
+    * Reciprocal
+
+    * Increment & Decrement
+
+* Binary Primitives
+
+    * Add & Sub
+
+    * Mul & Div
+
+    * Max & Min
+
+We incorporated them into our ``TensorOperation`` backend and implemented thorough unit tests.
+Some unforseen issues were the implementation of many new instructions, for example ``FRECPE`` and ``FRECPS`` for the reciprocal primitive,
+as well as the complex ``FMOV`` instruction for the increment and decrement primitives. Nontheless we were able to achieve all planned goals.
+
+In the second week, we first put our focus on optimizations. We implemented dimension fusion and also discovered suboptimal behaviour in our dimension splitting algorithm.
+We were able to resolve both tasks without further issues. Next, we extended our original roadmap by the sigmoid operation. Here, we implemented three different approaches
+with their own advantages and disadvantages. Furthermore, we benchmarked and compared the implemented approaches. Lastly, we had to incorporate the new sigmoid primitive
+into our ``TensorOperation`` backend, which came with an unexpected change we had to make. The kernel type which we previously used had to be extended by an extra parameter,
+allowing us to pass extra data such as lookup tables and constants. Changing the kernel type meant that we had to adjust all test cases and benchmarks as well.
+
+Finally, we can say that we fully achieved our goal of diversifying our tensor compiler with new primitive operations. 
+We were able to substantially extend the capabilities of our IR Optimizer with dimension fusion and an enhanced dimension splitting algorithm.
+As a bonus, we implemented the complex sigmoid function using multiple approaches, ranging from precision-based to efficiency-based computations.

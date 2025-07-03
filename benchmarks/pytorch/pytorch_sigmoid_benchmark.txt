@@ -1,0 +1,96 @@
+Running benchmarks on: CPU
+PyTorch version: 2.7.1
+==================================================
+
+RealSigmoid Benchmarks:
+--------------------------------------------------
+Running RealSigmoid 50x50 benchmark
+Total time (s):                       3.000001
+Total reps:                           933708
+Total number of elements:             2334270000
+Total amount of processed data (GiB): 17.391667
+Bandwidth (GiB/s)                     5.797220
+--------------------------------------------------
+Running RealSigmoid 64x64 benchmark
+Total time (s):                       3.000001
+Total reps:                           624515
+Total number of elements:             2558013440
+Total amount of processed data (GiB): 19.058685
+Bandwidth (GiB/s)                     6.352893
+--------------------------------------------------
+Running RealSigmoid 512x512 benchmark
+Total time (s):                       3.000091
+Total reps:                           31765
+Total number of elements:             8327004160
+Total amount of processed data (GiB): 62.041016
+Bandwidth (GiB/s)                     20.679711
+--------------------------------------------------
+Running RealSigmoid 2048x2048 benchmark
+Total time (s):                       3.000116
+Total reps:                           3140
+Total number of elements:             13170114560
+Total amount of processed data (GiB): 98.125000
+Bandwidth (GiB/s)                     32.707067
+--------------------------------------------------
+
+FastSigmoid Benchmarks:
+--------------------------------------------------
+Running FastSigmoid 50x50 benchmark
+Total time (s):                       3.000000
+Total reps:                           314311
+Total number of elements:             785777500
+Total amount of processed data (GiB): 5.854499
+Bandwidth (GiB/s)                     1.951500
+--------------------------------------------------
+Running FastSigmoid 64x64 benchmark
+Total time (s):                       3.000002
+Total reps:                           293904
+Total number of elements:             1203830784
+Total amount of processed data (GiB): 8.969238
+Bandwidth (GiB/s)                     2.989744
+--------------------------------------------------
+Running FastSigmoid 512x512 benchmark
+Total time (s):                       3.000216
+Total reps:                           12922
+Total number of elements:             3387424768
+Total amount of processed data (GiB): 25.238281
+Bandwidth (GiB/s)                     8.412155
+--------------------------------------------------
+Running FastSigmoid 2048x2048 benchmark
+Total time (s):                       3.001163
+Total reps:                           2329
+Total number of elements:             9768534016
+Total amount of processed data (GiB): 72.781250
+Bandwidth (GiB/s)                     24.251015
+--------------------------------------------------
+
+TaylorSigmoid Benchmarks:
+--------------------------------------------------
+Running TaylorSigmoid 50x50 benchmark
+Total time (s):                       3.000014
+Total reps:                           206219
+Total number of elements:             515547500
+Total amount of processed data (GiB): 3.841128
+Bandwidth (GiB/s)                     1.280370
+--------------------------------------------------
+Running TaylorSigmoid 64x64 benchmark
+Total time (s):                       3.000003
+Total reps:                           183858
+Total number of elements:             753082368
+Total amount of processed data (GiB): 5.610901
+Bandwidth (GiB/s)                     1.870298
+--------------------------------------------------
+Running TaylorSigmoid 512x512 benchmark
+Total time (s):                       3.000397
+Total reps:                           6377
+Total number of elements:             1671692288
+Total amount of processed data (GiB): 12.455078
+Bandwidth (GiB/s)                     4.151143
+--------------------------------------------------
+Running TaylorSigmoid 2048x2048 benchmark
+Total time (s):                       3.003952
+Total reps:                           720
+Total number of elements:             3019898880
+Total amount of processed data (GiB): 22.500000
+Bandwidth (GiB/s)                     7.490133
+--------------------------------------------------
