@@ -1441,19 +1441,27 @@ Our approach would be to load the constant values (``0.5``, ``0.25``, ...) as an
          0.002083f,  0.002083f,  0.002083f,  0.002083f
     };
 
-That meant, to be able to process this table we needed an additional kernel type in our ``Unary`` class, 
+That meant, to be able to process this table we needed an additional parameter in the kernel type in our ``Unary`` class, 
 that would allow us to handle these values: 
 
 .. code-block:: cpp
-    :caption: Special sigmoid kernel signature
+    :caption: New kernel type signature
+    /*
+     * Generalized kernel type.
+     * The kernel is a function that takes the following parameters:
+     * - a:    Pointer to column-major matrix A, nullptr if zero kernel.
+     * - b:    Pointer to matrix B.
+     * - ld_a: Leading dimension of A.
+     * - ld_b: Leading dimension of B.
+     * - extra: Optional pointer to extra/context data (e.g., lookup table).
+     */
+    using kernel_t = void (*)(void const *a,
+                              void *b,
+                              int64_t ld_a,
+                              int64_t ld_b,
+                              void *extra);
 
-    using kernel_t_sig = void (*)(void const *a,
-                                  void *b,
-                                  void *tab,
-                                  int64_t ld_a,
-                                  int64_t ld_b);
-
-After setting up this common entry point for this primitive, we could develop the kernel for the taylor approximation sigmoid kernel. 
+Now we have the option to specify a pointer to extra data that can be used inside the kernel. After setting up the entry point for this primitive, we developed the kernel for the taylor approximation sigmoid kernel. 
 Apart from loading the constant sigmoid values into our kernel, there were no special things that we needed to consider.
 The approach was to:
 
@@ -1461,14 +1469,14 @@ The approach was to:
 2. Calculate the polynonmials separately 
 3. Combine the polynomials into the approximation
 
-Just as for the fast sigmoid kernel our base kernel is able to compute blocks of **M=16** and **N=1**:
+Just as for the fast sigmoid kernel, our base kernel is able to compute blocks of **M=16** and **N=1**:
 
 .. code-block:: cpp
     :caption: Taylor approximation sigmoid for M=16 and N=1
 
     // Load fixed values
-    ldp(v31, v30, x2,  0, q),
-    ldp(v29, v28, x2, 32, q),
+    ldp(v31, v30, x4,  0, q),
+    ldp(v29, v28, x4, 32, q),
 
     ...
 
