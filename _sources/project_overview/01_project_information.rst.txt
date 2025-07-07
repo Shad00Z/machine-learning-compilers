@@ -19,14 +19,14 @@ If you wish to learn more about tensor processing primitives, we recommend readi
 
 While the main task of a tensor compiler is to enable tensor operations to be run on hardware, there are several goals that a good tensor compiler should achieve:
 
-- **High throughput**: The compiler should minimize the average execution time for many independent evaluations of the same tensor expression.
-- **Low latency**: The compiler should minimize the time it takes to execute a single tensor operation.
-- **Short compilation time**: The compiler should be able to generate code quickly.
-- **Flexibility**: The compiler should be able to handle a wide range of tensor operations and hardware architectures.
-- **Portability**: The compiler should support different hardware and achieve high performance everywhere.
+- **High throughput**: Minimize the average execution time for many independent evaluations of the same tensor expression.
+- **Low latency**: Minimize the time it takes to execute a single tensor operation.
+- **Short compilation time**: Minimize the time it takes for the compiler to generate executable code.
+- **Flexibility**: Support a wide range of tensor operations and hardware architectures.
+- **Portability**: Support for high performance execution on different hardware platforms.
 
 In our implementation, we decided to only focus on the first four goals. The tensor compiler we developed is specifically designed for the **A64 Instruction Set Architecture**, which is used in **ARM-based CPUs**.
-While this might be a large constraint in portability, it allowed us to focus into on achieving high throughput, low latency, and short compilation times on this specific architecture.
+While this might be a large constraint in portability, it allowed us to focus on the specific features and optimizations that are relevant for this architecture.
 
 *************************************
 Project Background
