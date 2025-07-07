@@ -20,6 +20,22 @@ Alongside the class sessions, we were also provided with `an online book <https:
 Project Structure
 *************************************
 
+The documentation you are currently reading is part of the `docs` directory in the GitHub repository.  
+It is organized into three main sections:
+
+#. **Project Overview**: Provides background on the project, its structure, and guidance on how to use the codebase.
+#. **Submissions**: Contains the individual assignments completed throughout the semester, along with explanations of the tasks and the code we wrote to solve them.
+#. **API**: Automatically generated from the codebase using `Doxygen <https://www.doxygen.nl/index.html>`_, this section offers detailed information about the classes, functions, and modules we implemented.
+
+The structure of the codebase itself is more complex, so we'll only provide a brief overview here.
+
+The main code can be found in the `src` directory, which contains the implementation of the tensor compiler.  
+Within `src`, you'll also find a `submissions` directory containing the code from the initial assignments we completed before beginning to work on the main compiler implementation.  
+We recommend starting with the **API** section if you're looking to understand the code structure and class design in detail.
+
+Next to the `src` directory is a `tests` directory, which includes unit tests used to verify the correctness of our implementation.  
+You'll also find the `docs` directory, which contains the documentation you're currently reading.
+Finally, the `benchmarks` directory includes various results from performance evaluations of our compiler.
 
 **************************************
 What are Machine Learning Compilers?
@@ -40,3 +56,15 @@ While the main task of a tensor compiler is to enable tensor operations to be ru
 - **Portability**: The compiler should be able to generate code that can run on different hardware platforms without requiring significant modifications.
 
 In our implementation, we decided to only focus on the first four goals. The tensor compiler we developed is specifically designed for the **A64 Instruction Set Architecture**, which is used in ARM-based processors.
+
+**************************************
+Where to Go Next?
+**************************************
+
+If you wish to learn more general information about the project, we recommend starting with the :ref:`project-report` section.
+This section provides an overview of the project, including the tasks we completed, the code we wrote, and the results we achieved.
+It also includes links to the individual assignments we completed throughout the semester, which provide more detailed information about the specific tasks and code we wrote.
+
+If you wish to use the tensor compiler yourself, you can find instructions in our :ref:`user-guide`.
+
+Lastly, if you are interested in building the documentation yourself, you should check out the :ref:`documentation-setup` section.
