@@ -26,7 +26,7 @@ While the main task of a tensor compiler is to enable tensor operations to be ru
 - **Portability**: Support for high performance execution on different hardware platforms.
 
 In our implementation, we decided to only focus on the first four goals. The tensor compiler we developed is specifically designed for the **A64 Instruction Set Architecture**, which is used in **ARM-based CPUs**.
-While this might be a large constraint in portability, it allowed us to focus into on achieving high throughput, low latency, and short compilation times on this specific architecture.
+While this might be a large constraint in portability, it allowed us to focus on the specific features and optimizations that are relevant for this architecture.
 
 *************************************
 Project Background
