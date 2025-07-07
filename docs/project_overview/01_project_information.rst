@@ -22,7 +22,7 @@ While the main task of a tensor compiler is to enable tensor operations to be ru
 - **High throughput**: Minimize the average execution time for many independent evaluations of the same tensor expression.
 - **Low latency**: Minimize the time it takes to execute a single tensor operation.
 - **Short compilation time**: Minimize the time it takes for the compiler to generate executable code.
-- **Flexibility**: Support a wide range of tensor operations and hardware architectures.
+- **Flexibility**: Support a wide range of tensor expressions.
 - **Portability**: Support for high performance execution on different hardware platforms.
 
 In our implementation, we decided to only focus on the first four goals. The tensor compiler we developed is specifically designed for the **A64 Instruction Set Architecture**, which is used in **ARM-based CPUs**.
