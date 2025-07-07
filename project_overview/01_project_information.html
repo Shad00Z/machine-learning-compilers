@@ -51,9 +51,9 @@
               <p class="caption" role="heading"><span class="caption-text">Project Overview</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#what-are-machine-learning-compilers">What are Machine Learning Compilers?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#project-background">Project Background</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#project-structure">Project Structure</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#what-are-machine-learning-compilers">What are Machine Learning Compilers?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#where-to-go-next">Where to Go Next?</a></li>
 </ul>
 </li>
@@ -113,12 +113,31 @@
 Specifically, we explain how we developed a domain-specific, primitive-based tensor compiler.
 If that sounds like a random string of technical buzzwords to you, don’t worry.
 In the following sections, we will break down what a tensor compiler is, why it’s useful, and how you can use our implementation.</p>
+<section id="what-are-machine-learning-compilers">
+<h2>What are Machine Learning Compilers?<a class="headerlink" href="#what-are-machine-learning-compilers" title="Link to this heading"></a></h2>
+<p>Machine Learning Compilers are tools that translate high-level machine learning models or tensor operations into low-level machine code that can be executed efficiently on hardware.
+Compilers which translate tensor operations are referred to as <strong>tensor compilers</strong>.
+A practical application of a tensor compiler is to close the gap between machine learning frameworks (like TensorFlow or PyTorch) and the underlying hardware.
+In this project, we focus on developing a tensor compiler that operates on a set of primitive operations, which are the building blocks for more complex tensor computations.
+If you wish to learn more about tensor processing primitives, we recommend reading <a class="reference external" href="https://arxiv.org/pdf/2104.05755">this paper</a>.</p>
+<p>While the main task of a tensor compiler is to enable tensor operations to be run on hardware, there are several goals that a good tensor compiler should achieve:</p>
+<ul class="simple">
+<li><p><strong>High throughput</strong>: The compiler should minimize the average execution time for many independent evaluations of the same tensor expression.</p></li>
+<li><p><strong>Low latency</strong>: The compiler should minimize the time it takes to execute a single tensor operation.</p></li>
+<li><p><strong>Short compilation time</strong>: The compiler should be able to generate code quickly.</p></li>
+<li><p><strong>Flexibility</strong>: The compiler should be able to handle a wide range of tensor operations and hardware architectures.</p></li>
+<li><p><strong>Portability</strong>: The compiler should support different hardware and achieve high performance everywhere.</p></li>
+</ul>
+<p>In our implementation, we decided to only focus on the first four goals. The tensor compiler we developed is specifically designed for the <strong>A64 Instruction Set Architecture</strong>, which is used in <strong>ARM-based CPUs</strong>.
+While this might be a large constraint in portability, it allowed us to focus into on achieving high throughput, low latency, and short compilation times on this specific architecture.</p>
+</section>
 <section id="project-background">
 <h2>Project Background<a class="headerlink" href="#project-background" title="Link to this heading"></a></h2>
-<p>Before we begin explaining the more technical topics, we’d like to provide some background on this project.
+<p>Having explained the motivation behind the project, we would now like to provide some further background information.
 Everything you’ll encounter in this guide and the accompanying GitHub repository was developed as part of the <strong>Machine Learning Compilers</strong> class at the <a class="reference external" href="https://www.uni-jena.de/en">University of Jena</a> during the summer semester of 2025.
 The codebase was created through a series of weekly assignments we completed throughout the semester.
-Alongside the class sessions, we were also provided with <a class="reference external" href="https://scalable.uni-jena.de/opt/pbtc/index.html">an online book</a> that outlines the core concepts behind this project.</p>
+Alongside the class sessions, we were also provided with <a class="reference external" href="https://scalable.uni-jena.de/opt/pbtc/index.html">an online book</a> that outlines the core concepts behind this project.
+If you are more interested in the theoretical background of the project, we recommend checking out the book first.</p>
 </section>
 <section id="project-structure">
 <h2>Project Structure<a class="headerlink" href="#project-structure" title="Link to this heading"></a></h2>
@@ -136,23 +155,6 @@ We recommend starting with the <strong>API</strong> section if you’re looking 
 <p>Next to the <cite>src</cite> directory is a <cite>tests</cite> directory, which includes unit tests used to verify the correctness of our implementation.
 You’ll also find the <cite>docs</cite> directory, which contains the documentation you’re currently reading.
 Finally, the <cite>benchmarks</cite> directory includes various results from performance evaluations of our compiler.</p>
-</section>
-<section id="what-are-machine-learning-compilers">
-<h2>What are Machine Learning Compilers?<a class="headerlink" href="#what-are-machine-learning-compilers" title="Link to this heading"></a></h2>
-<p>Machine learning compilers are tools that translate high-level machine learning models or tensor operations into low-level machine code that can be executed efficiently on hardware.
-Compilers which translate tensor operations are referred to as <strong>tensor compilers</strong>.
-A practical application of a tensor compiler is to close the gap between machine learning frameworks (like TensorFlow or PyTorch) and the underlying hardware.
-In this project, we focus on developing a tensor compiler that operates on a set of primitive operations, which are the building blocks for more complex tensor computations.
-If you wish to learn more about tensor processing primitives, we recommend reading <a class="reference external" href="https://arxiv.org/pdf/2104.05755">this paper</a>.</p>
-<p>While the main task of a tensor compiler is to enable tensor operations to be run on hardware, there are several goals that a good tensor compiler should achieve:</p>
-<ul class="simple">
-<li><p><strong>High throughput</strong>: The compiler should generate code that can process large amounts of data efficiently.</p></li>
-<li><p><strong>Low latency</strong>: The compiler should minimize the time it takes to execute tensor operations.</p></li>
-<li><p><strong>Short compilation time</strong>: The compiler should be able to generate code quickly.</p></li>
-<li><p><strong>Flexibility</strong>: The compiler should be able to handle a wide range of tensor operations and hardware architectures.</p></li>
-<li><p><strong>Portability</strong>: The compiler should be able to generate code that can run on different hardware platforms without requiring significant modifications.</p></li>
-</ul>
-<p>In our implementation, we decided to only focus on the first four goals. The tensor compiler we developed is specifically designed for the <strong>A64 Instruction Set Architecture</strong>, which is used in ARM-based processors.</p>
 </section>
 <section id="where-to-go-next">
 <h2>Where to Go Next?<a class="headerlink" href="#where-to-go-next" title="Link to this heading"></a></h2>
