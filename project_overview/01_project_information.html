@@ -125,11 +125,11 @@ If you wish to learn more about tensor processing primitives, we recommend readi
 <li><p><strong>High throughput</strong>: Minimize the average execution time for many independent evaluations of the same tensor expression.</p></li>
 <li><p><strong>Low latency</strong>: Minimize the time it takes to execute a single tensor operation.</p></li>
 <li><p><strong>Short compilation time</strong>: Minimize the time it takes for the compiler to generate executable code.</p></li>
-<li><p><strong>Flexibility</strong>: Support a wide range of tensor operations and hardware architectures.</p></li>
+<li><p><strong>Flexibility</strong>: Support a wide range of tensor expressions.</p></li>
 <li><p><strong>Portability</strong>: Support for high performance execution on different hardware platforms.</p></li>
 </ul>
-<p>In our implementation, we decided to only focus on the first four goals. The tensor compiler we developed is specifically designed for the <strong>A64 Instruction Set Architecture</strong>, which is used in <strong>ARM-based CPUs</strong>.
-While this might be a large constraint in portability, it allowed us to focus on the specific features and optimizations that are relevant for this architecture.</p>
+<p>In our implementation, we decided to focus on the first four goals. The tensor compiler we developed is specifically designed for the <strong>A64 Instruction Set Architecture</strong>, which is used in <strong>ARM-based CPUs</strong>.
+While this might be a large constraint in portability, it allowed us to focus on the specific features and optimizations that are relevant for the chosen architecture.</p>
 </section>
 <section id="project-background">
 <h2>Project Background<a class="headerlink" href="#project-background" title="Link to this heading"></a></h2>
