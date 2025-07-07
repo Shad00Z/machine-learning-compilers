@@ -1,35 +1,39 @@
+.. _Assembly:
+
 1. Assembly
 ===========
+
+To begin the machine learning compilers project, we explored the fundamentals of the assembly language and compiler behavior to establish a fundamental understanding. 
 
 1.1 Hello Assembly
 -------------------
 
-We have been given two files:
+We started with a simple C program:
 
-.. literalinclude:: ../../src/submissions/01_assembly/data/hello_assembly.c
-    :language: c
-    :linenos:
-    :caption: hello_assembly.c
+.. code-block:: cpp
+    :caption: `hello_assembly.c <https://github.com/Shad00Z/machine-learning-compilers/blob/main/src/submissions/01_assembly/data/hello_assembly.c>`_
 
-.. literalinclude:: ../../src/submissions/01_assembly/data/add_values.s 
-    :language: asm
-    :linenos:
-    :caption: add_values.s
+    #include <stdio.h>
+
+    void hello_assembly() 
+    {
+        printf( "Hello Assembly Language!\n");
+    }
+
+Our goal was to compile this program using both ``GCC`` and ``Clang`` and analyze the differences in the generated assembly code to understand how compiler implementations can vary at the machine level.
 
 Task 1.1.1
 ^^^^^^^^^^^^
 
-First we would like to compile :code:`hello_assembly.c` using the GCC and Clang compiler.
-
-The **GCC** compiler can be used with the following statement.
+To generate assembly code from the :code:`hello_assembly.c` program using both compilers, we first identified the appropriate commands:
 
 .. code-block:: bash
+    :caption: ``GCC`` compiler
 
     gcc -S hello_assembly.c
 
-The **Clang** compiler can be used with the following statement.
-
 .. code-block:: bash
+    :caption: ``Clang`` compiler
 
     clang -S hello_assembly.c
 
@@ -37,82 +41,90 @@ The **Clang** compiler can be used with the following statement.
 Task 1.1.2
 ^^^^^^^^^^^^
 
-After compilation we would like for each generated assembly file to:
+After compiling the C program, we analyzed the generated assembly code by:
 
-1. Find the "Hello Assembly Language!" string
-2. Identify the instructions that the compilers insert to conform to the procedure call standard
-3. Identify the function call to libc that prints the string
+1. Locating the "Hello Assembly Language!" string.
+2. Identifying the instructions inserted by the compiler insert to conform to the procedure call standard (PCS).
+3. Identifying the function call to the C standard library (libc) that prints the string.
 
-GCC
-"""
+Task 1.1.2.1 GCC
+"""""""""""""""""
 
-The **GCC** :code:`gcc_hello_assembly.s` looks like:
+The ``GCC``-generated file:
 
 .. literalinclude:: ../../src/submissions/01_assembly/01_task/gcc_hello_assembly.s 
     :language: asm
     :linenos:
-    :caption: GCC compiled file
+    :caption: `gcc_hello_assembly.s <https://github.com/Shad00Z/machine-learning-compilers/blob/main/src/submissions/01_assembly/01_task/gcc_hello_assembly.s>`_
 
-1. The string "Hello Assembly Language!" can be found in *line 7*.
-2. The instructions for the procedure call standard:
+1. The string "Hello Assembly Language!" appears at **line 7**.
+2. The instructions for the procedure call standard are:
 
 .. code-block:: asm
 
     stp	x29, x30, [sp, -16]!
     mov	x29, sp
+
+    ... 
+
     ldp x29, x30, [sp], 16
     ret
 
-3. The function call is that prints the string:
+3. The function call used to print the string is:
 
 .. code-block:: asm
 
     bl	puts
 
-Clang
-"""""
+Task 1.1.2.2 Clang
+"""""""""""""""""""
 
-The **Clang** :code:`clang_hello_assembly.s` looks like:
+The ``Clang``-generated file:
 
 .. literalinclude:: ../../src/submissions/01_assembly/01_task/clang_hello_assembly.s 
     :language: asm
     :linenos:
-    :caption: Clang compiled file
+    :caption: `clang_hello_assembly.s <https://github.com/Shad00Z/machine-learning-compilers/blob/main/src/submissions/01_assembly/01_task/clang_hello_assembly.s>`_
 
-1. The string "Hello Assembly Language!" can be found in *line 31*.
-2. The instructions for the procedure call standard:
+1. The string "Hello Assembly Language!" appears at **line 31**.
+2. The instructions for the procedure call standard are:
 
 .. code-block:: asm
 
     stp	x29, x30, [sp, -16]!
     mov	x29, sp
+
+    ...
+
     ldp x29, x30, [sp], 16
     ret
 
-3. The function call is that prints the string:
+3. The function call used to print the string is:
 
 .. code-block:: asm
 
     bl	printf
 
+This analysis illustrates that while both compilers conform to the same calling standard, they differ in aspects, such as the string placement and the choice of standard library function used for the output. 
+
 Task 1.1.3
 ^^^^^^^^^^^^
 
-Now we would like to test the :code:`hello_assembly` function with a C++ driver. 
+After analyzing the generated assembly code, we implemented a simple C++ driver that calls the ``hello_assembly`` function:
 
 .. literalinclude:: ../../src/submissions/01_assembly/01_task/driver_hello_assembly.cpp 
     :language: cpp
     :linenos:
-    :caption: C++ driver
+    :caption: `driver_hello_assembly.cpp <https://github.com/Shad00Z/machine-learning-compilers/blob/main/src/submissions/01_assembly/01_task/driver_hello_assembly.cpp>`_
 
-To compile and run this code, we can use:
+To compile the driver along with the ``GCC``-generated assembly code and execute the program, we used the following commands:
 
 .. code-block:: bash
 
     g++ driver_hello_assembly.cpp gcc_hello_assembly.s -o hello_assembly
     ./hello_assembly
 
-The output is then:
+The output of the program:
 
 .. code-block:: bash
 
@@ -124,12 +136,32 @@ The output is then:
 1.2 Assembly Function
 ----------------------
 
-Now we want to work with the :code:`add_values.s` file.
+Next, we worked with the :code:`add_values.s` file.
+
+.. code-block:: asm
+    :caption: `add_values.s <https://github.com/Shad00Z/machine-learning-compilers/blob/main/src/submissions/01_assembly/data/add_values.s>`_
+
+        .text
+        .type add_values, %function
+        .global add_values
+    add_values:
+        stp fp, lr, [sp, #-16]!
+        mov fp, sp
+
+        ldr w3, [x0]
+        ldr w4, [x1]
+        add w5, w3, w4
+        str w5, [x2]
+
+        ldp fp, lr, [sp], #16
+
+        ret
+
 
 Task 1.2.1
 ^^^^^^^^^^^
 
-As a first step we want to assemble the file. We can do that by calling:
+As a first step, we assembled the file into an object file using:
 
 .. code-block:: bash
 
@@ -138,80 +170,76 @@ As a first step we want to assemble the file. We can do that by calling:
 Task 1.2.2
 ^^^^^^^^^^^
 
-With :code:`add_values.o` we are now creating different files:
-
-To get a hexadecimal dump we used:
+With the :code:`add_values.o`, we performed different file generations to understand its structure:
 
 .. code-block:: bash
+    :caption: Generating a hexadecimal dump
 
     hexdump add_values.o > hexdump_add_values.hex
 
 .. literalinclude:: ../../src/submissions/01_assembly/02_task/hexdump_add_values.hex
     :language: none
     :linenos:
-    :caption: Hexadecimal dump
-
-To get the section headers we used:
+    :caption: `hexdump_add_values.hex <https://github.com/Shad00Z/machine-learning-compilers/blob/main/src/submissions/01_assembly/02_task/hexdump_add_values.hex>`_
 
 .. code-block:: bash
+    :caption: Generating section headers
 
     readelf -S add_values.o > sec_headers_add_values.relf
 
 .. literalinclude:: ../../src/submissions/01_assembly/02_task/sec_headers_add_values.relf
     :language: none
     :linenos:
-    :caption: Section headers
-
-To get the disassembled file we used:
+    :caption: `sec_headers_add_values.relf <https://github.com/Shad00Z/machine-learning-compilers/blob/main/src/submissions/01_assembly/02_task/sec_headers_add_values.relf>`_
 
 .. code-block:: bash
+    :caption: Generating disassembled file
 
     objdump --syms -S -d add_values.o > dis_add_values.dis
 
 .. literalinclude:: ../../src/submissions/01_assembly/02_task/dis_add_values.dis
     :language: none
     :linenos:
-    :caption: Disassembled file
+    :caption: `dis_add_values.dis <https://github.com/Shad00Z/machine-learning-compilers/blob/main/src/submissions/01_assembly/02_task/dis_add_values.dis>`_
 
 Task 1.2.3
 ^^^^^^^^^^^
 
-The *size* of the :code:`.text` section can be found in the section headers in *line 9*.
+The next step was to determine the **size** of the :code:`.text` section and understand its content. This information is available in the section headers file in *line 9*:
 
 .. literalinclude:: ../../src/submissions/01_assembly/02_task/sec_headers_add_values.relf
     :language: none
     :lines: 8-9
     :caption: Lines 8 and 9
 
-The *size* of the text section is :code:`0000000000000020` or :code:`0x20` which translates to 32 bytes.
-These 32 bytes correspond to 8 assembly instructions (each 4 bytes) that the function :code:`add_values` performs.
+The ``.text`` section has a size of :code:`0000000000000020` or :code:`0x20` bytes, which corresponds to 32 bytes in decimal. Since each AArch64 instruction is 4 bytes, the function ``add_values`` consists of exactly 8 instructions.
+
+We confirmed this observation by inspecting the disassembled output:
 
 .. literalinclude:: ../../src/submissions/01_assembly/02_task/dis_add_values.dis
     :language: none
     :lines: 15-22
     :caption: Lines 8 and 9
 
-Starting at :code:`0x00`, incrementing always by 4 bytes per instruction (performing 8 of those increments), 
-we ultimately finish at the :code:`ret` instruction located at :code:`0xc1`, which marks the end of the :code:`.text` section.
-Therefore, from :code:`0x00` to :code:`0xc1` there are exactly 8 instructions covered, which equal a *size* of 32 bytes.
+The instructions start at :code:`0x00` and proceed in 4-byte increments, ending at ``0x1c`` with the ``ret`` instruction. This confirms that our there are exactly 8 instructions present, that match the ``.text`` section size. 
 
 Task 1.2.4
 ^^^^^^^^^^^
 
-To test the functionality of the :code:`add_values` function we implemented a C++ driver:
+Similar to the first task, we now tested the functionality of the :code:`add_values` function by implementing a C++ driver:
 
 .. literalinclude:: ../../src/submissions/01_assembly/02_task/driver_add_values.cpp
     :language: cpp
     :linenos:
-    :caption: driver_add_values.cpp
+    :caption: `driver_add_values.cpp <https://github.com/Shad00Z/machine-learning-compilers/blob/main/src/submissions/01_assembly/02_task/driver_add_values.cpp>`_
 
-To test our function we now could call:
+We compiled and linked the driver with the assembly file using:
 
 .. code-block:: bash
 
     g++ driver_add_values.cpp add_values.s -o driver_add_values
 
-Where :code:`driver_add_values` results in:
+After executing these commands, we received the following results:
 
 .. code-block:: bash
 
@@ -219,28 +247,29 @@ Where :code:`driver_add_values` results in:
     l_data_1 / l_value_2 / l_value_o
     4 / 7 / 11
 
+This confirms that the ``add_values`` correctly adds the two input values together and stores the result at the specified memory location.
+
 Task 1.2.5
 ^^^^^^^^^^^
 
-To get an idea how the contents of the general purpose registers look like, when calling the :code:`add_values` function
-we stepped through a function call using the GNU Project Debugger.
+To better understand the contents of the general purpose registers during a function call to ``add_values``, we used the GNU Project Debugger (GDB) to step through the function execution. 
 
-To get the correct view in the GNU Project Debugger we call:
+We launched GDB with the compiled executable:
 
 .. code-block:: bash
 
     gdb ./driver_add_values
     lay next
 
-After :code:`lay next` we pressed enter 3 times to get to the register view in combination with the assembly instructions.
-To start the debugging process we call:
+To activate the correct layout view that displays both the assembly instructions and register contents, we ran :code:`lay next`. After pressing ``Enter``, GDB displayed the desired view.
+Next, we set a breakpoint at the ``add_values`` function and began the debugging process:
 
 .. code-block:: bash
     
     break add_values
     run
 
-After starting the debugging process we then proceeded to skip from instruction to instruction using :code:`nexti`.
+After starting the debugging process, we used ``nexti`` to step through each instruction one at a time:
 
 .. raw:: html
 
