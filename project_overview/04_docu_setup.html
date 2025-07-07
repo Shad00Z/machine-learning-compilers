@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Project Report &mdash; Machine Learning Compilers  documentation</title>
+  <title>Documentation Setup &mdash; Machine Learning Compilers  documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -26,7 +26,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="1. Assembly" href="../submissions/01_assembly.html" />
-    <link rel="prev" title="Documentation Setup" href="02_docu_setup.html" /> 
+    <link rel="prev" title="User Guide" href="03_user_guide.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -50,9 +50,10 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Project Overview</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="01_project_information.html">Machine Learning Compilers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="02_docu_setup.html">Documentation Setup</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Project Report</a></li>
+<li class="toctree-l1"><a class="reference internal" href="01_project_information.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02_project_report.html">Project Report</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03_user_guide.html">User Guide</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Documentation Setup</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Submissions</span></p>
 <ul>
@@ -90,9 +91,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Project Report</li>
+      <li class="breadcrumb-item active">Documentation Setup</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/project_overview/03_project_report.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/project_overview/04_docu_setup.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -100,18 +101,30 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="project-report">
-<h1>Project Report<a class="headerlink" href="#project-report" title="Link to this heading"></a></h1>
-<p>In the first two weeks of our project, we focused on ARM AArch64 assembly to build a solid foundation for understanding machine learning compilers. During the first week, we examined the assembly output of a simple C program compiled with both <strong>GCC</strong> and <strong>Clang</strong> to explore the differences in code generation and function call conventions.</p>
-<p>This initial exploration helped us become familiar with compiler behavior, instruction-level representations, and low-level debugging tools such as <strong>GDB</strong>.</p>
-<p>Further details about the specific steps and tasks can be found in the <a class="reference internal" href="../submissions/01_assembly.html#assembly"><span class="std std-ref">assembly section</span></a> of our project documentation.</p>
+  <section id="documentation-setup">
+<span id="id1"></span><h1>Documentation Setup<a class="headerlink" href="#documentation-setup" title="Link to this heading"></a></h1>
+<p>If you wish to build the documentation, you will need to install some requirements first.
+For the automatic code documentation, <a class="reference external" href="https://www.doxygen.nl/download.html">doxygen</a> is required.
+Furthermore, you will need <a class="reference external" href="https://www.python.org/downloads/">Python</a>. Using Python, you can install
+other requirements such as <a class="reference external" href="https://www.sphinx-doc.org/en/master/">Sphinx</a> and <a class="reference external" href="https://www.breathe-doc.org/">Breathe</a>,
+which can be found in the <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> file located in the <code class="docutils literal notranslate"><span class="pre">docs</span></code> folder.
+They can be installed easily by running</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+</pre></div>
+</div>
+<p>After everything has been installed, you can now run</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>html
+</pre></div>
+</div>
+<p>from inside the <code class="docutils literal notranslate"><span class="pre">docs</span></code> directory to build the documentation.
+You may now view the built documentation by opening the <code class="docutils literal notranslate"><span class="pre">index.html</span></code> file located in <code class="docutils literal notranslate"><span class="pre">docs/build/html</span></code>.</p>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="02_docu_setup.html" class="btn btn-neutral float-left" title="Documentation Setup" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="03_user_guide.html" class="btn btn-neutral float-left" title="User Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="../submissions/01_assembly.html" class="btn btn-neutral float-right" title="1. Assembly" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

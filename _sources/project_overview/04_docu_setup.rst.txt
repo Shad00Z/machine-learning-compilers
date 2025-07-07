@@ -1,5 +1,8 @@
+.. _documentation-setup:
+
+#############################
 Documentation Setup
-====================
+#############################
 
 If you wish to build the documentation, you will need to install some requirements first.
 For the automatic code documentation, `doxygen <https://www.doxygen.nl/download.html>`_ is required.
