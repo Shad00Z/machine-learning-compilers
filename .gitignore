@@ -4,6 +4,8 @@ _build/
 *.o
 *.d
 *.bin
+*.so
+*.a
 
 # Valgrind files
 *vgcore.*
