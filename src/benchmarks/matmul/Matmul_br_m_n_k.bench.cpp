@@ -6,7 +6,11 @@
 #include <mlc/kernels/matmul/matmul_br_m_n_k.h>
 #include <random>
 
-mini_jit::benchmarks::MatmulBrMNKBench::MatmulBrMNKBench(double run_time, int m, int n, int k, int br_size)
+mini_jit::benchmarks::MatmulBrMNKBench::MatmulBrMNKBench(double run_time,
+                                                         int    m,
+                                                         int    n,
+                                                         int    k,
+                                                         int    br_size)
     : Benchmark()
 {
     m_M        = m;
