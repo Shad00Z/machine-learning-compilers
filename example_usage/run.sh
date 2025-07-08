@@ -39,7 +39,7 @@
     -fopenmp \
     -lomp
 
-# Check if compilation was successful
+# Check if the compilation was successful
 if [ $? -eq 0 ]; then
     # Run the examples
     ./EinsumExample
