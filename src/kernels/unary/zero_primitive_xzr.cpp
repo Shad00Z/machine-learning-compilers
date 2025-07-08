@@ -1,17 +1,16 @@
-#include "zero_primitive_xzr.h"
-#include "Kernel.h"
-
-#include "registers/gp_registers.h"
-#include "registers/simd_fp_registers.h"
-#include "instructions/all_instructions.h"
+#include <mlc/Kernel.h>
+#include <mlc/instructions/all_instructions.h>
+#include <mlc/kernels/unary/zero_primitive_xzr.h>
+#include <mlc/registers/gp_registers.h>
+#include <mlc/registers/simd_fp_registers.h>
 
 using enum gpr_t;
 using namespace mini_jit::instructions::base;
 
-void mini_jit::kernels::unary::zero_xzr(mini_jit::Kernel &kernel,
-                                        u_int32_t m,
-                                        u_int32_t n,
-                                        u_int32_t trans_b)
+void mini_jit::kernels::unary::zero_xzr(mini_jit::Kernel& kernel,
+                                        u_int32_t         m,
+                                        u_int32_t         n,
+                                        u_int32_t         trans_b)
 {
     // Inputs:
     // x0: pointer to A
@@ -19,16 +18,16 @@ void mini_jit::kernels::unary::zero_xzr(mini_jit::Kernel &kernel,
     // x2: leading dimension of A
     // x3: leading dimension of B
 
-    if(1 == trans_b)
+    if (1 == trans_b)
     {
         u_int32_t mTemp = m;
-        m = n;
-        n = mTemp;
+        m               = n;
+        n               = mTemp;
     }
 
     // Prepare the kernel
     u_int32_t mLoopIterations = m / 8;
-    u_int32_t mLoopRemainder = m % 8;
+    u_int32_t mLoopRemainder  = m % 8;
 
     // PCS
     kernel.add_instr(stpPre(x29, x30, sp, -16));
@@ -61,7 +60,7 @@ void mini_jit::kernels::unary::zero_xzr(mini_jit::Kernel &kernel,
         kernel.add_instr(str(xzr, x8, 0));
 
         // jump by 8 rows
-        kernel.add_instr(add(x7, x7, 8*4, 0));
+        kernel.add_instr(add(x7, x7, 8 * 4, 0));
         // decrement m loop counter
         kernel.add_instr(sub(x6, x6, 1, 0));
         // check if loop counter is zero

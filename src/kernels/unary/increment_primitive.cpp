@@ -1,9 +1,8 @@
-#include "increment_primitive.h"
-#include "Kernel.h"
-
-#include "registers/gp_registers.h"
-#include "registers/simd_fp_registers.h"
-#include "instructions/all_instructions.h"
+#include <mlc/Kernel.h>
+#include <mlc/instructions/all_instructions.h>
+#include <mlc/kernels/unary/increment_primitive.h>
+#include <mlc/registers/gp_registers.h>
+#include <mlc/registers/simd_fp_registers.h>
 
 using enum gpr_t;
 using enum simd_fp_t;
@@ -13,9 +12,9 @@ using enum arr_spec_t;
 using namespace mini_jit::instructions::base;
 using namespace mini_jit::instructions::simd_fp;
 
-void mini_jit::kernels::unary::increment(mini_jit::Kernel &kernel,
-                                         u_int32_t m,
-                                         u_int32_t n)
+void mini_jit::kernels::unary::increment(mini_jit::Kernel& kernel,
+                                         u_int32_t         m,
+                                         u_int32_t         n)
 {
     // Inputs:
     // x0: pointer to A
@@ -25,7 +24,7 @@ void mini_jit::kernels::unary::increment(mini_jit::Kernel &kernel,
 
     // Prepare the kernel
     int mLoopIterations = m / 16;
-    int mLoopRemainder = m % 16;
+    int mLoopRemainder  = m % 16;
 
     kernel.add_instr({
         // PCS
@@ -44,7 +43,7 @@ void mini_jit::kernels::unary::increment(mini_jit::Kernel &kernel,
         mov(x6, n),
 
         // Set register with value 1
-        fmovIntVec(v19, 1, s4), 
+        fmovIntVec(v19, 1, s4),
     });
 
     // Start n loop (1 column)
@@ -77,8 +76,8 @@ void mini_jit::kernels::unary::increment(mini_jit::Kernel &kernel,
             stp(v6, v7, x9, 32, q),
 
             // jump by 16 rows
-            add(x8, x8, 16*4, 0),
-            add(x9, x9, 16*4, 0),
+            add(x8, x8, 16 * 4, 0),
+            add(x9, x9, 16 * 4, 0),
 
             // decrement m loop counter
             sub(x7, x7, 1, 0),
@@ -92,214 +91,182 @@ void mini_jit::kernels::unary::increment(mini_jit::Kernel &kernel,
         switch (mLoopRemainder)
         {
         case 1:
-            kernel.add_instr({
-                // 1 element
-                ldr(v0, x8, 0, s),
-                faddScalar(v1, v0, v19, s),
-                str(v1, x9, 0, s)
-            });
+            kernel.add_instr({// 1 element
+                              ldr(v0, x8, 0, s),
+                              faddScalar(v1, v0, v19, s),
+                              str(v1, x9, 0, s)});
             break;
         case 2:
-            kernel.add_instr({
-                // 2 elements
-                ldr(v0, x8, 0, d),
-                faddVec(v1, v0, v19, s2),
-                str(v1, x9, 0, d)
-            });
+            kernel.add_instr({// 2 elements
+                              ldr(v0, x8, 0, d),
+                              faddVec(v1, v0, v19, s2),
+                              str(v1, x9, 0, d)});
             break;
         case 3:
-            kernel.add_instr({
-                // 2 elements
-                ldr(v0, x8, 0, d),
-                faddVec(v1, v0, v19, s2),
-                str(v1, x9, 0, d),
-                // 1 element
-                ldr(v2, x8, 2*4, s),
-                faddScalar(v3, v2, v19, s),
-                str(v3, x9, 2*4, s)
-            });
+            kernel.add_instr({// 2 elements
+                              ldr(v0, x8, 0, d),
+                              faddVec(v1, v0, v19, s2),
+                              str(v1, x9, 0, d),
+                              // 1 element
+                              ldr(v2, x8, 2 * 4, s),
+                              faddScalar(v3, v2, v19, s),
+                              str(v3, x9, 2 * 4, s)});
             break;
         case 4:
-            kernel.add_instr({
-                // 4 elements
-                ldr(v0, x8, 0, q),
-                faddVec(v1, v0, v19, s4),
-                str(v1, x9, 0, q)
-            });
+            kernel.add_instr({// 4 elements
+                              ldr(v0, x8, 0, q),
+                              faddVec(v1, v0, v19, s4),
+                              str(v1, x9, 0, q)});
             break;
         case 5:
-            kernel.add_instr({
-                // 4 elements
-                ldr(v0, x8, 0, q),
-                faddVec(v1, v0, v19, s4),
-                str(v1, x9, 0, q),
-                // 1 element
-                ldr(v2, x8, 4*4, s),
-                faddScalar(v3, v2, v19, s),
-                str(v3, x9, 4*4, s)
-            });
+            kernel.add_instr({// 4 elements
+                              ldr(v0, x8, 0, q),
+                              faddVec(v1, v0, v19, s4),
+                              str(v1, x9, 0, q),
+                              // 1 element
+                              ldr(v2, x8, 4 * 4, s),
+                              faddScalar(v3, v2, v19, s),
+                              str(v3, x9, 4 * 4, s)});
             break;
         case 6:
-            kernel.add_instr({
-                // 4 elements
-                ldr(v0, x8, 0, q),
-                faddVec(v1, v0, v19, s4),
-                str(v1, x9, 0, q),
-                // 2 elements
-                ldr(v2, x8, 4*4, d),
-                faddVec(v3, v2, v19, s2),
-                str(v3, x9, 4*4, d)
-            });
+            kernel.add_instr({// 4 elements
+                              ldr(v0, x8, 0, q),
+                              faddVec(v1, v0, v19, s4),
+                              str(v1, x9, 0, q),
+                              // 2 elements
+                              ldr(v2, x8, 4 * 4, d),
+                              faddVec(v3, v2, v19, s2),
+                              str(v3, x9, 4 * 4, d)});
             break;
         case 7:
-            kernel.add_instr({
-                // 4 elements
-                ldr(v0, x8, 0, q),
-                faddVec(v1, v0, v19, s4),
-                str(v1, x9, 0, q),
-                // 2 elements
-                ldr(v2, x8, 4*4, d),
-                faddVec(v3, v2, v19, s2),
-                str(v3, x9, 4*4, d),
-                // 1 element
-                ldr(v4, x8, 24, s),
-                faddScalar(v5, v4, v19, s),
-                str(v5, x9, 24, s)
-            });
+            kernel.add_instr({// 4 elements
+                              ldr(v0, x8, 0, q),
+                              faddVec(v1, v0, v19, s4),
+                              str(v1, x9, 0, q),
+                              // 2 elements
+                              ldr(v2, x8, 4 * 4, d),
+                              faddVec(v3, v2, v19, s2),
+                              str(v3, x9, 4 * 4, d),
+                              // 1 element
+                              ldr(v4, x8, 24, s),
+                              faddScalar(v5, v4, v19, s),
+                              str(v5, x9, 24, s)});
             break;
         case 8:
-            kernel.add_instr({
-                // 8 elements
-                ldp(v0, v1, x8, 0, q),
-                faddVec(v2, v0, v19, s4),
-                faddVec(v3, v1, v19, s4),
-                stp(v2, v3, x9, 0, q)
-            });
+            kernel.add_instr({// 8 elements
+                              ldp(v0, v1, x8, 0, q),
+                              faddVec(v2, v0, v19, s4),
+                              faddVec(v3, v1, v19, s4),
+                              stp(v2, v3, x9, 0, q)});
             break;
         case 9:
-            kernel.add_instr({
-                // 8 elements
-                ldp(v0, v1, x8, 0, q),
-                faddVec(v2, v0, v19, s4),
-                faddVec(v3, v1, v19, s4),
-                stp(v2, v3, x9, 0, q),
-                // 1 element
-                ldr(v4, x8, 32, s),
-                faddScalar(v5, v4, v19, s),
-                str(v5, x9, 32, s)
-            });
+            kernel.add_instr({// 8 elements
+                              ldp(v0, v1, x8, 0, q),
+                              faddVec(v2, v0, v19, s4),
+                              faddVec(v3, v1, v19, s4),
+                              stp(v2, v3, x9, 0, q),
+                              // 1 element
+                              ldr(v4, x8, 32, s),
+                              faddScalar(v5, v4, v19, s),
+                              str(v5, x9, 32, s)});
             break;
         case 10:
-            kernel.add_instr({
-                // 8 elements
-                ldp(v0, v1, x8, 0, q),
-                faddVec(v2, v0, v19, s4),
-                faddVec(v3, v1, v19, s4),
-                stp(v2, v3, x9, 0, q),
-                // 2 elements
-                ldr(v4, x8, 32, d),
-                faddVec(v5, v4, v19, s2),
-                str(v5, x9, 32, d)
-            });
+            kernel.add_instr({// 8 elements
+                              ldp(v0, v1, x8, 0, q),
+                              faddVec(v2, v0, v19, s4),
+                              faddVec(v3, v1, v19, s4),
+                              stp(v2, v3, x9, 0, q),
+                              // 2 elements
+                              ldr(v4, x8, 32, d),
+                              faddVec(v5, v4, v19, s2),
+                              str(v5, x9, 32, d)});
             break;
         case 11:
-            kernel.add_instr({
-                // 8 elements
-                ldp(v0, v1, x8, 0, q),
-                faddVec(v2, v0, v19, s4),
-                faddVec(v3, v1, v19, s4),
-                stp(v2, v3, x9, 0, q),
-                // 2 elements
-                ldr(v4, x8, 32, d),
-                faddVec(v5, v4, v19, s2),
-                str(v5, x9, 32, d),
-                // 1 element
-                ldr(v6, x8, 40, s),
-                faddScalar(v7, v6, v19, s),
-                str(v7, x9, 40, s)
-            });
+            kernel.add_instr({// 8 elements
+                              ldp(v0, v1, x8, 0, q),
+                              faddVec(v2, v0, v19, s4),
+                              faddVec(v3, v1, v19, s4),
+                              stp(v2, v3, x9, 0, q),
+                              // 2 elements
+                              ldr(v4, x8, 32, d),
+                              faddVec(v5, v4, v19, s2),
+                              str(v5, x9, 32, d),
+                              // 1 element
+                              ldr(v6, x8, 40, s),
+                              faddScalar(v7, v6, v19, s),
+                              str(v7, x9, 40, s)});
             break;
         case 12:
-            kernel.add_instr({
-                // 8 elements
-                ldp(v0, v1, x8, 0, q),
-                faddVec(v2, v0, v19, s4),
-                faddVec(v3, v1, v19, s4),
-                stp(v2, v3, x9, 0, q),
-                // 4 elements
-                ldr(v4, x8, 32, q),
-                faddVec(v5, v4, v19, s4),
-                str(v5, x9, 32, q)
-            });
+            kernel.add_instr({// 8 elements
+                              ldp(v0, v1, x8, 0, q),
+                              faddVec(v2, v0, v19, s4),
+                              faddVec(v3, v1, v19, s4),
+                              stp(v2, v3, x9, 0, q),
+                              // 4 elements
+                              ldr(v4, x8, 32, q),
+                              faddVec(v5, v4, v19, s4),
+                              str(v5, x9, 32, q)});
             break;
         case 13:
-            kernel.add_instr({
-                // 8 elements
-                ldp(v0, v1, x8, 0, q),
-                faddVec(v2, v0, v19, s4),
-                faddVec(v3, v1, v19, s4),
-                stp(v2, v3, x9, 0, q),
-                // 4 elements
-                ldr(v4, x8, 32, q),
-                faddVec(v5, v4, v19, s4),
-                str(v5, x9, 32, q),
-                // 1 element
-                ldr(v6, x8, 48, s),
-                faddScalar(v7, v6, v19, s),
-                str(v7, x9, 48, s)
-            });
+            kernel.add_instr({// 8 elements
+                              ldp(v0, v1, x8, 0, q),
+                              faddVec(v2, v0, v19, s4),
+                              faddVec(v3, v1, v19, s4),
+                              stp(v2, v3, x9, 0, q),
+                              // 4 elements
+                              ldr(v4, x8, 32, q),
+                              faddVec(v5, v4, v19, s4),
+                              str(v5, x9, 32, q),
+                              // 1 element
+                              ldr(v6, x8, 48, s),
+                              faddScalar(v7, v6, v19, s),
+                              str(v7, x9, 48, s)});
             break;
         case 14:
-            kernel.add_instr({
-                // 8 elements
-                ldp(v0, v1, x8, 0, q),
-                faddVec(v2, v0, v19, s4),
-                faddVec(v3, v1, v19, s4),
-                stp(v2, v3, x9, 0, q),
-                // 4 elements
-                ldr(v4, x8, 32, q),
-                faddVec(v5, v4, v19, s4),
-                str(v5, x9, 32, q),
-                // 2 elements
-                ldr(v6, x8, 48, d),
-                faddVec(v7, v6, v19, s2),
-                str(v7, x9, 48, d)
-            });
+            kernel.add_instr({// 8 elements
+                              ldp(v0, v1, x8, 0, q),
+                              faddVec(v2, v0, v19, s4),
+                              faddVec(v3, v1, v19, s4),
+                              stp(v2, v3, x9, 0, q),
+                              // 4 elements
+                              ldr(v4, x8, 32, q),
+                              faddVec(v5, v4, v19, s4),
+                              str(v5, x9, 32, q),
+                              // 2 elements
+                              ldr(v6, x8, 48, d),
+                              faddVec(v7, v6, v19, s2),
+                              str(v7, x9, 48, d)});
             break;
         case 15:
-            kernel.add_instr({
-                // 8 elements
-                ldp(v0, v1, x8, 0, q),
-                faddVec(v2, v0, v19, s4),
-                faddVec(v3, v1, v19, s4),
-                stp(v2, v3, x9, 0, q),
-                // 4 elements
-                ldr(v4, x8, 32, q),
-                faddVec(v5, v4, v19, s4),
-                str(v5, x9, 32, q),
-                // 2 elements
-                ldr(v6, x8, 48, d),
-                faddVec(v7, v6, v19, s2),
-                str(v7, x9, 48, d),
-                // 1 element
-                ldr(v16, x8, 56, s),
-                faddScalar(v17, v16, v19, s),
-                str(v17, x9, 56, s)
-            });
+            kernel.add_instr({// 8 elements
+                              ldp(v0, v1, x8, 0, q),
+                              faddVec(v2, v0, v19, s4),
+                              faddVec(v3, v1, v19, s4),
+                              stp(v2, v3, x9, 0, q),
+                              // 4 elements
+                              ldr(v4, x8, 32, q),
+                              faddVec(v5, v4, v19, s4),
+                              str(v5, x9, 32, q),
+                              // 2 elements
+                              ldr(v6, x8, 48, d),
+                              faddVec(v7, v6, v19, s2),
+                              str(v7, x9, 48, d),
+                              // 1 element
+                              ldr(v16, x8, 56, s),
+                              faddScalar(v17, v16, v19, s),
+                              str(v17, x9, 56, s)});
             break;
         default:
             break;
         }
     }
 
-    kernel.add_instr({
-        // jump to next column
-        add(x4, x4, x2, 0, 0),
-        add(x5, x5, x3, 0, 0),
+    kernel.add_instr({// jump to next column
+                      add(x4, x4, x2, 0, 0),
+                      add(x5, x5, x3, 0, 0),
 
-        // decrement n loop counter
-        sub(x6, x6, 1, 0)
-    });
+                      // decrement n loop counter
+                      sub(x6, x6, 1, 0)});
     // check if loop counter is zero
     int l_nLoopInstrCount = kernel.getInstrCountFromLabel("n_loop");
     kernel.add_instr(cbnz(x6, -l_nLoopInstrCount * 4));

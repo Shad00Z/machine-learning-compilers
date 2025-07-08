@@ -1,14 +1,14 @@
-#include "Kernel.h"
-#include "Unary.h"
-#include "kernels/unary/all_unary_primitives.h"
 #include <iostream>
-#include "constants.h"
+#include <mlc/Kernel.h>
+#include <mlc/Unary.h>
+#include <mlc/constants.h>
+#include <mlc/kernels/unary/all_unary_primitives.h>
 
 mini_jit::error_t mini_jit::Unary::generate(uint32_t m,
                                             uint32_t n,
                                             uint32_t trans_b,
-                                            dtype_t dtype,
-                                            ptype_t ptype)
+                                            dtype_t  dtype,
+                                            ptype_t  ptype)
 {
     if (m <= 0)
     {
@@ -119,7 +119,7 @@ mini_jit::error_t mini_jit::Unary::generate(uint32_t m,
         if (0 == trans_b)
         {
             mini_jit::kernels::unary::sigmoid_interpolation(*m_kernel, m, n);
-            m_extra = (void*) sig_table;
+            m_extra = (void*)sig_table;
         }
         else
         {
@@ -131,7 +131,7 @@ mini_jit::error_t mini_jit::Unary::generate(uint32_t m,
         if (0 == trans_b)
         {
             mini_jit::kernels::unary::sigmoid_taylor(*m_kernel, m, n);
-            m_extra = (void*) sig_taylor_values;
+            m_extra = (void*)sig_taylor_values;
         }
         else
         {
@@ -149,10 +149,10 @@ mini_jit::error_t mini_jit::Unary::generate(uint32_t m,
 
 mini_jit::Unary::kernel_t mini_jit::Unary::get_kernel() const
 {
-    return reinterpret_cast<kernel_t>(const_cast<void *>(m_kernel->get_kernel()));
+    return reinterpret_cast<kernel_t>(const_cast<void*>(m_kernel->get_kernel()));
 }
 
-void mini_jit::Unary::set_extra(void *extra)
+void mini_jit::Unary::set_extra(void* extra)
 {
     m_extra = extra;
 }

@@ -1,14 +1,14 @@
-#include "TensorOperation.h"
 #include <algorithm>
-#include <ostream>
 #include <iostream>
+#include <mlc/TensorOperation.h>
+#include <ostream>
 
-mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
-                                                   ptype_t prim_first_touch,
-                                                   ptype_t prim_main,
-                                                   ptype_t prim_last_touch,
-                                                   std::span<const dim_t> dim_types,
-                                                   std::span<const exec_t> exec_types,
+mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t                  dtype,
+                                                   ptype_t                  prim_first_touch,
+                                                   ptype_t                  prim_main,
+                                                   ptype_t                  prim_last_touch,
+                                                   std::span<const dim_t>   dim_types,
+                                                   std::span<const exec_t>  exec_types,
                                                    std::span<const int64_t> dim_sizes,
                                                    std::span<const int64_t> strides_in0,
                                                    std::span<const int64_t> strides_in1,
@@ -41,8 +41,8 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
     {
         return error_t::wrong_exec_type;
     }
-    else if (prim_main == ptype_t::add || prim_main == ptype_t::sub || 
-             prim_main == ptype_t::mul || prim_main == ptype_t::div || 
+    else if (prim_main == ptype_t::add || prim_main == ptype_t::sub ||
+             prim_main == ptype_t::mul || prim_main == ptype_t::div ||
              prim_main == ptype_t::min || prim_main == ptype_t::max)
     {
         if (prim_count != 2)
@@ -65,28 +65,26 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
     std::vector<ptype_t> allowed_first_touch_types = {
         ptype_t::none,
         ptype_t::zero,
-        ptype_t::relu, 
-        ptype_t::square, 
+        ptype_t::relu,
+        ptype_t::square,
         ptype_t::reciprocal,
         ptype_t::increment,
-        ptype_t::decrement
-    };
+        ptype_t::decrement};
     std::vector<ptype_t> allowed_main_types = {
         ptype_t::none,
-        ptype_t::identity, 
-        ptype_t::brgemm, 
+        ptype_t::identity,
+        ptype_t::brgemm,
         ptype_t::gemm,
         ptype_t::add,
         ptype_t::sub,
         ptype_t::mul,
         ptype_t::div,
         ptype_t::min,
-        ptype_t::max
-    };
+        ptype_t::max};
     std::vector<ptype_t> allowed_last_touch_types = {
         ptype_t::none,
-        ptype_t::relu, 
-        ptype_t::square, 
+        ptype_t::relu,
+        ptype_t::square,
         ptype_t::reciprocal,
         ptype_t::increment,
         ptype_t::decrement,
@@ -119,15 +117,15 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
     m_strides_out.assign(strides_out.begin(), strides_out.end());
     m_dtype = dtype;
 
-    m_dim_id_prim_M = -1;
-    m_dim_id_prim_N = -1;
-    m_dim_id_prim_K = -1;
-    m_dim_id_prim_BR = -1;
-    m_dim_id_seq_M = -1;
-    m_dim_id_seq_N = -1;
-    m_dim_id_seq_K = -1;
-    m_dim_id_sha_M = -1;
-    m_dim_id_sha_N = -1;
+    m_dim_id_prim_M      = -1;
+    m_dim_id_prim_N      = -1;
+    m_dim_id_prim_K      = -1;
+    m_dim_id_prim_BR     = -1;
+    m_dim_id_seq_M       = -1;
+    m_dim_id_seq_N       = -1;
+    m_dim_id_seq_K       = -1;
+    m_dim_id_sha_M       = -1;
+    m_dim_id_sha_N       = -1;
     m_num_parallel_loops = 0;
 
     /////////////////////////////////////////////////////////////////////
@@ -286,13 +284,13 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
             m_adjusted_stride_out = m_strides_out[m_dim_id_prim_M];
         }
     }
-    else if(prim_main == ptype_t::add || prim_main == ptype_t::sub ||
-            prim_main == ptype_t::mul || prim_main == ptype_t::div ||
-            prim_main == ptype_t::min || prim_main == ptype_t::max)
+    else if (prim_main == ptype_t::add || prim_main == ptype_t::sub ||
+             prim_main == ptype_t::mul || prim_main == ptype_t::div ||
+             prim_main == ptype_t::min || prim_main == ptype_t::max)
     {
-            m_adjusted_stride_in0 = m_strides_in0[m_dim_id_prim_N];
-            m_adjusted_stride_in1 = m_strides_in1[m_dim_id_prim_N];
-            m_adjusted_stride_out = m_strides_out[m_dim_id_prim_N];
+        m_adjusted_stride_in0 = m_strides_in0[m_dim_id_prim_N];
+        m_adjusted_stride_in1 = m_strides_in1[m_dim_id_prim_N];
+        m_adjusted_stride_out = m_strides_out[m_dim_id_prim_N];
     }
     else
     {
@@ -366,9 +364,9 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
     else if (prim_main == ptype_t::none)
     {
         // no main kernel
-        m_kernel_gemm_main = nullptr;
+        m_kernel_gemm_main   = nullptr;
         m_kernel_binary_main = nullptr;
-        m_kernel_unary_main = nullptr;
+        m_kernel_unary_main  = nullptr;
     }
 
     if (prim_last_touch != ptype_t::none)
@@ -383,17 +381,17 @@ mini_jit::error_t mini_jit::TensorOperation::setup(dtype_t dtype,
     }
 
     m_kernel_first_touch_type = prim_first_touch;
-    m_kernel_main_type = prim_main;
-    m_kernel_last_touch_type = prim_last_touch;
+    m_kernel_main_type        = prim_main;
+    m_kernel_last_touch_type  = prim_last_touch;
 
     m_has_been_setup = true;
 
     return error_t::success;
 }
 
-void mini_jit::TensorOperation::execute(void const *tensor_in0,
-                                        void const *tensor_in1,
-                                        void *tensor_out)
+void mini_jit::TensorOperation::execute(void const* tensor_in0,
+                                        void const* tensor_in1,
+                                        void*       tensor_out)
 {
     if (!m_has_been_setup)
     {
@@ -401,9 +399,9 @@ void mini_jit::TensorOperation::execute(void const *tensor_in0,
         return;
     }
 
-    auto ptr_in0 = static_cast<char const *>(tensor_in0);
-    auto ptr_in1 = static_cast<char const *>(tensor_in1);
-    auto ptr_out = static_cast<char *>(tensor_out);
+    auto ptr_in0 = static_cast<char const*>(tensor_in0);
+    auto ptr_in1 = static_cast<char const*>(tensor_in1);
+    auto ptr_out = static_cast<char*>(tensor_out);
 
     if (m_num_parallel_loops == 0)
     {
@@ -426,16 +424,16 @@ void mini_jit::TensorOperation::execute(void const *tensor_in0,
     }
 }
 
-void mini_jit::TensorOperation::execute_iter(int64_t id_loop,
-                                             char const *ptr_in0,
-                                             char const *ptr_in1,
-                                             char *ptr_out,
-                                             bool first_access,
-                                             bool last_access)
+void mini_jit::TensorOperation::execute_iter(int64_t     id_loop,
+                                             char const* ptr_in0,
+                                             char const* ptr_in1,
+                                             char*       ptr_out,
+                                             bool        first_access,
+                                             bool        last_access)
 {
     // there is only one iteration if the dimension is the first primitive
-    const int64_t l_size = id_loop != m_id_first_primitive_loop ? m_dim_sizes[id_loop] : 1;
-    const int64_t dtype_sz = dtype_size();
+    const int64_t l_size       = id_loop != m_id_first_primitive_loop ? m_dim_sizes[id_loop] : 1;
+    const int64_t dtype_sz     = dtype_size();
     const int64_t l_stride_in0 = m_strides_in0[id_loop] * dtype_sz;
     const int64_t l_stride_in1 = m_strides_in1[id_loop] * dtype_sz;
     const int64_t l_stride_out = m_strides_out[id_loop] * dtype_sz;
@@ -443,17 +441,17 @@ void mini_jit::TensorOperation::execute_iter(int64_t id_loop,
     for (int64_t l_iter = 0; l_iter < l_size; l_iter++)
     {
         bool is_first = first_access;
-        bool is_last = last_access;
+        bool is_last  = last_access;
         // if the size is 1, it is always the first and last access
         if (l_size > 1 && m_dim_types[id_loop] == dim_t::k)
         {
             is_first = first_access && (l_iter == 0);
-            is_last = last_access && (l_iter == m_dim_sizes[id_loop] - 1);
+            is_last  = last_access && (l_iter == m_dim_sizes[id_loop] - 1);
         }
 
-        char const *sub_ptr_in0 = ptr_in0 + l_iter * l_stride_in0;
-        char const *sub_ptr_in1 = ptr_in1 + l_iter * l_stride_in1;
-        char *sub_ptr_out = ptr_out + l_iter * l_stride_out;
+        char const* sub_ptr_in0 = ptr_in0 + l_iter * l_stride_in0;
+        char const* sub_ptr_in1 = ptr_in1 + l_iter * l_stride_in1;
+        char*       sub_ptr_out = ptr_out + l_iter * l_stride_out;
 
         // Recursive Call
         if (id_loop + 1 < m_id_first_primitive_loop)
@@ -490,11 +488,11 @@ void mini_jit::TensorOperation::execute_iter(int64_t id_loop,
     }
 }
 
-void mini_jit::TensorOperation::execute_iter_parallel(char const *ptr_in0,
-                                                      char const *ptr_in1,
-                                                      char *ptr_out,
-                                                      bool first_access,
-                                                      bool last_access)
+void mini_jit::TensorOperation::execute_iter_parallel(char const* ptr_in0,
+                                                      char const* ptr_in1,
+                                                      char*       ptr_out,
+                                                      bool        first_access,
+                                                      bool        last_access)
 {
     // Compute total number of iterations over shared loops
     int64_t l_size_parallel_loops = 1;
@@ -509,7 +507,7 @@ void mini_jit::TensorOperation::execute_iter_parallel(char const *ptr_in0,
     for (int64_t l_it_all = 0; l_it_all < l_size_parallel_loops; ++l_it_all)
     {
         // Unflatten l_it_all into loop indices
-        int64_t remainder = l_it_all;
+        int64_t              remainder = l_it_all;
         std::vector<int64_t> loop_indices(m_shared_loop_ids.size());
 
         for (int64_t i = m_shared_loop_ids.size() - 1; i >= 0; --i)
@@ -519,15 +517,15 @@ void mini_jit::TensorOperation::execute_iter_parallel(char const *ptr_in0,
         }
 
         // Compute pointer offsets using strides and loop indices
-        char const *sub_ptr_in0 = ptr_in0;
-        char const *sub_ptr_in1 = ptr_in1;
-        char *sub_ptr_out = ptr_out;
+        char const* sub_ptr_in0 = ptr_in0;
+        char const* sub_ptr_in1 = ptr_in1;
+        char*       sub_ptr_out = ptr_out;
 
         const int64_t dtype_sz = dtype_size();
         for (size_t i = 0; i < m_shared_loop_ids.size(); ++i)
         {
             const int64_t dim_id = m_shared_loop_ids[i];
-            const int64_t idx = loop_indices[i];
+            const int64_t idx    = loop_indices[i];
 
             sub_ptr_in0 += idx * m_strides_in0[dim_id] * dtype_sz;
             sub_ptr_in1 += idx * m_strides_in1[dim_id] * dtype_sz;
@@ -544,7 +542,7 @@ void mini_jit::TensorOperation::execute_iter_parallel(char const *ptr_in0,
     }
 }
 
-void mini_jit::TensorOperation::execute_kernel_first_touch(char *ptr_out,
+void mini_jit::TensorOperation::execute_kernel_first_touch(char*   ptr_out,
                                                            int64_t ldOut)
 {
     if (m_kernel_first_touch_type == ptype_t::zero)
@@ -555,8 +553,8 @@ void mini_jit::TensorOperation::execute_kernel_first_touch(char *ptr_out,
                              ldOut,
                              m_unary_first_touch.get_extra());
     }
-    else if (m_kernel_first_touch_type == ptype_t::relu || 
-             m_kernel_first_touch_type == ptype_t::square || 
+    else if (m_kernel_first_touch_type == ptype_t::relu ||
+             m_kernel_first_touch_type == ptype_t::square ||
              m_kernel_first_touch_type == ptype_t::reciprocal ||
              m_kernel_first_touch_type == ptype_t::increment ||
              m_kernel_first_touch_type == ptype_t::decrement)
@@ -569,14 +567,14 @@ void mini_jit::TensorOperation::execute_kernel_first_touch(char *ptr_out,
     }
 }
 
-void mini_jit::TensorOperation::execute_kernel_main(char const *ptr_in0,
-                                                    char const *ptr_in1,
-                                                    char *ptr_out,
-                                                    int64_t ldA,
-                                                    int64_t ldB,
-                                                    int64_t ldC,
-                                                    int64_t br_size_A,
-                                                    int64_t br_size_B)
+void mini_jit::TensorOperation::execute_kernel_main(char const* ptr_in0,
+                                                    char const* ptr_in1,
+                                                    char*       ptr_out,
+                                                    int64_t     ldA,
+                                                    int64_t     ldB,
+                                                    int64_t     ldC,
+                                                    int64_t     br_size_A,
+                                                    int64_t     br_size_B)
 {
     if (m_kernel_main_type == ptype_t::gemm)
     {
@@ -621,7 +619,7 @@ void mini_jit::TensorOperation::execute_kernel_main(char const *ptr_in0,
     }
 }
 
-void mini_jit::TensorOperation::execute_kernel_last_touch(char *ptr_out,
+void mini_jit::TensorOperation::execute_kernel_last_touch(char*   ptr_out,
                                                           int64_t ldOut)
 {
     if (m_kernel_last_touch_type == ptype_t::zero)
@@ -632,8 +630,8 @@ void mini_jit::TensorOperation::execute_kernel_last_touch(char *ptr_out,
                             ldOut,
                             m_unary_last_touch.get_extra());
     }
-    else if (m_kernel_last_touch_type == ptype_t::relu || 
-             m_kernel_last_touch_type == ptype_t::square || 
+    else if (m_kernel_last_touch_type == ptype_t::relu ||
+             m_kernel_last_touch_type == ptype_t::square ||
              m_kernel_last_touch_type == ptype_t::reciprocal ||
              m_kernel_last_touch_type == ptype_t::increment ||
              m_kernel_last_touch_type == ptype_t::decrement ||

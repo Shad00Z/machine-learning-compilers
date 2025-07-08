@@ -1,0 +1,27 @@
+BasedOnStyle: LLVM
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+
+AlignAfterOpenBracket: Align
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+AllowAllParametersOfDeclarationOnNextLine: true
+BreakBeforeBraces: Allman
+ColumnLimit: 0
+SortIncludes: true
+IncludeBlocks: Regroup
+NamespaceIndentation: All
+AccessModifierOffset: -4
+SpacesBeforeTrailingComments: 1
+SpaceBeforeParens: ControlStatements
+PointerAlignment: Left
+KeepEmptyLinesAtTheStartOfBlocks: false
+AlignConsecutiveAssignments: true
+AlignConsecutiveDeclarations: true
+AlwaysBreakAfterReturnType: None
+AllowAllConstructorInitializersOnNextLine: true
+
+BinPackArguments: false
+BinPackParameters: false

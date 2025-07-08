@@ -116,16 +116,16 @@ INCFLAGS = -I$(INC_DIR)
 INCFLAGS += -I$(TEST_DIR)
 INCFLAGS += -I/usr/local/include
 ifeq ($(OS),windows)
-	INCFLAGS += $(shell C:\\msys64\\usr\\bin\\find.exe -L $(SRC_DIR) -type d -path "$(SUB_DIR)" -prune -o -type d -exec echo -I{} \;)
+#	INCFLAGS += $(shell C:\\msys64\\usr\\bin\\find.exe -L $(SRC_DIR) -type d -path "$(SUB_DIR)" -prune -o -type d -exec echo -I{} \;)
 else ifeq ($(OS),macOS)
-	INCFLAGS += $(shell find $(SRC_DIR) -path "$(SUB_DIR)" -prune -o -type d -exec echo -I{} \;)
+#	INCFLAGS += $(shell find $(SRC_DIR) -path "$(SUB_DIR)" -prune -o -type d -exec echo -I{} \;)
 	ifeq ($(ARCH),arm64)
 		INCFLAGS += -I/opt/homebrew/include
 	else ifeq ($(ARCH),x86_64)
 		INCFLAGS += -I/usr/local/include
 	endif
 else ifeq ($(OS),linux)
-	INCFLAGS += $(shell find $(SRC_DIR) -path "$(SUB_DIR)" -prune -o -type d -exec echo -I{} \;)
+#	INCFLAGS += $(shell find $(SRC_DIR) -path "$(SUB_DIR)" -prune -o -type d -exec echo -I{} \;)
 endif
 
 # LINKER LIBRARIES

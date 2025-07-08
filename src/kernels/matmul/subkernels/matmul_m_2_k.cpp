@@ -1,27 +1,24 @@
-#include "registers/gp_registers.h"
-#include "registers/simd_fp_registers.h"
-#include "instructions/all_instructions.h"
-#include "matmul_m_2_k.h"
+#include <mlc/instructions/all_instructions.h>
+#include <mlc/kernels/matmul/subkernels/matmul_m_2_k.h>
+#include <mlc/registers/gp_registers.h>
+#include <mlc/registers/simd_fp_registers.h>
 
-#include <iostream>
-#include <cstring>
-
-using gpr_t = mini_jit::registers::gpr_t;
-using simd_fp_t = mini_jit::registers::simd_fp_t;
-using arr_spec_t = mini_jit::registers::arr_spec_t;
+using gpr_t            = mini_jit::registers::gpr_t;
+using simd_fp_t        = mini_jit::registers::simd_fp_t;
+using arr_spec_t       = mini_jit::registers::arr_spec_t;
 using neon_size_spec_t = mini_jit::registers::neon_size_spec_t;
 
-namespace inst = mini_jit::instructions;
-namespace base = inst::base;
+namespace inst    = mini_jit::instructions;
+namespace base    = inst::base;
 namespace simd_fp = inst::simd_fp;
 
-void mini_jit::kernels::matmul::subkernels::matmul_m_2_k(mini_jit::Kernel &kernel,
-                                                         int m,
-                                                         int k)
+void mini_jit::kernels::matmul::subkernels::matmul_m_2_k(mini_jit::Kernel& kernel,
+                                                         int               m,
+                                                         int               k)
 {
     // Prepare the kernel
     int mLoopIterations = m / 16;
-    int mLoopRemainder = m % 16;
+    int mLoopRemainder  = m % 16;
 
     // PCS
     kernel.add_instr(base::stpPre(gpr_t::x29, gpr_t::x30, gpr_t::sp, -16));
@@ -137,9 +134,9 @@ void mini_jit::kernels::matmul::subkernels::matmul_m_2_k(mini_jit::Kernel &kerne
     kernel.set_kernel();
 }
 
-void mini_jit::kernels::matmul::subkernels::internal::generateM16N2Loop(mini_jit::Kernel &kernel,
-                                                                        int mLoopIterations,
-                                                                        int k)
+void mini_jit::kernels::matmul::subkernels::internal::generateM16N2Loop(mini_jit::Kernel& kernel,
+                                                                        int               mLoopIterations,
+                                                                        int               k)
 {
     // prepare the kernel
     kernel.add_instr(base::mov(gpr_t::x11, mLoopIterations));
@@ -223,7 +220,7 @@ void mini_jit::kernels::matmul::subkernels::internal::generateM16N2Loop(mini_jit
     // END M_LOOP
 }
 
-void mini_jit::kernels::matmul::subkernels::internal::generateM1N2Loop(mini_jit::Kernel &kernel)
+void mini_jit::kernels::matmul::subkernels::internal::generateM1N2Loop(mini_jit::Kernel& kernel)
 {
     // Load Matrix C (1 value)
     kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x10));
@@ -268,7 +265,7 @@ void mini_jit::kernels::matmul::subkernels::internal::generateM1N2Loop(mini_jit:
     kernel.add_instr(simd_fp::str(simd_fp_t::v1, gpr_t::x12, 0, neon_size_spec_t::s));
 }
 
-void mini_jit::kernels::matmul::subkernels::internal::generateM2N2Loop(mini_jit::Kernel &kernel)
+void mini_jit::kernels::matmul::subkernels::internal::generateM2N2Loop(mini_jit::Kernel& kernel)
 {
     // LOAD MATRIX C (2 values)
     kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x10));
@@ -313,7 +310,7 @@ void mini_jit::kernels::matmul::subkernels::internal::generateM2N2Loop(mini_jit:
     kernel.add_instr(simd_fp::str(simd_fp_t::v1, gpr_t::x12, 0, neon_size_spec_t::d));
 }
 
-void mini_jit::kernels::matmul::subkernels::internal::generateM3N2Loop(mini_jit::Kernel &kernel)
+void mini_jit::kernels::matmul::subkernels::internal::generateM3N2Loop(mini_jit::Kernel& kernel)
 {
     // LOAD MATRIX C (3 values)
     kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x10));
@@ -370,7 +367,7 @@ void mini_jit::kernels::matmul::subkernels::internal::generateM3N2Loop(mini_jit:
     kernel.add_instr(simd_fp::str(simd_fp_t::v3, gpr_t::x24, 0, neon_size_spec_t::s));
 }
 
-void mini_jit::kernels::matmul::subkernels::internal::generateM4N2Loop(mini_jit::Kernel &kernel)
+void mini_jit::kernels::matmul::subkernels::internal::generateM4N2Loop(mini_jit::Kernel& kernel)
 {
     // LOAD MATRIX C (4 values)
     kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x10));
@@ -414,7 +411,7 @@ void mini_jit::kernels::matmul::subkernels::internal::generateM4N2Loop(mini_jit:
     kernel.add_instr(simd_fp::str(simd_fp_t::v1, gpr_t::x12, 0, neon_size_spec_t::q));
 }
 
-void mini_jit::kernels::matmul::subkernels::internal::generateM5N2Loop(mini_jit::Kernel &kernel)
+void mini_jit::kernels::matmul::subkernels::internal::generateM5N2Loop(mini_jit::Kernel& kernel)
 {
     // LOAD MATRIX C (5 values)
     kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x10));
@@ -466,7 +463,7 @@ void mini_jit::kernels::matmul::subkernels::internal::generateM5N2Loop(mini_jit:
     kernel.add_instr(simd_fp::str(simd_fp_t::v3, gpr_t::x12, 16, neon_size_spec_t::s));
 }
 
-void mini_jit::kernels::matmul::subkernels::internal::generateM6N2Loop(mini_jit::Kernel &kernel)
+void mini_jit::kernels::matmul::subkernels::internal::generateM6N2Loop(mini_jit::Kernel& kernel)
 {
     // LOAD MATRIX C (6 values)
     kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x10));
@@ -518,7 +515,7 @@ void mini_jit::kernels::matmul::subkernels::internal::generateM6N2Loop(mini_jit:
     kernel.add_instr(simd_fp::str(simd_fp_t::v3, gpr_t::x12, 16, neon_size_spec_t::d));
 }
 
-void mini_jit::kernels::matmul::subkernels::internal::generateM7N2Loop(mini_jit::Kernel &kernel)
+void mini_jit::kernels::matmul::subkernels::internal::generateM7N2Loop(mini_jit::Kernel& kernel)
 {
     // LOAD MATRIX C (7 values)
     kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x10));
@@ -580,7 +577,7 @@ void mini_jit::kernels::matmul::subkernels::internal::generateM7N2Loop(mini_jit:
     kernel.add_instr(simd_fp::strPost(simd_fp_t::v5, gpr_t::x20, 4, neon_size_spec_t::s));
 }
 
-void mini_jit::kernels::matmul::subkernels::internal::generateM8N2Loop(mini_jit::Kernel &kernel)
+void mini_jit::kernels::matmul::subkernels::internal::generateM8N2Loop(mini_jit::Kernel& kernel)
 {
     // Load Matrix C
     kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x10));
@@ -632,7 +629,7 @@ void mini_jit::kernels::matmul::subkernels::internal::generateM8N2Loop(mini_jit:
     kernel.add_instr(simd_fp::stp(simd_fp_t::v2, simd_fp_t::v3, gpr_t::x12, 0, neon_size_spec_t::q));
 }
 
-void mini_jit::kernels::matmul::subkernels::internal::generateM9N2Loop(mini_jit::Kernel &kernel)
+void mini_jit::kernels::matmul::subkernels::internal::generateM9N2Loop(mini_jit::Kernel& kernel)
 {
     // LOAD MATRIX C (9 values)
     kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x10));
@@ -685,7 +682,7 @@ void mini_jit::kernels::matmul::subkernels::internal::generateM9N2Loop(mini_jit:
     kernel.add_instr(simd_fp::str(simd_fp_t::v7, gpr_t::x12, 32, neon_size_spec_t::s));
 }
 
-void mini_jit::kernels::matmul::subkernels::internal::generateM10N2Loop(mini_jit::Kernel &kernel)
+void mini_jit::kernels::matmul::subkernels::internal::generateM10N2Loop(mini_jit::Kernel& kernel)
 {
     // LOAD MATRIX C (10 values)
     kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x10));
@@ -738,7 +735,7 @@ void mini_jit::kernels::matmul::subkernels::internal::generateM10N2Loop(mini_jit
     kernel.add_instr(simd_fp::str(simd_fp_t::v7, gpr_t::x12, 32, neon_size_spec_t::d));
 }
 
-void mini_jit::kernels::matmul::subkernels::internal::generateM11N2Loop(mini_jit::Kernel &kernel)
+void mini_jit::kernels::matmul::subkernels::internal::generateM11N2Loop(mini_jit::Kernel& kernel)
 {
     // LOAD MATRIX C (11 values)
     kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x10));
@@ -798,7 +795,7 @@ void mini_jit::kernels::matmul::subkernels::internal::generateM11N2Loop(mini_jit
     kernel.add_instr(simd_fp::str(simd_fp_t::v8, gpr_t::x12, 40, neon_size_spec_t::s));
 }
 
-void mini_jit::kernels::matmul::subkernels::internal::generateM12N2Loop(mini_jit::Kernel &kernel)
+void mini_jit::kernels::matmul::subkernels::internal::generateM12N2Loop(mini_jit::Kernel& kernel)
 {
     // LOAD MATRIX C (12 values)
     kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x10));
@@ -851,7 +848,7 @@ void mini_jit::kernels::matmul::subkernels::internal::generateM12N2Loop(mini_jit
     kernel.add_instr(simd_fp::str(simd_fp_t::v7, gpr_t::x12, 32, neon_size_spec_t::q));
 }
 
-void mini_jit::kernels::matmul::subkernels::internal::generateM13N2Loop(mini_jit::Kernel &kernel)
+void mini_jit::kernels::matmul::subkernels::internal::generateM13N2Loop(mini_jit::Kernel& kernel)
 {
     // LOAD MATRIX C (13 values)
     kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x10));
@@ -911,7 +908,7 @@ void mini_jit::kernels::matmul::subkernels::internal::generateM13N2Loop(mini_jit
     kernel.add_instr(simd_fp::str(simd_fp_t::v8, gpr_t::x12, 48, neon_size_spec_t::s));
 }
 
-void mini_jit::kernels::matmul::subkernels::internal::generateM14N2Loop(mini_jit::Kernel &kernel)
+void mini_jit::kernels::matmul::subkernels::internal::generateM14N2Loop(mini_jit::Kernel& kernel)
 {
     // LOAD MATRIX C (14 values)
     kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x10));
@@ -971,7 +968,7 @@ void mini_jit::kernels::matmul::subkernels::internal::generateM14N2Loop(mini_jit
     kernel.add_instr(simd_fp::str(simd_fp_t::v8, gpr_t::x12, 48, neon_size_spec_t::d));
 }
 
-void mini_jit::kernels::matmul::subkernels::internal::generateM15N2Loop(mini_jit::Kernel &kernel)
+void mini_jit::kernels::matmul::subkernels::internal::generateM15N2Loop(mini_jit::Kernel& kernel)
 {
     // LOAD MATRIX C (15 values)
     kernel.add_instr(base::mov(gpr_t::x12, gpr_t::x10));

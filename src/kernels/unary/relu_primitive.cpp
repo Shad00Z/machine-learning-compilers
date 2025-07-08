@@ -1,9 +1,8 @@
-#include "relu_primitive.h"
-#include "Kernel.h"
-
-#include "registers/gp_registers.h"
-#include "registers/simd_fp_registers.h"
-#include "instructions/all_instructions.h"
+#include <mlc/Kernel.h>
+#include <mlc/instructions/all_instructions.h>
+#include <mlc/kernels/unary/relu_primitive.h>
+#include <mlc/registers/gp_registers.h>
+#include <mlc/registers/simd_fp_registers.h>
 
 using enum gpr_t;
 using enum simd_fp_t;
@@ -13,9 +12,9 @@ using enum arr_spec_t;
 using namespace mini_jit::instructions::base;
 using namespace mini_jit::instructions::simd_fp;
 
-void mini_jit::kernels::unary::relu(mini_jit::Kernel &kernel,
-                                    u_int32_t m,
-                                    u_int32_t n)
+void mini_jit::kernels::unary::relu(mini_jit::Kernel& kernel,
+                                    u_int32_t         m,
+                                    u_int32_t         n)
 {
     // Inputs:
     // x0: pointer to A
@@ -25,7 +24,7 @@ void mini_jit::kernels::unary::relu(mini_jit::Kernel &kernel,
 
     // Prepare the kernel
     int mLoopIterations = m / 8;
-    int mLoopRemainder = m % 8;
+    int mLoopRemainder  = m % 8;
 
     // PCS
     kernel.add_instr(stpPre(x29, x30, sp, -16));
@@ -59,18 +58,18 @@ void mini_jit::kernels::unary::relu(mini_jit::Kernel &kernel,
     {
         kernel.add_label("m_8_loop");
         kernel.add_instr({
-        // load 8 elements from A
-        ldp(v0, v1, x8, 0, q),
-        // compute f(x)=max(x,0)
-        fmaxVec(v0, v0, v31, s4),
-        fmaxVec(v1, v1, v31, s4),
-        // store 8 elements to B
-        stp(v0, v1, x9, 0, q),
-        // jump by 8 rows
-        add(x8, x8, 8*4, 0),
-        add(x9, x9, 8*4, 0),
-        // decrement m loop counter
-        sub(x7, x7, 1, 0),
+            // load 8 elements from A
+            ldp(v0, v1, x8, 0, q),
+            // compute f(x)=max(x,0)
+            fmaxVec(v0, v0, v31, s4),
+            fmaxVec(v1, v1, v31, s4),
+            // store 8 elements to B
+            stp(v0, v1, x9, 0, q),
+            // jump by 8 rows
+            add(x8, x8, 8 * 4, 0),
+            add(x9, x9, 8 * 4, 0),
+            // decrement m loop counter
+            sub(x7, x7, 1, 0),
         });
         // check if loop counter is zero
         kernel.add_instr(cbnz(x7, -kernel.getInstrCountFromLabel("m_8_loop") * 4));
@@ -92,9 +91,9 @@ void mini_jit::kernels::unary::relu(mini_jit::Kernel &kernel,
             break;
         case 3:
             // 2
-            kernel.add_instr(ldrPost(v0, x8, 2*4, d));
+            kernel.add_instr(ldrPost(v0, x8, 2 * 4, d));
             kernel.add_instr(fmaxVec(v0, v0, v31, s2));
-            kernel.add_instr(strPost(v0, x9, 2*4, d));
+            kernel.add_instr(strPost(v0, x9, 2 * 4, d));
             // 1
             kernel.add_instr(ldr(v0, x8, 0, s));
             kernel.add_instr(fmaxScalar(v0, v0, v31, s));
@@ -107,9 +106,9 @@ void mini_jit::kernels::unary::relu(mini_jit::Kernel &kernel,
             break;
         case 5:
             // 4
-            kernel.add_instr(ldrPost(v0, x8, 4*4, q));
+            kernel.add_instr(ldrPost(v0, x8, 4 * 4, q));
             kernel.add_instr(fmaxVec(v0, v0, v31, s4));
-            kernel.add_instr(strPost(v0, x9, 4*4, q));
+            kernel.add_instr(strPost(v0, x9, 4 * 4, q));
             // 1
             kernel.add_instr(ldr(v0, x8, 0, s));
             kernel.add_instr(fmaxScalar(v0, v0, v31, s));
@@ -117,9 +116,9 @@ void mini_jit::kernels::unary::relu(mini_jit::Kernel &kernel,
             break;
         case 6:
             // 4
-            kernel.add_instr(ldrPost(v0, x8, 4*4, q));
+            kernel.add_instr(ldrPost(v0, x8, 4 * 4, q));
             kernel.add_instr(fmaxVec(v0, v0, v31, s4));
-            kernel.add_instr(strPost(v0, x9, 4*4, q));
+            kernel.add_instr(strPost(v0, x9, 4 * 4, q));
             // 2
             kernel.add_instr(ldr(v0, x8, 0, d));
             kernel.add_instr(fmaxVec(v0, v0, v31, s2));
@@ -127,13 +126,13 @@ void mini_jit::kernels::unary::relu(mini_jit::Kernel &kernel,
             break;
         case 7:
             // 4
-            kernel.add_instr(ldrPost(v0, x8, 4*4, q));
+            kernel.add_instr(ldrPost(v0, x8, 4 * 4, q));
             kernel.add_instr(fmaxVec(v0, v0, v31, s4));
-            kernel.add_instr(strPost(v0, x9, 4*4, q));
+            kernel.add_instr(strPost(v0, x9, 4 * 4, q));
             // 2
-            kernel.add_instr(ldrPost(v0, x8, 2*4, d));
+            kernel.add_instr(ldrPost(v0, x8, 2 * 4, d));
             kernel.add_instr(fmaxVec(v0, v0, v31, s2));
-            kernel.add_instr(strPost(v0, x9, 2*4, d));
+            kernel.add_instr(strPost(v0, x9, 2 * 4, d));
             // 1
             kernel.add_instr(ldr(v0, x8, 0, s));
             kernel.add_instr(fmaxScalar(v0, v0, v31, s));

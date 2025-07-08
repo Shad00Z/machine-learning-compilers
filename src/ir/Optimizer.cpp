@@ -1,12 +1,12 @@
-#include "Optimizer.h"
-#include "IRConverter.h"
 #include <algorithm>
 #include <limits.h>
+#include <mlc/ir/IRConverter.h>
+#include <mlc/ir/Optimizer.h>
 
-void mini_jit::ir::Optimizer::optimize(std::vector<mini_jit::ir::Dimension> &dimensions,
-                                       int64_t thread_target,
-                                       int64_t max_kernel_size,
-                                       int64_t min_kernel_size)
+void mini_jit::ir::Optimizer::optimize(std::vector<mini_jit::ir::Dimension>& dimensions,
+                                       int64_t                               thread_target,
+                                       int64_t                               max_kernel_size,
+                                       int64_t                               min_kernel_size)
 {
     fuseDimensions(dimensions,
                    min_kernel_size);
@@ -18,11 +18,8 @@ void mini_jit::ir::Optimizer::optimize(std::vector<mini_jit::ir::Dimension> &dim
     identifyPrimitives(dimensions);
 
     // Verify that there are 2, 3 or 4 primitive dimensions
-    int prim_count = std::count_if(dimensions.begin(), dimensions.end(),
-                                   [](const mini_jit::ir::Dimension &dim)
-                                   {
-                                       return dim.exec_type == exec_t::prim;
-                                   });
+    int prim_count = std::count_if(dimensions.begin(), dimensions.end(), [](const mini_jit::ir::Dimension& dim)
+                                   { return dim.exec_type == exec_t::prim; });
     if (prim_count < 2 || prim_count > 4)
     {
         throw std::invalid_argument("Optimizer: Expected 2, 3 or 4 primitive dimensions, found " + std::to_string(prim_count) + ". Try setting all dimensions to seq or undefined.");
@@ -34,15 +31,15 @@ void mini_jit::ir::Optimizer::optimize(std::vector<mini_jit::ir::Dimension> &dim
     // TODO: Dimension Reordering?
 }
 
-void mini_jit::ir::Optimizer::optimize(std::vector<mini_jit::dim_t> &dim_types,
-                                       std::vector<mini_jit::exec_t> &exec_types,
-                                       std::vector<int64_t> &dim_sizes,
-                                       std::vector<int64_t> &strides_in0,
-                                       std::vector<int64_t> &strides_in1,
-                                       std::vector<int64_t> &strides_out,
-                                       int64_t thread_target,
-                                       int64_t max_kernel_size,
-                                       int64_t min_kernel_size)
+void mini_jit::ir::Optimizer::optimize(std::vector<mini_jit::dim_t>&  dim_types,
+                                       std::vector<mini_jit::exec_t>& exec_types,
+                                       std::vector<int64_t>&          dim_sizes,
+                                       std::vector<int64_t>&          strides_in0,
+                                       std::vector<int64_t>&          strides_in1,
+                                       std::vector<int64_t>&          strides_out,
+                                       int64_t                        thread_target,
+                                       int64_t                        max_kernel_size,
+                                       int64_t                        min_kernel_size)
 {
     // Convert input vectors to a vector of Dimensions
     std::vector<mini_jit::ir::Dimension> dimensions;
@@ -54,9 +51,9 @@ void mini_jit::ir::Optimizer::optimize(std::vector<mini_jit::dim_t> &dim_types,
                                            strides_out,
                                            dimensions);
     // Optimize the dimensions
-    optimize(dimensions, 
-             thread_target, 
-             max_kernel_size, 
+    optimize(dimensions,
+             thread_target,
+             max_kernel_size,
              min_kernel_size);
     // Convert the optimized dimensions back to the original format
     IRConverter::convertDimensionsToConfig(dimensions,
@@ -68,39 +65,27 @@ void mini_jit::ir::Optimizer::optimize(std::vector<mini_jit::dim_t> &dim_types,
                                            strides_out);
 }
 
-void mini_jit::ir::Optimizer::identifyPrimitives(std::vector<mini_jit::ir::Dimension> &dimensions)
+void mini_jit::ir::Optimizer::identifyPrimitives(std::vector<mini_jit::ir::Dimension>& dimensions)
 {
     // Handle identity case first
-    auto l_has_c_dim = std::any_of(dimensions.begin(), dimensions.end(),
-                                   [](const mini_jit::ir::Dimension &dim)
-                                   {
-                                       return dim.type == dim_t::c;
-                                   });
+    auto l_has_c_dim = std::any_of(dimensions.begin(), dimensions.end(), [](const mini_jit::ir::Dimension& dim)
+                                   { return dim.type == dim_t::c; });
 
     // Handle binary case
-    auto l_has_k_dim = std::any_of(dimensions.begin(), dimensions.end(),
-                                   [](const mini_jit::ir::Dimension &dim)
-                                   {
-                                       return dim.type == dim_t::k;
-                                   });
+    auto l_has_k_dim = std::any_of(dimensions.begin(), dimensions.end(), [](const mini_jit::ir::Dimension& dim)
+                                   { return dim.type == dim_t::k; });
 
     if (l_has_c_dim)
     {
         // check that all dimensions are c
-        if (!std::all_of(dimensions.begin(), dimensions.end(),
-                         [](const mini_jit::ir::Dimension &dim)
-                         {
-                             return dim.type == dim_t::c;
-                         }))
+        if (!std::all_of(dimensions.begin(), dimensions.end(), [](const mini_jit::ir::Dimension& dim)
+                         { return dim.type == dim_t::c; }))
         {
             throw std::invalid_argument("Optimizer: All dimensions must be of type 'c' for unary operations.");
         }
         // check for existing primary dimensions
-        int prim_c_count = std::count_if(dimensions.begin(), dimensions.end(),
-                                         [](const mini_jit::ir::Dimension &dim)
-                                         {
-                                             return dim.type == dim_t::c && dim.exec_type == exec_t::prim;
-                                         });
+        int prim_c_count = std::count_if(dimensions.begin(), dimensions.end(), [](const mini_jit::ir::Dimension& dim)
+                                         { return dim.type == dim_t::c && dim.exec_type == exec_t::prim; });
         if (prim_c_count == 2)
         {
             return; // primary dimensions already set
@@ -114,13 +99,10 @@ void mini_jit::ir::Optimizer::identifyPrimitives(std::vector<mini_jit::ir::Dimen
         // FIND UNARY PRIM M
         /////////////////////////////////////////////////////////////////
         // req: unit stride in in0. Out might not be 1 if operation transposes.
-        auto l_dim_m_it = std::find_if(dimensions.begin(), dimensions.end(),
-                                       [](const mini_jit::ir::Dimension &dim)
-                                       {
-                                           return (dim.type == dim_t::c) &&
-                                                  dim.stride_in0 == 1 &&
-                                                  dim.stride_in1 == 0;
-                                       });
+        auto l_dim_m_it = std::find_if(dimensions.begin(), dimensions.end(), [](const mini_jit::ir::Dimension& dim)
+                                       { return (dim.type == dim_t::c) &&
+                                                dim.stride_in0 == 1 &&
+                                                dim.stride_in1 == 0; });
 
         bool l_transpose = false;
         if (l_dim_m_it != dimensions.end())
@@ -146,13 +128,10 @@ void mini_jit::ir::Optimizer::identifyPrimitives(std::vector<mini_jit::ir::Dimen
             // FIND UNARY PRIM N
             /////////////////////////////////////////////////////////////////
             // req: unit stride in out.
-            auto l_dim_n_it = std::find_if(dimensions.begin(), dimensions.end(),
-                                           [](const mini_jit::ir::Dimension &dim)
-                                           {
-                                               return (dim.type == dim_t::c) &&
-                                                      dim.stride_out == 1 &&
-                                                      dim.stride_in1 == 0;
-                                           });
+            auto l_dim_n_it = std::find_if(dimensions.begin(), dimensions.end(), [](const mini_jit::ir::Dimension& dim)
+                                           { return (dim.type == dim_t::c) &&
+                                                    dim.stride_out == 1 &&
+                                                    dim.stride_in1 == 0; });
 
             if (l_dim_n_it != dimensions.end())
             {
@@ -178,7 +157,7 @@ void mini_jit::ir::Optimizer::identifyPrimitives(std::vector<mini_jit::ir::Dimen
             /////////////////////////////////////////////////////////////////
             // req: choose the one with the smallest stride in in0
             int l_n_dim_stride = INT_MAX;
-            int l_n_dim_id = -1;
+            int l_n_dim_id     = -1;
             for (size_t i = 0; i < dimensions.size(); i++)
             {
                 if ((dimensions[i].type == dim_t::c) &&
@@ -190,7 +169,7 @@ void mini_jit::ir::Optimizer::identifyPrimitives(std::vector<mini_jit::ir::Dimen
                     if (l_current_stride < l_n_dim_stride)
                     {
                         l_n_dim_stride = l_current_stride;
-                        l_n_dim_id = static_cast<int>(i);
+                        l_n_dim_id     = static_cast<int>(i);
                     }
                 }
             }
@@ -210,7 +189,7 @@ void mini_jit::ir::Optimizer::identifyPrimitives(std::vector<mini_jit::ir::Dimen
         }
 
         // lastly, set all remaining dimensions to seq
-        for (auto &dim : dimensions)
+        for (auto& dim : dimensions)
         {
             if (dim.exec_type == exec_t::undefined)
             {
@@ -224,11 +203,8 @@ void mini_jit::ir::Optimizer::identifyPrimitives(std::vector<mini_jit::ir::Dimen
     else if (!l_has_k_dim)
     {
         // check for existing primary dimensions
-        int prim_count = std::count_if(dimensions.begin(), dimensions.end(),
-                                         [](const mini_jit::ir::Dimension &dim)
-                                         {
-                                             return dim.type == dim_t::c && dim.exec_type == exec_t::prim;
-                                         });
+        int prim_count = std::count_if(dimensions.begin(), dimensions.end(), [](const mini_jit::ir::Dimension& dim)
+                                       { return dim.type == dim_t::c && dim.exec_type == exec_t::prim; });
         if (prim_count == 2)
         {
             return; // primary dimensions already set
@@ -241,19 +217,16 @@ void mini_jit::ir::Optimizer::identifyPrimitives(std::vector<mini_jit::ir::Dimen
         // FIND PRIM M
         /////////////////////////////////////////////////////////////////
         // req: unit stride in all tensors
-        auto l_dim_m_it = std::find_if(dimensions.begin(), dimensions.end(),
-                                       [](const mini_jit::ir::Dimension &dim)
-                                       {
-                                           return dim.type == dim_t::m &&
-                                                  dim.stride_in0 == 1 &&
-                                                  dim.stride_in1 == 1 &&
-                                                  dim.stride_out == 1;
-                                       });
+        auto l_dim_m_it = std::find_if(dimensions.begin(), dimensions.end(), [](const mini_jit::ir::Dimension& dim)
+                                       { return dim.type == dim_t::m &&
+                                                dim.stride_in0 == 1 &&
+                                                dim.stride_in1 == 1 &&
+                                                dim.stride_out == 1; });
 
         if (l_dim_m_it != dimensions.end())
         {
             // set dimension data
-            l_dim_m_it->type = dim_t::m;
+            l_dim_m_it->type      = dim_t::m;
             l_dim_m_it->exec_type = exec_t::prim;
             if (l_dim_m_it != dimensions.end() - 1)
             {
@@ -271,7 +244,7 @@ void mini_jit::ir::Optimizer::identifyPrimitives(std::vector<mini_jit::ir::Dimen
         /////////////////////////////////////////////////////////////////
         // req: choose the one with smallest stride
         int l_n_dim_stride = INT_MAX;
-        int l_n_dim_id = -1;
+        int l_n_dim_id     = -1;
         for (size_t i = 0; i < dimensions.size(); i++)
         {
             if (dimensions[i].type == dim_t::n &&
@@ -280,7 +253,7 @@ void mini_jit::ir::Optimizer::identifyPrimitives(std::vector<mini_jit::ir::Dimen
                 if (dimensions[i].stride_in0 < l_n_dim_stride)
                 {
                     l_n_dim_stride = dimensions[i].stride_in0;
-                    l_n_dim_id = static_cast<int>(i);
+                    l_n_dim_id     = static_cast<int>(i);
                 }
             }
         }
@@ -291,7 +264,7 @@ void mini_jit::ir::Optimizer::identifyPrimitives(std::vector<mini_jit::ir::Dimen
         }
 
         // set dimension data
-        dimensions[l_n_dim_id].type = dim_t::n;
+        dimensions[l_n_dim_id].type      = dim_t::n;
         dimensions[l_n_dim_id].exec_type = exec_t::prim;
         // move N to the back
         if (l_n_dim_id != static_cast<int>(dimensions.size()) - 1)
@@ -306,18 +279,15 @@ void mini_jit::ir::Optimizer::identifyPrimitives(std::vector<mini_jit::ir::Dimen
         // FIND PRIM BR (second K)
         /////////////////////////////////////////////////////////////////
         // req: no unit stride in in1, stride_out has to be 0
-        auto l_dim_BR_it = std::find_if(dimensions.begin(), dimensions.end(),
-                                        [](const mini_jit::ir::Dimension &dim)
-                                        {
-                                            return dim.type == dim_t::k &&
-                                                   dim.stride_in1 != 1 &&
-                                                   dim.stride_out == 0;
-                                        });
+        auto l_dim_BR_it = std::find_if(dimensions.begin(), dimensions.end(), [](const mini_jit::ir::Dimension& dim)
+                                        { return dim.type == dim_t::k &&
+                                                 dim.stride_in1 != 1 &&
+                                                 dim.stride_out == 0; });
 
         if (l_dim_BR_it != dimensions.end())
         {
             // set dimension data
-            l_dim_BR_it->type = dim_t::k;
+            l_dim_BR_it->type      = dim_t::k;
             l_dim_BR_it->exec_type = exec_t::prim;
             if (l_dim_BR_it != dimensions.end() - 1)
             {
@@ -329,19 +299,16 @@ void mini_jit::ir::Optimizer::identifyPrimitives(std::vector<mini_jit::ir::Dimen
         // FIND PRIM M
         /////////////////////////////////////////////////////////////////
         // req: unit stride in in0 and out
-        auto l_dim_m_it = std::find_if(dimensions.begin(), dimensions.end(),
-                                       [](const mini_jit::ir::Dimension &dim)
-                                       {
-                                           return dim.type == dim_t::m &&
-                                                  dim.stride_in0 == 1 &&
-                                                  dim.stride_in1 == 0 &&
-                                                  dim.stride_out == 1;
-                                       });
+        auto l_dim_m_it = std::find_if(dimensions.begin(), dimensions.end(), [](const mini_jit::ir::Dimension& dim)
+                                       { return dim.type == dim_t::m &&
+                                                dim.stride_in0 == 1 &&
+                                                dim.stride_in1 == 0 &&
+                                                dim.stride_out == 1; });
 
         if (l_dim_m_it != dimensions.end())
         {
             // set dimension data
-            l_dim_m_it->type = dim_t::m;
+            l_dim_m_it->type      = dim_t::m;
             l_dim_m_it->exec_type = exec_t::prim;
             if (l_dim_m_it != dimensions.end() - 1)
             {
@@ -359,7 +326,7 @@ void mini_jit::ir::Optimizer::identifyPrimitives(std::vector<mini_jit::ir::Dimen
         /////////////////////////////////////////////////////////////////
         // req: choose the one with the smallest strides, stride_in0 has to be 0
         int l_n_dim_strides = INT_MAX;
-        int l_n_dim_id = -1;
+        int l_n_dim_id      = -1;
         for (size_t i = 0; i < dimensions.size(); i++)
         {
             if (dimensions[i].type == dim_t::n &&
@@ -369,7 +336,7 @@ void mini_jit::ir::Optimizer::identifyPrimitives(std::vector<mini_jit::ir::Dimen
                 if (l_current_strides < l_n_dim_strides)
                 {
                     l_n_dim_strides = l_current_strides;
-                    l_n_dim_id = static_cast<int>(i);
+                    l_n_dim_id      = static_cast<int>(i);
                 }
             }
         }
@@ -380,7 +347,7 @@ void mini_jit::ir::Optimizer::identifyPrimitives(std::vector<mini_jit::ir::Dimen
         }
 
         // set dimension data
-        dimensions[l_n_dim_id].type = dim_t::n;
+        dimensions[l_n_dim_id].type      = dim_t::n;
         dimensions[l_n_dim_id].exec_type = exec_t::prim;
         // move N to the back
         if (l_n_dim_id != static_cast<int>(dimensions.size()) - 1)
@@ -391,18 +358,15 @@ void mini_jit::ir::Optimizer::identifyPrimitives(std::vector<mini_jit::ir::Dimen
         // FIND PRIM K
         /////////////////////////////////////////////////////////////////
         // req: unit stride in in1, stride_out has to be 0
-        auto l_dim_k_it = std::find_if(dimensions.begin(), dimensions.end(),
-                                       [](const mini_jit::ir::Dimension &dim)
-                                       {
-                                           return dim.type == dim_t::k &&
-                                                  dim.stride_in1 == 1 &&
-                                                  dim.stride_out == 0;
-                                       });
+        auto l_dim_k_it = std::find_if(dimensions.begin(), dimensions.end(), [](const mini_jit::ir::Dimension& dim)
+                                       { return dim.type == dim_t::k &&
+                                                dim.stride_in1 == 1 &&
+                                                dim.stride_out == 0; });
 
         if (l_dim_k_it != dimensions.end())
         {
             // set dimension data
-            l_dim_k_it->type = dim_t::k;
+            l_dim_k_it->type      = dim_t::k;
             l_dim_k_it->exec_type = exec_t::prim;
             if (l_dim_k_it != dimensions.end() - 1)
             {
@@ -417,9 +381,9 @@ void mini_jit::ir::Optimizer::identifyPrimitives(std::vector<mini_jit::ir::Dimen
     }
 }
 
-void mini_jit::ir::Optimizer::splitDimensions(std::vector<mini_jit::ir::Dimension> &dimensions,
-                                              int64_t max_kernel_size,
-                                              int64_t min_kernel_size)
+void mini_jit::ir::Optimizer::splitDimensions(std::vector<mini_jit::ir::Dimension>& dimensions,
+                                              int64_t                               max_kernel_size,
+                                              int64_t                               min_kernel_size)
 {
     // Dimensions should be split if they are too large (> max_kernel_size)
     for (size_t i = 0; i < dimensions.size(); i++)
@@ -452,8 +416,8 @@ void mini_jit::ir::Optimizer::splitDimensions(std::vector<mini_jit::ir::Dimensio
     }
 }
 
-void mini_jit::ir::Optimizer::createSharedLoops(std::vector<mini_jit::ir::Dimension> &dimensions,
-                                                int64_t thread_target)
+void mini_jit::ir::Optimizer::createSharedLoops(std::vector<mini_jit::ir::Dimension>& dimensions,
+                                                int64_t                               thread_target)
 {
     int64_t l_num_threads = 1;
 
@@ -470,15 +434,12 @@ void mini_jit::ir::Optimizer::createSharedLoops(std::vector<mini_jit::ir::Dimens
     if (l_num_threads >= thread_target)
     {
         // make sure that the shared loops are at the front
-        std::stable_partition(dimensions.begin(), dimensions.end(),
-                              [](const mini_jit::ir::Dimension &dim)
-                              {
-                                  return dim.exec_type == exec_t::shared;
-                              });
+        std::stable_partition(dimensions.begin(), dimensions.end(), [](const mini_jit::ir::Dimension& dim)
+                              { return dim.exec_type == exec_t::shared; });
         // no need to create more shared loops
         return;
     }
-    
+
     // Creation of new shared loops:
     for (size_t i = 0; i < dimensions.size(); i++)
     {
@@ -495,19 +456,16 @@ void mini_jit::ir::Optimizer::createSharedLoops(std::vector<mini_jit::ir::Dimens
     }
 
     // Move all shared loops to the front
-    std::stable_partition(dimensions.begin(), dimensions.end(),
-                          [](const mini_jit::ir::Dimension &dim)
-                          {
-                              return dim.exec_type == exec_t::shared;
-                          });
+    std::stable_partition(dimensions.begin(), dimensions.end(), [](const mini_jit::ir::Dimension& dim)
+                          { return dim.exec_type == exec_t::shared; });
 }
 
-void mini_jit::ir::Optimizer::findBestSplit(int64_t i_size,
-                                            int64_t i_max_kernel_size,
-                                            int64_t i_min_kernel_size,
-                                            dim_t i_type,
-                                            int64_t &o_size_0,
-                                            int64_t &o_size_1)
+void mini_jit::ir::Optimizer::findBestSplit(int64_t  i_size,
+                                            int64_t  i_max_kernel_size,
+                                            int64_t  i_min_kernel_size,
+                                            dim_t    i_type,
+                                            int64_t& o_size_0,
+                                            int64_t& o_size_1)
 {
     o_size_0 = 1;
     o_size_1 = i_size;
@@ -592,12 +550,12 @@ void mini_jit::ir::Optimizer::findBestSplit(int64_t i_size,
     }
 }
 
-void mini_jit::ir::Optimizer::findLargestMultipleOfDivisor(int64_t i_divisor,
-                                                           int64_t i_size,
-                                                           int64_t i_max_size,
-                                                           int64_t i_min_size,
-                                                           int64_t &o_size_0,
-                                                           int64_t &o_size_1)
+void mini_jit::ir::Optimizer::findLargestMultipleOfDivisor(int64_t  i_divisor,
+                                                           int64_t  i_size,
+                                                           int64_t  i_max_size,
+                                                           int64_t  i_min_size,
+                                                           int64_t& o_size_0,
+                                                           int64_t& o_size_1)
 {
     if (i_divisor <= 0 || i_size <= 0 || i_max_size <= 0 || i_min_size <= 0 ||
         i_divisor > i_max_size || i_size < i_min_size)
@@ -624,23 +582,24 @@ void mini_jit::ir::Optimizer::findLargestMultipleOfDivisor(int64_t i_divisor,
     }
 }
 
-void mini_jit::ir::Optimizer::fuseDimensions(std::vector<mini_jit::ir::Dimension> &dimensions,
-                                             int64_t min_kernel_size)
+void mini_jit::ir::Optimizer::fuseDimensions(std::vector<mini_jit::ir::Dimension>& dimensions,
+                                             int64_t                               min_kernel_size)
 {
     // Dimensions should be fused if they are small enough (< min_kernel_size)
     // Config object: Two dimensions X and Y can be fused can be fused if for all tensors: stride(X) = |Y| ⨉ stride(Y).
     // For both dimensions X and Y, the type has to be the same, and the execution type (exec.type) has to be the same or undefined.
     for (size_t i = 0; i < dimensions.size(); i++)
     {
-        mini_jit::ir::Dimension &l_dim_0 = dimensions[i];
+        mini_jit::ir::Dimension& l_dim_0 = dimensions[i];
         if (l_dim_0.size < min_kernel_size)
         {
             // find a dimension that can be fused with the current one
             for (size_t j = 0; j < dimensions.size(); j++)
             {
-                if (i == j) continue; // skip self
+                if (i == j)
+                    continue; // skip self
 
-                mini_jit::ir::Dimension &l_dim_1 = dimensions[j];
+                mini_jit::ir::Dimension& l_dim_1 = dimensions[j];
                 if (l_dim_0.type == l_dim_1.type &&
                     (l_dim_0.exec_type == l_dim_1.exec_type ||
                      l_dim_0.exec_type == exec_t::undefined ||

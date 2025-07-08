@@ -1,20 +1,19 @@
-#include <catch2/catch.hpp>
-#include <random>
 #include <algorithm>
-#include <iostream>
-#include <vector>
-#include <span>
+#include <catch2/catch.hpp>
 #include <iomanip>
+#include <iostream>
+#include <mlc/Brgemm.h>
+#include <mlc/TensorOperation.h>
+#include <mlc/constants.h>
+#include <mlc/ir/Optimizer.h>
+#include <mlc/types.h>
+#include <random>
+#include <span>
+#include <vector>
 
-#include "Brgemm.h"
-#include "TensorOperation.h"
-#include "Optimizer.h"
-#include "constants.h"
-#include "types.h"
-
-void runTensorOperationTest(mini_jit::ptype_t first_touch_type,
-                            mini_jit::ptype_t main_type,
-                            mini_jit::ptype_t last_touch_type,
+void runTensorOperationTest(mini_jit::ptype_t                 first_touch_type,
+                            mini_jit::ptype_t                 main_type,
+                            mini_jit::ptype_t                 last_touch_type,
                             std::span<const mini_jit::exec_t> exec_types)
 {
     const int R = 3;
@@ -28,14 +27,14 @@ void runTensorOperationTest(mini_jit::ptype_t first_touch_type,
     const int SIZE_B = (T * U) * (P * Q);
     const int SIZE_C = (R * S) * (P * Q);
 
-    float *A = new float[SIZE_A];
-    float *A_raw = new float[SIZE_A];
-    float *B = new float[SIZE_B];
-    float *C = new float[SIZE_C];
-    float *C_expected = new float[SIZE_C];
+    float* A          = new float[SIZE_A];
+    float* A_raw      = new float[SIZE_A];
+    float* B          = new float[SIZE_B];
+    float* C          = new float[SIZE_C];
+    float* C_expected = new float[SIZE_C];
 
-    std::random_device rd;
-    std::mt19937 gen(rd());
+    std::random_device                    rd;
+    std::mt19937                          gen(rd());
     std::uniform_real_distribution<float> dist(-10.0f, 10.0f);
 
     int id_Raw = 0;
@@ -51,8 +50,8 @@ void runTensorOperationTest(mini_jit::ptype_t first_touch_type,
                     int col = t * U + u;
                     int idx = col * (R * S) + row;
 
-                    float val = dist(gen);
-                    A[idx] = val;
+                    float val       = dist(gen);
+                    A[idx]          = val;
                     A_raw[id_Raw++] = val;
                 }
             }
@@ -69,7 +68,7 @@ void runTensorOperationTest(mini_jit::ptype_t first_touch_type,
         for (int i = 0; i < SIZE_C; ++i)
         {
             // dont init with zero, to test if the kernel sets it to zero
-            C[i] = dist(gen);
+            C[i]          = dist(gen);
             C_expected[i] = 0.0f;
         }
     }
@@ -77,7 +76,7 @@ void runTensorOperationTest(mini_jit::ptype_t first_touch_type,
     {
         for (int i = 0; i < SIZE_C; ++i)
         {
-            C[i] = 0.0f;
+            C[i]          = 0.0f;
             C_expected[i] = 0.0f;
         }
     }
@@ -167,8 +166,8 @@ void runTensorOperationTest(mini_jit::ptype_t first_touch_type,
 TEST_CASE("Reference test for ZERO + GEMM tensor operation kernel with variable R, P, T, S, Q, U", "[tensor_operation][parameterized][zero][gemm]")
 {
     const mini_jit::ptype_t first_touch_type = mini_jit::ptype_t::zero;
-    const mini_jit::ptype_t main_type = mini_jit::ptype_t::gemm;
-    const mini_jit::ptype_t last_touch_type = mini_jit::ptype_t::none;
+    const mini_jit::ptype_t main_type        = mini_jit::ptype_t::gemm;
+    const mini_jit::ptype_t last_touch_type  = mini_jit::ptype_t::none;
 
     std::vector<mini_jit::exec_t> exec_types = {
         mini_jit::exec_t::seq,
@@ -186,8 +185,8 @@ TEST_CASE("Reference test for ZERO + GEMM tensor operation kernel with variable 
 TEST_CASE("Reference test for ZERO + BRGEMM tensor operation kernel with variable R, P, T, S, Q, U", "[tensor_operation][parameterized][zero][brgemm]")
 {
     const mini_jit::ptype_t first_touch_type = mini_jit::ptype_t::zero;
-    const mini_jit::ptype_t main_type = mini_jit::ptype_t::brgemm;
-    const mini_jit::ptype_t last_touch_type = mini_jit::ptype_t::none;
+    const mini_jit::ptype_t main_type        = mini_jit::ptype_t::brgemm;
+    const mini_jit::ptype_t last_touch_type  = mini_jit::ptype_t::none;
 
     std::vector<mini_jit::exec_t> exec_types = {
         mini_jit::exec_t::seq,
@@ -205,8 +204,8 @@ TEST_CASE("Reference test for ZERO + BRGEMM tensor operation kernel with variabl
 TEST_CASE("Reference test for ZERO + GEMM + RELU tensor operation kernel with variable R, P, T, S, Q, U", "[tensor_operation][parameterized][zero][gemm][relu]")
 {
     const mini_jit::ptype_t first_touch_type = mini_jit::ptype_t::zero;
-    const mini_jit::ptype_t main_type = mini_jit::ptype_t::gemm;
-    const mini_jit::ptype_t last_touch_type = mini_jit::ptype_t::relu;
+    const mini_jit::ptype_t main_type        = mini_jit::ptype_t::gemm;
+    const mini_jit::ptype_t last_touch_type  = mini_jit::ptype_t::relu;
 
     std::vector<mini_jit::exec_t> exec_types = {
         mini_jit::exec_t::seq,
@@ -224,8 +223,8 @@ TEST_CASE("Reference test for ZERO + GEMM + RELU tensor operation kernel with va
 TEST_CASE("Reference test for ZERO + BRGEMM + RELU tensor operation kernel with variable R, P, T, S, Q, U", "[tensor_operation][parameterized][zero][brgemm][relu]")
 {
     const mini_jit::ptype_t first_touch_type = mini_jit::ptype_t::zero;
-    const mini_jit::ptype_t main_type = mini_jit::ptype_t::brgemm;
-    const mini_jit::ptype_t last_touch_type = mini_jit::ptype_t::relu;
+    const mini_jit::ptype_t main_type        = mini_jit::ptype_t::brgemm;
+    const mini_jit::ptype_t last_touch_type  = mini_jit::ptype_t::relu;
 
     std::vector<mini_jit::exec_t> exec_types = {
         mini_jit::exec_t::seq,
@@ -243,8 +242,8 @@ TEST_CASE("Reference test for ZERO + BRGEMM + RELU tensor operation kernel with 
 TEST_CASE("Reference test for ZERO + BRGEMM + RELU tensor operation kernel with variable shared(R), P, T, S, Q, U", "[tensor_operation][parameterized][zero][brgemm][relu]")
 {
     const mini_jit::ptype_t first_touch_type = mini_jit::ptype_t::zero;
-    const mini_jit::ptype_t main_type = mini_jit::ptype_t::brgemm;
-    const mini_jit::ptype_t last_touch_type = mini_jit::ptype_t::relu;
+    const mini_jit::ptype_t main_type        = mini_jit::ptype_t::brgemm;
+    const mini_jit::ptype_t last_touch_type  = mini_jit::ptype_t::relu;
 
     std::vector<mini_jit::exec_t> exec_types = {
         mini_jit::exec_t::shared,
@@ -262,8 +261,8 @@ TEST_CASE("Reference test for ZERO + BRGEMM + RELU tensor operation kernel with 
 TEST_CASE("Reference test for BRGEMM tensor operation kernel with variable shared(R), shared(P), T, S, Q, U", "[tensor_operation][parameterized][brgemm]")
 {
     const mini_jit::ptype_t first_touch_type = mini_jit::ptype_t::none;
-    const mini_jit::ptype_t main_type = mini_jit::ptype_t::brgemm;
-    const mini_jit::ptype_t last_touch_type = mini_jit::ptype_t::none;
+    const mini_jit::ptype_t main_type        = mini_jit::ptype_t::brgemm;
+    const mini_jit::ptype_t last_touch_type  = mini_jit::ptype_t::none;
 
     std::vector<mini_jit::exec_t> exec_types = {
         mini_jit::exec_t::shared,
@@ -281,8 +280,8 @@ TEST_CASE("Reference test for BRGEMM tensor operation kernel with variable share
 TEST_CASE("Reference test for ZERO + BRGEMM + RELU tensor operation kernel with variable shared(R), shared(P), T, S, Q, U", "[tensor_operation][parameterized][zero][brgemm][relu]")
 {
     const mini_jit::ptype_t first_touch_type = mini_jit::ptype_t::zero;
-    const mini_jit::ptype_t main_type = mini_jit::ptype_t::brgemm;
-    const mini_jit::ptype_t last_touch_type = mini_jit::ptype_t::relu;
+    const mini_jit::ptype_t main_type        = mini_jit::ptype_t::brgemm;
+    const mini_jit::ptype_t last_touch_type  = mini_jit::ptype_t::relu;
 
     std::vector<mini_jit::exec_t> exec_types = {
         mini_jit::exec_t::shared,
@@ -300,8 +299,8 @@ TEST_CASE("Reference test for ZERO + BRGEMM + RELU tensor operation kernel with 
 TEST_CASE("Reference test for IDENTITY layout transformation trus → turs", "[tensor_operation][layout_transform][identity]")
 {
     const mini_jit::ptype_t first_touch_type = mini_jit::ptype_t::none;
-    const mini_jit::ptype_t main_type = mini_jit::ptype_t::identity;
-    const mini_jit::ptype_t last_touch_type = mini_jit::ptype_t::none;
+    const mini_jit::ptype_t main_type        = mini_jit::ptype_t::identity;
+    const mini_jit::ptype_t last_touch_type  = mini_jit::ptype_t::none;
 
     const int T = GENERATE(3, 4, 7);
     const int R = GENERATE(3, 4, 7);
@@ -310,12 +309,12 @@ TEST_CASE("Reference test for IDENTITY layout transformation trus → turs", "[t
 
     const int SIZE = T * R * U * S;
 
-    float *A = new float[SIZE];
-    float *C = new float[SIZE];
-    float *C_expected = new float[SIZE];
+    float* A          = new float[SIZE];
+    float* C          = new float[SIZE];
+    float* C_expected = new float[SIZE];
 
-    std::random_device rd;
-    std::mt19937 gen(rd());
+    std::random_device                    rd;
+    std::mt19937                          gen(rd());
     std::uniform_real_distribution<float> dist(-10.0f, 10.0f);
 
     for (int i = 0; i < SIZE; ++i)
@@ -335,7 +334,7 @@ TEST_CASE("Reference test for IDENTITY layout transformation trus → turs", "[t
                     // Calculate index in output format (t,r,u,s) using strides_out
                     int l_idx_c_exp = t * (U * R * S) + r * S + u * (R * S) + s;
                     // Calculate index in input format (t,u,r,s) using strides_in0
-                    int l_idx_a = t * (R * U * S) + u * S + r * (U * S) + s;
+                    int l_idx_a             = t * (R * U * S) + u * S + r * (U * S) + s;
                     C_expected[l_idx_c_exp] = A[l_idx_a];
                 }
             }
@@ -402,8 +401,8 @@ TEST_CASE("Reference test for IDENTITY layout transformation trus → turs", "[t
 TEST_CASE("Reference test for SHARED IDENTITY layout transformation trus → turs", "[tensor_operation][layout_transform][identity][shared]")
 {
     const mini_jit::ptype_t first_touch_type = mini_jit::ptype_t::none;
-    const mini_jit::ptype_t main_type = mini_jit::ptype_t::identity;
-    const mini_jit::ptype_t last_touch_type = mini_jit::ptype_t::none;
+    const mini_jit::ptype_t main_type        = mini_jit::ptype_t::identity;
+    const mini_jit::ptype_t last_touch_type  = mini_jit::ptype_t::none;
 
     const int T = GENERATE(3, 4, 7);
     const int R = GENERATE(3, 4, 7);
@@ -412,12 +411,12 @@ TEST_CASE("Reference test for SHARED IDENTITY layout transformation trus → tur
 
     const int SIZE = T * R * U * S;
 
-    float *A = new float[SIZE];
-    float *C = new float[SIZE];
-    float *C_expected = new float[SIZE];
+    float* A          = new float[SIZE];
+    float* C          = new float[SIZE];
+    float* C_expected = new float[SIZE];
 
-    std::random_device rd;
-    std::mt19937 gen(rd());
+    std::random_device                    rd;
+    std::mt19937                          gen(rd());
     std::uniform_real_distribution<float> dist(-10.0f, 10.0f);
 
     for (int i = 0; i < SIZE; ++i)
@@ -437,7 +436,7 @@ TEST_CASE("Reference test for SHARED IDENTITY layout transformation trus → tur
                     // Calculate index in output format (t,r,u,s) using strides_out
                     int l_idx_c_exp = t * (U * R * S) + r * S + u * (R * S) + s;
                     // Calculate index in input format (t,u,r,s) using strides_in0
-                    int l_idx_a = t * (R * U * S) + u * S + r * (U * S) + s;
+                    int l_idx_a             = t * (R * U * S) + u * S + r * (U * S) + s;
                     C_expected[l_idx_c_exp] = A[l_idx_a];
                 }
             }
@@ -504,8 +503,8 @@ TEST_CASE("Reference test for SHARED IDENTITY layout transformation trus → tur
 TEST_CASE("Reference test for ZERO + IDENTITY layout transformation trus → turs", "[tensor_operation][layout_transform][zero][identity]")
 {
     const mini_jit::ptype_t first_touch_type = mini_jit::ptype_t::zero;
-    const mini_jit::ptype_t main_type = mini_jit::ptype_t::identity;
-    const mini_jit::ptype_t last_touch_type = mini_jit::ptype_t::none;
+    const mini_jit::ptype_t main_type        = mini_jit::ptype_t::identity;
+    const mini_jit::ptype_t last_touch_type  = mini_jit::ptype_t::none;
 
     const int T = GENERATE(3, 4, 7);
     const int R = GENERATE(3, 4, 7);
@@ -514,12 +513,12 @@ TEST_CASE("Reference test for ZERO + IDENTITY layout transformation trus → tur
 
     const int SIZE = T * R * U * S;
 
-    float *A = new float[SIZE];
-    float *C = new float[SIZE];
-    float *C_expected = new float[SIZE];
+    float* A          = new float[SIZE];
+    float* C          = new float[SIZE];
+    float* C_expected = new float[SIZE];
 
-    std::random_device rd;
-    std::mt19937 gen(rd());
+    std::random_device                    rd;
+    std::mt19937                          gen(rd());
     std::uniform_real_distribution<float> dist(-10.0f, 10.0f);
 
     for (int i = 0; i < SIZE; ++i)
@@ -539,7 +538,7 @@ TEST_CASE("Reference test for ZERO + IDENTITY layout transformation trus → tur
                     // Calculate index in output format (t,r,u,s) using strides_out
                     int l_idx_c_exp = t * (U * R * S) + r * S + u * (R * S) + s;
                     // Calculate index in input format (t,u,r,s) using strides_in0
-                    int l_idx_a = t * (R * U * S) + u * S + r * (U * S) + s;
+                    int l_idx_a             = t * (R * U * S) + u * S + r * (U * S) + s;
                     C_expected[l_idx_c_exp] = A[l_idx_a];
                 }
             }
@@ -606,8 +605,8 @@ TEST_CASE("Reference test for ZERO + IDENTITY layout transformation trus → tur
 TEST_CASE("Reference test for IDENTITY + RELU layout transformation trus → turs", "[tensor_operation][layout_transform][relu][identity]")
 {
     const mini_jit::ptype_t first_touch_type = mini_jit::ptype_t::none;
-    const mini_jit::ptype_t main_type = mini_jit::ptype_t::identity;
-    const mini_jit::ptype_t last_touch_type = mini_jit::ptype_t::relu;
+    const mini_jit::ptype_t main_type        = mini_jit::ptype_t::identity;
+    const mini_jit::ptype_t last_touch_type  = mini_jit::ptype_t::relu;
 
     const int T = GENERATE(3, 4, 7);
     const int R = GENERATE(3, 4, 7);
@@ -616,12 +615,12 @@ TEST_CASE("Reference test for IDENTITY + RELU layout transformation trus → tur
 
     const int SIZE = T * R * U * S;
 
-    float *A = new float[SIZE];
-    float *C = new float[SIZE];
-    float *C_expected = new float[SIZE];
+    float* A          = new float[SIZE];
+    float* C          = new float[SIZE];
+    float* C_expected = new float[SIZE];
 
-    std::random_device rd;
-    std::mt19937 gen(rd());
+    std::random_device                    rd;
+    std::mt19937                          gen(rd());
     std::uniform_real_distribution<float> dist(-10.0f, 10.0f);
 
     for (int i = 0; i < SIZE; ++i)
@@ -715,8 +714,8 @@ TEST_CASE("Reference test for IDENTITY + RELU layout transformation trus → tur
 TEST_CASE("Reference test for ZERO + IDENTITY_TRANS tensor operation kernel with variable R, S", "[tensor_operation][parameterized][zero][identity_trans]")
 {
     const mini_jit::ptype_t first_touch_type = mini_jit::ptype_t::zero;
-    const mini_jit::ptype_t main_type = mini_jit::ptype_t::identity;
-    const mini_jit::ptype_t last_touch_type = mini_jit::ptype_t::none;
+    const mini_jit::ptype_t main_type        = mini_jit::ptype_t::identity;
+    const mini_jit::ptype_t last_touch_type  = mini_jit::ptype_t::none;
 
     const int R = 4;
     const int S = 4;
@@ -724,12 +723,12 @@ TEST_CASE("Reference test for ZERO + IDENTITY_TRANS tensor operation kernel with
     const int SIZE_A = R * S;
     const int SIZE_C = R * S;
 
-    float *A = new float[SIZE_A];
-    float *C = new float[SIZE_C];
-    float *C_expected = new float[SIZE_C];
+    float* A          = new float[SIZE_A];
+    float* C          = new float[SIZE_C];
+    float* C_expected = new float[SIZE_C];
 
-    std::random_device rd;
-    std::mt19937 gen(rd());
+    std::random_device                    rd;
+    std::mt19937                          gen(rd());
     std::uniform_real_distribution<float> dist(-10.0f, 10.0f);
 
     // Initialize input tensor A
@@ -808,8 +807,8 @@ TEST_CASE("Reference test for ZERO + IDENTITY_TRANS tensor operation kernel with
 TEST_CASE("Reference test for ZERO + IDENTITY_TRANS + RELU tensor operation kernel with variable R, S", "[tensor_operation][parameterized][zero][identity][relu]")
 {
     const mini_jit::ptype_t first_touch_type = mini_jit::ptype_t::zero;
-    const mini_jit::ptype_t main_type = mini_jit::ptype_t::identity;
-    const mini_jit::ptype_t last_touch_type = mini_jit::ptype_t::relu;
+    const mini_jit::ptype_t main_type        = mini_jit::ptype_t::identity;
+    const mini_jit::ptype_t last_touch_type  = mini_jit::ptype_t::relu;
 
     const int R = 4;
     const int S = 4;
@@ -817,12 +816,12 @@ TEST_CASE("Reference test for ZERO + IDENTITY_TRANS + RELU tensor operation kern
     const int SIZE_A = R * S;
     const int SIZE_C = R * S;
 
-    float *A = new float[SIZE_A];
-    float *C = new float[SIZE_C];
-    float *C_expected = new float[SIZE_C];
+    float* A          = new float[SIZE_A];
+    float* C          = new float[SIZE_C];
+    float* C_expected = new float[SIZE_C];
 
-    std::random_device rd;
-    std::mt19937 gen(rd());
+    std::random_device                    rd;
+    std::mt19937                          gen(rd());
     std::uniform_real_distribution<float> dist(-10.0f, 10.0f);
 
     // Initialize input tensor A
@@ -895,8 +894,8 @@ TEST_CASE("Reference test for ZERO + IDENTITY_TRANS + RELU tensor operation kern
 TEST_CASE("Reference test for ZERO + IDENTITY + RELU optimized tensor operation kernel with variable R, S", "[tensor_operation][parameterized][zero][identity][relu][optimized]")
 {
     const mini_jit::ptype_t first_touch_type = mini_jit::ptype_t::zero;
-    const mini_jit::ptype_t main_type = mini_jit::ptype_t::identity;
-    const mini_jit::ptype_t last_touch_type = mini_jit::ptype_t::relu;
+    const mini_jit::ptype_t main_type        = mini_jit::ptype_t::identity;
+    const mini_jit::ptype_t last_touch_type  = mini_jit::ptype_t::relu;
 
     const int R = 8;
     const int S = 8;
@@ -904,12 +903,12 @@ TEST_CASE("Reference test for ZERO + IDENTITY + RELU optimized tensor operation 
     const int SIZE_A = R * S;
     const int SIZE_C = R * S;
 
-    float *A = new float[SIZE_A];
-    float *C = new float[SIZE_C];
-    float *C_expected = new float[SIZE_C];
+    float* A          = new float[SIZE_A];
+    float* C          = new float[SIZE_C];
+    float* C_expected = new float[SIZE_C];
 
-    std::random_device rd;
-    std::mt19937 gen(rd());
+    std::random_device                    rd;
+    std::mt19937                          gen(rd());
     std::uniform_real_distribution<float> dist(-10.0f, 10.0f);
 
     // Initialize input tensor A
@@ -996,13 +995,13 @@ void binaryTensorOperationTest(const mini_jit::ptype_t main_type)
     const int SIZE_B = M * N;
     const int SIZE_C = M * N;
 
-    float *A = new float[SIZE_A];
-    float *B = new float[SIZE_B];
-    float *C = new float[SIZE_C]{0.0f};
-    float *C_expected = new float[SIZE_C];
+    float* A          = new float[SIZE_A];
+    float* B          = new float[SIZE_B];
+    float* C          = new float[SIZE_C]{0.0f};
+    float* C_expected = new float[SIZE_C];
 
-    std::random_device rd;
-    std::mt19937 gen(rd());
+    std::random_device                    rd;
+    std::mt19937                          gen(rd());
     std::uniform_real_distribution<float> dist(-10.0f, 10.0f);
 
     for (int i = 0; i < SIZE_A; ++i)

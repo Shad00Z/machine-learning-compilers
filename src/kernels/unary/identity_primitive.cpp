@@ -1,9 +1,8 @@
-#include "identity_primitive.h"
-#include "Kernel.h"
-
-#include "registers/gp_registers.h"
-#include "registers/simd_fp_registers.h"
-#include "instructions/all_instructions.h"
+#include <mlc/Kernel.h>
+#include <mlc/instructions/all_instructions.h>
+#include <mlc/kernels/unary/identity_primitive.h>
+#include <mlc/registers/gp_registers.h>
+#include <mlc/registers/simd_fp_registers.h>
 
 using enum gpr_t;
 using enum simd_fp_t;
@@ -13,9 +12,9 @@ using enum arr_spec_t;
 using namespace mini_jit::instructions::base;
 using namespace mini_jit::instructions::simd_fp;
 
-void mini_jit::kernels::unary::identity(mini_jit::Kernel &kernel,
-                                        u_int32_t m,
-                                        u_int32_t n)
+void mini_jit::kernels::unary::identity(mini_jit::Kernel& kernel,
+                                        u_int32_t         m,
+                                        u_int32_t         n)
 {
     // Inputs:
     // x0: pointer to A
@@ -25,7 +24,7 @@ void mini_jit::kernels::unary::identity(mini_jit::Kernel &kernel,
 
     // Prepare the kernel
     u_int32_t mLoopIterations = m / 8;
-    u_int32_t mLoopRemainder = m % 8;
+    u_int32_t mLoopRemainder  = m % 8;
 
     // PCS
     kernel.add_instr(stpPre(x29, x30, sp, -16));
@@ -38,7 +37,7 @@ void mini_jit::kernels::unary::identity(mini_jit::Kernel &kernel,
     kernel.add_instr(lsl(x3, x3, 2));
 
     // Save pase matrix pointer
-    kernel.add_instr(mov(x4, x1)); // B
+    kernel.add_instr(mov(x4, x1));  // B
     kernel.add_instr(mov(x10, x0)); // B
 
     // Set n loop counter
@@ -51,7 +50,7 @@ void mini_jit::kernels::unary::identity(mini_jit::Kernel &kernel,
     kernel.add_instr(mov(x6, mLoopIterations));
 
     // working pointer for B (rows)
-    kernel.add_instr(mov(x7, x4)); 
+    kernel.add_instr(mov(x7, x4));
 
     // working pointer for A (rows)
     kernel.add_instr(mov(x8, x10));
@@ -64,8 +63,8 @@ void mini_jit::kernels::unary::identity(mini_jit::Kernel &kernel,
         kernel.add_instr(ldp(v0, v1, x8, 0, q));
         kernel.add_instr(stp(v0, v1, x7, 0, q));
         // jump by 8 rows
-        kernel.add_instr(add(x8, x8, 8*4, 0));
-        kernel.add_instr(add(x7, x7, 8*4, 0));
+        kernel.add_instr(add(x8, x8, 8 * 4, 0));
+        kernel.add_instr(add(x7, x7, 8 * 4, 0));
         // decrement m loop counter
         kernel.add_instr(sub(x6, x6, 1, 0));
         // check if loop counter is zero

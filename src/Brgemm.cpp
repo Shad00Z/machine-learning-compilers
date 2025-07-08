@@ -1,8 +1,8 @@
-#include "Brgemm.h"
-#include "Kernel.h"
-#include "kernels/matmul/matmul_m_n_k.h"
-#include "kernels/matmul/matmul_br_m_n_k.h"
 #include <iostream>
+#include <mlc/Brgemm.h>
+#include <mlc/Kernel.h>
+#include <mlc/kernels/matmul/matmul_br_m_n_k.h>
+#include <mlc/kernels/matmul/matmul_m_n_k.h>
 
 mini_jit::error_t mini_jit::Brgemm::generate(uint32_t m,
                                              uint32_t n,
@@ -11,7 +11,7 @@ mini_jit::error_t mini_jit::Brgemm::generate(uint32_t m,
                                              uint32_t trans_a,
                                              uint32_t trans_b,
                                              uint32_t trans_c,
-                                             dtype_t dtype)
+                                             dtype_t  dtype)
 {
     /**
      * Currently supported:
@@ -89,7 +89,7 @@ mini_jit::error_t mini_jit::Brgemm::generate(uint32_t m,
 
 mini_jit::Brgemm::kernel_t mini_jit::Brgemm::get_kernel() const
 {
-    return reinterpret_cast<kernel_t>(const_cast<void *>(m_kernel->get_kernel()));
+    return reinterpret_cast<kernel_t>(const_cast<void*>(m_kernel->get_kernel()));
 }
 
 void mini_jit::Brgemm::reset_kernel()

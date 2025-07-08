@@ -1,9 +1,8 @@
-#include "identity_trans_primitive.h"
-#include "Kernel.h"
-
-#include "registers/gp_registers.h"
-#include "registers/simd_fp_registers.h"
-#include "instructions/all_instructions.h"
+#include <mlc/Kernel.h>
+#include <mlc/instructions/all_instructions.h>
+#include <mlc/kernels/unary/identity_trans_primitive.h>
+#include <mlc/registers/gp_registers.h>
+#include <mlc/registers/simd_fp_registers.h>
 
 using enum gpr_t;
 using enum simd_fp_t;
@@ -14,16 +13,16 @@ using namespace mini_jit::instructions::base;
 using namespace mini_jit::instructions::simd_fp;
 namespace internal_subkernels = mini_jit::kernels::unary::internal;
 
-void mini_jit::kernels::unary::identity_trans(mini_jit::Kernel &kernel,
-                                              int m,
-                                              int n)
+void mini_jit::kernels::unary::identity_trans(mini_jit::Kernel& kernel,
+                                              int               m,
+                                              int               n)
 {
     // Prepare the kernel
     int mLoopIterations = m / 4;
-    int mLoopRemainder = m % 4;
+    int mLoopRemainder  = m % 4;
 
     int nLoopIterations = n / 4;
-    int nLoopRemainder = n % 4;
+    int nLoopRemainder  = n % 4;
 
     // PCS
     kernel.add_instr(stpPre(x29, x30, sp, -16));
@@ -55,7 +54,7 @@ void mini_jit::kernels::unary::identity_trans(mini_jit::Kernel &kernel,
 
     // Some constant values:
     // Jumping 4 rows in A | B      - (x25)
-    kernel.add_instr(mov(x25, 4*4)); 
+    kernel.add_instr(mov(x25, 4 * 4));
 
     // Jumping 4 columns in A       - (x26)
     kernel.add_instr(lsl(x26, x2, 2));
@@ -63,48 +62,48 @@ void mini_jit::kernels::unary::identity_trans(mini_jit::Kernel &kernel,
     // Jumping 4 columns in B       - (x27)
     kernel.add_instr(lsl(x27, x3, 2));
 
-    if ( nLoopIterations > 0)
+    if (nLoopIterations > 0)
     {
         // Start n loop (1 column)
         kernel.add_label("n_loop");
-    
+
         if (mLoopIterations > 0)
         {
-            internal_subkernels::identityM4N4( kernel, mLoopIterations );
+            internal_subkernels::identityM4N4(kernel, mLoopIterations);
         }
-    
+
         if (mLoopRemainder > 0)
         {
             switch (mLoopRemainder)
             {
             case 1:
-                internal_subkernels::identityM1N4( kernel );
+                internal_subkernels::identityM1N4(kernel);
                 break;
             case 2:
-                internal_subkernels::identityM2N4( kernel );
+                internal_subkernels::identityM2N4(kernel);
                 break;
             case 3:
-                internal_subkernels::identityM3N4( kernel );
+                internal_subkernels::identityM3N4(kernel);
                 break;
             default:
                 break;
             }
         }
-        
+
         // Restore positions
         kernel.add_instr(mov(x4, x0));
         kernel.add_instr(mov(x5, x1));
-    
+
         // Update Columns of A
         kernel.add_instr(add(x12, x12, x26, 0, 0));
-    
+
         // Update Rows of B
         kernel.add_instr(add(x13, x13, x25, 0, 0));
-    
+
         // Apply the updates:
         kernel.add_instr(add(x4, x4, x12, 0, 0));
         kernel.add_instr(add(x5, x5, x13, 0, 0));
-    
+
         // decrement n loop counter
         kernel.add_instr(sub(x9, x9, 1, 0));
         // check if loop counter is zero
@@ -114,70 +113,70 @@ void mini_jit::kernels::unary::identity_trans(mini_jit::Kernel &kernel,
 
     // All iterations in the n dimension have been performed, only possibilities are now:
     // nRemainder == 3, 2, 1
-    if ( nLoopRemainder > 0 )
+    if (nLoopRemainder > 0)
     {
         if (mLoopIterations)
         {
             switch (nLoopRemainder)
             {
-                case 1:
-                    internal_subkernels::identityM4N1( kernel, mLoopIterations );
-                    break;
-                case 2:
-                    internal_subkernels::identityM4N2( kernel, mLoopIterations );
-                    break;
-                case 3:
-                    internal_subkernels::identityM4N3( kernel, mLoopIterations );
-                    break;
-                default:
-                    break;
+            case 1:
+                internal_subkernels::identityM4N1(kernel, mLoopIterations);
+                break;
+            case 2:
+                internal_subkernels::identityM4N2(kernel, mLoopIterations);
+                break;
+            case 3:
+                internal_subkernels::identityM4N3(kernel, mLoopIterations);
+                break;
+            default:
+                break;
             }
         }
-        
+
         if (mLoopRemainder > 0)
         {
             switch (mLoopRemainder)
             {
             case 1:
-                if ( nLoopRemainder == 1 )
+                if (nLoopRemainder == 1)
                 {
-                    internal_subkernels::identityM1N1( kernel );
+                    internal_subkernels::identityM1N1(kernel);
                 }
-                else if ( nLoopRemainder == 2 )
+                else if (nLoopRemainder == 2)
                 {
-                    internal_subkernels::identityM1N2( kernel );
+                    internal_subkernels::identityM1N2(kernel);
                 }
-                else if ( nLoopRemainder == 3 )
+                else if (nLoopRemainder == 3)
                 {
-                    internal_subkernels::identityM1N3( kernel );
+                    internal_subkernels::identityM1N3(kernel);
                 }
                 break;
             case 2:
-                if ( nLoopRemainder == 1 )
+                if (nLoopRemainder == 1)
                 {
-                    internal_subkernels::identityM2N1( kernel );
+                    internal_subkernels::identityM2N1(kernel);
                 }
-                else if ( nLoopRemainder == 2 )
+                else if (nLoopRemainder == 2)
                 {
-                    internal_subkernels::identityM2N2( kernel );
+                    internal_subkernels::identityM2N2(kernel);
                 }
-                else if ( nLoopRemainder == 3 )
+                else if (nLoopRemainder == 3)
                 {
-                    internal_subkernels::identityM2N3( kernel );
+                    internal_subkernels::identityM2N3(kernel);
                 }
                 break;
             case 3:
-                if ( nLoopRemainder == 1 )
+                if (nLoopRemainder == 1)
                 {
-                    internal_subkernels::identityM3N1( kernel );
+                    internal_subkernels::identityM3N1(kernel);
                 }
-                else if ( nLoopRemainder == 2 )
+                else if (nLoopRemainder == 2)
                 {
-                    internal_subkernels::identityM3N2( kernel );
+                    internal_subkernels::identityM3N2(kernel);
                 }
-                else if ( nLoopRemainder == 3 )
+                else if (nLoopRemainder == 3)
                 {
-                    internal_subkernels::identityM3N3( kernel );
+                    internal_subkernels::identityM3N3(kernel);
                 }
                 break;
             default:
@@ -203,8 +202,8 @@ void mini_jit::kernels::unary::identity_trans(mini_jit::Kernel &kernel,
     kernel.set_kernel();
 }
 
-void mini_jit::kernels::unary::internal::identityM4N4( mini_jit::Kernel &kernel,
-                                                       int mLoopIterations )
+void mini_jit::kernels::unary::internal::identityM4N4(mini_jit::Kernel& kernel,
+                                                      int               mLoopIterations)
 {
     kernel.add_instr(mov(x6, mLoopIterations));
 
@@ -213,7 +212,7 @@ void mini_jit::kernels::unary::internal::identityM4N4( mini_jit::Kernel &kernel,
     // working pointer for A and B
     kernel.add_instr(mov(x7, x4));
     kernel.add_instr(mov(x8, x5));
-    
+
     // Load 4x4 block of A (input matrix)
     kernel.add_instr(ldr(v0, x7, 0, q));
     kernel.add_instr(add(x7, x7, x2, 0, 0));
@@ -251,7 +250,7 @@ void mini_jit::kernels::unary::internal::identityM4N4( mini_jit::Kernel &kernel,
 
     // Matrix B next 4 columns
     kernel.add_instr(add(x5, x5, x27, 0, 0));
-    
+
     // decrement m loop counter
     kernel.add_instr(sub(x6, x6, 1, 0));
     // check if loop counter is zero
@@ -259,12 +258,12 @@ void mini_jit::kernels::unary::internal::identityM4N4( mini_jit::Kernel &kernel,
     kernel.add_instr(cbnz(x6, -l_mLoopInstrCount * 4));
 }
 
-void mini_jit::kernels::unary::internal::identityM3N4( mini_jit::Kernel &kernel )
+void mini_jit::kernels::unary::internal::identityM3N4(mini_jit::Kernel& kernel)
 {
     // working pointer for A and B
     kernel.add_instr(mov(x7, x4));
     kernel.add_instr(mov(x8, x5));
-    
+
     // Load 3x4 block of A (input matrix)
     kernel.add_instr(mov(x17, x7));
 
@@ -315,12 +314,12 @@ void mini_jit::kernels::unary::internal::identityM3N4( mini_jit::Kernel &kernel 
     kernel.add_instr(str(v19, x8, 0, d));
 }
 
-void mini_jit::kernels::unary::internal::identityM2N4( mini_jit::Kernel &kernel )
+void mini_jit::kernels::unary::internal::identityM2N4(mini_jit::Kernel& kernel)
 {
     // working pointer for A and B
     kernel.add_instr(mov(x7, x4));
     kernel.add_instr(mov(x8, x5));
-    
+
     // Load 2x4 block of A (input matrix)
     kernel.add_instr(ldr(v0, x7, 0, d));
     kernel.add_instr(add(x7, x7, x2, 0, 0));
@@ -352,12 +351,12 @@ void mini_jit::kernels::unary::internal::identityM2N4( mini_jit::Kernel &kernel 
     kernel.add_instr(str(v9, x8, 0, q));
 }
 
-void mini_jit::kernels::unary::internal::identityM1N4( mini_jit::Kernel &kernel )
+void mini_jit::kernels::unary::internal::identityM1N4(mini_jit::Kernel& kernel)
 {
     // working pointer for A and B
     kernel.add_instr(mov(x7, x4));
     kernel.add_instr(mov(x8, x5));
-    
+
     // Load 1x4 block of A (input matrix)
     kernel.add_instr(ldr(v0, x7, 0, s));
     kernel.add_instr(add(x7, x7, x2, 0, 0));
@@ -382,17 +381,16 @@ void mini_jit::kernels::unary::internal::identityM1N4( mini_jit::Kernel &kernel 
     kernel.add_instr(str(v6, x8, 0, q));
 }
 
-void mini_jit::kernels::unary::internal::identityM4N3( mini_jit::Kernel &kernel,
-                                                       int mLoopIterations )
+void mini_jit::kernels::unary::internal::identityM4N3(mini_jit::Kernel& kernel,
+                                                      int               mLoopIterations)
 {
     kernel.add_instr(mov(x6, mLoopIterations));
     kernel.add_label("m_4_n_3_loop");
 
-
     // working pointer for A and B
     kernel.add_instr(mov(x7, x4));
     kernel.add_instr(mov(x8, x5));
-    
+
     // Load 4x3 block of A (input matrix)
     kernel.add_instr(mov(x17, x7));
 
@@ -418,7 +416,6 @@ void mini_jit::kernels::unary::internal::identityM4N3( mini_jit::Kernel &kernel,
     kernel.add_instr(trn1(v10, v1, v3, s4));
     kernel.add_instr(trn2(v11, v1, v3, s4));
 
-
     // Store 4x3 Block of B
     kernel.add_instr(mov(x17, x8));
 
@@ -440,13 +437,12 @@ void mini_jit::kernels::unary::internal::identityM4N3( mini_jit::Kernel &kernel,
     kernel.add_instr(strPost(v11, x17, 8, d));
     kernel.add_instr(str(v7, x17, 0, s));
 
-
     // Matrix A next 4 rows
     kernel.add_instr(add(x4, x4, x25, 0, 0));
 
     // Matrix B next 1 columns
     kernel.add_instr(add(x5, x5, x27, 0, 0));
-    
+
     // decrement m loop counter
     kernel.add_instr(sub(x6, x6, 1, 0));
     // check if loop counter is zero
@@ -454,17 +450,16 @@ void mini_jit::kernels::unary::internal::identityM4N3( mini_jit::Kernel &kernel,
     kernel.add_instr(cbnz(x6, -l_mLoopInstrCount * 4));
 }
 
-void mini_jit::kernels::unary::internal::identityM4N2( mini_jit::Kernel &kernel,
-                                                       int mLoopIterations )
+void mini_jit::kernels::unary::internal::identityM4N2(mini_jit::Kernel& kernel,
+                                                      int               mLoopIterations)
 {
     kernel.add_instr(mov(x6, mLoopIterations));
     kernel.add_label("m_4_n_2_loop");
 
-
     // working pointer for A and B
     kernel.add_instr(mov(x7, x4));
     kernel.add_instr(mov(x8, x5));
-    
+
     // Load 4x2 block of A (input matrix)
     kernel.add_instr(mov(x17, x7));
     kernel.add_instr(ldrPost(v0, x17, 8, d));
@@ -495,13 +490,12 @@ void mini_jit::kernels::unary::internal::identityM4N2( mini_jit::Kernel &kernel,
 
     kernel.add_instr(str(v7, x8, 0, d));
 
-
     // Matrix A next 4 rows
     kernel.add_instr(add(x4, x4, x25, 0, 0));
 
     // Matrix B next 1 columns
     kernel.add_instr(add(x5, x5, x27, 0, 0));
-    
+
     // decrement m loop counter
     kernel.add_instr(sub(x6, x6, 1, 0));
     // check if loop counter is zero
@@ -509,17 +503,16 @@ void mini_jit::kernels::unary::internal::identityM4N2( mini_jit::Kernel &kernel,
     kernel.add_instr(cbnz(x6, -l_mLoopInstrCount * 4));
 }
 
-void mini_jit::kernels::unary::internal::identityM4N1( mini_jit::Kernel &kernel,
-                                                       int mLoopIterations )
+void mini_jit::kernels::unary::internal::identityM4N1(mini_jit::Kernel& kernel,
+                                                      int               mLoopIterations)
 {
     kernel.add_instr(mov(x6, mLoopIterations));
     kernel.add_label("m_4_n_1_loop");
 
-
     // working pointer for A and B
     kernel.add_instr(mov(x7, x4));
     kernel.add_instr(mov(x8, x5));
-    
+
     // Load 4x1 block of A (input matrix)
     kernel.add_instr(ldrPost(v0, x7, 4, s));
     kernel.add_instr(ldrPost(v1, x7, 4, s));
@@ -539,13 +532,12 @@ void mini_jit::kernels::unary::internal::identityM4N1( mini_jit::Kernel &kernel,
     kernel.add_instr(str(v3, x8, 0, s));
     kernel.add_instr(add(x8, x8, x3, 0, 0));
 
-
     // Matrix A next 4 rows
     kernel.add_instr(add(x4, x4, x25, 0, 0));
 
     // Matrix B next 1 columns
     kernel.add_instr(add(x5, x5, x27, 0, 0));
-    
+
     // decrement m loop counter
     kernel.add_instr(sub(x6, x6, 1, 0));
     // check if loop counter is zero
@@ -553,12 +545,12 @@ void mini_jit::kernels::unary::internal::identityM4N1( mini_jit::Kernel &kernel,
     kernel.add_instr(cbnz(x6, -l_mLoopInstrCount * 4));
 }
 
-void mini_jit::kernels::unary::internal::identityM3N3( mini_jit::Kernel &kernel )
+void mini_jit::kernels::unary::internal::identityM3N3(mini_jit::Kernel& kernel)
 {
     // working pointer for A and B
     kernel.add_instr(mov(x7, x4));
     kernel.add_instr(mov(x8, x5));
-    
+
     // Load 3x3 block of A (input matrix)
     kernel.add_instr(mov(x17, x7));
 
@@ -599,12 +591,12 @@ void mini_jit::kernels::unary::internal::identityM3N3( mini_jit::Kernel &kernel 
     kernel.add_instr(str(v6, x17, 0, s));
 }
 
-void mini_jit::kernels::unary::internal::identityM3N2( mini_jit::Kernel &kernel )
+void mini_jit::kernels::unary::internal::identityM3N2(mini_jit::Kernel& kernel)
 {
     // working pointer for A and B
     kernel.add_instr(mov(x7, x4));
     kernel.add_instr(mov(x8, x5));
-    
+
     // Load 3x2 block of A (input matrix)
     kernel.add_instr(mov(x17, x7));
 
@@ -632,12 +624,12 @@ void mini_jit::kernels::unary::internal::identityM3N2( mini_jit::Kernel &kernel 
     kernel.add_instr(str(v3, x8, 0, s));
 }
 
-void mini_jit::kernels::unary::internal::identityM3N1( mini_jit::Kernel &kernel )
+void mini_jit::kernels::unary::internal::identityM3N1(mini_jit::Kernel& kernel)
 {
     // working pointer for A and B
     kernel.add_instr(mov(x7, x4));
     kernel.add_instr(mov(x8, x5));
-    
+
     // Load 3x2 block of A (input matrix)
     kernel.add_instr(ldrPost(v0, x7, 4, s));
     kernel.add_instr(ldrPost(v1, x7, 4, s));
@@ -653,12 +645,12 @@ void mini_jit::kernels::unary::internal::identityM3N1( mini_jit::Kernel &kernel 
     kernel.add_instr(str(v2, x8, 0, s));
 }
 
-void mini_jit::kernels::unary::internal::identityM2N3( mini_jit::Kernel &kernel )
+void mini_jit::kernels::unary::internal::identityM2N3(mini_jit::Kernel& kernel)
 {
     // working pointer for A and B
     kernel.add_instr(mov(x7, x4));
     kernel.add_instr(mov(x8, x5));
-    
+
     // Load 2x3 block of A (input matrix)
     kernel.add_instr(mov(x17, x7));
 
@@ -690,12 +682,12 @@ void mini_jit::kernels::unary::internal::identityM2N3( mini_jit::Kernel &kernel 
     kernel.add_instr(str(v3, x17, 0, s));
 }
 
-void mini_jit::kernels::unary::internal::identityM1N3( mini_jit::Kernel &kernel )
+void mini_jit::kernels::unary::internal::identityM1N3(mini_jit::Kernel& kernel)
 {
     // working pointer for A and B
     kernel.add_instr(mov(x7, x4));
     kernel.add_instr(mov(x8, x5));
-    
+
     // Load 1x3 block of A (input matrix)
     kernel.add_instr(ldr(v0, x7, 0, s));
     kernel.add_instr(add(x7, x7, x2, 0, 0));
@@ -711,12 +703,12 @@ void mini_jit::kernels::unary::internal::identityM1N3( mini_jit::Kernel &kernel 
     kernel.add_instr(str(v2, x8, 0, s));
 }
 
-void mini_jit::kernels::unary::internal::identityM2N2( mini_jit::Kernel &kernel )
+void mini_jit::kernels::unary::internal::identityM2N2(mini_jit::Kernel& kernel)
 {
     // working pointer for A and B
     kernel.add_instr(mov(x7, x4));
     kernel.add_instr(mov(x8, x5));
-    
+
     // Load 2x3 block of A (input matrix)
     kernel.add_instr(ldr(v0, x7, 0, d));
     kernel.add_instr(add(x7, x7, x2, 0, 0));
@@ -731,16 +723,16 @@ void mini_jit::kernels::unary::internal::identityM2N2( mini_jit::Kernel &kernel 
     // Store 2x3 Block of B
     kernel.add_instr(str(v2, x8, 0, d));
     kernel.add_instr(add(x8, x8, x3, 0, 0));
-    
+
     kernel.add_instr(str(v3, x8, 0, d));
 }
 
-void mini_jit::kernels::unary::internal::identityM2N1( mini_jit::Kernel &kernel )
+void mini_jit::kernels::unary::internal::identityM2N1(mini_jit::Kernel& kernel)
 {
     // working pointer for A and B
     kernel.add_instr(mov(x7, x4));
     kernel.add_instr(mov(x8, x5));
-    
+
     // Load 2x1 block of A (input matrix)
     kernel.add_instr(ldrPost(v0, x7, 4, s));
     kernel.add_instr(ldr(v1, x7, 0, s));
@@ -752,12 +744,12 @@ void mini_jit::kernels::unary::internal::identityM2N1( mini_jit::Kernel &kernel 
     kernel.add_instr(strPost(v1, x8, 0, s));
 }
 
-void mini_jit::kernels::unary::internal::identityM1N2( mini_jit::Kernel &kernel )
+void mini_jit::kernels::unary::internal::identityM1N2(mini_jit::Kernel& kernel)
 {
     // working pointer for A and B
     kernel.add_instr(mov(x7, x4));
     kernel.add_instr(mov(x8, x5));
-    
+
     // Load 1x2 block of A (input matrix)
     kernel.add_instr(ldr(v0, x7, 0, s));
     kernel.add_instr(add(x7, x7, x2, 0, 0));
@@ -769,12 +761,12 @@ void mini_jit::kernels::unary::internal::identityM1N2( mini_jit::Kernel &kernel 
     kernel.add_instr(str(v1, x8, 0, s));
 }
 
-void mini_jit::kernels::unary::internal::identityM1N1( mini_jit::Kernel &kernel )
+void mini_jit::kernels::unary::internal::identityM1N1(mini_jit::Kernel& kernel)
 {
     // working pointer for A and B
     kernel.add_instr(mov(x7, x4));
     kernel.add_instr(mov(x8, x5));
-    
+
     // Load 1x1 block of A (input matrix)
     kernel.add_instr(ldr(v0, x7, 0, s));
 

@@ -1,34 +1,31 @@
-#include "registers/gp_registers.h"
-#include "registers/simd_fp_registers.h"
-#include "instructions/all_instructions.h"
-#include "kernels/matmul/subkernels/all_subkernels.h"
-#include "matmul_br_m_n_k.h"
-#include "matmul_m_n_k.h"
+#include <mlc/instructions/all_instructions.h>
+#include <mlc/kernels/matmul/matmul_br_m_n_k.h>
+#include <mlc/kernels/matmul/matmul_m_n_k.h>
+#include <mlc/kernels/matmul/subkernels/all_subkernels.h>
+#include <mlc/registers/gp_registers.h>
+#include <mlc/registers/simd_fp_registers.h>
 
-#include <iostream>
-#include <cstring>
-
-using gpr_t = mini_jit::registers::gpr_t;
-using simd_fp_t = mini_jit::registers::simd_fp_t;
-using arr_spec_t = mini_jit::registers::arr_spec_t;
+using gpr_t            = mini_jit::registers::gpr_t;
+using simd_fp_t        = mini_jit::registers::simd_fp_t;
+using arr_spec_t       = mini_jit::registers::arr_spec_t;
 using neon_size_spec_t = mini_jit::registers::neon_size_spec_t;
 
-namespace inst = mini_jit::instructions;
-namespace base = inst::base;
-namespace simd_fp = inst::simd_fp;
+namespace inst                = mini_jit::instructions;
+namespace base                = inst::base;
+namespace simd_fp             = inst::simd_fp;
 namespace internal_subkernels = mini_jit::kernels::matmul::subkernels::internal;
 
-void mini_jit::kernels::matmul::matmul_br_m_n_k(mini_jit::Kernel &kernel,
-                                                int m,
-                                                int n,
-                                                int k,
-                                                int br_size)
+void mini_jit::kernels::matmul::matmul_br_m_n_k(mini_jit::Kernel& kernel,
+                                                int               m,
+                                                int               n,
+                                                int               k,
+                                                int               br_size)
 {
     // Prepare the kernel
     int nLoopIterations = n / 4;
-    int nLoopRemainder = n % 4;
+    int nLoopRemainder  = n % 4;
     int mLoopIterations = m / 16;
-    int mLoopRemainder = m % 16;
+    int mLoopRemainder  = m % 16;
 
     // PCS
     kernel.add_instr(base::stpPre(gpr_t::x29, gpr_t::x30, gpr_t::sp, -16));

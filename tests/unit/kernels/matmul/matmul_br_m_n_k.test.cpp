@@ -1,25 +1,24 @@
 #include <catch2/catch.hpp>
-#include <random>
 #include <iostream>
-
-#include "matmul_br_m_n_k.h"
-#include "Brgemm.h"
-#include "constants.h"
+#include <mlc/Brgemm.h>
+#include <mlc/constants.h>
+#include <mlc/kernels/matmul/matmul_br_m_n_k.h>
+#include <random>
 
 TEST_CASE("Reference test for batch reduce matmul kernel with variable M, N, K", "[br_matmul][parameterized]")
 {
-    const int M = GENERATE(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
-    const int N = GENERATE(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
-    const int K = GENERATE(1, 16, 32, 64, 128);
+    const int M       = GENERATE(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
+    const int N       = GENERATE(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
+    const int K       = GENERATE(1, 16, 32, 64, 128);
     const int br_size = 16;
 
-    float *A = new float[M * K * br_size];
-    float *B = new float[K * N * br_size];
-    float *C = new float[M * N];
-    float *C_expected = new float[M * N];
+    float* A          = new float[M * K * br_size];
+    float* B          = new float[K * N * br_size];
+    float* C          = new float[M * N];
+    float* C_expected = new float[M * N];
 
-    std::random_device rd;
-    std::mt19937 gen(rd());
+    std::random_device                    rd;
+    std::mt19937                          gen(rd());
     std::uniform_real_distribution<float> dist(-0.5f, 100.0f);
 
     for (int i = 0; i < M * K * br_size; ++i)
@@ -56,7 +55,7 @@ TEST_CASE("Reference test for batch reduce matmul kernel with variable M, N, K",
 
     mini_jit::Kernel l_kernel;
     mini_jit::kernels::matmul::matmul_br_m_n_k(l_kernel, M, N, K, br_size);
-    mini_jit::Brgemm::kernel_t l_kernel_t = reinterpret_cast<mini_jit::Brgemm::kernel_t>(const_cast<void *>(l_kernel.get_kernel()));
+    mini_jit::Brgemm::kernel_t l_kernel_t = reinterpret_cast<mini_jit::Brgemm::kernel_t>(const_cast<void*>(l_kernel.get_kernel()));
     l_kernel_t(A, B, C, M, K, M, M * K, K * N);
 
     for (int i = 0; i < M * N; ++i)

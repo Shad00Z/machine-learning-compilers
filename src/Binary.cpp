@@ -1,13 +1,13 @@
-#include "Kernel.h"
-#include "Binary.h"
-#include "kernels/binary/all_binary_primitives.h"
 #include <iostream>
+#include <mlc/Binary.h>
+#include <mlc/Kernel.h>
+#include <mlc/kernels/binary/all_binary_primitives.h>
 
 mini_jit::error_t mini_jit::Binary::generate(uint32_t m,
                                              uint32_t n,
                                              uint32_t trans_c,
-                                             dtype_t dtype,
-                                             ptype_t ptype)
+                                             dtype_t  dtype,
+                                             ptype_t  ptype)
 {
     if (m <= 0)
     {
@@ -115,7 +115,7 @@ mini_jit::error_t mini_jit::Binary::generate(uint32_t m,
 
 mini_jit::Binary::kernel_t mini_jit::Binary::get_kernel() const
 {
-    return reinterpret_cast<kernel_t>(const_cast<void *>(m_kernel->get_kernel()));
+    return reinterpret_cast<kernel_t>(const_cast<void*>(m_kernel->get_kernel()));
 }
 
 void mini_jit::Binary::reset_kernel()

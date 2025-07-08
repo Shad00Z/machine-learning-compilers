@@ -1,10 +1,9 @@
 #include <catch2/catch.hpp>
-#include <random>
 #include <iostream>
-
-#include "matmul_m_n_k.h"
-#include "Brgemm.h"
-#include "constants.h"
+#include <mlc/Brgemm.h>
+#include <mlc/constants.h>
+#include <mlc/kernels/matmul/matmul_m_n_k.h>
+#include <random>
 
 TEST_CASE("Reference test for matmul kernel with variable M, N, K", "[matmul][parameterized]")
 {
@@ -12,13 +11,13 @@ TEST_CASE("Reference test for matmul kernel with variable M, N, K", "[matmul][pa
     const int N = GENERATE(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 32);
     const int K = GENERATE(1, 16, 32, 64, 128);
 
-    float *A = new float[M * K];
-    float *B = new float[K * N];
-    float *C = new float[M * N];
-    float *C_expected = new float[M * N];
+    float* A          = new float[M * K];
+    float* B          = new float[K * N];
+    float* C          = new float[M * N];
+    float* C_expected = new float[M * N];
 
-    std::random_device rd;
-    std::mt19937 gen(rd());
+    std::random_device                    rd;
+    std::mt19937                          gen(rd());
     std::uniform_real_distribution<float> dist(-0.5f, 100.0f);
 
     for (int i = 0; i < M * K; ++i)
@@ -52,7 +51,7 @@ TEST_CASE("Reference test for matmul kernel with variable M, N, K", "[matmul][pa
 
     mini_jit::Kernel l_kernel;
     mini_jit::kernels::matmul::matmul_m_n_k(l_kernel, M, N, K);
-    mini_jit::Brgemm::kernel_t l_kernel_t = reinterpret_cast<mini_jit::Brgemm::kernel_t>(const_cast<void *>(l_kernel.get_kernel()));
+    mini_jit::Brgemm::kernel_t l_kernel_t = reinterpret_cast<mini_jit::Brgemm::kernel_t>(const_cast<void*>(l_kernel.get_kernel()));
     l_kernel_t(A, B, C, M, K, M, 0, 0);
 
     for (int i = 0; i < M * N; ++i)
@@ -73,7 +72,7 @@ TEST_CASE("Reference test for matmul kernel with variable M, N, K and lda>M, ldb
     const int K = GENERATE(1, 16, 32, 64, 128);
 
     std::random_device rd;
-    std::mt19937 gen(rd());
+    std::mt19937       gen(rd());
 
     std::uniform_int_distribution<int> strideDist(1, 10);
 
@@ -83,10 +82,10 @@ TEST_CASE("Reference test for matmul kernel with variable M, N, K and lda>M, ldb
     const int ldc = M + strideDist(gen);
 
     // Allocate space for matrices larger than M, N, K
-    float *A = new float[lda * K];
-    float *B = new float[ldb * N];
-    float *C = new float[ldc * N];
-    float *C_expected = new float[ldc * N];
+    float* A          = new float[lda * K];
+    float* B          = new float[ldb * N];
+    float* C          = new float[ldc * N];
+    float* C_expected = new float[ldc * N];
 
     std::uniform_real_distribution<float> dist(-0.5f, 100.0f);
 
@@ -113,8 +112,8 @@ TEST_CASE("Reference test for matmul kernel with variable M, N, K and lda>M, ldb
     {
         for (int m = 0; m < ldc; ++m)
         {
-            float value = (m < M) ? dist(gen) : 0.0f;
-            C[m + n * ldc] = value;
+            float value             = (m < M) ? dist(gen) : 0.0f;
+            C[m + n * ldc]          = value;
             C_expected[m + n * ldc] = value;
         }
     }
@@ -135,7 +134,7 @@ TEST_CASE("Reference test for matmul kernel with variable M, N, K and lda>M, ldb
 
     mini_jit::Kernel l_kernel;
     mini_jit::kernels::matmul::matmul_m_n_k(l_kernel, M, N, K);
-    mini_jit::Brgemm::kernel_t l_kernel_t = reinterpret_cast<mini_jit::Brgemm::kernel_t>(const_cast<void *>(l_kernel.get_kernel()));
+    mini_jit::Brgemm::kernel_t l_kernel_t = reinterpret_cast<mini_jit::Brgemm::kernel_t>(const_cast<void*>(l_kernel.get_kernel()));
     l_kernel_t(A, B, C, lda, ldb, ldc, 0, 0);
 
     for (int n = 0; n < N; ++n)
