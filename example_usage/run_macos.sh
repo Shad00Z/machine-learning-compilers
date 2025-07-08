@@ -49,6 +49,7 @@ if [ $? -eq 0 ]; then
 
     # Clean up the generated executables
     rm -f EinsumExample TensorOperationExample OptimizerExample
+    rm -rf build
     echo "Cleaned up generated executables."
     exit 0
 else
