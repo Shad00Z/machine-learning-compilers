@@ -10,6 +10,7 @@ CPP_VERSION = c++20
 
 # LIBS
 LIBS = 
+LIB_NAME = libmlc
 
 # DIRECTORIES
 SRC_DIR = src
@@ -105,6 +106,7 @@ ifeq ($(OS),macOS)
 	CXXFLAGS += -I$(LIBOMP_LOCATION)/include
 	LDFLAGS += -L$(LIBOMP_LOCATION)/lib
 	LDFLAGS += -lomp
+	LDFLAGS += -Wl,-rpath,$(LIBOMP_LOCATION)/lib
 endif
 
 CXXFLAGS += -fopenmp
@@ -186,7 +188,7 @@ BENCH_MAIN_OBJ = $(BENCH_MAIN_SRC:%.cpp=$(BIN_DIR)/%.o)
 BENCH_OBJ = $(BENCH_SRC:%.cpp=$(BIN_DIR)/%.o)
 
 # TARGETS
-default: tests benchmarks
+default: static-library unit-tests
 
 $(BIN_DIR):
 	mkdir -p $@
@@ -196,6 +198,15 @@ createdirs: $(BIN_DIR)
 $(BIN_DIR)/%.o: %.cpp
 	@mkdir -p $(dir $@)
 	$(CXX) -o $@ -MMD -c $< $(CXXFLAGS) $(INCFLAGS)
+
+static-library: $(BIN_DIR)/$(LIB_NAME).a
+shared-library: $(BIN_DIR)/$(LIB_NAME).so
+
+$(BIN_DIR)/$(LIB_NAME).a: $(COMMON_OBJ) | $(BIN_DIR)
+	ar rcs $@ $^
+
+$(BIN_DIR)/$(LIB_NAME).so: $(COMMON_OBJ) | $(BIN_DIR)
+	$(CXX) -shared -o $@ $^ $(LDFLAGS)
 
 benchmarks: createdirs $(COMMON_OBJ) $(BENCH_MAIN_OBJ) $(BENCH_OBJ)
 	$(LD) -o $(BIN_DIR)/benchmarks $(COMMON_OBJ) $(BENCH_MAIN_OBJ) $(BENCH_OBJ) $(LDFLAGS) $(LIBS)
