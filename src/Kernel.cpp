@@ -155,25 +155,32 @@ void mini_jit::Kernel::release_memory()
     m_kernel = nullptr;
 }
 
-void mini_jit::Kernel::write(char const* filename) const
+void mini_jit::Kernel::create_dir_if_missing(const char* dir) const
 {
-    // create build/kernels dir
-    const char* build_dir = "build/kernels";
     struct stat st;
-    if (stat(build_dir, &st) != 0)
+    if (stat(dir, &st) != 0)
     {
-        if (mkdir(build_dir, 0755) != 0)
+        if (mkdir(dir, 0755) != 0)
         {
-            throw std::runtime_error("Failed to create build/kernels directory");
+            if (errno != EEXIST)
+            {
+                throw std::runtime_error(std::string("Failed to create directory: ") + dir);
+            }
         }
     }
     else if (!S_ISDIR(st.st_mode))
     {
-        throw std::runtime_error("\"build/kernels\" exists but is not a directory");
+        throw std::runtime_error(std::string("\"") + dir + "\" exists but is not a directory");
     }
+}
+
+void mini_jit::Kernel::write(char const* filename) const
+{
+    create_dir_if_missing("build");
+    create_dir_if_missing("build/kernels");
 
     // edit file path
-    std::string filepath = std::string(build_dir) + "/" + std::string(filename);
+    std::string filepath = std::string("build/kernels/") + std::string(filename);
 
     std::ofstream l_out(filepath,
                         std::ios::out | std::ios::binary);

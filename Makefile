@@ -19,7 +19,7 @@ UNIT_TESTS_DIR = $(TEST_DIR)/unit
 INT_TESTS_DIR = $(TEST_DIR)/integration
 BIN_DIR_ROOT = build
 KERNELS_DIR = $(BIN_DIR_ROOT)/kernels
-LIB_DIR = 
+LIB_DIR = lib
 INC_DIR = include
 SUB_DIR = $(SRC_DIR)/submissions
 
@@ -75,6 +75,12 @@ LLVM_LOCATION = $(shell brew --prefix llvm)
 CXX = $(LLVM_LOCATION)/bin/clang++
 LD = $(LLVM_LOCATION)/bin/clang++
 endif
+endif
+
+# SET AR ON MAC THAT IS NOT INSTALLED BY HOMEBREW
+AR := ar
+ifeq ($(OS),macOS)
+	AR := $(shell xcrun --find ar)
 endif
 
 # OS-SPECIFIC DIRECTORIES
@@ -199,13 +205,16 @@ $(BIN_DIR)/%.o: %.cpp
 	@mkdir -p $(dir $@)
 	$(CXX) -o $@ -MMD -c $< $(CXXFLAGS) $(INCFLAGS)
 
-static-library: $(BIN_DIR)/$(LIB_NAME).a
-shared-library: $(BIN_DIR)/$(LIB_NAME).so
+static-library: $(LIB_DIR)/$(LIB_NAME).a
+shared-library: $(LIB_DIR)/$(LIB_NAME).so
 
-$(BIN_DIR)/$(LIB_NAME).a: $(COMMON_OBJ) | $(BIN_DIR)
-	ar rcs $@ $^
+$(LIB_DIR):
+	mkdir -p $@
 
-$(BIN_DIR)/$(LIB_NAME).so: $(COMMON_OBJ) | $(BIN_DIR)
+$(LIB_DIR)/$(LIB_NAME).a: $(COMMON_OBJ) | $(LIB_DIR)
+	$(AR) rcs $@ $^
+
+$(LIB_DIR)/$(LIB_NAME).so: $(COMMON_OBJ) | $(LIB_DIR)
 	$(CXX) -shared -o $@ $^ $(LDFLAGS)
 
 benchmarks: createdirs $(COMMON_OBJ) $(BENCH_MAIN_OBJ) $(BENCH_OBJ)
@@ -234,5 +243,6 @@ tests-san: unit-tests-san int-tests-san
 .PHONY: clean
 
 clean:
+	rm -rf $(LIB_DIR)
 	rm -rf $(BIN_DIR)
 	rm -rf $(KERNELS_DIR)

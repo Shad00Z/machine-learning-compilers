@@ -57,6 +57,13 @@ private:
      **/
     void release_memory();
 
+    /**
+     * Creates a directory if it does not exist.
+     *
+     * @param dir directory to create.
+     **/
+    void create_dir_if_missing(const char* dir) const;
+
 public:
     /**
      * Constructor
