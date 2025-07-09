@@ -63,9 +63,9 @@ Finally, the `benchmarks` directory includes various results from performance ev
 Where to Go Next?
 **************************************
 
-If you wish to learn more general information about the project, we recommend starting with the :ref:`project-report` section.
+If you wish to learn more about the project, we recommend starting with the :ref:`project-report` section.
 This section provides an overview of the project, including the tasks we completed, the code we wrote, and the results we achieved.
-It also includes links to the individual assignments we completed throughout the semester, which provide more detailed information about the specific tasks and code we wrote.
+It also includes links to the individual assignments we completed throughout the semester, which provide more detailed information about the specific tasks and our solutions.
 
 If you wish to use the tensor compiler yourself, you can find instructions in our :ref:`user-guide`.
 
