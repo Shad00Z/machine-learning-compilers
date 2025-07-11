@@ -653,6 +653,8 @@ int main(int argc, char* argv[])
             has_reciprocal = true;
         else if (strcmp(argv[i], "sigmoid") == 0)
             has_sigmoid = true;
+        else if (strcmp(argv[i], "help") == 0)
+            std::cout << "Usage: " << argv[0] << " [gemm|brgemm|matmul|unary|top|top-shared|top-opt|einsum|opt-einsum|reciprocal|sigmoid]" << std::endl;
         else
         {
             std::cerr << "Unknown argument: " << argv[i] << std::endl;

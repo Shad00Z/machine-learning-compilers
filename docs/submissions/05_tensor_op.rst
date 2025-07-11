@@ -293,7 +293,7 @@ With the parallelization we achieve about ``360 - 390 GFLOPs``.
 
 Our approach to enhancing the performance of the tensor operations was to use a vector of ``struct``'s for each dimension that we have got:
 
-.. literalinclude:: ../../src/ir/Dimension.h
+.. literalinclude:: ../../include/mlc/ir/Dimension.h
     :language: cpp
     :lines: 17-60
     :lineno-match:

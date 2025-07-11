@@ -33,7 +33,7 @@ Project Background
 *************************************
 
 Having explained the motivation behind the project, we would now like to provide some further background information.
-Everything you'll encounter in this guide and the accompanying GitHub repository was developed as part of the **Machine Learning Compilers** class at the `University of Jena <https://www.uni-jena.de/en>`_ during the summer semester of 2025.
+Everything you'll encounter in this guide and the accompanying `GitHub repository <https://github.com/Shad00Z/machine-learning-compilers>` was developed as part of the **Machine Learning Compilers** class at the `University of Jena <https://www.uni-jena.de/en>`_ during the summer semester of 2025.
 The codebase was created through a series of weekly assignments we completed throughout the semester.  
 Alongside the class sessions, we were also provided with `an online book <https://scalable.uni-jena.de/opt/pbtc/index.html>`_ that outlines the core concepts behind this project. 
 If you are more interested in the theoretical background of the project, we recommend checking out the book first.
@@ -42,7 +42,7 @@ If you are more interested in the theoretical background of the project, we reco
 Project Structure
 *************************************
 
-The documentation you are currently reading is part of the `docs` directory in the GitHub repository.  
+The documentation you are currently reading is part of the `docs` directory in the `GitHub repository <https://github.com/Shad00Z/machine-learning-compilers>`. 
 It is organized into three main sections:
 
 #. **Project Overview**: Provides background on the project, its structure, and guidance on how to use the codebase.
