@@ -51,9 +51,9 @@ int main()
     // This example demonstrates how to use the Optimizer
     // As seen in the TensorOperation example, we can create a TensorOperation object
     // and set it up with the required parameters. In that example, we had to manually
-    // defines the execution types and choose the main type of operation, such as GEMM or BRGEMM.
-    // In this Optimizer example, we will use the Optimizer class to automatically
-    // generate the execution types and main type based on the tensor dimensions and operations.
+    // define the execution types and choose the main type of operation, such as GEMM or BRGEMM.
+    // In this Optimizer example, we will use the Optimizer class to automatically generate
+    // the execution types based on the tensor dimensions and properties.
     std::cout << "Running the Optimizer example" << std::endl;
 
     // First, we will define some tensor dimensions and their properties.
