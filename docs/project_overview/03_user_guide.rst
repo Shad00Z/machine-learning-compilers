@@ -8,14 +8,12 @@ User Guide
 
     This guide is for macOS and Linux only. As of now, we have not tested any support for Windows.
 
-In order to use our tensor compiler, you will have to build from source.
-Before we begin with instructions on how to do that, we will first guide you through all the dependencies you need.
+In order to use our tensor compiler, you have to build from source.
+But before we begin with instructions on how to do that, we will first guide you through all the dependencies you need to install.
 
 *****************************
 Installing Dependencies
 *****************************
-
-To build this project from source, you will need a few tools installed:
 
 Git
 ===================================
@@ -103,7 +101,7 @@ All you need to do here is to invoke ``make`` from inside the ``machine-learning
 A ``lib`` folder will be created, containing a ``libmlc.a`` static library file.
 
 You may also execute our unit tests to ensure everything works on your system. 
-Should you experience any test failures, please open an issue containing the console log in our GitHub repository.
+Should you experience any test failures, please open an issue containing your system information and the console log in our GitHub repository.
 
 **On Linux:**
 
@@ -141,7 +139,7 @@ to build a static library, or
 to build a shared library. 
 
 In either case, the library file can be found inside the ``lib`` folder at the top of the repository.
-We recommend building a static library, as we have not tested the usage of a shared library.
+We recommend building a static library, as we have not yet tested the usage of a shared library.
 
 Executing Benchmarks
 ===================================
