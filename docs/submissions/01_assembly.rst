@@ -210,7 +210,6 @@ The next step was to determine the **size** of the :code:`.text` section and und
 .. literalinclude:: ../../src/submissions/01_assembly/02_task/sec_headers_add_values.relf
     :language: none
     :lines: 8-9
-    :caption: Lines 8 and 9
 
 The ``.text`` section has a size of :code:`0000000000000020` or :code:`0x20` bytes, which corresponds to 32 bytes in decimal. Since each AArch64 instruction is 4 bytes, the function ``add_values`` consists of exactly 8 instructions.
 
@@ -219,7 +218,6 @@ We confirmed this observation by inspecting the disassembled output:
 .. literalinclude:: ../../src/submissions/01_assembly/02_task/dis_add_values.dis
     :language: none
     :lines: 15-22
-    :caption: Lines 8 and 9
 
 The instructions start at :code:`0x00` and proceed in 4-byte increments, ending at ``0x1c`` with the ``ret`` instruction. This confirms that our there are exactly 8 instructions present, that match the ``.text`` section size. 
 

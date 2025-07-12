@@ -1,31 +1,53 @@
+.. _Base:
+
 2. Base
 =========
+
+After exploring the fundamentals of assembly, we moved on to applying that knowledge by implementing small programs using only AArch64 base instructions.
 
 2.1 Copying Data
 ------------------
 
-For this task, we have been given a C++ driver that makes calls to C and assembly functions. The first C function copies 7 32-bit integers from an array to another. The second C function does the same, but with a variable number of integers which is passed as the first argument. The two assembly functions are supposed to have the same functionality as the C functions, however they were not implemented yet.
+In the first task, we were provided with a `C++ driver <https://github.com/Shad00Z/machine-learning-compilers/blob/main/src/submissions/02_base/01_copying_data/copy_driver.cpp>`_ that calls both C and assembly functions. 
 
-For context, the C functions are as follows:
+The goal was to replicate the behavior of the two C functions using assembly.
+The first C function copies seven 32-bit integers from one array to another. 
+The second C function performs the same operation for a variable number of integers, with the number of elements passed as the first argument. 
+The corresponding assembly functions were pre-defined but not yet implemented.
+
+For context, the two C functions are as follows:
 
 .. literalinclude:: ../../src/submissions/02_base/01_copying_data/copy_c.c
     :language: c
     :linenos:
-    :caption: copy_c.c
+    :caption: `copy_c.c <https://github.com/Shad00Z/machine-learning-compilers/blob/main/src/submissions/02_base/01_copying_data/copy_c.c>`_
 
 Task 2.1.1 & 2.1.2
 ^^^^^^^^^^^^^^^^^^^
 
-Given the C functions, our task is to implement the assembly functions that match the C functions in functionality by using only base instructions. For the first function, we simply load and store the 7 32-bit integers from the source to the destination using the `ldr` and `str` instructions. We use the given addresses and an immediate offset that is incremented by 4 for each 32-bit integer (4 bytes = 32 bit).
+For the first function, which copies seven 32-bit integers, we used ``ldr`` and ``str`` instructions to load from the source and store to the destination registers.
+The memory addresses were accessed using immediate offsets, incremented by 4 bytes for each successive elements (since each 32-bit integer occupies 4 bytes).
 
-For the second function, we need to use a loop to copy the values from the source to the destination. We use two registers to keep track of number of elements copied and the current byte offset. The loop then starts by copying the first 32-bit integer, and then increase the number of elements copied by 1 and the byte offset by 4 (since each integer is 4 bytes). Next, we use the `cmp` instruction to check if we have copied the specified number of integers. If not, we go back to the beginning of the loop and repeat the process. If we have copied the specified number of integers, we exit the loop and return from the function.
+For the second function, which supports a variable number of elements, we implemented a loop. 
+We used two registers to accomplish a loop:
+- one register to track the number of copied elements
+- one register to maintain the current byte offset
+
+Our loop performs the following steps:
+1. Load a 32-bit value from the source register using the current offset.
+2. Store the value at the corresponding destination offset.
+3. Increment both the element counter and the byte offset by 1 and 4, respectively.
+4. Use the ``cmp`` instruction to check whether the target count has been reached.
+5. If not, branch back to the top of the loop. Otherwise, return from the function.
+
+The implementation is as follows:
 
 .. literalinclude:: ../../src/submissions/02_base/01_copying_data/copy_asm.s
     :language: asm
     :linenos:
-    :caption: copy_asm.s
+    :caption: `copy_asm.s <https://github.com/Shad00Z/machine-learning-compilers/blob/main/src/submissions/02_base/01_copying_data/copy_asm.s>`_
 
-After compiling and running the driver, we can see that the assembly functions work as expected. The output of the driver is as follows:
+After compiling and running the driver, the output confirms that both assembly implementations behave identically to their C function counterparts:
 
 .. code-block:: bash
 
@@ -39,110 +61,92 @@ After compiling and running the driver, we can see that the assembly functions w
 2.2 Instruction Throughput and Latency
 ----------------------------------------
 
-For this task, we were supposed to write a micro-benchmarking script to measure the
-throughput and the latency of the ADD (shifted register) and the MUL instruction.
+In this task, we wrote a micro-benchmarking script to measure the throughput and the latency of two instructions:
+- ``ADD`` (shifted register)
+-  ``MUL``.
 
 2.2.1 Throughput
 ^^^^^^^^^^^^^^^^^
 
-To measure the **throughput** of the instructions we have developed an assembly function
-for each of the two instructions. The idea for measuring the throughput is that for 
-every consecutive add instructions there shouldn't be any dependencies on the add 
-instruction from before. The loop that was executed several times for the ADD (shifted register)
-and the MUL instruction was:
+To measure the **throughput** of the instructions, we developed an assembly function for each instruction. The idea was to construct a loop where each instruction is independent of the previous one, thereby allowing the processor to execute them in parallel and also to avoid any dependencies between the instructions. 
 
 .. literalinclude:: ../../src/submissions/02_base/02_instruction_throughput_and_latency/add_instr.s
     :language: asm
     :linenos:
     :lines: 28-60
-    :caption: loop in add_instr.s
+    :caption: `add_instr.s <https://github.com/Shad00Z/machine-learning-compilers/blob/main/src/submissions/02_base/02_instruction_throughput_and_latency/add_instr.s>`_ loop
 
 .. literalinclude:: ../../src/submissions/02_base/02_instruction_throughput_and_latency/mul_instr.s
     :language: asm
     :linenos:
     :lines: 28-60
-    :caption: loop in mul_instr.s
+    :caption: `mul_instr.s <https://github.com/Shad00Z/machine-learning-compilers/blob/main/src/submissions/02_base/02_instruction_throughput_and_latency/mul_instr.s>`_ loop
 
 2.2.2 Latency
 ^^^^^^^^^^^^^^
 
-To measure the **latency** of the two instructions we have developed two more assembly
-functions. The idea for measuring the latency is to have consecutive instructions that 
-dependent on the result from the last executed instruction. That meant we had to slightly 
-adjust the loops from the throughput programs, resulting in the following loops for the
-ADD (shifted register) and the MUL instruction: 
+To measure the **latency** of the two instructions, we implemented two additional assembly functions. In contrast to the throughput benchmarks, where instructions were independent, the idea here was to create data dependencies between instructions.
+
+Each instruction in the loop depends on the result of the previous one, forcing the processor to wait for the output of one instruction before executing the next:
 
 .. literalinclude:: ../../src/submissions/02_base/02_instruction_throughput_and_latency/add_lat_instr.s
     :language: asm
     :linenos:
     :lines: 28-39
-    :caption: loop in add_lat_instr.s
+    :caption: `add_lat_instr.s <https://github.com/Shad00Z/machine-learning-compilers/blob/main/src/submissions/02_base/02_instruction_throughput_and_latency/add_lat_instr.s>`_ loop
 
 .. literalinclude:: ../../src/submissions/02_base/02_instruction_throughput_and_latency/mul_lat_instr.s
     :language: asm
     :linenos:
     :lines: 27-38
-    :caption: loop in mul_lat_instr.s
+    :caption: `mul_lat_instr.s <https://github.com/Shad00Z/machine-learning-compilers/blob/main/src/submissions/02_base/02_instruction_throughput_and_latency/mul_lat_instr.s>`_ loop
 
 2.2.3 Results
 ^^^^^^^^^^^^^^^
 
-To test our assembly functions we implemented a microbenchmark in C++ that would 
-1. call these functions several times
-2. measure the time it took to complete these computations
-3. calculate the GOPS obtained by these calculations
+To test our assembly functions, we implemented a microbenchmark in C++ that:
+
+1. calls each function multiple times,
+2. measures the total execution time,
+3. calculates the GOPS (Giga Operations Per Second) obtained by these calculations.
 
 .. literalinclude:: ../../src/submissions/02_base/02_instruction_throughput_and_latency/microbench.cpp
+    :dedent:
     :language: cpp
     :lines: 33-36
-    :caption: time measurement for add_instr in microbench.cpp
+    :caption: time measurement for add_instr in `microbench.cpp <https://github.com/Shad00Z/machine-learning-compilers/blob/main/src/submissions/02_base/02_instruction_throughput_and_latency/microbench.cpp>`_
 
 .. literalinclude:: ../../src/submissions/02_base/02_instruction_throughput_and_latency/microbench.cpp
+    :dedent:
     :language: cpp
     :lines: 46-48
-    :caption: GOPS calculation for add_instr in microbench.cpp
+    :caption: GOPS calculation for add_instr
 
-To compile and execute the microbenchmark we simply used:
+To compile and execute the benchmark, we run:
 
 .. code-block:: bash
 
     $ g++ microbench.cpp add_instr.s add_lat_instr.s mul_instr.s mul_lat_instr.s -o microbench.o
     $ ./microbench.o
 
-When executing our benchmarking script we obtained the following results:
+We obtained the following results:
 
 .. literalinclude:: ../../src/submissions/02_base/02_instruction_throughput_and_latency/results.txt
     :language: none
-    :caption: results
+    :caption: Benchmarking results (GOPS)
 
-To understand the results, we did two things:
-1. we searched for the `clock speed <https://everymac.com/systems/apple/mac_mini/specs/mac-mini-m4-10-core-cpu-10-core-gpu-2024-specs.html#:~:text=This%20model%20is%20powered%20by,speed%20clockspeed%20around%204.4%20GHz.>`_  which is about 4.4 GHz
-2. we looked at the `ARM Neoverse V2 Software Optimization Guide <https://developer.arm.com/documentation/109898/latest/>`_ for the base instructions.
+To interpret these results, we first looked up the `clock speed of the Apple M4 chip <https://everymac.com/systems/apple/mac_mini/specs/mac-mini-m4-10-core-cpu-10-core-gpu-2024-specs.html#:~:text=This%20model%20is%20powered%20by,speed%20clockspeed%20around%204.4%20GHz.>`_, which is about 4.4 GHz
 
-The guide specifies the following theoretical instruction **throughput** per cycle:
-
-* ADD: 6 instructions per cycle
-* MUL: 2 instructions per cycle
-
-and the latency (until a result is available) of:
-
-* ADD: 1 clock cycle
-* MUL: 2 clock cycles
+Further, we needed information about the M4 architecture. We could find, that the Apple M4 has 8 ALUs, from which 3 are able to perform ``MUL`` instructions.
 
 Looking at a these numbers, we can assume a clock cycle speed of:
 
-.. math:: \frac{29.0414 \text{ GOPS}}{6} = 4.84 \text{ GHz}
+.. math:: \frac{29.0414 \text{ GOPS}}{8} = 3.63 \text{ GHz}
 
-.. math:: \frac{13.2584 \text{ GOPS}}{2} = 6.63 \text{ GHz}
+.. math:: \frac{13.2584 \text{ GOPS}}{3} = 4.42 \text{ GHz}
 
-For the ADD instruction, this aligns closely with the *known* clock speed of 4.4 GHz.
-For the MUL instruction on the other hand, the clock speed is higher than expected. It is not clear why exactly this is the case, but in order to verify the correctness of our code, we ran it on an M3 Pro Chip with a clock speed of 4.05 GHz. The result for `ADD` and `MUL` here was:
-
-.. math:: \frac{26.195 \text{ GOPS}}{6} = 4.37 \text{ GHz}
-
-.. math:: \frac{8.08751 \text{ GOPS}}{2} = 4.04 \text{ GHz}
-
-We see that the calculated clock speeds are close to the expected clock speed of 4.05 GHz in both cases, which indicates that our code is correct.
+For the ``ADD`` instruction, we are slightly below the specified clock cycle speed of 4.4 GHz.
+For the ``MUL`` instruction on the other hand, our results closely align with the given clock speed.
 
 For the **latency** we can make a similar calculation:
 
@@ -150,6 +154,4 @@ For the **latency** we can make a similar calculation:
 
 .. math:: \frac{4.4 \text{ GHz}}{1.46244 \text{ GOPS}} ≈ 3 \text{ clock cycles per instr}
 
-This shows that our obtained results for the ADD instruction correspond with the 
-number that we obtained from the guide, whereas the latency for the MUL instruction 
-is slightly higher than expected.
+The ``ADD`` latency matches the theoretical value. The ``MUL`` is slightly higher than expected (3 vs. 2 cylces).
