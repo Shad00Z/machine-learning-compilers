@@ -52,7 +52,27 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="01_project_information.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="02_project_report.html">Project Report</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">User Guide</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">User Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#installing-dependencies">Installing Dependencies</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#git">Git</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#c-compiler-with-openmp-support">C++ Compiler with OpenMP Support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#make-build-system">Make (Build System)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#building-from-source">Building from Source</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#default-installation">Default Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#library-only-installation">Library-only Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#executing-benchmarks">Executing Benchmarks</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#using-our-tensor-compiler">Using our Tensor Compiler</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#compiling-and-running-examples">Compiling and Running Examples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#compilation-example-linux">Compilation Example (Linux)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#explanation">Explanation</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="04_docu_setup.html">Documentation Setup</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Submissions</span></p>
@@ -103,6 +123,181 @@
              
   <section id="user-guide">
 <span id="id1"></span><h1>User Guide<a class="headerlink" href="#user-guide" title="Link to this heading"></a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This guide is for macOS and Linux only. As of now, we have not tested any support for Windows.</p>
+</div>
+<p>In order to use our tensor compiler, you have to build from source.
+But before we begin with instructions on how to do that, we will first guide you through all the dependencies you need to install.</p>
+<section id="installing-dependencies">
+<h2>Installing Dependencies<a class="headerlink" href="#installing-dependencies" title="Link to this heading"></a></h2>
+<section id="git">
+<h3>Git<a class="headerlink" href="#git" title="Link to this heading"></a></h3>
+<p>To pull the code from GitHub, <a class="reference external" href="https://git-scm.com/downloads">git</a> is required.
+Alternatively, you can download the repository as a <cite>.zip</cite> file directly from GitHub.</p>
+</section>
+<section id="c-compiler-with-openmp-support">
+<h3>C++ Compiler with OpenMP Support<a class="headerlink" href="#c-compiler-with-openmp-support" title="Link to this heading"></a></h3>
+<p>You need a C++ compiler that supports <a class="reference external" href="https://www.openmp.org">OpenMP</a>, as our tensor compiler uses parallel execution.</p>
+<p><strong>On Linux (e.g., Ubuntu/Debian):</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>build-essential<span class="w"> </span>libomp-dev
+</pre></div>
+</div>
+<p>This installs the GNU Compiler Collection (GCC), <cite>make</cite>, and the OpenMP development library.</p>
+<p><strong>On macOS:</strong></p>
+<p>While macOS comes with a default C++ compiler (Apple Clang), it <strong>does not support OpenMP</strong>. We recommend using the LLVM toolchain via <a class="reference external" href="https://brew.sh">Homebrew</a>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>brew<span class="w"> </span>install<span class="w"> </span>llvm<span class="w"> </span>libomp
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you are already using Homebrew’s GCC, that will work also, but you will have to adjust our Makefile.
+It automatically switches to <strong>LLVM</strong> on macOS, because we could not figure out a stable way to distinguish
+between the default Apple Clang and Homebrew’s GCC.</p>
+</div>
+</section>
+<section id="make-build-system">
+<h3>Make (Build System)<a class="headerlink" href="#make-build-system" title="Link to this heading"></a></h3>
+<p>Our project uses Makefiles, so you will also need the <code class="docutils literal notranslate"><span class="pre">make</span></code> tool.</p>
+<p><strong>On Linux:</strong></p>
+<p><code class="docutils literal notranslate"><span class="pre">make</span></code> is typically included with <code class="docutils literal notranslate"><span class="pre">build-essential</span></code>. If not, install it with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>make
+</pre></div>
+</div>
+<p><strong>On macOS:</strong></p>
+<p>Install the Command Line Tools, which include <code class="docutils literal notranslate"><span class="pre">make</span></code>.
+If you have already used Homebrew before, this will likely already be installed.
+You can test this by running:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>--v
+</pre></div>
+</div>
+<p>If you get an error saying that <code class="docutils literal notranslate"><span class="pre">make</span></code> could not be found, run</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>xcode-select<span class="w"> </span>--install
+</pre></div>
+</div>
+<p>and try again.</p>
+</section>
+</section>
+<section id="building-from-source">
+<h2>Building from Source<a class="headerlink" href="#building-from-source" title="Link to this heading"></a></h2>
+<p>The first step to building from source is to actually obtain the sources, which you can do using <strong>git</strong>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/Shad00Z/machine-learning-compilers.git
+<span class="nb">cd</span><span class="w"> </span>machine-learning-compilers
+</pre></div>
+</div>
+<p>Next, you have a few options to build the project, which are all based on running <code class="docutils literal notranslate"><span class="pre">make</span></code> from inside the
+<code class="docutils literal notranslate"><span class="pre">machine-learning-compilers</span></code> directory.</p>
+<section id="default-installation">
+<h3>Default Installation<a class="headerlink" href="#default-installation" title="Link to this heading"></a></h3>
+<p>The default installation packages our project as a <strong>static library</strong> and also builds test executables.
+All you need to do here is to invoke <code class="docutils literal notranslate"><span class="pre">make</span></code> from inside the <code class="docutils literal notranslate"><span class="pre">machine-learning-compilers</span></code> directory.
+A <code class="docutils literal notranslate"><span class="pre">lib</span></code> folder will be created, containing a <code class="docutils literal notranslate"><span class="pre">libmlc.a</span></code> static library file.</p>
+<p>You may also execute our unit tests to ensure everything works on your system.
+Should you experience any test failures, please open an issue containing your system information and the console log in our GitHub repository.</p>
+<p><strong>On Linux:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./build/linux/tests/unit-tests
+</pre></div>
+</div>
+<p><strong>On macOS (ARM64):</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./build/macOS-arm64/tests/unit-tests
+</pre></div>
+</div>
+<p><strong>On macOS (Intel):</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./build/macOS-x86_64/tests/unit-tests
+</pre></div>
+</div>
+</section>
+<section id="library-only-installation">
+<h3>Library-only Installation<a class="headerlink" href="#library-only-installation" title="Link to this heading"></a></h3>
+<p>You may skip building our tests, by invoking either</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>static-library
+</pre></div>
+</div>
+<p>to build a static library, or</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>shared-library
+</pre></div>
+</div>
+<p>to build a shared library.</p>
+<p>In either case, the library file can be found inside the <code class="docutils literal notranslate"><span class="pre">lib</span></code> folder at the top of the repository.
+We recommend building a static library, as we have not yet tested the usage of a shared library.</p>
+</section>
+<section id="executing-benchmarks">
+<h3>Executing Benchmarks<a class="headerlink" href="#executing-benchmarks" title="Link to this heading"></a></h3>
+<p>To build the benchmarks, simply run</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>benchmarks
+</pre></div>
+</div>
+<p>To actually execute benchmarks, the <code class="docutils literal notranslate"><span class="pre">benchmarks</span></code> executable is used.
+However, for this executable to do anything, you need to specify which benchmarks you would like to run.
+A list of available benchmarks can be displayed using:</p>
+<p><strong>On Linux:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./build/linux/benchmarks<span class="w"> </span><span class="nb">help</span>
+</pre></div>
+</div>
+<p><strong>On macOS (ARM64):</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./build/macOS-arm64/benchmarks<span class="w"> </span><span class="nb">help</span>
+</pre></div>
+</div>
+<p><strong>On macOS (Intel):</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./build/macOS-x86_64/benchmarks<span class="w"> </span><span class="nb">help</span>
+</pre></div>
+</div>
+<p>For example if you wish to execute the <strong>matmul</strong> and <strong>sigmoid</strong> benchmarks on Linux, you would need to run</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./build/linux/benchmarks<span class="w"> </span>matmul<span class="w"> </span>sigmoid
+</pre></div>
+</div>
+</section>
+</section>
+<section id="using-our-tensor-compiler">
+<h2>Using our Tensor Compiler<a class="headerlink" href="#using-our-tensor-compiler" title="Link to this heading"></a></h2>
+<p>We believe that the best way to learn is by exploring examples.
+So instead of explaining all the details here, we have provided several code samples in the <code class="docutils literal notranslate"><span class="pre">example_usage</span></code> directory at the root of our GitHub repository.
+These examples demonstrate how to use the core functionality of our tensor compiler and should help you get started quickly.
+If you would like to explore more advanced features, be sure to check out the <strong>API</strong> section.</p>
+<section id="compiling-and-running-examples">
+<h3>Compiling and Running Examples<a class="headerlink" href="#compiling-and-running-examples" title="Link to this heading"></a></h3>
+<p>If you have installed all necessary dependencies, you can compile and run the examples using the shell scripts we have provided:</p>
+<p><strong>On Linux:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./run_linux.sh
+</pre></div>
+</div>
+<p><strong>On macOS:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./run_macos.sh
+</pre></div>
+</div>
+<p>These scripts are also useful references, because they show how to compile and link your own code against our static library.</p>
+</section>
+<section id="compilation-example-linux">
+<h3>Compilation Example (Linux)<a class="headerlink" href="#compilation-example-linux" title="Link to this heading"></a></h3>
+<p>Here is the command we use in the Linux shell script to compile and link the <code class="docutils literal notranslate"><span class="pre">EinsumExample</span></code> file:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>g++<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-std<span class="o">=</span>c++20<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-o<span class="w"> </span>EinsumExample<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>EinsumExample.cpp<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-I../include<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-L../lib<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-lmlc<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-fopenmp<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-lomp
+</pre></div>
+</div>
+</section>
+<section id="explanation">
+<h3>Explanation<a class="headerlink" href="#explanation" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>The first four lines are standard for compiling a C++ file with C++20 support.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">-I../include</span></code> flag tells the compiler where to find the public headers for our tensor compiler.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">-L../lib</span></code> flag tells the linker where to look for the compiled static library.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">-lmlc</span></code> flag links the binary against <code class="docutils literal notranslate"><span class="pre">libmlc.a</span></code>, which is how your project accesses the functionality of our compiler.</p></li>
+<li><p>The last two flags enable <strong>OpenMP</strong> support. These assume that OpenMP is installed and accessible through your system paths.</p></li>
+</ul>
+<p>If you are integrating the tensor compiler into your own project, you will need to add <code class="docutils literal notranslate"><span class="pre">machine-learning-compilers/include</span></code> to your compiler’s include paths, and <code class="docutils literal notranslate"><span class="pre">machine-learning-compilers/lib</span></code> to your linker paths.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you are using an IDE, make sure to add the include directory to your project’s configuration. This will ensure that features like autocompletion work correctly.</p>
+</div>
+</section>
+</section>
 </section>
 
 
