@@ -83,7 +83,7 @@ and try again.
 Building from Source
 *****************************
 
-The first to building from source is to actually obtain the sources, which you can do using **git**:
+The first step to building from source is to actually obtain the sources, which you can do using **git**:
 
 .. code:: bash
 
