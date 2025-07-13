@@ -26,12 +26,14 @@ Task 2.1.1 & 2.1.2
 ^^^^^^^^^^^^^^^^^^^
 
 For the first function, which copies seven 32-bit integers, we used ``ldr`` and ``str`` instructions to load from the source and store to the destination registers.
-The memory addresses were accessed using immediate offsets, incremented by 4 bytes for each successive elements (since each 32-bit integer occupies 4 bytes).
+The memory addresses were accessed using immediate offsets, incremented by 4 bytes for each successive element (since each 32-bit integer occupies 4 bytes).
 
 For the second function, which supports a variable number of elements, we implemented a loop. 
 We used two registers to accomplish a loop:
-- one register to track the number of copied elements
-- one register to maintain the current byte offset
+
+* one register to track the number of copied elements
+
+* one register to maintain the current byte offset
 
 Our loop performs the following steps:
 1. Load a 32-bit value from the source register using the current offset.
@@ -62,13 +64,15 @@ After compiling and running the driver, the output confirms that both assembly i
 ----------------------------------------
 
 In this task, we wrote a micro-benchmarking script to measure the throughput and the latency of two instructions:
-- ``ADD`` (shifted register)
--  ``MUL``.
+
+* ``ADD`` (shifted register)
+
+*  ``MUL``.
 
 2.2.1 Throughput
 ^^^^^^^^^^^^^^^^^
 
-To measure the **throughput** of the instructions, we developed an assembly function for each instruction. The idea was to construct a loop where each instruction is independent of the previous one, thereby allowing the processor to execute them in parallel and also to avoid any dependencies between the instructions. 
+To measure the **throughput** of the instructions, we developed an assembly function for each instruction. The idea was to construct a loop, where each instruction is independent of the previous one, thereby allowing the processor to execute them in parallel and also to avoid any dependencies between the instructions. 
 
 .. literalinclude:: ../../src/submissions/02_base/02_instruction_throughput_and_latency/add_instr.s
     :language: asm
@@ -104,7 +108,7 @@ Each instruction in the loop depends on the result of the previous one, forcing 
 2.2.3 Results
 ^^^^^^^^^^^^^^^
 
-To test our assembly functions, we implemented a microbenchmark in C++ that:
+To test our assembly functions, we implemented a benchmark in C++ that:
 
 1. calls each function multiple times,
 2. measures the total execution time,
@@ -122,7 +126,7 @@ To test our assembly functions, we implemented a microbenchmark in C++ that:
     :lines: 46-48
     :caption: GOPS calculation for add_instr
 
-To compile and execute the benchmark, we run:
+To compile and execute the benchmark, we ran:
 
 .. code-block:: bash
 
@@ -146,7 +150,7 @@ Looking at a these numbers, we can assume a clock cycle speed of:
 .. math:: \frac{13.2584 \text{ GOPS}}{3} = 4.42 \text{ GHz}
 
 For the ``ADD`` instruction, we are slightly below the specified clock cycle speed of 4.4 GHz.
-For the ``MUL`` instruction on the other hand, our results closely align with the given clock speed.
+Looking at the ``MUL`` instruction on the other hand, our results closely align with the given clock speed.
 
 For the **latency** we can make a similar calculation:
 
