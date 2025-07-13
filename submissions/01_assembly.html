@@ -26,7 +26,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="2. Base" href="02_base.html" />
-    <link rel="prev" title="Documentation Setup" href="../project_overview/04_docu_setup.html" /> 
+    <link rel="prev" title="Project Report" href="../project_overview/03_project_report.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -50,10 +50,9 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Project Overview</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../project_overview/01_project_information.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../project_overview/02_project_report.html">Project Report</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../project_overview/03_user_guide.html">User Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../project_overview/04_docu_setup.html">Documentation Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../project_overview/01_project_information.html">Machine Learning Compilers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../project_overview/02_docu_setup.html">Documentation Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../project_overview/03_project_report.html">Project Report</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Submissions</span></p>
 <ul class="current">
@@ -488,17 +487,12 @@ Hello<span class="w"> </span>Assembly<span class="w"> </span>Language!
 <section id="task-1-2-3">
 <h3>Task 1.2.3<a class="headerlink" href="#task-1-2-3" title="Link to this heading"></a></h3>
 <p>The next step was to determine the <strong>size</strong> of the <code class="code docutils literal notranslate"><span class="pre">.text</span></code> section and understand its content. This information is available in the section headers file in <em>line 9</em>:</p>
-<div class="literal-block-wrapper docutils container" id="id15">
-<div class="code-block-caption"><span class="caption-text">Lines 8 and 9</span><a class="headerlink" href="#id15" title="Link to this code"></a></div>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>  [ 1] .text             PROGBITS         0000000000000000  00000040
        0000000000000020  0000000000000000  AX       0     0     4
 </pre></div>
 </div>
-</div>
 <p>The <code class="docutils literal notranslate"><span class="pre">.text</span></code> section has a size of <code class="code docutils literal notranslate"><span class="pre">0000000000000020</span></code> or <code class="code docutils literal notranslate"><span class="pre">0x20</span></code> bytes, which corresponds to 32 bytes in decimal. Since each AArch64 instruction is 4 bytes, the function <code class="docutils literal notranslate"><span class="pre">add_values</span></code> consists of exactly 8 instructions.</p>
 <p>We confirmed this observation by inspecting the disassembled output:</p>
-<div class="literal-block-wrapper docutils container" id="id16">
-<div class="code-block-caption"><span class="caption-text">Lines 8 and 9</span><a class="headerlink" href="#id16" title="Link to this code"></a></div>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>   0:	a9bf7bfd 	stp	x29, x30, [sp, #-16]!
    4:	910003fd 	mov	x29, sp
    8:	b9400003 	ldr	w3, [x0]
@@ -509,14 +503,13 @@ Hello<span class="w"> </span>Assembly<span class="w"> </span>Language!
   1c:	d65f03c0 	ret
 </pre></div>
 </div>
-</div>
 <p>The instructions start at <code class="code docutils literal notranslate"><span class="pre">0x00</span></code> and proceed in 4-byte increments, ending at <code class="docutils literal notranslate"><span class="pre">0x1c</span></code> with the <code class="docutils literal notranslate"><span class="pre">ret</span></code> instruction. This confirms that our there are exactly 8 instructions present, that match the <code class="docutils literal notranslate"><span class="pre">.text</span></code> section size.</p>
 </section>
 <section id="task-1-2-4">
 <h3>Task 1.2.4<a class="headerlink" href="#task-1-2-4" title="Link to this heading"></a></h3>
 <p>Similar to the first task, we now tested the functionality of the <code class="code docutils literal notranslate"><span class="pre">add_values</span></code> function by implementing a C++ driver:</p>
-<div class="literal-block-wrapper docutils container" id="id17">
-<div class="code-block-caption"><span class="caption-text"><a class="reference external" href="https://github.com/Shad00Z/machine-learning-compilers/blob/main/src/submissions/01_assembly/02_task/driver_add_values.cpp">driver_add_values.cpp</a></span><a class="headerlink" href="#id17" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id15">
+<div class="code-block-caption"><span class="caption-text"><a class="reference external" href="https://github.com/Shad00Z/machine-learning-compilers/blob/main/src/submissions/01_assembly/02_task/driver_add_values.cpp">driver_add_values.cpp</a></span><a class="headerlink" href="#id15" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span>
 <span class="linenos"> 2</span>
 <span class="linenos"> 3</span><span class="k">extern</span><span class="w"> </span><span class="s">&quot;C&quot;</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">add_values</span><span class="p">(</span>
@@ -588,7 +581,7 @@ run
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../project_overview/04_docu_setup.html" class="btn btn-neutral float-left" title="Documentation Setup" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../project_overview/03_project_report.html" class="btn btn-neutral float-left" title="Project Report" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="02_base.html" class="btn btn-neutral float-right" title="2. Base" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

@@ -50,10 +50,9 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Project Overview</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../project_overview/01_project_information.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../project_overview/02_project_report.html">Project Report</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../project_overview/03_user_guide.html">User Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../project_overview/04_docu_setup.html">Documentation Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../project_overview/01_project_information.html">Machine Learning Compilers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../project_overview/02_docu_setup.html">Documentation Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../project_overview/03_project_report.html">Project Report</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Submissions</span></p>
 <ul>
@@ -68,7 +67,105 @@
 <p class="caption" role="heading"><span class="caption-text">API</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="mini_jit.html">mini_jit</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">mini_jit::benchmarks</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">mini_jit::benchmarks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks15EinsumTreeBenchE"><code class="docutils literal notranslate"><span class="pre">mini_jit::benchmarks::EinsumTreeBench</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks15EinsumTreeBench15EinsumTreeBenchEdRKNSt6stringERNSt6vectorI7int64_tEEN8mini_jit7dtype_tE7int64_t7int64_t7int64_tRNSt3mapINSt6stringEPKvEE"><code class="docutils literal notranslate"><span class="pre">EinsumTreeBench()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks15EinsumTreeBenchD0Ev"><code class="docutils literal notranslate"><span class="pre">~EinsumTreeBench()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks15EinsumTreeBench3runEv"><code class="docutils literal notranslate"><span class="pre">run()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks25FastSigmoidPrimitiveBenchE"><code class="docutils literal notranslate"><span class="pre">mini_jit::benchmarks::FastSigmoidPrimitiveBench</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks25FastSigmoidPrimitiveBench25FastSigmoidPrimitiveBenchEd8uint32_t8uint32_t"><code class="docutils literal notranslate"><span class="pre">FastSigmoidPrimitiveBench()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks25FastSigmoidPrimitiveBenchD0Ev"><code class="docutils literal notranslate"><span class="pre">~FastSigmoidPrimitiveBench()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks25FastSigmoidPrimitiveBench3runEv"><code class="docutils literal notranslate"><span class="pre">run()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks22IdentityPrimitiveBenchE"><code class="docutils literal notranslate"><span class="pre">mini_jit::benchmarks::IdentityPrimitiveBench</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks22IdentityPrimitiveBench22IdentityPrimitiveBenchEd8uint32_t8uint32_t"><code class="docutils literal notranslate"><span class="pre">IdentityPrimitiveBench()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks22IdentityPrimitiveBenchD0Ev"><code class="docutils literal notranslate"><span class="pre">~IdentityPrimitiveBench()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks22IdentityPrimitiveBench3runEv"><code class="docutils literal notranslate"><span class="pre">run()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks27IdentityTransPrimitiveBenchE"><code class="docutils literal notranslate"><span class="pre">mini_jit::benchmarks::IdentityTransPrimitiveBench</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks27IdentityTransPrimitiveBench27IdentityTransPrimitiveBenchEd8uint32_t8uint32_t"><code class="docutils literal notranslate"><span class="pre">IdentityTransPrimitiveBench()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks27IdentityTransPrimitiveBenchD0Ev"><code class="docutils literal notranslate"><span class="pre">~IdentityTransPrimitiveBench()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks27IdentityTransPrimitiveBench3runEv"><code class="docutils literal notranslate"><span class="pre">run()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks16MatmulBrMNKBenchE"><code class="docutils literal notranslate"><span class="pre">mini_jit::benchmarks::MatmulBrMNKBench</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks16MatmulBrMNKBench16MatmulBrMNKBenchEdiiii"><code class="docutils literal notranslate"><span class="pre">MatmulBrMNKBench()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks16MatmulBrMNKBenchD0Ev"><code class="docutils literal notranslate"><span class="pre">~MatmulBrMNKBench()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks16MatmulBrMNKBench3runEv"><code class="docutils literal notranslate"><span class="pre">run()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks14MatmulMNKBenchE"><code class="docutils literal notranslate"><span class="pre">mini_jit::benchmarks::MatmulMNKBench</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks14MatmulMNKBench14MatmulMNKBenchEdiii"><code class="docutils literal notranslate"><span class="pre">MatmulMNKBench()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks14MatmulMNKBenchD0Ev"><code class="docutils literal notranslate"><span class="pre">~MatmulMNKBench()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks14MatmulMNKBench3runEv"><code class="docutils literal notranslate"><span class="pre">run()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks24ReciprocalPrimitiveBenchE"><code class="docutils literal notranslate"><span class="pre">mini_jit::benchmarks::ReciprocalPrimitiveBench</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks24ReciprocalPrimitiveBench24ReciprocalPrimitiveBenchEd8uint32_t8uint32_t"><code class="docutils literal notranslate"><span class="pre">ReciprocalPrimitiveBench()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks24ReciprocalPrimitiveBenchD0Ev"><code class="docutils literal notranslate"><span class="pre">~ReciprocalPrimitiveBench()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks24ReciprocalPrimitiveBench3runEv"><code class="docutils literal notranslate"><span class="pre">run()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks18ReLUPrimitiveBenchE"><code class="docutils literal notranslate"><span class="pre">mini_jit::benchmarks::ReLUPrimitiveBench</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks18ReLUPrimitiveBench18ReLUPrimitiveBenchEd8uint32_t8uint32_t"><code class="docutils literal notranslate"><span class="pre">ReLUPrimitiveBench()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks18ReLUPrimitiveBenchD0Ev"><code class="docutils literal notranslate"><span class="pre">~ReLUPrimitiveBench()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks18ReLUPrimitiveBench3runEv"><code class="docutils literal notranslate"><span class="pre">run()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks23ReLUTransPrimitiveBenchE"><code class="docutils literal notranslate"><span class="pre">mini_jit::benchmarks::ReLUTransPrimitiveBench</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks23ReLUTransPrimitiveBench23ReLUTransPrimitiveBenchEd8uint32_t8uint32_t"><code class="docutils literal notranslate"><span class="pre">ReLUTransPrimitiveBench()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks23ReLUTransPrimitiveBenchD0Ev"><code class="docutils literal notranslate"><span class="pre">~ReLUTransPrimitiveBench()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks23ReLUTransPrimitiveBench3runEv"><code class="docutils literal notranslate"><span class="pre">run()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks34SigmoidInterpolationPrimitiveBenchE"><code class="docutils literal notranslate"><span class="pre">mini_jit::benchmarks::SigmoidInterpolationPrimitiveBench</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks34SigmoidInterpolationPrimitiveBench34SigmoidInterpolationPrimitiveBenchEd8uint32_t8uint32_t"><code class="docutils literal notranslate"><span class="pre">SigmoidInterpolationPrimitiveBench()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks34SigmoidInterpolationPrimitiveBenchD0Ev"><code class="docutils literal notranslate"><span class="pre">~SigmoidInterpolationPrimitiveBench()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks34SigmoidInterpolationPrimitiveBench3runEv"><code class="docutils literal notranslate"><span class="pre">run()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks27SigmoidTaylorPrimitiveBenchE"><code class="docutils literal notranslate"><span class="pre">mini_jit::benchmarks::SigmoidTaylorPrimitiveBench</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks27SigmoidTaylorPrimitiveBench27SigmoidTaylorPrimitiveBenchEd8uint32_t8uint32_t"><code class="docutils literal notranslate"><span class="pre">SigmoidTaylorPrimitiveBench()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks27SigmoidTaylorPrimitiveBenchD0Ev"><code class="docutils literal notranslate"><span class="pre">~SigmoidTaylorPrimitiveBench()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks27SigmoidTaylorPrimitiveBench3runEv"><code class="docutils literal notranslate"><span class="pre">run()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks20SquarePrimitiveBenchE"><code class="docutils literal notranslate"><span class="pre">mini_jit::benchmarks::SquarePrimitiveBench</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks20SquarePrimitiveBench20SquarePrimitiveBenchEd8uint32_t8uint32_t"><code class="docutils literal notranslate"><span class="pre">SquarePrimitiveBench()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks20SquarePrimitiveBenchD0Ev"><code class="docutils literal notranslate"><span class="pre">~SquarePrimitiveBench()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks20SquarePrimitiveBench3runEv"><code class="docutils literal notranslate"><span class="pre">run()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks25SquareTransPrimitiveBenchE"><code class="docutils literal notranslate"><span class="pre">mini_jit::benchmarks::SquareTransPrimitiveBench</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks25SquareTransPrimitiveBench25SquareTransPrimitiveBenchEd8uint32_t8uint32_t"><code class="docutils literal notranslate"><span class="pre">SquareTransPrimitiveBench()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks25SquareTransPrimitiveBenchD0Ev"><code class="docutils literal notranslate"><span class="pre">~SquareTransPrimitiveBench()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks25SquareTransPrimitiveBench3runEv"><code class="docutils literal notranslate"><span class="pre">run()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks20TensorOperationBenchE"><code class="docutils literal notranslate"><span class="pre">mini_jit::benchmarks::TensorOperationBench</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks20TensorOperationBench20TensorOperationBenchEd7dtype_t7ptype_t7ptype_t7ptype_tNSt4spanIK5dim_tEENSt4spanIK6exec_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEE"><code class="docutils literal notranslate"><span class="pre">TensorOperationBench()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks20TensorOperationBenchD0Ev"><code class="docutils literal notranslate"><span class="pre">~TensorOperationBench()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks20TensorOperationBench3runEv"><code class="docutils literal notranslate"><span class="pre">run()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks21ZeroEorPrimitiveBenchE"><code class="docutils literal notranslate"><span class="pre">mini_jit::benchmarks::ZeroEorPrimitiveBench</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks21ZeroEorPrimitiveBench21ZeroEorPrimitiveBenchEd8uint32_t8uint32_t"><code class="docutils literal notranslate"><span class="pre">ZeroEorPrimitiveBench()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks21ZeroEorPrimitiveBenchD0Ev"><code class="docutils literal notranslate"><span class="pre">~ZeroEorPrimitiveBench()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks21ZeroEorPrimitiveBench3runEv"><code class="docutils literal notranslate"><span class="pre">run()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks21ZeroXZRPrimitiveBenchE"><code class="docutils literal notranslate"><span class="pre">mini_jit::benchmarks::ZeroXZRPrimitiveBench</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks21ZeroXZRPrimitiveBench21ZeroXZRPrimitiveBenchEd8uint32_t8uint32_t"><code class="docutils literal notranslate"><span class="pre">ZeroXZRPrimitiveBench()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks21ZeroXZRPrimitiveBenchD0Ev"><code class="docutils literal notranslate"><span class="pre">~ZeroXZRPrimitiveBench()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks21ZeroXZRPrimitiveBench3runEv"><code class="docutils literal notranslate"><span class="pre">run()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="mini_jit_converters.html">mini_jit::converters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mini_jit_einsum.html">mini_jit::einsum</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mini_jit_instructions.html">mini_jit::instructions</a></li>
@@ -103,10 +200,570 @@
              
   <section id="mini-jit-benchmarks">
 <span id="api-mini-jit-benchmarks"></span><h1>mini_jit::benchmarks<a class="headerlink" href="#mini-jit-benchmarks" title="Link to this heading"></a></h1>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygennamespace: Cannot find namespace “mini_jit::benchmarks” in doxygen xml output for project “Machine Learning Compilers” from directory: build/xml/</p>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks15EinsumTreeBenchE">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks15EinsumTreeBenchE"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks15EinsumTreeBenchE"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::EinsumTreeBench"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1EinsumTreeBench"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EinsumTreeBench</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Benchmark</span></span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks15EinsumTreeBenchE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks15EinsumTreeBench15EinsumTreeBenchEdRKNSt6stringERNSt6vectorI7int64_tEEN8mini_jit7dtype_tE7int64_t7int64_t7int64_tRNSt3mapINSt6stringEPKvEE">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks15EinsumTreeBench15EinsumTreeBenchEdRKNSt6stringERNSt6vectorI7int64_tEEN8mini_jit7dtype_tE7int64_t7int64_t7int64_tRNSt3mapINSt6stringEPKvEE"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks15EinsumTreeBench15EinsumTreeBenchEdRKNSt6stringERNSt6vectorI7int64_tEEN8mini_jit7dtype_tE7int64_t7int64_t7int64_tRNSt3mapINSt6stringEPKvEE"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::EinsumTreeBench::EinsumTreeBench__double.ssCR.std::vector:int64_t:R.mini_jit::dtype_t.int64_t.int64_t.int64_t.std::map:ss.voidCP:R"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1EinsumTreeBench_1a615f20e50d0f5e626bda3c56c9f673aa"></span><span class="sig-name descname"><span class="n"><span class="pre">EinsumTreeBench</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">run_time</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">einsum_expression</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">int64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">dimension_sizes</span></span>, <span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">dtype_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dtype</span></span>, <span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">thread_target</span></span>, <span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">max_kernel_size</span></span>, <span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">min_kernel_size</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">map</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">tensor_inputs</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks15EinsumTreeBench15EinsumTreeBenchEdRKNSt6stringERNSt6vectorI7int64_tEEN8mini_jit7dtype_tE7int64_t7int64_t7int64_tRNSt3mapINSt6stringEPKvEE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks15EinsumTreeBenchD0Ev">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks15EinsumTreeBenchD0Ev"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks15EinsumTreeBenchD0Ev"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::EinsumTreeBench::~EinsumTreeBench"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1EinsumTreeBench_1ae5107ec5a051d3f90516d1cfaeb19bec"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~EinsumTreeBench</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks15EinsumTreeBenchD0Ev" title="Link to this definition"></a><br /></dt>
+<dd><p>Destructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks15EinsumTreeBench3runEv">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks15EinsumTreeBench3runEv"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks15EinsumTreeBench3runEv"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::EinsumTreeBench::run"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1EinsumTreeBench_1a6df203a0646bd5fe94c5df3a9dbcd2de"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">run</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks15EinsumTreeBench3runEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Runs the benchmark. </p>
+</dd></dl>
+
 </div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks25FastSigmoidPrimitiveBenchE">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks25FastSigmoidPrimitiveBenchE"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks25FastSigmoidPrimitiveBenchE"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::FastSigmoidPrimitiveBench"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1FastSigmoidPrimitiveBench"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FastSigmoidPrimitiveBench</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Benchmark</span></span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks25FastSigmoidPrimitiveBenchE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks25FastSigmoidPrimitiveBench25FastSigmoidPrimitiveBenchEd8uint32_t8uint32_t">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks25FastSigmoidPrimitiveBench25FastSigmoidPrimitiveBenchEd8uint32_t8uint32_t"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks25FastSigmoidPrimitiveBench25FastSigmoidPrimitiveBenchEd8uint32_t8uint32_t"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::FastSigmoidPrimitiveBench::FastSigmoidPrimitiveBench__double.uint32_t.uint32_t"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1FastSigmoidPrimitiveBench_1a3e861a583c67447e76355e6cd20efce3"></span><span class="sig-name descname"><span class="n"><span class="pre">FastSigmoidPrimitiveBench</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">runTime</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks25FastSigmoidPrimitiveBench25FastSigmoidPrimitiveBenchEd8uint32_t8uint32_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Constructor for the benchmark for the fast sigmoid primitive. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>runTime</strong> – The time to run the benchmark in seconds. </p></li>
+<li><p><strong>m</strong> – number of rows in A and B. </p></li>
+<li><p><strong>n</strong> – number of columns in A and B. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks25FastSigmoidPrimitiveBenchD0Ev">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks25FastSigmoidPrimitiveBenchD0Ev"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks25FastSigmoidPrimitiveBenchD0Ev"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::FastSigmoidPrimitiveBench::~FastSigmoidPrimitiveBench"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1FastSigmoidPrimitiveBench_1a893c1dcfa6171535afd6aa59da981e60"></span><span class="sig-name descname"><span class="n"><span class="pre">~FastSigmoidPrimitiveBench</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks25FastSigmoidPrimitiveBenchD0Ev" title="Link to this definition"></a><br /></dt>
+<dd><p>Destructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks25FastSigmoidPrimitiveBench3runEv">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks25FastSigmoidPrimitiveBench3runEv"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks25FastSigmoidPrimitiveBench3runEv"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::FastSigmoidPrimitiveBench::run"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1FastSigmoidPrimitiveBench_1aed1d676673ccc5e6b7a817f9ee79989b"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">run</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks25FastSigmoidPrimitiveBench3runEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Runs the benchmark. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks22IdentityPrimitiveBenchE">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks22IdentityPrimitiveBenchE"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks22IdentityPrimitiveBenchE"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::IdentityPrimitiveBench"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1IdentityPrimitiveBench"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IdentityPrimitiveBench</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Benchmark</span></span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks22IdentityPrimitiveBenchE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks22IdentityPrimitiveBench22IdentityPrimitiveBenchEd8uint32_t8uint32_t">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks22IdentityPrimitiveBench22IdentityPrimitiveBenchEd8uint32_t8uint32_t"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks22IdentityPrimitiveBench22IdentityPrimitiveBenchEd8uint32_t8uint32_t"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::IdentityPrimitiveBench::IdentityPrimitiveBench__double.uint32_t.uint32_t"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1IdentityPrimitiveBench_1af477af7be54d00b3ef928f6e5b1b988e"></span><span class="sig-name descname"><span class="n"><span class="pre">IdentityPrimitiveBench</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">runTime</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks22IdentityPrimitiveBench22IdentityPrimitiveBenchEd8uint32_t8uint32_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Constructor for the benchmark for identity primitive. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>runTime</strong> – The time to run the benchmark in seconds. </p></li>
+<li><p><strong>m</strong> – number of rows in A and B. </p></li>
+<li><p><strong>n</strong> – number of columns in A and B. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks22IdentityPrimitiveBenchD0Ev">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks22IdentityPrimitiveBenchD0Ev"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks22IdentityPrimitiveBenchD0Ev"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::IdentityPrimitiveBench::~IdentityPrimitiveBench"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1IdentityPrimitiveBench_1a2758936bd2272c041945bd467424100a"></span><span class="sig-name descname"><span class="n"><span class="pre">~IdentityPrimitiveBench</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks22IdentityPrimitiveBenchD0Ev" title="Link to this definition"></a><br /></dt>
+<dd><p>Destructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks22IdentityPrimitiveBench3runEv">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks22IdentityPrimitiveBench3runEv"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks22IdentityPrimitiveBench3runEv"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::IdentityPrimitiveBench::run"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1IdentityPrimitiveBench_1a47bc83df89e8daa002adb7783f44b670"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">run</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks22IdentityPrimitiveBench3runEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Runs the benchmark. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks27IdentityTransPrimitiveBenchE">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks27IdentityTransPrimitiveBenchE"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks27IdentityTransPrimitiveBenchE"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::IdentityTransPrimitiveBench"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1IdentityTransPrimitiveBench"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IdentityTransPrimitiveBench</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Benchmark</span></span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks27IdentityTransPrimitiveBenchE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks27IdentityTransPrimitiveBench27IdentityTransPrimitiveBenchEd8uint32_t8uint32_t">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks27IdentityTransPrimitiveBench27IdentityTransPrimitiveBenchEd8uint32_t8uint32_t"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks27IdentityTransPrimitiveBench27IdentityTransPrimitiveBenchEd8uint32_t8uint32_t"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::IdentityTransPrimitiveBench::IdentityTransPrimitiveBench__double.uint32_t.uint32_t"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1IdentityTransPrimitiveBench_1a8d2c242b4db47216a11fe7fb65ccddf2"></span><span class="sig-name descname"><span class="n"><span class="pre">IdentityTransPrimitiveBench</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">runTime</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks27IdentityTransPrimitiveBench27IdentityTransPrimitiveBenchEd8uint32_t8uint32_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Constructor for the benchmark for identity transposition primitive. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>runTime</strong> – The time to run the benchmark in seconds. </p></li>
+<li><p><strong>m</strong> – number of rows in A and B. </p></li>
+<li><p><strong>n</strong> – number of columns in A and B. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks27IdentityTransPrimitiveBenchD0Ev">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks27IdentityTransPrimitiveBenchD0Ev"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks27IdentityTransPrimitiveBenchD0Ev"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::IdentityTransPrimitiveBench::~IdentityTransPrimitiveBench"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1IdentityTransPrimitiveBench_1a4b9ee7a85cf6ec587b67f54d5786ecd1"></span><span class="sig-name descname"><span class="n"><span class="pre">~IdentityTransPrimitiveBench</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks27IdentityTransPrimitiveBenchD0Ev" title="Link to this definition"></a><br /></dt>
+<dd><p>Destructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks27IdentityTransPrimitiveBench3runEv">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks27IdentityTransPrimitiveBench3runEv"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks27IdentityTransPrimitiveBench3runEv"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::IdentityTransPrimitiveBench::run"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1IdentityTransPrimitiveBench_1a908a54546d06812afdc40c92054401db"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">run</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks27IdentityTransPrimitiveBench3runEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Runs the benchmark. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks16MatmulBrMNKBenchE">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks16MatmulBrMNKBenchE"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks16MatmulBrMNKBenchE"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::MatmulBrMNKBench"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1MatmulBrMNKBench"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MatmulBrMNKBench</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Benchmark</span></span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks16MatmulBrMNKBenchE" title="Link to this definition"></a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;Matmul_br_m_n_k.bench.h&gt;</em></div>
+<p><a class="reference internal" href="mini_jit.html#classmini__jit_1_1Benchmark"><span class="std std-ref">Benchmark</span></a> for matrix multiplication using BRGEMM. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks16MatmulBrMNKBench16MatmulBrMNKBenchEdiiii">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks16MatmulBrMNKBench16MatmulBrMNKBenchEdiiii"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks16MatmulBrMNKBench16MatmulBrMNKBenchEdiiii"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::MatmulBrMNKBench::MatmulBrMNKBench__double.i.i.i.i"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1MatmulBrMNKBench_1a76ea22f7f6f964ada3b869a0bfa04b6f"></span><span class="sig-name descname"><span class="n"><span class="pre">MatmulBrMNKBench</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">run_time</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">k</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">br_size</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks16MatmulBrMNKBench16MatmulBrMNKBenchEdiiii" title="Link to this definition"></a><br /></dt>
+<dd><p>Constructor for the benchmark for matrix multiplication using BRGEMM. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>run_time</strong> – The time to run the benchmark in seconds. </p></li>
+<li><p><strong>m</strong> – number of rows in A and C. </p></li>
+<li><p><strong>n</strong> – number of columns in B and C. </p></li>
+<li><p><strong>k</strong> – number of columns in A and rows in B. </p></li>
+<li><p><strong>br_size</strong> – The size of the batch-reduce. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks16MatmulBrMNKBenchD0Ev">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks16MatmulBrMNKBenchD0Ev"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks16MatmulBrMNKBenchD0Ev"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::MatmulBrMNKBench::~MatmulBrMNKBench"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1MatmulBrMNKBench_1a88f96d9b3f1fc839348623d120242fac"></span><span class="sig-name descname"><span class="n"><span class="pre">~MatmulBrMNKBench</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks16MatmulBrMNKBenchD0Ev" title="Link to this definition"></a><br /></dt>
+<dd><p>Destructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks16MatmulBrMNKBench3runEv">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks16MatmulBrMNKBench3runEv"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks16MatmulBrMNKBench3runEv"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::MatmulBrMNKBench::run"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1MatmulBrMNKBench_1a0d7d038ff300eb4dd3ff760aaa8362db"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">run</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks16MatmulBrMNKBench3runEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Runs the benchmark. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks14MatmulMNKBenchE">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks14MatmulMNKBenchE"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks14MatmulMNKBenchE"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::MatmulMNKBench"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1MatmulMNKBench"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MatmulMNKBench</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Benchmark</span></span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks14MatmulMNKBenchE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks14MatmulMNKBench14MatmulMNKBenchEdiii">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks14MatmulMNKBench14MatmulMNKBenchEdiii"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks14MatmulMNKBench14MatmulMNKBenchEdiii"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::MatmulMNKBench::MatmulMNKBench__double.i.i.i"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1MatmulMNKBench_1aab94cec9cfa7d30024032cfa96925bf7"></span><span class="sig-name descname"><span class="n"><span class="pre">MatmulMNKBench</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">run_time</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">k</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks14MatmulMNKBench14MatmulMNKBenchEdiii" title="Link to this definition"></a><br /></dt>
+<dd><p>Constructor for the benchmark for matrix multiplication using GEMM. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>run_time</strong> – The time to run the benchmark in seconds. </p></li>
+<li><p><strong>m</strong> – number of rows in A and C. </p></li>
+<li><p><strong>n</strong> – number of columns in B and C. </p></li>
+<li><p><strong>k</strong> – number of columns in A and rows in B. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks14MatmulMNKBenchD0Ev">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks14MatmulMNKBenchD0Ev"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks14MatmulMNKBenchD0Ev"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::MatmulMNKBench::~MatmulMNKBench"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1MatmulMNKBench_1a58becdcd05d662e6d97b548693e1744b"></span><span class="sig-name descname"><span class="n"><span class="pre">~MatmulMNKBench</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks14MatmulMNKBenchD0Ev" title="Link to this definition"></a><br /></dt>
+<dd><p>Destructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks14MatmulMNKBench3runEv">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks14MatmulMNKBench3runEv"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks14MatmulMNKBench3runEv"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::MatmulMNKBench::run"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1MatmulMNKBench_1a29c9e31d7412f148353cf589733d721f"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">run</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks14MatmulMNKBench3runEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Runs the benchmark. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks24ReciprocalPrimitiveBenchE">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks24ReciprocalPrimitiveBenchE"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks24ReciprocalPrimitiveBenchE"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::ReciprocalPrimitiveBench"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1ReciprocalPrimitiveBench"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ReciprocalPrimitiveBench</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Benchmark</span></span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks24ReciprocalPrimitiveBenchE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks24ReciprocalPrimitiveBench24ReciprocalPrimitiveBenchEd8uint32_t8uint32_t">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks24ReciprocalPrimitiveBench24ReciprocalPrimitiveBenchEd8uint32_t8uint32_t"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks24ReciprocalPrimitiveBench24ReciprocalPrimitiveBenchEd8uint32_t8uint32_t"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::ReciprocalPrimitiveBench::ReciprocalPrimitiveBench__double.uint32_t.uint32_t"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1ReciprocalPrimitiveBench_1a789b5327f4c916fa97ea0d8497428aa0"></span><span class="sig-name descname"><span class="n"><span class="pre">ReciprocalPrimitiveBench</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">runTime</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks24ReciprocalPrimitiveBench24ReciprocalPrimitiveBenchEd8uint32_t8uint32_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Constructor for the benchmark for the reciprocal primitive. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>runTime</strong> – The time to run the benchmark in seconds. </p></li>
+<li><p><strong>m</strong> – number of rows in A and B. </p></li>
+<li><p><strong>n</strong> – number of columns in A and B. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks24ReciprocalPrimitiveBenchD0Ev">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks24ReciprocalPrimitiveBenchD0Ev"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks24ReciprocalPrimitiveBenchD0Ev"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::ReciprocalPrimitiveBench::~ReciprocalPrimitiveBench"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1ReciprocalPrimitiveBench_1aa362d5f7fd95daa771b025eb7a599b5d"></span><span class="sig-name descname"><span class="n"><span class="pre">~ReciprocalPrimitiveBench</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks24ReciprocalPrimitiveBenchD0Ev" title="Link to this definition"></a><br /></dt>
+<dd><p>Destructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks24ReciprocalPrimitiveBench3runEv">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks24ReciprocalPrimitiveBench3runEv"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks24ReciprocalPrimitiveBench3runEv"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::ReciprocalPrimitiveBench::run"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1ReciprocalPrimitiveBench_1a4036e734fe96be3a63a90863e6bcc66f"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">run</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks24ReciprocalPrimitiveBench3runEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Runs the benchmark. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks18ReLUPrimitiveBenchE">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks18ReLUPrimitiveBenchE"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks18ReLUPrimitiveBenchE"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::ReLUPrimitiveBench"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1ReLUPrimitiveBench"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ReLUPrimitiveBench</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Benchmark</span></span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks18ReLUPrimitiveBenchE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks18ReLUPrimitiveBench18ReLUPrimitiveBenchEd8uint32_t8uint32_t">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks18ReLUPrimitiveBench18ReLUPrimitiveBenchEd8uint32_t8uint32_t"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks18ReLUPrimitiveBench18ReLUPrimitiveBenchEd8uint32_t8uint32_t"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::ReLUPrimitiveBench::ReLUPrimitiveBench__double.uint32_t.uint32_t"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1ReLUPrimitiveBench_1afc4354c6c40e92496637cc57fd33537b"></span><span class="sig-name descname"><span class="n"><span class="pre">ReLUPrimitiveBench</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">runTime</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks18ReLUPrimitiveBench18ReLUPrimitiveBenchEd8uint32_t8uint32_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Constructor for the benchmark for the ReLU primitive. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>runTime</strong> – The time to run the benchmark in seconds. </p></li>
+<li><p><strong>m</strong> – number of rows in A and B. </p></li>
+<li><p><strong>n</strong> – number of columns in A and B. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks18ReLUPrimitiveBenchD0Ev">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks18ReLUPrimitiveBenchD0Ev"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks18ReLUPrimitiveBenchD0Ev"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::ReLUPrimitiveBench::~ReLUPrimitiveBench"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1ReLUPrimitiveBench_1aad810792de2f83da4ec1ad3769e0ca25"></span><span class="sig-name descname"><span class="n"><span class="pre">~ReLUPrimitiveBench</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks18ReLUPrimitiveBenchD0Ev" title="Link to this definition"></a><br /></dt>
+<dd><p>Destructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks18ReLUPrimitiveBench3runEv">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks18ReLUPrimitiveBench3runEv"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks18ReLUPrimitiveBench3runEv"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::ReLUPrimitiveBench::run"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1ReLUPrimitiveBench_1a0d6bc4a16dc5489b107df1119aeb4f31"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">run</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks18ReLUPrimitiveBench3runEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Runs the benchmark. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks23ReLUTransPrimitiveBenchE">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks23ReLUTransPrimitiveBenchE"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks23ReLUTransPrimitiveBenchE"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::ReLUTransPrimitiveBench"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1ReLUTransPrimitiveBench"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ReLUTransPrimitiveBench</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Benchmark</span></span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks23ReLUTransPrimitiveBenchE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks23ReLUTransPrimitiveBench23ReLUTransPrimitiveBenchEd8uint32_t8uint32_t">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks23ReLUTransPrimitiveBench23ReLUTransPrimitiveBenchEd8uint32_t8uint32_t"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks23ReLUTransPrimitiveBench23ReLUTransPrimitiveBenchEd8uint32_t8uint32_t"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::ReLUTransPrimitiveBench::ReLUTransPrimitiveBench__double.uint32_t.uint32_t"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1ReLUTransPrimitiveBench_1af4f43af2f03e6ff7a8263936b188a37f"></span><span class="sig-name descname"><span class="n"><span class="pre">ReLUTransPrimitiveBench</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">runTime</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks23ReLUTransPrimitiveBench23ReLUTransPrimitiveBenchEd8uint32_t8uint32_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Constructor for the benchmark for the transposition ReLU primitive. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>runTime</strong> – The time to run the benchmark in seconds. </p></li>
+<li><p><strong>m</strong> – number of rows in A and B. </p></li>
+<li><p><strong>n</strong> – number of columns in A and B. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks23ReLUTransPrimitiveBenchD0Ev">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks23ReLUTransPrimitiveBenchD0Ev"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks23ReLUTransPrimitiveBenchD0Ev"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::ReLUTransPrimitiveBench::~ReLUTransPrimitiveBench"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1ReLUTransPrimitiveBench_1aa58ef3e6b5b2b3626db120965e1d6666"></span><span class="sig-name descname"><span class="n"><span class="pre">~ReLUTransPrimitiveBench</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks23ReLUTransPrimitiveBenchD0Ev" title="Link to this definition"></a><br /></dt>
+<dd><p>Destructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks23ReLUTransPrimitiveBench3runEv">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks23ReLUTransPrimitiveBench3runEv"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks23ReLUTransPrimitiveBench3runEv"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::ReLUTransPrimitiveBench::run"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1ReLUTransPrimitiveBench_1a3e0fb1698270ac87d765cb2fb4132e11"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">run</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks23ReLUTransPrimitiveBench3runEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Runs the benchmark. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks34SigmoidInterpolationPrimitiveBenchE">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks34SigmoidInterpolationPrimitiveBenchE"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks34SigmoidInterpolationPrimitiveBenchE"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::SigmoidInterpolationPrimitiveBench"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1SigmoidInterpolationPrimitiveBench"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SigmoidInterpolationPrimitiveBench</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Benchmark</span></span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks34SigmoidInterpolationPrimitiveBenchE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks34SigmoidInterpolationPrimitiveBench34SigmoidInterpolationPrimitiveBenchEd8uint32_t8uint32_t">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks34SigmoidInterpolationPrimitiveBench34SigmoidInterpolationPrimitiveBenchEd8uint32_t8uint32_t"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks34SigmoidInterpolationPrimitiveBench34SigmoidInterpolationPrimitiveBenchEd8uint32_t8uint32_t"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::SigmoidInterpolationPrimitiveBench::SigmoidInterpolationPrimitiveBench__double.uint32_t.uint32_t"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1SigmoidInterpolationPrimitiveBench_1aa556608f9ecc73de70cfb70036e7bdc6"></span><span class="sig-name descname"><span class="n"><span class="pre">SigmoidInterpolationPrimitiveBench</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">runTime</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks34SigmoidInterpolationPrimitiveBench34SigmoidInterpolationPrimitiveBenchEd8uint32_t8uint32_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Constructor for the benchmark for the sigmoid interpolation primitive. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>runTime</strong> – The time to run the benchmark in seconds. </p></li>
+<li><p><strong>m</strong> – number of rows in A and B. </p></li>
+<li><p><strong>n</strong> – number of columns in A and B. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks34SigmoidInterpolationPrimitiveBenchD0Ev">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks34SigmoidInterpolationPrimitiveBenchD0Ev"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks34SigmoidInterpolationPrimitiveBenchD0Ev"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::SigmoidInterpolationPrimitiveBench::~SigmoidInterpolationPrimitiveBench"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1SigmoidInterpolationPrimitiveBench_1a688ec0f32edbf4f25a93b38bf84f01f1"></span><span class="sig-name descname"><span class="n"><span class="pre">~SigmoidInterpolationPrimitiveBench</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks34SigmoidInterpolationPrimitiveBenchD0Ev" title="Link to this definition"></a><br /></dt>
+<dd><p>Destructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks34SigmoidInterpolationPrimitiveBench3runEv">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks34SigmoidInterpolationPrimitiveBench3runEv"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks34SigmoidInterpolationPrimitiveBench3runEv"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::SigmoidInterpolationPrimitiveBench::run"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1SigmoidInterpolationPrimitiveBench_1ab96766bcfd5b75c292e25ef78ef55b3a"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">run</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks34SigmoidInterpolationPrimitiveBench3runEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Runs the benchmark. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks27SigmoidTaylorPrimitiveBenchE">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks27SigmoidTaylorPrimitiveBenchE"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks27SigmoidTaylorPrimitiveBenchE"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::SigmoidTaylorPrimitiveBench"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1SigmoidTaylorPrimitiveBench"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SigmoidTaylorPrimitiveBench</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Benchmark</span></span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks27SigmoidTaylorPrimitiveBenchE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks27SigmoidTaylorPrimitiveBench27SigmoidTaylorPrimitiveBenchEd8uint32_t8uint32_t">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks27SigmoidTaylorPrimitiveBench27SigmoidTaylorPrimitiveBenchEd8uint32_t8uint32_t"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks27SigmoidTaylorPrimitiveBench27SigmoidTaylorPrimitiveBenchEd8uint32_t8uint32_t"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::SigmoidTaylorPrimitiveBench::SigmoidTaylorPrimitiveBench__double.uint32_t.uint32_t"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1SigmoidTaylorPrimitiveBench_1a908f9885f44235e1e166aa050db19f53"></span><span class="sig-name descname"><span class="n"><span class="pre">SigmoidTaylorPrimitiveBench</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">runTime</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks27SigmoidTaylorPrimitiveBench27SigmoidTaylorPrimitiveBenchEd8uint32_t8uint32_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Constructor for the benchmark for the sigmoid taylor approxmiation primitive. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>runTime</strong> – The time to run the benchmark in seconds. </p></li>
+<li><p><strong>m</strong> – number of rows in A and B. </p></li>
+<li><p><strong>n</strong> – number of columns in A and B. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks27SigmoidTaylorPrimitiveBenchD0Ev">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks27SigmoidTaylorPrimitiveBenchD0Ev"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks27SigmoidTaylorPrimitiveBenchD0Ev"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::SigmoidTaylorPrimitiveBench::~SigmoidTaylorPrimitiveBench"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1SigmoidTaylorPrimitiveBench_1a7c6de181ee396501ba5f4abcdab32072"></span><span class="sig-name descname"><span class="n"><span class="pre">~SigmoidTaylorPrimitiveBench</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks27SigmoidTaylorPrimitiveBenchD0Ev" title="Link to this definition"></a><br /></dt>
+<dd><p>Destructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks27SigmoidTaylorPrimitiveBench3runEv">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks27SigmoidTaylorPrimitiveBench3runEv"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks27SigmoidTaylorPrimitiveBench3runEv"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::SigmoidTaylorPrimitiveBench::run"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1SigmoidTaylorPrimitiveBench_1a8bf715e22c7f92aa36916ab5c2aeb069"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">run</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks27SigmoidTaylorPrimitiveBench3runEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Runs the benchmark. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks20SquarePrimitiveBenchE">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks20SquarePrimitiveBenchE"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks20SquarePrimitiveBenchE"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::SquarePrimitiveBench"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1SquarePrimitiveBench"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SquarePrimitiveBench</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Benchmark</span></span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks20SquarePrimitiveBenchE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks20SquarePrimitiveBench20SquarePrimitiveBenchEd8uint32_t8uint32_t">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks20SquarePrimitiveBench20SquarePrimitiveBenchEd8uint32_t8uint32_t"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks20SquarePrimitiveBench20SquarePrimitiveBenchEd8uint32_t8uint32_t"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::SquarePrimitiveBench::SquarePrimitiveBench__double.uint32_t.uint32_t"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1SquarePrimitiveBench_1a653a964ebf45d3de21f6b51b15a11e06"></span><span class="sig-name descname"><span class="n"><span class="pre">SquarePrimitiveBench</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">runTime</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks20SquarePrimitiveBench20SquarePrimitiveBenchEd8uint32_t8uint32_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Constructor for the benchmark for square primitive. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>runTime</strong> – The time to run the benchmark in seconds. </p></li>
+<li><p><strong>m</strong> – number of rows in A and B. </p></li>
+<li><p><strong>n</strong> – number of columns in A and B. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks20SquarePrimitiveBenchD0Ev">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks20SquarePrimitiveBenchD0Ev"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks20SquarePrimitiveBenchD0Ev"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::SquarePrimitiveBench::~SquarePrimitiveBench"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1SquarePrimitiveBench_1aaa3c9dd2038e398500f0dd23d96cc8b5"></span><span class="sig-name descname"><span class="n"><span class="pre">~SquarePrimitiveBench</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks20SquarePrimitiveBenchD0Ev" title="Link to this definition"></a><br /></dt>
+<dd><p>Destructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks20SquarePrimitiveBench3runEv">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks20SquarePrimitiveBench3runEv"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks20SquarePrimitiveBench3runEv"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::SquarePrimitiveBench::run"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1SquarePrimitiveBench_1ae95a33d28d01802aa53eeb66f7844c59"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">run</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks20SquarePrimitiveBench3runEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Runs the benchmark. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks25SquareTransPrimitiveBenchE">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks25SquareTransPrimitiveBenchE"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks25SquareTransPrimitiveBenchE"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::SquareTransPrimitiveBench"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1SquareTransPrimitiveBench"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SquareTransPrimitiveBench</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Benchmark</span></span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks25SquareTransPrimitiveBenchE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks25SquareTransPrimitiveBench25SquareTransPrimitiveBenchEd8uint32_t8uint32_t">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks25SquareTransPrimitiveBench25SquareTransPrimitiveBenchEd8uint32_t8uint32_t"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks25SquareTransPrimitiveBench25SquareTransPrimitiveBenchEd8uint32_t8uint32_t"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::SquareTransPrimitiveBench::SquareTransPrimitiveBench__double.uint32_t.uint32_t"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1SquareTransPrimitiveBench_1aa7af116fd725b85a55fd4ac79f1eda5a"></span><span class="sig-name descname"><span class="n"><span class="pre">SquareTransPrimitiveBench</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">runTime</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks25SquareTransPrimitiveBench25SquareTransPrimitiveBenchEd8uint32_t8uint32_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Constructor for the benchmark for the transposition square primitive. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>runTime</strong> – The time to run the benchmark in seconds. </p></li>
+<li><p><strong>m</strong> – number of rows in A and B. </p></li>
+<li><p><strong>n</strong> – number of columns in A and B. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks25SquareTransPrimitiveBenchD0Ev">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks25SquareTransPrimitiveBenchD0Ev"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks25SquareTransPrimitiveBenchD0Ev"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::SquareTransPrimitiveBench::~SquareTransPrimitiveBench"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1SquareTransPrimitiveBench_1a2f4abb0d651e9698c92024641bdae71d"></span><span class="sig-name descname"><span class="n"><span class="pre">~SquareTransPrimitiveBench</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks25SquareTransPrimitiveBenchD0Ev" title="Link to this definition"></a><br /></dt>
+<dd><p>Destructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks25SquareTransPrimitiveBench3runEv">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks25SquareTransPrimitiveBench3runEv"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks25SquareTransPrimitiveBench3runEv"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::SquareTransPrimitiveBench::run"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1SquareTransPrimitiveBench_1ae5bcb3372d1fcfd7068c1792dcc5deda"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">run</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks25SquareTransPrimitiveBench3runEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Runs the benchmark. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks20TensorOperationBenchE">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks20TensorOperationBenchE"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks20TensorOperationBenchE"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::TensorOperationBench"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1TensorOperationBench"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TensorOperationBench</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Benchmark</span></span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks20TensorOperationBenchE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks20TensorOperationBench20TensorOperationBenchEd7dtype_t7ptype_t7ptype_t7ptype_tNSt4spanIK5dim_tEENSt4spanIK6exec_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEE">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks20TensorOperationBench20TensorOperationBenchEd7dtype_t7ptype_t7ptype_t7ptype_tNSt4spanIK5dim_tEENSt4spanIK6exec_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEE"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks20TensorOperationBench20TensorOperationBenchEd7dtype_t7ptype_t7ptype_t7ptype_tNSt4spanIK5dim_tEENSt4spanIK6exec_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEE"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::TensorOperationBench::TensorOperationBench__double.dtype_t.ptype_t.ptype_t.ptype_t.std::span:dim_tC:.std::span:exec_tC:.std::span:int64_tC:.std::span:int64_tC:.std::span:int64_tC:.std::span:int64_tC:"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1TensorOperationBench_1ab31d715af778486422ac980a274a0934"></span><span class="sig-name descname"><span class="n"><span class="pre">TensorOperationBench</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">run_time</span></span>, <a class="reference internal" href="mini_jit.html#_CPPv4N8mini_jit7dtype_tE" title="mini_jit::dtype_t"><span class="n"><span class="pre">dtype_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">dtype</span></span>, <a class="reference internal" href="mini_jit.html#_CPPv4N8mini_jit7ptype_tE" title="mini_jit::ptype_t"><span class="n"><span class="pre">ptype_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">prim_first_touch</span></span>, <a class="reference internal" href="mini_jit.html#_CPPv4N8mini_jit7ptype_tE" title="mini_jit::ptype_t"><span class="n"><span class="pre">ptype_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">prim_main</span></span>, <a class="reference internal" href="mini_jit.html#_CPPv4N8mini_jit7ptype_tE" title="mini_jit::ptype_t"><span class="n"><span class="pre">ptype_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">prim_last_touch</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">span</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="mini_jit.html#_CPPv4N8mini_jit5dim_tE" title="mini_jit::dim_t"><span class="n"><span class="pre">dim_t</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dim_types</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">span</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="mini_jit.html#_CPPv4N8mini_jit6exec_tE" title="mini_jit::exec_t"><span class="n"><span class="pre">exec_t</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">exec_types</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">span</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">int64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dim_sizes</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">span</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">int64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">strides_in0</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">span</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">int64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">strides_in1</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">span</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">int64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">strides_out</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks20TensorOperationBench20TensorOperationBenchEd7dtype_t7ptype_t7ptype_t7ptype_tNSt4spanIK5dim_tEENSt4spanIK6exec_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEE" title="Link to this definition"></a><br /></dt>
+<dd><p>Constructor for the benchmark for tensor operations. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>run_time</strong> – The time to run the benchmark in seconds. </p></li>
+<li><p><strong>dtype</strong> – Datatype of all tensor elements. </p></li>
+<li><p><strong>prim_first_touch</strong> – Type of the first touch primitive. </p></li>
+<li><p><strong>prim_main</strong> – Type of the main primitive. </p></li>
+<li><p><strong>prim_last_touch</strong> – Type of the last touch primitive. </p></li>
+<li><p><strong>dim_types</strong> – Dimension type of the loops (c, m, n, or k). </p></li>
+<li><p><strong>exec_types</strong> – Execution type of the loops (seq, shared, or prim). </p></li>
+<li><p><strong>dim_sizes</strong> – Sizes of the dimensions. </p></li>
+<li><p><strong>strides_in0</strong> – Strides of the first input tensor. </p></li>
+<li><p><strong>strides_in1</strong> – Strides of the second input tensor (ignored if unary). </p></li>
+<li><p><strong>strides_out</strong> – Strides of the output tensor. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks20TensorOperationBenchD0Ev">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks20TensorOperationBenchD0Ev"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks20TensorOperationBenchD0Ev"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::TensorOperationBench::~TensorOperationBench"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1TensorOperationBench_1a71a7ed21a7801f879e90cf655d3c9550"></span><span class="sig-name descname"><span class="n"><span class="pre">~TensorOperationBench</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks20TensorOperationBenchD0Ev" title="Link to this definition"></a><br /></dt>
+<dd><p>Destructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks20TensorOperationBench3runEv">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks20TensorOperationBench3runEv"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks20TensorOperationBench3runEv"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::TensorOperationBench::run"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1TensorOperationBench_1aa8eb71138f5859b39888548caeb031b9"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">run</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks20TensorOperationBench3runEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Runs the benchmark. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks21ZeroEorPrimitiveBenchE">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks21ZeroEorPrimitiveBenchE"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks21ZeroEorPrimitiveBenchE"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::ZeroEorPrimitiveBench"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1ZeroEorPrimitiveBench"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ZeroEorPrimitiveBench</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Benchmark</span></span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks21ZeroEorPrimitiveBenchE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks21ZeroEorPrimitiveBench21ZeroEorPrimitiveBenchEd8uint32_t8uint32_t">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks21ZeroEorPrimitiveBench21ZeroEorPrimitiveBenchEd8uint32_t8uint32_t"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks21ZeroEorPrimitiveBench21ZeroEorPrimitiveBenchEd8uint32_t8uint32_t"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::ZeroEorPrimitiveBench::ZeroEorPrimitiveBench__double.uint32_t.uint32_t"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1ZeroEorPrimitiveBench_1a072e8b4bb98a978013c5e32b548fd763"></span><span class="sig-name descname"><span class="n"><span class="pre">ZeroEorPrimitiveBench</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">runTime</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks21ZeroEorPrimitiveBench21ZeroEorPrimitiveBenchEd8uint32_t8uint32_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Constructor for the benchmark for the EOR Zero primitive. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>runTime</strong> – The time to run the benchmark in seconds. </p></li>
+<li><p><strong>m</strong> – number of rows in A and B. </p></li>
+<li><p><strong>n</strong> – number of columns in A and B. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks21ZeroEorPrimitiveBenchD0Ev">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks21ZeroEorPrimitiveBenchD0Ev"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks21ZeroEorPrimitiveBenchD0Ev"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::ZeroEorPrimitiveBench::~ZeroEorPrimitiveBench"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1ZeroEorPrimitiveBench_1ae58ce6e9d1ccf03021562ee043648aae"></span><span class="sig-name descname"><span class="n"><span class="pre">~ZeroEorPrimitiveBench</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks21ZeroEorPrimitiveBenchD0Ev" title="Link to this definition"></a><br /></dt>
+<dd><p>Destructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks21ZeroEorPrimitiveBench3runEv">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks21ZeroEorPrimitiveBench3runEv"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks21ZeroEorPrimitiveBench3runEv"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::ZeroEorPrimitiveBench::run"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1ZeroEorPrimitiveBench_1a0ac4a7d562cc15959ef5673009e7c064"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">run</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks21ZeroEorPrimitiveBench3runEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Runs the benchmark. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks21ZeroXZRPrimitiveBenchE">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks21ZeroXZRPrimitiveBenchE"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks21ZeroXZRPrimitiveBenchE"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::ZeroXZRPrimitiveBench"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1ZeroXZRPrimitiveBench"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ZeroXZRPrimitiveBench</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Benchmark</span></span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks21ZeroXZRPrimitiveBenchE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks21ZeroXZRPrimitiveBench21ZeroXZRPrimitiveBenchEd8uint32_t8uint32_t">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks21ZeroXZRPrimitiveBench21ZeroXZRPrimitiveBenchEd8uint32_t8uint32_t"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks21ZeroXZRPrimitiveBench21ZeroXZRPrimitiveBenchEd8uint32_t8uint32_t"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::ZeroXZRPrimitiveBench::ZeroXZRPrimitiveBench__double.uint32_t.uint32_t"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1ZeroXZRPrimitiveBench_1ad777f49b0dd0552c096db37335f981d9"></span><span class="sig-name descname"><span class="n"><span class="pre">ZeroXZRPrimitiveBench</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">runTime</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks21ZeroXZRPrimitiveBench21ZeroXZRPrimitiveBenchEd8uint32_t8uint32_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Constructor for the benchmark for the XZR Zero primitive. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>runTime</strong> – The time to run the benchmark in seconds. </p></li>
+<li><p><strong>m</strong> – number of rows in A and B. </p></li>
+<li><p><strong>n</strong> – number of columns in A and B. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks21ZeroXZRPrimitiveBenchD0Ev">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks21ZeroXZRPrimitiveBenchD0Ev"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks21ZeroXZRPrimitiveBenchD0Ev"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::ZeroXZRPrimitiveBench::~ZeroXZRPrimitiveBench"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1ZeroXZRPrimitiveBench_1afdcb3794a30e69bcdcba558ffd4c5a80"></span><span class="sig-name descname"><span class="n"><span class="pre">~ZeroXZRPrimitiveBench</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks21ZeroXZRPrimitiveBenchD0Ev" title="Link to this definition"></a><br /></dt>
+<dd><p>Destructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks21ZeroXZRPrimitiveBench3runEv">
+<span id="_CPPv3N8mini_jit10benchmarks8mini_jit10benchmarks21ZeroXZRPrimitiveBench3runEv"></span><span id="_CPPv2N8mini_jit10benchmarks8mini_jit10benchmarks21ZeroXZRPrimitiveBench3runEv"></span><span id="mini_jit::benchmarks::mini_jit::benchmarks::ZeroXZRPrimitiveBench::run"></span><span class="target" id="classmini__jit_1_1benchmarks_1_1ZeroXZRPrimitiveBench_1a6603091da0b5ed6d9ae02261512f67eb"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">run</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks21ZeroXZRPrimitiveBench3runEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Runs the benchmark. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
 </section>
 
 

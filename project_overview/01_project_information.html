@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Introduction &mdash; Machine Learning Compilers  documentation</title>
+  <title>Machine Learning Compilers &mdash; Machine Learning Compilers  documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -25,7 +25,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Project Report" href="02_project_report.html" />
+    <link rel="next" title="Documentation Setup" href="02_docu_setup.html" />
     <link rel="prev" title="Machine Learning Compilers" href="../index.html" /> 
 </head>
 
@@ -50,16 +50,9 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Project Overview</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Introduction</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#what-are-machine-learning-compilers">What are Machine Learning Compilers?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#project-background">Project Background</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#project-structure">Project Structure</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#where-to-go-next">Where to Go Next?</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="02_project_report.html">Project Report</a></li>
-<li class="toctree-l1"><a class="reference internal" href="03_user_guide.html">User Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="04_docu_setup.html">Documentation Setup</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Machine Learning Compilers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02_docu_setup.html">Documentation Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03_project_report.html">Project Report</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Submissions</span></p>
 <ul>
@@ -97,7 +90,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Introduction</li>
+      <li class="breadcrumb-item active">Machine Learning Compilers</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/project_overview/01_project_information.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -107,63 +100,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="introduction">
-<h1>Introduction<a class="headerlink" href="#introduction" title="Link to this heading"></a></h1>
-<p>This project discusses the development of a <strong>Machine Learning Compiler</strong>.
-Specifically, we explain how we developed a domain-specific, primitive-based tensor compiler.
-If that sounds like a random string of technical buzzwords to you, don’t worry.
-In the following sections, we will break down what a tensor compiler is, why it’s useful, and how you can use our implementation.</p>
-<section id="what-are-machine-learning-compilers">
-<h2>What are Machine Learning Compilers?<a class="headerlink" href="#what-are-machine-learning-compilers" title="Link to this heading"></a></h2>
-<p>Machine Learning Compilers are tools that translate high-level machine learning models or tensor operations into low-level machine code that can be executed efficiently on hardware.
-Compilers which translate tensor operations are referred to as <strong>tensor compilers</strong>.
-A practical application of a tensor compiler is to close the gap between machine learning frameworks (like TensorFlow or PyTorch) and the underlying hardware.
-In this project, we focus on developing a tensor compiler that operates on a set of primitive operations, which are the building blocks for more complex tensor computations.
-If you wish to learn more about tensor processing primitives, we recommend reading <a class="reference external" href="https://arxiv.org/pdf/2104.05755">this paper</a>.</p>
-<p>While the main task of a tensor compiler is to enable tensor operations to be run on hardware, there are several goals that a good tensor compiler should achieve:</p>
-<ul class="simple">
-<li><p><strong>High throughput</strong>: Minimize the average execution time for many independent evaluations of the same tensor expression.</p></li>
-<li><p><strong>Low latency</strong>: Minimize the time it takes to execute a single tensor operation.</p></li>
-<li><p><strong>Short compilation time</strong>: Minimize the time it takes for the compiler to generate executable code.</p></li>
-<li><p><strong>Flexibility</strong>: Support a wide range of tensor expressions.</p></li>
-<li><p><strong>Portability</strong>: Support for high performance execution on different hardware platforms.</p></li>
-</ul>
-<p>In our implementation, we decided to focus on the first four goals. The tensor compiler we developed is specifically designed for the <strong>A64 Instruction Set Architecture</strong>, which is used in <strong>ARM-based CPUs</strong>.
-While this might be a large constraint in portability, it allowed us to focus on the specific features and optimizations that are relevant for the chosen architecture.</p>
-</section>
-<section id="project-background">
-<h2>Project Background<a class="headerlink" href="#project-background" title="Link to this heading"></a></h2>
-<p>Having explained the motivation behind the project, we would now like to provide some further background information.
-Everything you’ll encounter in this guide and the accompanying <cite>GitHub repository &lt;https://github.com/Shad00Z/machine-learning-compilers&gt;</cite> was developed as part of the <strong>Machine Learning Compilers</strong> class at the <a class="reference external" href="https://www.uni-jena.de/en">University of Jena</a> during the summer semester of 2025.
-The codebase was created through a series of weekly assignments we completed throughout the semester.
-Alongside the class sessions, we were also provided with <a class="reference external" href="https://scalable.uni-jena.de/opt/pbtc/index.html">an online book</a> that outlines the core concepts behind this project.
-If you are more interested in the theoretical background of the project, we recommend checking out the book first.</p>
-</section>
-<section id="project-structure">
-<h2>Project Structure<a class="headerlink" href="#project-structure" title="Link to this heading"></a></h2>
-<p>The documentation you are currently reading is part of the <cite>docs</cite> directory in the <cite>GitHub repository &lt;https://github.com/Shad00Z/machine-learning-compilers&gt;</cite>.
-It is organized into three main sections:</p>
-<ol class="arabic simple">
-<li><p><strong>Project Overview</strong>: Provides background on the project, its structure, and guidance on how to use the codebase.</p></li>
-<li><p><strong>Submissions</strong>: Contains the individual assignments completed throughout the semester, along with explanations of the tasks and the code we wrote to solve them.</p></li>
-<li><p><strong>API</strong>: Automatically generated from the codebase using <a class="reference external" href="https://www.doxygen.nl/index.html">Doxygen</a>, this section offers detailed information about the classes, functions, and modules we implemented.</p></li>
-</ol>
-<p>The structure of the codebase itself is more complex, so we’ll only provide a brief overview here.</p>
-<p>The main code can be found in the <cite>src</cite> directory, which contains the implementation of the tensor compiler.
-Within <cite>src</cite>, you’ll also find a <cite>submissions</cite> directory containing the code from the initial assignments we completed before beginning to work on the main compiler implementation.
-We recommend starting with the <strong>API</strong> section if you’re looking to understand the code structure and class design in detail.</p>
-<p>Next to the <cite>src</cite> directory is a <cite>tests</cite> directory, which includes unit tests used to verify the correctness of our implementation.
-You’ll also find the <cite>docs</cite> directory, which contains the documentation you’re currently reading.
-Finally, the <cite>benchmarks</cite> directory includes various results from performance evaluations of our compiler.</p>
-</section>
-<section id="where-to-go-next">
-<h2>Where to Go Next?<a class="headerlink" href="#where-to-go-next" title="Link to this heading"></a></h2>
-<p>If you wish to learn more about the project, we recommend starting with the <a class="reference internal" href="02_project_report.html#project-report"><span class="std std-ref">Project Report</span></a> section.
-This section provides an overview of the project, including the tasks we completed, the code we wrote, and the results we achieved.
-It also includes links to the individual assignments we completed throughout the semester, which provide more detailed information about the specific tasks and our solutions.</p>
-<p>If you wish to use the tensor compiler yourself, you can find instructions in our <a class="reference internal" href="03_user_guide.html#user-guide"><span class="std std-ref">User Guide</span></a>.</p>
-<p>Lastly, if you are interested in building the documentation yourself, you should check out the <a class="reference internal" href="04_docu_setup.html#documentation-setup"><span class="std std-ref">Documentation Setup</span></a> section.</p>
-</section>
+  <section id="machine-learning-compilers">
+<h1>Machine Learning Compilers<a class="headerlink" href="#machine-learning-compilers" title="Link to this heading"></a></h1>
+<p>This project addresses the work of a primitive-based tensor compiler.
+All information about this topic can be found at <a class="reference external" href="https://scalable.uni-jena.de/opt/pbtc/index.html">this link</a>.</p>
 </section>
 
 
@@ -171,7 +111,7 @@ It also includes links to the individual assignments we completed throughout the
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="../index.html" class="btn btn-neutral float-left" title="Machine Learning Compilers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="02_project_report.html" class="btn btn-neutral float-right" title="Project Report" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="02_docu_setup.html" class="btn btn-neutral float-right" title="Documentation Setup" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

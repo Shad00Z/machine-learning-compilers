@@ -50,10 +50,9 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Project Overview</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../project_overview/01_project_information.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../project_overview/02_project_report.html">Project Report</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../project_overview/03_user_guide.html">User Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../project_overview/04_docu_setup.html">Documentation Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../project_overview/01_project_information.html">Machine Learning Compilers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../project_overview/02_docu_setup.html">Documentation Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../project_overview/03_project_report.html">Project Report</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Submissions</span></p>
 <ul>
@@ -69,7 +68,11 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="mini_jit.html">mini_jit</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mini_jit_benchmarks.html">mini_jit::benchmarks</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">mini_jit::converters</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">mini_jit::converters</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#_CPPv4N8mini_jit10converters13to_string_binE8uint32_t"><code class="docutils literal notranslate"><span class="pre">to_string_bin()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#_CPPv4N8mini_jit10converters13to_string_hexE8uint32_t"><code class="docutils literal notranslate"><span class="pre">to_string_hex()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="mini_jit_einsum.html">mini_jit::einsum</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mini_jit_instructions.html">mini_jit::instructions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mini_jit_ir.html">mini_jit::ir</a></li>
@@ -103,10 +106,34 @@
              
   <section id="mini-jit-converters">
 <span id="api-mini-jit-converters"></span><h1>mini_jit::converters<a class="headerlink" href="#mini-jit-converters" title="Link to this heading"></a></h1>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygennamespace: Cannot find namespace “mini_jit::converters” in doxygen xml output for project “Machine Learning Compilers” from directory: build/xml/</p>
-</div>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10converters13to_string_binE8uint32_t">
+<span id="_CPPv3N8mini_jit10converters13to_string_binE8uint32_t"></span><span id="_CPPv2N8mini_jit10converters13to_string_binE8uint32_t"></span><span id="mini_jit::converters::to_string_bin__uint32_t"></span><span class="target" id="instToBinString_8h_1a19502c78634303617c1c35026c65c43a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">converters</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">to_string_bin</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">inst</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit10converters13to_string_binE8uint32_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Converts the given instruction to a binary string. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>inst</strong> – instruction.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>binary string. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit10converters13to_string_hexE8uint32_t">
+<span id="_CPPv3N8mini_jit10converters13to_string_hexE8uint32_t"></span><span id="_CPPv2N8mini_jit10converters13to_string_hexE8uint32_t"></span><span id="mini_jit::converters::to_string_hex__uint32_t"></span><span class="target" id="instToHexString_8h_1ab320337720601d7541dd7580a172a7e1"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">mini_jit</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">converters</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">to_string_hex</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">inst</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit10converters13to_string_hexE8uint32_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Converts the given instruction to a hex string. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>inst</strong> – instruction.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>hex string. </p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 
 

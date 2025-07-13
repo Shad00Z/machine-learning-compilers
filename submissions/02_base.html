@@ -51,10 +51,9 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Project Overview</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../project_overview/01_project_information.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../project_overview/02_project_report.html">Project Report</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../project_overview/03_user_guide.html">User Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../project_overview/04_docu_setup.html">Documentation Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../project_overview/01_project_information.html">Machine Learning Compilers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../project_overview/02_docu_setup.html">Documentation Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../project_overview/03_project_report.html">Project Report</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Submissions</span></p>
 <ul class="current">
@@ -115,13 +114,18 @@
            <div itemprop="articleBody">
              
   <section id="base">
-<h1>2. Base<a class="headerlink" href="#base" title="Link to this heading"></a></h1>
+<span id="id1"></span><h1>2. Base<a class="headerlink" href="#base" title="Link to this heading"></a></h1>
+<p>After exploring the fundamentals of assembly, we moved on to applying that knowledge by implementing small programs using only AArch64 base instructions.</p>
 <section id="copying-data">
 <h2>2.1 Copying Data<a class="headerlink" href="#copying-data" title="Link to this heading"></a></h2>
-<p>For this task, we have been given a C++ driver that makes calls to C and assembly functions. The first C function copies 7 32-bit integers from an array to another. The second C function does the same, but with a variable number of integers which is passed as the first argument. The two assembly functions are supposed to have the same functionality as the C functions, however they were not implemented yet.</p>
-<p>For context, the C functions are as follows:</p>
-<div class="literal-block-wrapper docutils container" id="id1">
-<div class="code-block-caption"><span class="caption-text">copy_c.c</span><a class="headerlink" href="#id1" title="Link to this code"></a></div>
+<p>In the first task, we were provided with a <a class="reference external" href="https://github.com/Shad00Z/machine-learning-compilers/blob/main/src/submissions/02_base/01_copying_data/copy_driver.cpp">C++ driver</a> that calls both C and assembly functions.</p>
+<p>The goal was to replicate the behavior of the two C functions using assembly.
+The first C function copies seven 32-bit integers from one array to another.
+The second C function performs the same operation for a variable number of integers, with the number of elements passed as the first argument.
+The corresponding assembly functions were pre-defined but not yet implemented.</p>
+<p>For context, the two C functions are as follows:</p>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text"><a class="reference external" href="https://github.com/Shad00Z/machine-learning-compilers/blob/main/src/submissions/02_base/01_copying_data/copy_c.c">copy_c.c</a></span><a class="headerlink" href="#id2" title="Link to this code"></a></div>
 <div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdint.h&gt;</span>
 <span class="linenos"> 2</span>
 <span class="linenos"> 3</span><span class="cp">#ifdef __cplusplus</span>
@@ -155,10 +159,21 @@
 </div>
 <section id="task-2-1-1-2-1-2">
 <h3>Task 2.1.1 &amp; 2.1.2<a class="headerlink" href="#task-2-1-1-2-1-2" title="Link to this heading"></a></h3>
-<p>Given the C functions, our task is to implement the assembly functions that match the C functions in functionality by using only base instructions. For the first function, we simply load and store the 7 32-bit integers from the source to the destination using the <cite>ldr</cite> and <cite>str</cite> instructions. We use the given addresses and an immediate offset that is incremented by 4 for each 32-bit integer (4 bytes = 32 bit).</p>
-<p>For the second function, we need to use a loop to copy the values from the source to the destination. We use two registers to keep track of number of elements copied and the current byte offset. The loop then starts by copying the first 32-bit integer, and then increase the number of elements copied by 1 and the byte offset by 4 (since each integer is 4 bytes). Next, we use the <cite>cmp</cite> instruction to check if we have copied the specified number of integers. If not, we go back to the beginning of the loop and repeat the process. If we have copied the specified number of integers, we exit the loop and return from the function.</p>
-<div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text">copy_asm.s</span><a class="headerlink" href="#id2" title="Link to this code"></a></div>
+<p>For the first function, which copies seven 32-bit integers, we used <code class="docutils literal notranslate"><span class="pre">ldr</span></code> and <code class="docutils literal notranslate"><span class="pre">str</span></code> instructions to load from the source and store to the destination registers.
+The memory addresses were accessed using immediate offsets, incremented by 4 bytes for each successive elements (since each 32-bit integer occupies 4 bytes).</p>
+<p>For the second function, which supports a variable number of elements, we implemented a loop.
+We used two registers to accomplish a loop:
+- one register to track the number of copied elements
+- one register to maintain the current byte offset</p>
+<p>Our loop performs the following steps:
+1. Load a 32-bit value from the source register using the current offset.
+2. Store the value at the corresponding destination offset.
+3. Increment both the element counter and the byte offset by 1 and 4, respectively.
+4. Use the <code class="docutils literal notranslate"><span class="pre">cmp</span></code> instruction to check whether the target count has been reached.
+5. If not, branch back to the top of the loop. Otherwise, return from the function.</p>
+<p>The implementation is as follows:</p>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text"><a class="reference external" href="https://github.com/Shad00Z/machine-learning-compilers/blob/main/src/submissions/02_base/01_copying_data/copy_asm.s">copy_asm.s</a></span><a class="headerlink" href="#id3" title="Link to this code"></a></div>
 <div class="highlight-asm notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="w">    </span><span class="na">.text</span>
 <span class="linenos"> 2</span><span class="w">    </span><span class="na">.type</span><span class="w"> </span><span class="no">copy_asm_0</span><span class="p">,</span><span class="w"> </span><span class="nv">%function</span>
 <span class="linenos"> 3</span><span class="w">    </span><span class="na">.global</span><span class="w"> </span><span class="no">copy_asm_0</span>
@@ -242,7 +257,7 @@
 </pre></div>
 </div>
 </div>
-<p>After compiling and running the driver, we can see that the assembly functions work as expected. The output of the driver is as follows:</p>
+<p>After compiling and running the driver, the output confirms that both assembly implementations behave identically to their C function counterparts:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>./copy_driver
 copy_c_0:<span class="w"> </span>copy<span class="w"> </span>succeeded
 copy_c_1:<span class="w"> </span>copy<span class="w"> </span>succeeded
@@ -254,17 +269,14 @@ copy_asm_1:<span class="w"> </span>copy<span class="w"> </span>succeeded
 </section>
 <section id="instruction-throughput-and-latency">
 <h2>2.2 Instruction Throughput and Latency<a class="headerlink" href="#instruction-throughput-and-latency" title="Link to this heading"></a></h2>
-<p>For this task, we were supposed to write a micro-benchmarking script to measure the
-throughput and the latency of the ADD (shifted register) and the MUL instruction.</p>
+<p>In this task, we wrote a micro-benchmarking script to measure the throughput and the latency of two instructions:
+- <code class="docutils literal notranslate"><span class="pre">ADD</span></code> (shifted register)
+-  <code class="docutils literal notranslate"><span class="pre">MUL</span></code>.</p>
 <section id="throughput">
 <h3>2.2.1 Throughput<a class="headerlink" href="#throughput" title="Link to this heading"></a></h3>
-<p>To measure the <strong>throughput</strong> of the instructions we have developed an assembly function
-for each of the two instructions. The idea for measuring the throughput is that for
-every consecutive add instructions there shouldn’t be any dependencies on the add
-instruction from before. The loop that was executed several times for the ADD (shifted register)
-and the MUL instruction was:</p>
-<div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-text">loop in add_instr.s</span><a class="headerlink" href="#id3" title="Link to this code"></a></div>
+<p>To measure the <strong>throughput</strong> of the instructions, we developed an assembly function for each instruction. The idea was to construct a loop where each instruction is independent of the previous one, thereby allowing the processor to execute them in parallel and also to avoid any dependencies between the instructions.</p>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text"><a class="reference external" href="https://github.com/Shad00Z/machine-learning-compilers/blob/main/src/submissions/02_base/02_instruction_throughput_and_latency/add_instr.s">add_instr.s</a> loop</span><a class="headerlink" href="#id4" title="Link to this code"></a></div>
 <div class="highlight-asm notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nl">loop:</span>
 <span class="linenos"> 2</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="no">x27</span><span class="p">,</span><span class="w"> </span><span class="no">x28</span>
 <span class="linenos"> 3</span><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x2</span><span class="p">,</span><span class="w"> </span><span class="no">x27</span><span class="p">,</span><span class="w"> </span><span class="no">x28</span>
@@ -301,8 +313,8 @@ and the MUL instruction was:</p>
 </pre></div>
 </div>
 </div>
-<div class="literal-block-wrapper docutils container" id="id4">
-<div class="code-block-caption"><span class="caption-text">loop in mul_instr.s</span><a class="headerlink" href="#id4" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text"><a class="reference external" href="https://github.com/Shad00Z/machine-learning-compilers/blob/main/src/submissions/02_base/02_instruction_throughput_and_latency/mul_instr.s">mul_instr.s</a> loop</span><a class="headerlink" href="#id5" title="Link to this code"></a></div>
 <div class="highlight-asm notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="w">    </span><span class="nf">mul</span><span class="w"> </span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="no">x27</span><span class="p">,</span><span class="w"> </span><span class="no">x28</span>
 <span class="linenos"> 2</span><span class="w">    </span><span class="nf">mul</span><span class="w"> </span><span class="no">x2</span><span class="p">,</span><span class="w"> </span><span class="no">x27</span><span class="p">,</span><span class="w"> </span><span class="no">x28</span>
 <span class="linenos"> 3</span><span class="w">    </span><span class="nf">mul</span><span class="w"> </span><span class="no">x3</span><span class="p">,</span><span class="w"> </span><span class="no">x27</span><span class="p">,</span><span class="w"> </span><span class="no">x28</span>
@@ -341,13 +353,10 @@ and the MUL instruction was:</p>
 </section>
 <section id="latency">
 <h3>2.2.2 Latency<a class="headerlink" href="#latency" title="Link to this heading"></a></h3>
-<p>To measure the <strong>latency</strong> of the two instructions we have developed two more assembly
-functions. The idea for measuring the latency is to have consecutive instructions that
-dependent on the result from the last executed instruction. That meant we had to slightly
-adjust the loops from the throughput programs, resulting in the following loops for the
-ADD (shifted register) and the MUL instruction:</p>
-<div class="literal-block-wrapper docutils container" id="id5">
-<div class="code-block-caption"><span class="caption-text">loop in add_lat_instr.s</span><a class="headerlink" href="#id5" title="Link to this code"></a></div>
+<p>To measure the <strong>latency</strong> of the two instructions, we implemented two additional assembly functions. In contrast to the throughput benchmarks, where instructions were independent, the idea here was to create data dependencies between instructions.</p>
+<p>Each instruction in the loop depends on the result of the previous one, forcing the processor to wait for the output of one instruction before executing the next:</p>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text"><a class="reference external" href="https://github.com/Shad00Z/machine-learning-compilers/blob/main/src/submissions/02_base/02_instruction_throughput_and_latency/add_lat_instr.s">add_lat_instr.s</a> loop</span><a class="headerlink" href="#id6" title="Link to this code"></a></div>
 <div class="highlight-asm notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nl">loop:</span>
 <span class="linenos"> 2</span><span class="w">    </span><span class="c1">// repeat the following block 5 times</span>
 <span class="linenos"> 3</span><span class="w">    </span><span class="na">.rept</span><span class="w"> </span><span class="mi">5</span>
@@ -363,8 +372,8 @@ ADD (shifted register) and the MUL instruction:</p>
 </pre></div>
 </div>
 </div>
-<div class="literal-block-wrapper docutils container" id="id6">
-<div class="code-block-caption"><span class="caption-text">loop in mul_lat_instr.s</span><a class="headerlink" href="#id6" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text"><a class="reference external" href="https://github.com/Shad00Z/machine-learning-compilers/blob/main/src/submissions/02_base/02_instruction_throughput_and_latency/mul_lat_instr.s">mul_lat_instr.s</a> loop</span><a class="headerlink" href="#id7" title="Link to this code"></a></div>
 <div class="highlight-asm notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nl">loop:</span>
 <span class="linenos"> 2</span><span class="w">    </span><span class="c1">// repeat the following block 5 times</span>
 <span class="linenos"> 3</span><span class="w">    </span><span class="na">.rept</span><span class="w"> </span><span class="mi">5</span>
@@ -383,35 +392,37 @@ ADD (shifted register) and the MUL instruction:</p>
 </section>
 <section id="results">
 <h3>2.2.3 Results<a class="headerlink" href="#results" title="Link to this heading"></a></h3>
-<p>To test our assembly functions we implemented a microbenchmark in C++ that would
-1. call these functions several times
-2. measure the time it took to complete these computations
-3. calculate the GOPS obtained by these calculations</p>
-<div class="literal-block-wrapper docutils container" id="id7">
-<div class="code-block-caption"><span class="caption-text">time measurement for add_instr in microbench.cpp</span><a class="headerlink" href="#id7" title="Link to this code"></a></div>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="w">        </span><span class="k">auto</span><span class="w"> </span><span class="n">l_start_time</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">high_resolution_clock</span><span class="o">::</span><span class="n">now</span><span class="p">();</span>
-<span class="w">        </span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="p">);</span>
-<span class="w">        </span><span class="k">auto</span><span class="w"> </span><span class="n">l_end_time</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">high_resolution_clock</span><span class="o">::</span><span class="n">now</span><span class="p">();</span>
-<span class="w">        </span><span class="n">elapsedTime</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">duration_cast</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">microseconds</span><span class="o">&gt;</span><span class="p">(</span><span class="n">l_end_time</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">l_start_time</span><span class="p">).</span><span class="n">count</span><span class="p">()</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mf">1e6</span><span class="p">;</span>
-</pre></div>
-</div>
-</div>
+<p>To test our assembly functions, we implemented a microbenchmark in C++ that:</p>
+<ol class="arabic simple">
+<li><p>calls each function multiple times,</p></li>
+<li><p>measures the total execution time,</p></li>
+<li><p>calculates the GOPS (Giga Operations Per Second) obtained by these calculations.</p></li>
+</ol>
 <div class="literal-block-wrapper docutils container" id="id8">
-<div class="code-block-caption"><span class="caption-text">GOPS calculation for add_instr in microbench.cpp</span><a class="headerlink" href="#id8" title="Link to this code"></a></div>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">totalOps</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">25</span><span class="p">;</span>
-<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">opsPerSec</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">totalOps</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">elapsedTime</span><span class="p">;</span>
-<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">gops</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">opsPerSec</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mf">1e9</span><span class="p">;</span>
+<div class="code-block-caption"><span class="caption-text">time measurement for add_instr in <a class="reference external" href="https://github.com/Shad00Z/machine-learning-compilers/blob/main/src/submissions/02_base/02_instruction_throughput_and_latency/microbench.cpp">microbench.cpp</a></span><a class="headerlink" href="#id8" title="Link to this code"></a></div>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">l_start_time</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">high_resolution_clock</span><span class="o">::</span><span class="n">now</span><span class="p">();</span>
+<span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="p">);</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">l_end_time</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">high_resolution_clock</span><span class="o">::</span><span class="n">now</span><span class="p">();</span>
+<span class="n">elapsedTime</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">duration_cast</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">microseconds</span><span class="o">&gt;</span><span class="p">(</span><span class="n">l_end_time</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">l_start_time</span><span class="p">).</span><span class="n">count</span><span class="p">()</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mf">1e6</span><span class="p">;</span>
 </pre></div>
 </div>
 </div>
-<p>To compile and execute the microbenchmark we simply used:</p>
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text">GOPS calculation for add_instr</span><a class="headerlink" href="#id9" title="Link to this code"></a></div>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="n">totalOps</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">25</span><span class="p">;</span>
+<span class="kt">double</span><span class="w"> </span><span class="n">opsPerSec</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">totalOps</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">elapsedTime</span><span class="p">;</span>
+<span class="kt">double</span><span class="w"> </span><span class="n">gops</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">opsPerSec</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mf">1e9</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<p>To compile and execute the benchmark, we run:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>g++<span class="w"> </span>microbench.cpp<span class="w"> </span>add_instr.s<span class="w"> </span>add_lat_instr.s<span class="w"> </span>mul_instr.s<span class="w"> </span>mul_lat_instr.s<span class="w"> </span>-o<span class="w"> </span>microbench.o
 $<span class="w"> </span>./microbench.o
 </pre></div>
 </div>
-<p>When executing our benchmarking script we obtained the following results:</p>
-<div class="literal-block-wrapper docutils container" id="id9">
-<div class="code-block-caption"><span class="caption-text">results</span><a class="headerlink" href="#id9" title="Link to this code"></a></div>
+<p>We obtained the following results:</p>
+<div class="literal-block-wrapper docutils container" id="id10">
+<div class="code-block-caption"><span class="caption-text">Benchmarking results (GOPS)</span><a class="headerlink" href="#id10" title="Link to this code"></a></div>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Benchmarking ADD throughput ...
 -----------------------------------------------
 Measuring throughput for Instruction
@@ -446,39 +457,21 @@ Estimated GOPS:   1.46244 GigaOps/sec
 </pre></div>
 </div>
 </div>
-<p>To understand the results, we did two things:
-1. we searched for the <a class="reference external" href="https://everymac.com/systems/apple/mac_mini/specs/mac-mini-m4-10-core-cpu-10-core-gpu-2024-specs.html#:~:text=This%20model%20is%20powered%20by,speed%20clockspeed%20around%204.4%20GHz.">clock speed</a>  which is about 4.4 GHz
-2. we looked at the <a class="reference external" href="https://developer.arm.com/documentation/109898/latest/">ARM Neoverse V2 Software Optimization Guide</a> for the base instructions.</p>
-<p>The guide specifies the following theoretical instruction <strong>throughput</strong> per cycle:</p>
-<ul class="simple">
-<li><p>ADD: 6 instructions per cycle</p></li>
-<li><p>MUL: 2 instructions per cycle</p></li>
-</ul>
-<p>and the latency (until a result is available) of:</p>
-<ul class="simple">
-<li><p>ADD: 1 clock cycle</p></li>
-<li><p>MUL: 2 clock cycles</p></li>
-</ul>
+<p>To interpret these results, we first looked up the <a class="reference external" href="https://everymac.com/systems/apple/mac_mini/specs/mac-mini-m4-10-core-cpu-10-core-gpu-2024-specs.html#:~:text=This%20model%20is%20powered%20by,speed%20clockspeed%20around%204.4%20GHz.">clock speed of the Apple M4 chip</a>, which is about 4.4 GHz</p>
+<p>Further, we needed information about the M4 architecture. We could find, that the Apple M4 has 8 ALUs, from which 3 are able to perform <code class="docutils literal notranslate"><span class="pre">MUL</span></code> instructions.</p>
 <p>Looking at a these numbers, we can assume a clock cycle speed of:</p>
 <div class="math notranslate nohighlight">
-\[\frac{29.0414 \text{ GOPS}}{6} = 4.84 \text{ GHz}\]</div>
+\[\frac{29.0414 \text{ GOPS}}{8} = 3.63 \text{ GHz}\]</div>
 <div class="math notranslate nohighlight">
-\[\frac{13.2584 \text{ GOPS}}{2} = 6.63 \text{ GHz}\]</div>
-<p>For the ADD instruction, this aligns closely with the <em>known</em> clock speed of 4.4 GHz.
-For the MUL instruction on the other hand, the clock speed is higher than expected. It is not clear why exactly this is the case, but in order to verify the correctness of our code, we ran it on an M3 Pro Chip with a clock speed of 4.05 GHz. The result for <cite>ADD</cite> and <cite>MUL</cite> here was:</p>
-<div class="math notranslate nohighlight">
-\[\frac{26.195 \text{ GOPS}}{6} = 4.37 \text{ GHz}\]</div>
-<div class="math notranslate nohighlight">
-\[\frac{8.08751 \text{ GOPS}}{2} = 4.04 \text{ GHz}\]</div>
-<p>We see that the calculated clock speeds are close to the expected clock speed of 4.05 GHz in both cases, which indicates that our code is correct.</p>
+\[\frac{13.2584 \text{ GOPS}}{3} = 4.42 \text{ GHz}\]</div>
+<p>For the <code class="docutils literal notranslate"><span class="pre">ADD</span></code> instruction, we are slightly below the specified clock cycle speed of 4.4 GHz.
+For the <code class="docutils literal notranslate"><span class="pre">MUL</span></code> instruction on the other hand, our results closely align with the given clock speed.</p>
 <p>For the <strong>latency</strong> we can make a similar calculation:</p>
 <div class="math notranslate nohighlight">
 \[\frac{4.4 \text{ GHz}}{4.37951 \text{ GOPS}} ≈ 1 \text{ clock cycles per instr}\]</div>
 <div class="math notranslate nohighlight">
 \[\frac{4.4 \text{ GHz}}{1.46244 \text{ GOPS}} ≈ 3 \text{ clock cycles per instr}\]</div>
-<p>This shows that our obtained results for the ADD instruction correspond with the
-number that we obtained from the guide, whereas the latency for the MUL instruction
-is slightly higher than expected.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">ADD</span></code> latency matches the theoretical value. The <code class="docutils literal notranslate"><span class="pre">MUL</span></code> is slightly higher than expected (3 vs. 2 cylces).</p>
 </section>
 </section>
 </section>

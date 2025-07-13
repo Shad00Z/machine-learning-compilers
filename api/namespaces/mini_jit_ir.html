@@ -50,10 +50,9 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Project Overview</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../project_overview/01_project_information.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../project_overview/02_project_report.html">Project Report</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../project_overview/03_user_guide.html">User Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../project_overview/04_docu_setup.html">Documentation Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../project_overview/01_project_information.html">Machine Learning Compilers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../project_overview/02_docu_setup.html">Documentation Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../project_overview/03_project_report.html">Project Report</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Submissions</span></p>
 <ul>
@@ -72,7 +71,35 @@
 <li class="toctree-l1"><a class="reference internal" href="mini_jit_converters.html">mini_jit::converters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mini_jit_einsum.html">mini_jit::einsum</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mini_jit_instructions.html">mini_jit::instructions</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">mini_jit::ir</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">mini_jit::ir</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#_CPPv4N8mini_jit2ir8mini_jit2ir9DimensionE"><code class="docutils literal notranslate"><span class="pre">mini_jit::ir::Dimension</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit2ir8mini_jit2ir9Dimension9DimensionE5dim_t6exec_t7int64_t7int64_t7int64_t7int64_t"><code class="docutils literal notranslate"><span class="pre">Dimension()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit2ir8mini_jit2ir9Dimension4typeE"><code class="docutils literal notranslate"><span class="pre">type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit2ir8mini_jit2ir9Dimension9exec_typeE"><code class="docutils literal notranslate"><span class="pre">exec_type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit2ir8mini_jit2ir9Dimension4sizeE"><code class="docutils literal notranslate"><span class="pre">size</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit2ir8mini_jit2ir9Dimension10stride_in0E"><code class="docutils literal notranslate"><span class="pre">stride_in0</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit2ir8mini_jit2ir9Dimension10stride_in1E"><code class="docutils literal notranslate"><span class="pre">stride_in1</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit2ir8mini_jit2ir9Dimension10stride_outE"><code class="docutils literal notranslate"><span class="pre">stride_out</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#_CPPv4N8mini_jit2ir8mini_jit2ir11IRConverterE"><code class="docutils literal notranslate"><span class="pre">mini_jit::ir::IRConverter</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit2ir8mini_jit2ir11IRConverter11IRConverterEv"><code class="docutils literal notranslate"><span class="pre">IRConverter()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit2ir8mini_jit2ir11IRConverter25convertConfigToDimensionsENSt4spanIK5dim_tEENSt4spanIK6exec_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEERNSt6vectorI9DimensionEE"><code class="docutils literal notranslate"><span class="pre">convertConfigToDimensions()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit2ir8mini_jit2ir11IRConverter25convertDimensionsToConfigERKNSt6vectorI9DimensionEERNSt6vectorI5dim_tEERNSt6vectorI6exec_tEERNSt6vectorI7int64_tEERNSt6vectorI7int64_tEERNSt6vectorI7int64_tEERNSt6vectorI7int64_tEE"><code class="docutils literal notranslate"><span class="pre">convertDimensionsToConfig()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#_CPPv4N8mini_jit2ir8mini_jit2ir9OptimizerE"><code class="docutils literal notranslate"><span class="pre">mini_jit::ir::Optimizer</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit2ir8mini_jit2ir9Optimizer9OptimizerEv"><code class="docutils literal notranslate"><span class="pre">Optimizer()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit2ir8mini_jit2ir9Optimizer8optimizeERNSt6vectorI9DimensionEE7int64_t7int64_t7int64_t"><code class="docutils literal notranslate"><span class="pre">optimize()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit2ir8mini_jit2ir9Optimizer8optimizeERNSt6vectorI5dim_tEERNSt6vectorI6exec_tEERNSt6vectorI7int64_tEERNSt6vectorI7int64_tEERNSt6vectorI7int64_tEERNSt6vectorI7int64_tEE7int64_t7int64_t7int64_t"><code class="docutils literal notranslate"><span class="pre">optimize()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit2ir8mini_jit2ir9Optimizer18identifyPrimitivesERNSt6vectorI9DimensionEE"><code class="docutils literal notranslate"><span class="pre">identifyPrimitives()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit2ir8mini_jit2ir9Optimizer15splitDimensionsERNSt6vectorI9DimensionEE7int64_t7int64_t"><code class="docutils literal notranslate"><span class="pre">splitDimensions()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit2ir8mini_jit2ir9Optimizer14fuseDimensionsERNSt6vectorI9DimensionEE7int64_t"><code class="docutils literal notranslate"><span class="pre">fuseDimensions()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#_CPPv4N8mini_jit2ir8mini_jit2ir9Optimizer17createSharedLoopsERNSt6vectorI9DimensionEE7int64_t"><code class="docutils literal notranslate"><span class="pre">createSharedLoops()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="mini_jit_kernels.html">mini_jit::kernels</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mini_jit_registers.html">mini_jit::registers</a></li>
 </ul>
@@ -103,10 +130,244 @@
              
   <section id="mini-jit-ir">
 <span id="api-mini-jit-ir"></span><h1>mini_jit::ir<a class="headerlink" href="#mini-jit-ir" title="Link to this heading"></a></h1>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygennamespace: Cannot find namespace “mini_jit::ir” in doxygen xml output for project “Machine Learning Compilers” from directory: build/xml/</p>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit2ir8mini_jit2ir9DimensionE">
+<span id="_CPPv3N8mini_jit2ir8mini_jit2ir9DimensionE"></span><span id="_CPPv2N8mini_jit2ir8mini_jit2ir9DimensionE"></span><span id="mini_jit::ir::mini_jit::ir::Dimension"></span><span class="target" id="structmini__jit_1_1ir_1_1Dimension"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Dimension</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit2ir8mini_jit2ir9DimensionE" title="Link to this definition"></a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;Dimension.h&gt;</em></div>
+<p>The <a class="reference internal" href="#structmini__jit_1_1ir_1_1Dimension"><span class="std std-ref">Dimension</span></a> struct represents a dimension in a tensor operation. It contains information about the type of dimension (M, N, K), execution type (Prim, Seq, Shared), size, and strides for the input and output tensors. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit2ir8mini_jit2ir9Dimension9DimensionE5dim_t6exec_t7int64_t7int64_t7int64_t7int64_t">
+<span id="_CPPv3N8mini_jit2ir8mini_jit2ir9Dimension9DimensionE5dim_t6exec_t7int64_t7int64_t7int64_t7int64_t"></span><span id="_CPPv2N8mini_jit2ir8mini_jit2ir9Dimension9DimensionE5dim_t6exec_t7int64_t7int64_t7int64_t7int64_t"></span><span id="mini_jit::ir::mini_jit::ir::Dimension::Dimension__dim_t.exec_t.int64_t.int64_t.int64_t.int64_t"></span><span class="target" id="structmini__jit_1_1ir_1_1Dimension_1a7686a845be13bbdfadcf5fe348cda79c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Dimension</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="mini_jit.html#_CPPv4N8mini_jit5dim_tE" title="mini_jit::dim_t"><span class="n"><span class="pre">dim_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">type</span></span>, <a class="reference internal" href="mini_jit.html#_CPPv4N8mini_jit6exec_tE" title="mini_jit::exec_t"><span class="n"><span class="pre">exec_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">exec_type</span></span>, <span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">size</span></span>, <span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">stride_in0</span></span>, <span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">stride_in1</span></span>, <span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">stride_out</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit2ir8mini_jit2ir9Dimension9DimensionE5dim_t6exec_t7int64_t7int64_t7int64_t7int64_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Construct a new <a class="reference internal" href="#structmini__jit_1_1ir_1_1Dimension"><span class="std std-ref">Dimension</span></a> object. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>type</strong> – Type of the dimension (M, N, K). </p></li>
+<li><p><strong>exec_type</strong> – Execution type (Prim, Seq, Shared, …). </p></li>
+<li><p><strong>size</strong> – Size of the dimension. </p></li>
+<li><p><strong>stride_in0</strong> – Stride in the first input tensor. </p></li>
+<li><p><strong>stride_in1</strong> – Stride in the second input tensor. </p></li>
+<li><p><strong>stride_out</strong> – Stride in the output tensor. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit2ir8mini_jit2ir9Dimension4typeE">
+<span id="_CPPv3N8mini_jit2ir8mini_jit2ir9Dimension4typeE"></span><span id="_CPPv2N8mini_jit2ir8mini_jit2ir9Dimension4typeE"></span><span id="mini_jit::ir::mini_jit::ir::Dimension::type__dim_t"></span><span class="target" id="structmini__jit_1_1ir_1_1Dimension_1add70526b340466589e3a142f9cda467b"></span><a class="reference internal" href="mini_jit.html#_CPPv4N8mini_jit5dim_tE" title="mini_jit::dim_t"><span class="n"><span class="pre">dim_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="mini_jit.html#_CPPv4N8mini_jit5dim_tE" title="mini_jit::dim_t"><span class="n"><span class="pre">dim_t</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="mini_jit.html#_CPPv4N8mini_jit5dim_t1mE" title="mini_jit::dim_t::m"><span class="n"><span class="pre">m</span></span></a><a class="headerlink" href="#_CPPv4N8mini_jit2ir8mini_jit2ir9Dimension4typeE" title="Link to this definition"></a><br /></dt>
+<dd><p>Type of the dimension (M, N, K) </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit2ir8mini_jit2ir9Dimension9exec_typeE">
+<span id="_CPPv3N8mini_jit2ir8mini_jit2ir9Dimension9exec_typeE"></span><span id="_CPPv2N8mini_jit2ir8mini_jit2ir9Dimension9exec_typeE"></span><span id="mini_jit::ir::mini_jit::ir::Dimension::exec_type__exec_t"></span><span class="target" id="structmini__jit_1_1ir_1_1Dimension_1ae2a891b22af5a20a6a3b93703772f969"></span><a class="reference internal" href="mini_jit.html#_CPPv4N8mini_jit6exec_tE" title="mini_jit::exec_t"><span class="n"><span class="pre">exec_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">exec_type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="mini_jit.html#_CPPv4N8mini_jit6exec_tE" title="mini_jit::exec_t"><span class="n"><span class="pre">exec_t</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="mini_jit.html#_CPPv4N8mini_jit6exec_t9undefinedE" title="mini_jit::exec_t::undefined"><span class="n"><span class="pre">undefined</span></span></a><a class="headerlink" href="#_CPPv4N8mini_jit2ir8mini_jit2ir9Dimension9exec_typeE" title="Link to this definition"></a><br /></dt>
+<dd><p>Execution type (Prim, Seq, Shared, …) </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit2ir8mini_jit2ir9Dimension4sizeE">
+<span id="_CPPv3N8mini_jit2ir8mini_jit2ir9Dimension4sizeE"></span><span id="_CPPv2N8mini_jit2ir8mini_jit2ir9Dimension4sizeE"></span><span id="mini_jit::ir::mini_jit::ir::Dimension::size__int64_t"></span><span class="target" id="structmini__jit_1_1ir_1_1Dimension_1a874f01bca16ce8a5baf9a256567c6a3a"></span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">size</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N8mini_jit2ir8mini_jit2ir9Dimension4sizeE" title="Link to this definition"></a><br /></dt>
+<dd><p><a class="reference internal" href="#structmini__jit_1_1ir_1_1Dimension"><span class="std std-ref">Dimension</span></a> size. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit2ir8mini_jit2ir9Dimension10stride_in0E">
+<span id="_CPPv3N8mini_jit2ir8mini_jit2ir9Dimension10stride_in0E"></span><span id="_CPPv2N8mini_jit2ir8mini_jit2ir9Dimension10stride_in0E"></span><span id="mini_jit::ir::mini_jit::ir::Dimension::stride_in0__int64_t"></span><span class="target" id="structmini__jit_1_1ir_1_1Dimension_1a962ad111915d0bb5bfe849a47472b492"></span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">stride_in0</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N8mini_jit2ir8mini_jit2ir9Dimension10stride_in0E" title="Link to this definition"></a><br /></dt>
+<dd><p>Stride in the first input tensor. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit2ir8mini_jit2ir9Dimension10stride_in1E">
+<span id="_CPPv3N8mini_jit2ir8mini_jit2ir9Dimension10stride_in1E"></span><span id="_CPPv2N8mini_jit2ir8mini_jit2ir9Dimension10stride_in1E"></span><span id="mini_jit::ir::mini_jit::ir::Dimension::stride_in1__int64_t"></span><span class="target" id="structmini__jit_1_1ir_1_1Dimension_1a59fed57e0e57b7f9f59eab8ce1d7369b"></span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">stride_in1</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N8mini_jit2ir8mini_jit2ir9Dimension10stride_in1E" title="Link to this definition"></a><br /></dt>
+<dd><p>Stride in the second input tensor. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit2ir8mini_jit2ir9Dimension10stride_outE">
+<span id="_CPPv3N8mini_jit2ir8mini_jit2ir9Dimension10stride_outE"></span><span id="_CPPv2N8mini_jit2ir8mini_jit2ir9Dimension10stride_outE"></span><span id="mini_jit::ir::mini_jit::ir::Dimension::stride_out__int64_t"></span><span class="target" id="structmini__jit_1_1ir_1_1Dimension_1a61d82026288362a3a68603ae11e64a0d"></span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">stride_out</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N8mini_jit2ir8mini_jit2ir9Dimension10stride_outE" title="Link to this definition"></a><br /></dt>
+<dd><p>Stride in the output tensor. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit2ir8mini_jit2ir11IRConverterE">
+<span id="_CPPv3N8mini_jit2ir8mini_jit2ir11IRConverterE"></span><span id="_CPPv2N8mini_jit2ir8mini_jit2ir11IRConverterE"></span><span id="mini_jit::ir::mini_jit::ir::IRConverter"></span><span class="target" id="classmini__jit_1_1ir_1_1IRConverter"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IRConverter</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit2ir8mini_jit2ir11IRConverterE" title="Link to this definition"></a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;IRConverter.h&gt;</em></div>
+<p>The <a class="reference internal" href="#classmini__jit_1_1ir_1_1IRConverter"><span class="std std-ref">IRConverter</span></a> class provides methods to convert between configuration parameters and IR <a class="reference internal" href="#structmini__jit_1_1ir_1_1Dimension"><span class="std std-ref">Dimension</span></a> representation. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit2ir8mini_jit2ir11IRConverter11IRConverterEv">
+<span id="_CPPv3N8mini_jit2ir8mini_jit2ir11IRConverter11IRConverterEv"></span><span id="_CPPv2N8mini_jit2ir8mini_jit2ir11IRConverter11IRConverterEv"></span><span id="mini_jit::ir::mini_jit::ir::IRConverter::IRConverter"></span><span class="target" id="classmini__jit_1_1ir_1_1IRConverter_1ac99454558109916072a89182e30eaa62"></span><span class="sig-name descname"><span class="n"><span class="pre">IRConverter</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N8mini_jit2ir8mini_jit2ir11IRConverter11IRConverterEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Deleted constructor to prevent instantiation of the static <a class="reference internal" href="#classmini__jit_1_1ir_1_1IRConverter"><span class="std std-ref">IRConverter</span></a> class. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit2ir8mini_jit2ir11IRConverter25convertConfigToDimensionsENSt4spanIK5dim_tEENSt4spanIK6exec_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEERNSt6vectorI9DimensionEE">
+<span id="_CPPv3N8mini_jit2ir8mini_jit2ir11IRConverter25convertConfigToDimensionsENSt4spanIK5dim_tEENSt4spanIK6exec_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEERNSt6vectorI9DimensionEE"></span><span id="_CPPv2N8mini_jit2ir8mini_jit2ir11IRConverter25convertConfigToDimensionsENSt4spanIK5dim_tEENSt4spanIK6exec_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEERNSt6vectorI9DimensionEE"></span><span id="mini_jit::ir::mini_jit::ir::IRConverter::convertConfigToDimensions__std::span:dim_tC:.std::span:exec_tC:.std::span:int64_tC:.std::span:int64_tC:.std::span:int64_tC:.std::span:int64_tC:.std::vector:Dimension:R"></span><span class="target" id="classmini__jit_1_1ir_1_1IRConverter_1a11c1b37d471e902a1be0758e69d14396"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">convertConfigToDimensions</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">span</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="mini_jit.html#_CPPv4N8mini_jit5dim_tE" title="mini_jit::dim_t"><span class="n"><span class="pre">dim_t</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">i_dim_types</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">span</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="mini_jit.html#_CPPv4N8mini_jit6exec_tE" title="mini_jit::exec_t"><span class="n"><span class="pre">exec_t</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">i_exec_types</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">span</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">int64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">i_dim_sizes</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">span</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">int64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">i_strides_in0</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">span</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">int64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">i_strides_in1</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">span</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">int64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">i_strides_out</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N8mini_jit2ir8mini_jit2ir9DimensionE" title="mini_jit::ir::mini_jit::ir::Dimension"><span class="n"><span class="pre">Dimension</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">o_dimensions</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit2ir8mini_jit2ir11IRConverter25convertConfigToDimensionsENSt4spanIK5dim_tEENSt4spanIK6exec_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEENSt4spanIK7int64_tEERNSt6vectorI9DimensionEE" title="Link to this definition"></a><br /></dt>
+<dd><p>Convert configuration parameters to a vector of <a class="reference internal" href="#structmini__jit_1_1ir_1_1Dimension"><span class="std std-ref">Dimension</span></a> objects. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>i_dim_types</strong> – A span of dimension types (M, N, K). </p></li>
+<li><p><strong>i_exec_types</strong> – A span of execution types (Prim, Seq, Shared). </p></li>
+<li><p><strong>i_dim_sizes</strong> – A span of dimension sizes. </p></li>
+<li><p><strong>i_strides_in0</strong> – A span of strides for the first input tensor. </p></li>
+<li><p><strong>i_strides_in1</strong> – A span of strides for the second input tensor. </p></li>
+<li><p><strong>i_strides_out</strong> – A span of strides for the output tensor. </p></li>
+<li><p><strong>o_dimensions</strong> – A vector to store the converted <a class="reference internal" href="#structmini__jit_1_1ir_1_1Dimension"><span class="std std-ref">Dimension</span></a> objects. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit2ir8mini_jit2ir11IRConverter25convertDimensionsToConfigERKNSt6vectorI9DimensionEERNSt6vectorI5dim_tEERNSt6vectorI6exec_tEERNSt6vectorI7int64_tEERNSt6vectorI7int64_tEERNSt6vectorI7int64_tEERNSt6vectorI7int64_tEE">
+<span id="_CPPv3N8mini_jit2ir8mini_jit2ir11IRConverter25convertDimensionsToConfigERKNSt6vectorI9DimensionEERNSt6vectorI5dim_tEERNSt6vectorI6exec_tEERNSt6vectorI7int64_tEERNSt6vectorI7int64_tEERNSt6vectorI7int64_tEERNSt6vectorI7int64_tEE"></span><span id="_CPPv2N8mini_jit2ir8mini_jit2ir11IRConverter25convertDimensionsToConfigERKNSt6vectorI9DimensionEERNSt6vectorI5dim_tEERNSt6vectorI6exec_tEERNSt6vectorI7int64_tEERNSt6vectorI7int64_tEERNSt6vectorI7int64_tEERNSt6vectorI7int64_tEE"></span><span id="mini_jit::ir::mini_jit::ir::IRConverter::convertDimensionsToConfig__std::vector:Dimension:CR.std::vector:dim_t:R.std::vector:exec_t:R.std::vector:int64_t:R.std::vector:int64_t:R.std::vector:int64_t:R.std::vector:int64_t:R"></span><span class="target" id="classmini__jit_1_1ir_1_1IRConverter_1a8eecefadd048f90a9eab5f34d53f958e"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">convertDimensionsToConfig</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N8mini_jit2ir8mini_jit2ir9DimensionE" title="mini_jit::ir::mini_jit::ir::Dimension"><span class="n"><span class="pre">Dimension</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">i_dimensions</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="mini_jit.html#_CPPv4N8mini_jit5dim_tE" title="mini_jit::dim_t"><span class="n"><span class="pre">dim_t</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">o_dim_types</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="mini_jit.html#_CPPv4N8mini_jit6exec_tE" title="mini_jit::exec_t"><span class="n"><span class="pre">exec_t</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">o_exec_types</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">int64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">o_dim_sizes</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">int64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">o_strides_in0</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">int64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">o_strides_in1</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">int64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">o_strides_out</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit2ir8mini_jit2ir11IRConverter25convertDimensionsToConfigERKNSt6vectorI9DimensionEERNSt6vectorI5dim_tEERNSt6vectorI6exec_tEERNSt6vectorI7int64_tEERNSt6vectorI7int64_tEERNSt6vectorI7int64_tEERNSt6vectorI7int64_tEE" title="Link to this definition"></a><br /></dt>
+<dd><p>Convert a vector of <a class="reference internal" href="#structmini__jit_1_1ir_1_1Dimension"><span class="std std-ref">Dimension</span></a> objects to configuration parameters. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>i_dimensions</strong> – A vector of <a class="reference internal" href="#structmini__jit_1_1ir_1_1Dimension"><span class="std std-ref">Dimension</span></a> objects to be converted. </p></li>
+<li><p><strong>o_dim_types</strong> – A vector to store the dimension types. </p></li>
+<li><p><strong>o_exec_types</strong> – A vector to store the execution types. </p></li>
+<li><p><strong>o_dim_sizes</strong> – A vector to store the dimension sizes. </p></li>
+<li><p><strong>o_strides_in0</strong> – A vector to store the strides for the first input tensor. </p></li>
+<li><p><strong>o_strides_in1</strong> – A vector to store the strides for the second input tensor. </p></li>
+<li><p><strong>o_strides_out</strong> – A vector to store the strides for the output tensor. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit2ir8mini_jit2ir9OptimizerE">
+<span id="_CPPv3N8mini_jit2ir8mini_jit2ir9OptimizerE"></span><span id="_CPPv2N8mini_jit2ir8mini_jit2ir9OptimizerE"></span><span id="mini_jit::ir::mini_jit::ir::Optimizer"></span><span class="target" id="classmini__jit_1_1ir_1_1Optimizer"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Optimizer</span></span></span><a class="headerlink" href="#_CPPv4N8mini_jit2ir8mini_jit2ir9OptimizerE" title="Link to this definition"></a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;Optimizer.h&gt;</em></div>
+<p>The <a class="reference internal" href="#classmini__jit_1_1ir_1_1Optimizer"><span class="std std-ref">Optimizer</span></a> class provides methods to optimize tensor operations by adjusting dimensions, splitting large dimensions, and creating shared loops. </p>
+<p>It is recommened to only call the <code class="docutils literal notranslate"><span class="pre">optimize</span></code> method, which will internally call the other methods in the correct order. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit2ir8mini_jit2ir9Optimizer9OptimizerEv">
+<span id="_CPPv3N8mini_jit2ir8mini_jit2ir9Optimizer9OptimizerEv"></span><span id="_CPPv2N8mini_jit2ir8mini_jit2ir9Optimizer9OptimizerEv"></span><span id="mini_jit::ir::mini_jit::ir::Optimizer::Optimizer"></span><span class="target" id="classmini__jit_1_1ir_1_1Optimizer_1af04059ad017da7366cf5ed392e70bf59"></span><span class="sig-name descname"><span class="n"><span class="pre">Optimizer</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N8mini_jit2ir8mini_jit2ir9Optimizer9OptimizerEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Deleted constructor to prevent instantiation of the static <a class="reference internal" href="#classmini__jit_1_1ir_1_1Optimizer"><span class="std std-ref">Optimizer</span></a> class. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit2ir8mini_jit2ir9Optimizer8optimizeERNSt6vectorI9DimensionEE7int64_t7int64_t7int64_t">
+<span id="_CPPv3N8mini_jit2ir8mini_jit2ir9Optimizer8optimizeERNSt6vectorI9DimensionEE7int64_t7int64_t7int64_t"></span><span id="_CPPv2N8mini_jit2ir8mini_jit2ir9Optimizer8optimizeERNSt6vectorI9DimensionEE7int64_t7int64_t7int64_t"></span><span id="mini_jit::ir::mini_jit::ir::Optimizer::optimize__std::vector:Dimension:R.int64_t.int64_t.int64_t"></span><span class="target" id="classmini__jit_1_1ir_1_1Optimizer_1a23aa57ef76cf0a39b3ecbb1ff074c776"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">optimize</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N8mini_jit2ir8mini_jit2ir9DimensionE" title="mini_jit::ir::mini_jit::ir::Dimension"><span class="n"><span class="pre">Dimension</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">dimensions</span></span>, <span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">thread_target</span></span>, <span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">max_kernel_size</span></span>, <span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">min_kernel_size</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit2ir8mini_jit2ir9Optimizer8optimizeERNSt6vectorI9DimensionEE7int64_t7int64_t7int64_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Optimize the dimensions of a tensor operation. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dimensions</strong> – A vector of dimensions to be optimized. </p></li>
+<li><p><strong>thread_target</strong> – The target number of threads for optimization. </p></li>
+<li><p><strong>max_kernel_size</strong> – The maximum size of a kernel dimension </p></li>
+<li><p><strong>min_kernel_size</strong> – The minimum size of a kernel dimension </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit2ir8mini_jit2ir9Optimizer8optimizeERNSt6vectorI5dim_tEERNSt6vectorI6exec_tEERNSt6vectorI7int64_tEERNSt6vectorI7int64_tEERNSt6vectorI7int64_tEERNSt6vectorI7int64_tEE7int64_t7int64_t7int64_t">
+<span id="_CPPv3N8mini_jit2ir8mini_jit2ir9Optimizer8optimizeERNSt6vectorI5dim_tEERNSt6vectorI6exec_tEERNSt6vectorI7int64_tEERNSt6vectorI7int64_tEERNSt6vectorI7int64_tEERNSt6vectorI7int64_tEE7int64_t7int64_t7int64_t"></span><span id="_CPPv2N8mini_jit2ir8mini_jit2ir9Optimizer8optimizeERNSt6vectorI5dim_tEERNSt6vectorI6exec_tEERNSt6vectorI7int64_tEERNSt6vectorI7int64_tEERNSt6vectorI7int64_tEERNSt6vectorI7int64_tEE7int64_t7int64_t7int64_t"></span><span id="mini_jit::ir::mini_jit::ir::Optimizer::optimize__std::vector:dim_t:R.std::vector:exec_t:R.std::vector:int64_t:R.std::vector:int64_t:R.std::vector:int64_t:R.std::vector:int64_t:R.int64_t.int64_t.int64_t"></span><span class="target" id="classmini__jit_1_1ir_1_1Optimizer_1aebc282662983908b3b17b8716fc13111"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">optimize</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="mini_jit.html#_CPPv4N8mini_jit5dim_tE" title="mini_jit::dim_t"><span class="n"><span class="pre">dim_t</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">dim_types</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="mini_jit.html#_CPPv4N8mini_jit6exec_tE" title="mini_jit::exec_t"><span class="n"><span class="pre">exec_t</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">exec_types</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">int64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">dim_sizes</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">int64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">strides_in0</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">int64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">strides_in1</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">int64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">strides_out</span></span>, <span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">thread_target</span></span>, <span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">max_kernel_size</span></span>, <span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">min_kernel_size</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit2ir8mini_jit2ir9Optimizer8optimizeERNSt6vectorI5dim_tEERNSt6vectorI6exec_tEERNSt6vectorI7int64_tEERNSt6vectorI7int64_tEERNSt6vectorI7int64_tEERNSt6vectorI7int64_tEE7int64_t7int64_t7int64_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Optimize the dimensions of a tensor operation. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dim_types</strong> – A vector of dimension types (M, N, K). </p></li>
+<li><p><strong>exec_types</strong> – A vector of execution types (Prim, Seq, Shared). </p></li>
+<li><p><strong>dim_sizes</strong> – A vector of dimension sizes. </p></li>
+<li><p><strong>strides_in0</strong> – A vector of strides for the first input tensor. </p></li>
+<li><p><strong>strides_in1</strong> – A vector of strides for the second input tensor. </p></li>
+<li><p><strong>strides_out</strong> – A vector of strides for the output tensor. </p></li>
+<li><p><strong>thread_target</strong> – The target number of threads for optimization. </p></li>
+<li><p><strong>max_kernel_size</strong> – The maximum size of a kernel dimension </p></li>
+<li><p><strong>min_kernel_size</strong> – The minimum size of a kernel dimension </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit2ir8mini_jit2ir9Optimizer18identifyPrimitivesERNSt6vectorI9DimensionEE">
+<span id="_CPPv3N8mini_jit2ir8mini_jit2ir9Optimizer18identifyPrimitivesERNSt6vectorI9DimensionEE"></span><span id="_CPPv2N8mini_jit2ir8mini_jit2ir9Optimizer18identifyPrimitivesERNSt6vectorI9DimensionEE"></span><span id="mini_jit::ir::mini_jit::ir::Optimizer::identifyPrimitives__std::vector:Dimension:R"></span><span class="target" id="classmini__jit_1_1ir_1_1Optimizer_1a44b95cb1c150be201373d92bbbe4fe08"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">identifyPrimitives</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N8mini_jit2ir8mini_jit2ir9DimensionE" title="mini_jit::ir::mini_jit::ir::Dimension"><span class="n"><span class="pre">Dimension</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">dimensions</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit2ir8mini_jit2ir9Optimizer18identifyPrimitivesERNSt6vectorI9DimensionEE" title="Link to this definition"></a><br /></dt>
+<dd><p>Identify primitive dimensions in the tensor operation and adjust their order. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dimensions</strong> – A vector of dimensions to be processed. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit2ir8mini_jit2ir9Optimizer15splitDimensionsERNSt6vectorI9DimensionEE7int64_t7int64_t">
+<span id="_CPPv3N8mini_jit2ir8mini_jit2ir9Optimizer15splitDimensionsERNSt6vectorI9DimensionEE7int64_t7int64_t"></span><span id="_CPPv2N8mini_jit2ir8mini_jit2ir9Optimizer15splitDimensionsERNSt6vectorI9DimensionEE7int64_t7int64_t"></span><span id="mini_jit::ir::mini_jit::ir::Optimizer::splitDimensions__std::vector:Dimension:R.int64_t.int64_t"></span><span class="target" id="classmini__jit_1_1ir_1_1Optimizer_1a4521397f38944c4b1bbd83f695c68442"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">splitDimensions</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N8mini_jit2ir8mini_jit2ir9DimensionE" title="mini_jit::ir::mini_jit::ir::Dimension"><span class="n"><span class="pre">Dimension</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">dimensions</span></span>, <span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">max_kernel_size</span></span>, <span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">min_kernel_size</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit2ir8mini_jit2ir9Optimizer15splitDimensionsERNSt6vectorI9DimensionEE7int64_t7int64_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Split large dimensions into smaller ones. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dimensions</strong> – A vector of dimensions to be processed. </p></li>
+<li><p><strong>max_kernel_size</strong> – The maximum size allowed for a kernel dimension. </p></li>
+<li><p><strong>min_kernel_size</strong> – The minimum size allowed for a kernel dimension. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit2ir8mini_jit2ir9Optimizer14fuseDimensionsERNSt6vectorI9DimensionEE7int64_t">
+<span id="_CPPv3N8mini_jit2ir8mini_jit2ir9Optimizer14fuseDimensionsERNSt6vectorI9DimensionEE7int64_t"></span><span id="_CPPv2N8mini_jit2ir8mini_jit2ir9Optimizer14fuseDimensionsERNSt6vectorI9DimensionEE7int64_t"></span><span id="mini_jit::ir::mini_jit::ir::Optimizer::fuseDimensions__std::vector:Dimension:R.int64_t"></span><span class="target" id="classmini__jit_1_1ir_1_1Optimizer_1a3afcc1ab333168e6c33ded6b49b36785"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">fuseDimensions</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N8mini_jit2ir8mini_jit2ir9DimensionE" title="mini_jit::ir::mini_jit::ir::Dimension"><span class="n"><span class="pre">Dimension</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">dimensions</span></span>, <span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">min_kernel_size</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit2ir8mini_jit2ir9Optimizer14fuseDimensionsERNSt6vectorI9DimensionEE7int64_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Fuse small dimensions into larger dimensions. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dimensions</strong> – A vector of dimensions to be processed. </p></li>
+<li><p><strong>min_kernel_size</strong> – The minimum size for a kernel dimension to be considered for fusion. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8mini_jit2ir8mini_jit2ir9Optimizer17createSharedLoopsERNSt6vectorI9DimensionEE7int64_t">
+<span id="_CPPv3N8mini_jit2ir8mini_jit2ir9Optimizer17createSharedLoopsERNSt6vectorI9DimensionEE7int64_t"></span><span id="_CPPv2N8mini_jit2ir8mini_jit2ir9Optimizer17createSharedLoopsERNSt6vectorI9DimensionEE7int64_t"></span><span id="mini_jit::ir::mini_jit::ir::Optimizer::createSharedLoops__std::vector:Dimension:R.int64_t"></span><span class="target" id="classmini__jit_1_1ir_1_1Optimizer_1adb15dfb7dd7bd4f99f5a344775103ee9"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">createSharedLoops</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N8mini_jit2ir8mini_jit2ir9DimensionE" title="mini_jit::ir::mini_jit::ir::Dimension"><span class="n"><span class="pre">Dimension</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">dimensions</span></span>, <span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">thread_target</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8mini_jit2ir8mini_jit2ir9Optimizer17createSharedLoopsERNSt6vectorI9DimensionEE7int64_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Turn sequential dimensions into shared dimensions. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dimensions</strong> – A vector of dimensions to be processed. </p></li>
+<li><p><strong>thread_target</strong> – The target number of threads for optimization. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</dd></dl>
+
 </section>
 
 
