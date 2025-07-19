@@ -1,8 +1,5 @@
 var searchData=
 [
-  ['benchmark_0',['Benchmark',['../classmini__jit_1_1Benchmark.html',1,'mini_jit']]],
-  ['benchmark_5fresult_1',['benchmark_result',['../structmini__jit_1_1Benchmark_1_1benchmark__result.html',1,'mini_jit::Benchmark']]],
-  ['benchmark_5fsigmoid_2',['benchmark_sigmoid',['../namespacesigmoid__benchmark.html#accae2279c40934686e95f06fc325dca9',1,'sigmoid_benchmark']]],
-  ['binary_3',['Binary',['../classmini__jit_1_1Binary.html',1,'mini_jit']]],
-  ['brgemm_4',['Brgemm',['../classmini__jit_1_1Brgemm.html',1,'mini_jit']]]
+  ['fast_5fsigmoid_0',['fast_sigmoid',['../namespacesigmoid__benchmark.html#a57dd65b8e6a8c2917a96a3ba6f211fc7',1,'sigmoid_benchmark.fast_sigmoid()'],['../namespacesigmoid__comparison.html#a999cc8d21422abe109379a7a0b7ef149',1,'sigmoid_comparison.fast_sigmoid()']]],
+  ['format_5fbenchmark_5fresults_1',['format_benchmark_results',['../namespacesigmoid__benchmark.html#af602c9ef9bb51f5d2562ab6587b48032',1,'sigmoid_benchmark']]]
 ];
