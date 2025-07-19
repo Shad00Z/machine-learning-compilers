@@ -12,3 +12,7 @@ In the second week, we began writing assembly programs from scratch using only b
 After successfully replicating the functionality of the C programs, we developed microbenchmarks to evaluate the **throughput** and **latency** of key instructions such as ``ADD`` and ``MUL``. These benchmarks helped us gain insight into the performance characteristics of modern ARM processors and how instruction-level behavior can impact overall computation speed.
 
 Further details about the specific steps and tasks can be found in the :ref:`base section<Base>` of our project documentation.
+
+After spending the first two weeks experimenting with base instructions and writing simply assembly programs, we advanced to working with **Neon** (**Advanced SIMD**) instructions. In the following weeks, we explored the performance characteristics of Neon operations, an essential step toward mastering the fundamentals required for building our own tensor compiler.
+
+We began by benchmarking the throughput and latency of the ``FMLA`` and ``FMADD`` instructions. This helped us understand the significance of instruction-level parallelism and how much instruction ordering and data dependencies can impact performance.

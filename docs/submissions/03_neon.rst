@@ -3,10 +3,12 @@
 3. Neon
 =========
 
+In this section we explore `Neon <https://developer.arm.com/Architectures/Neon>`_, ARM's advanced SIMD (Single Instruction, Multiple Data) architecture extension. Our goal is to understand how to effectively implement Neon kernels and how to optimize them for maximum performance. 
+
 3.1 Execution Throughput and Latency
 -------------------------------------
 
-For this task, we were benchmarking the execution throughput and latency for FP32 neon instructions.
+The first task was to benchmark the execution throughput and latency of some selected FP32 Neon instructions. 
 Specifically, we were looking at:
 
 1. `FMLA (vector) <https://developer.arm.com/documentation/ddi0602/2025-03/SIMD-FP-Instructions/FMLA--vector---Floating-point-fused-multiply-add-to-accumulator--vector-->`_ instruction
@@ -15,105 +17,114 @@ Specifically, we were looking at:
 3.1.1 Throughput
 ^^^^^^^^^^^^^^^^^
 
-As a first step we were comparing the throughput of:
+To analyze the throughput, we compared the performance of the following variants:
 
-1. FMLA (vector) with arrangement specifier ``4S``
-2. FMLA (vector) with arrangement specifier ``2S``
-3. FMADD (scalar), single-precision variant
+1. ``FMLA (vector)`` with arrangement specifier ``4S``
+2. ``FMLA (vector)`` with arrangement specifier ``2S``
+3. ``FMADD (scalar)``, single-precision variant
 
-To compare the throughput, we created three assembly programs, that were executing
-several of these operations. To get proper results we were looking for any dependencies
-regarding the source or destination registers of the operations.
-The calculations that we were ending up with were:
+To compare the throughput of these variants, we created an assembly program for each of them.
+To ensure instruction-level parallelism, we carefully designed the inner loops of these programs to avoid register dependencies between successive instructions.
+The calculations and loop structures we used are shown here:
 
 .. literalinclude:: ../../src/submissions/03_neon/01_execution_throughput_and_latency/fmla_4s_instr.s
     :language: asm
     :lines: 31-71
     :lineno-match:
-    :caption: FMLA (vector) with arrangement specifier ``4S``
+    :caption: ``FMLA (vector)`` with arrangement specifier ``4S``
 
 .. literalinclude:: ../../src/submissions/03_neon/01_execution_throughput_and_latency/fmla_2s_instr.s
     :language: asm
     :lines: 31-71
     :lineno-match:
-    :caption: FMLA (vector) with arrangement specifier ``2S``
+    :caption: ``FMLA (vector)`` with arrangement specifier ``2S``
 
 .. literalinclude:: ../../src/submissions/03_neon/01_execution_throughput_and_latency/fmadd_instr.s
     :language: asm
     :lines: 39-82
     :lineno-match:
-    :caption: FMADD (scalar), single-precision variant
+    :caption: ``FMADD (scalar)``, single-precision variant
 
-In order to measure the throughput of these instructions we developed a C++ microbenchmark.
-For each instruction we firstly performed a warm up, measured the time, counted the operations and then calculated the GFLOPs.
+We then implemented a C++ microbenchmark to evaluate each version. 
+For each function, we:
+
+1. Performed a warm-up
+2. Measured the execution time
+3. Counted the number of operations
+4. Calculated the resulting GFLOPs
 
 .. literalinclude:: ../../src/submissions/03_neon/01_execution_throughput_and_latency/benchmark/microbench.cpp
     :language: cpp
     :lines: 61-73
     :lineno-match:
-    :caption: Example benchmark for FMLA (vector) with arrangement specifier ``4S``
+    :caption: Example benchmark for ``FMLA 4S``
 
-For the ``2S`` and the FMADD (scalar) instructions, we simply adjusted the calculations for the operations slightly:
+Calculations for ``2S`` and ``FMADD (scalar)``:
 
 .. literalinclude:: ../../src/submissions/03_neon/01_execution_throughput_and_latency/benchmark/microbench.cpp
     :language: cpp
     :lines: 85-89
     :lineno-match:
-    :caption: Calculations for FMLA (vector) with arrangement specifier ``2S``
+    :caption: Calculations for ``FMLA 2S``
 
 .. literalinclude:: ../../src/submissions/03_neon/01_execution_throughput_and_latency/benchmark/microbench.cpp
     :language: cpp
     :lines: 101-105
     :lineno-match:
-    :caption: Calculations for FMLA (vector) with arrangement specifier ``2S``
+    :caption: Calculations for ``FMADD``
 
-For this benchmarking task we obtained the following results:
+The measured throughput results we obtained were as follows:
 
 .. literalinclude:: ../../src/submissions/03_neon/01_execution_throughput_and_latency/benchmark/benchmarking_results.txt
     :language: text
     :lines: 1-23
     :lineno-match:
-    :caption: Throughput results for the three instructions
+    :caption: Measured Throughput Results
 
-It can be seen that the FMLA (vector) with arrangement specifier ``4S`` instruction performs approximately 
-2.5 times as many floating point operations than the FMLA (vector) with arrangement specifier ``2S`` instruction. 
-Further the FMLA (vector) with arrangement specifier ``2S`` instructions performs at approximately 2.5 times more
-floating point operations than the FMADD (scalar) instruction. 
+We observe that:
 
-This shows that leveraging data-level parallelism (vector-based) can yield a much higher throughput, than using only scalar operations.
+* ``FMLA 4S`` achieves approximately ``2.5`` times the performance of ``FMLA 2S``
+* ``FMLA 2S`` similarly outperforms ``FMADD (scalar)`` by a factor of ``2.5``
+
+These results highlight the benefit of data-level parallelism through vector operations. The higher the vector width, the more operations are performed per instruction, therefore resulting in a significantly improved throughput compared to a scalar execution.
 
 3.1.2 Latency
 ^^^^^^^^^^^^^^
 
-To measure the execution latency for FMLA (vector) instructions with arrangement specifier ``4S``, we examined two scenarios:
+To analyze the execution latency of the ``FMLA vector`` instruction with arrangement specifier ``4S``, we considered two dependency scenarios:
 
-1. Each instruction depends on the destination register and one of the source register of the previous instruction
+1. Each instruction depends on the destination register **and** one source register of the previous instruction.
 
 .. literalinclude:: ../../src/submissions/03_neon/01_execution_throughput_and_latency/fmla_4s_source_lat_instr.s
     :language: asm
     :lines: 33-36
     :lineno-match:
-    :caption: fmla instructions with dependencies on the destination register and one of the source registers
+    :caption: ``FMLA`` instructions with dependencies on the destination and one source registers
 
-2. Each instruction depends only on the destination register of the previous instruction
+2. Each instruction depends **only** on the destination register of the previous instruction
 
 .. literalinclude:: ../../src/submissions/03_neon/01_execution_throughput_and_latency/fmla_4s_dest_lat_instr.s
     :language: asm
     :lines: 33-36
     :lineno-match:
-    :caption: fmla instructions with dependencies on the destination register
+    :caption: ``FMLA`` instructions with dependency only on the destination register
 
-Both files contain 32 fmla instructions each, which are executed 100 times. The results of our benchmark is shown below:
+In both cases, 32 dependent ``FMLA`` instructions were executed in a loop, repeated 100 times. 
+The results for both cases are shown below:
 
 .. literalinclude:: ../../src/submissions/03_neon/01_execution_throughput_and_latency/benchmark/benchmarking_results.txt
     :language: text
     :lines: 25-39
     :lineno-match:
-    :caption: Latency results for the two scenarios
+    :caption: Latency benchmark results for the two dependency scenarios
 
-We can see that both scenarios have similar results, which is why we computed the latency only for the first scenario.
+We observed that both scenarios produced nearly identical performance results. Therefore, we focused our latency calculations only on the first scenario.
 
-We measured :math:`1.16266 \times 10^{10}` instructions per second, which means that the latency of the FMLA (vector) instruction with arrangement specifier ``4S`` is approximately :math:`\frac{1}{1.16266 \times 10^{10}} \approx 8.6 \times 10^{-11}` seconds. Using a known clock frequency of 4.4 GHz, we computed the latency as :math:`8.6 \times 10^{-11} \times 4.4 \times 10^9 = 0.3784` cycles.
+From our measurement, we got :math:`1.16266 \times 10^{10}` instructions per second.
+This yields a per-instruction latency of approximately :math:`\frac{1}{1.16266 \times 10^{10}} \approx 8.6 \times 10^{-11}` seconds. 
+Assuming a clock frequency of ``4.4`` GHz, we estimated the latency in clock cycles as :math:`8.6 \times 10^{-11} \times 4.4 \times 10^9 = 0.3784` cycles.
+
+This value suggests that the latency of a single ``FMLA 4S`` instruction is well below one clock.
 
 3.2 Microkernel
 --------------------------------
