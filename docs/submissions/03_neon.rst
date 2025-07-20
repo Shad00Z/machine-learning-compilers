@@ -3,7 +3,7 @@
 3. Neon
 =========
 
-In this section we explore `Neon <https://developer.arm.com/Architectures/Neon>`_, ARM's advanced SIMD (Single Instruction, Multiple Data) architecture extension. Our goal is to understand how to effectively implement Neon kernels and how to optimize them for maximum performance. 
+In this section we explore `Neon <https://developer.arm.com/Architectures/Neon>`_, ARM's advanced SIMD (Single Instruction, Multiple Data) architecture extension. Our goal is to understand how to implement Neon kernels and how to optimize them for maximum performance. 
 
 3.1 Execution Throughput and Latency
 -------------------------------------
