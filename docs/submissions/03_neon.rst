@@ -5,6 +5,8 @@
 
 In this section we explore `Neon <https://developer.arm.com/Architectures/Neon>`_, ARM's advanced SIMD (Single Instruction, Multiple Data) architecture extension. Our goal is to understand how to implement Neon kernels and how to optimize them for maximum performance. 
 
+.. _3.1-throughput-latency:
+
 3.1 Execution Throughput and Latency
 -------------------------------------
 
@@ -124,66 +126,171 @@ From our measurement, we got :math:`1.16266 \times 10^{10}` instructions per sec
 This yields a per-instruction latency of approximately :math:`\frac{1}{1.16266 \times 10^{10}} \approx 8.6 \times 10^{-11}` seconds. 
 Assuming a clock frequency of ``4.4`` GHz, we estimated the latency in clock cycles as :math:`8.6 \times 10^{-11} \times 4.4 \times 10^9 = 0.3784` cycles.
 
-This value suggests that the latency of a single ``FMLA 4S`` instruction is well below one clock.
+This value suggests that the latency of a single ``FMLA 4S`` instruction is well below one clock cycle.
+
+.. _3.2-microkernel:
 
 3.2 Microkernel
 --------------------------------
 
-For the second task we were implementing a microkernel to execute a matrix multiplication for matrices with the dimensions:
+For the second task, we implemented a Neon-based microkernel to perform a matrix-matrix multiplication with the following dimensions:
 
-1. Matrix A: 16 x 1
-2. Matrix B: 1 x 6
-3. Matrix C: 16 x 6
+1. Matrix A: ``16 x 1``
+2. Matrix B: ``1 x 6``
+3. Matrix C: ``16 x 6``
+
+For the task we were provided with the following C function signature:
+
+.. code-block:: c
+    :caption: Function Signature
+
+    /**
+     * @brief GEMM that computes: C+=AB.
+     * @param a    Pointer to column-major matrix A.
+     * @param b    Pointer to column-major matrix B.
+     * @param c    Pointer to column-major matrix C.
+     * @param ld_a Leading dimension of A.
+     * @param ld_b Leading dimension of B.
+     * @param ld_c Leading dimension of C.
+     **/
+    void matmul_16_6_1( float   const * a,
+                        float   const * b,
+                        float         * c,
+                        int64_t         ld_a,
+                        int64_t         ld_b,
+                        int64_t         ld_c );
 
 3.2.1 Neon Microkernel
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-We developed three different versions of this microkernel in order to optimize its performance.
+We developed three different versions of this microkernel. With each version, we wanted to compare different data-loading, register usage and data reuse strategies:
 
-In the **first version** we:
+The **first version**:
 
-1. Load matrix A (16 x 1)
-2. Load three columns (1 x 1) of matrix B
-3. Load matrix C (16 x 6)
+1. Load the entire Matrix A (16 x 1)
+2. Load **three** individual elements (1 x 1) of Matrix B
+3. Load the entire Matrix C (16 x 6)
 
-In the **second version** we:
+.. code-block:: asm
+    :caption: `b1_matmul_16_6_1.s <https://github.com/Shad00Z/machine-learning-compilers/blob/main/src/submissions/03_neon/02_microkernel/benchmark/b1_matmul_16_6_1.s>`_
 
-1. Load matrix A (16 x 1)
-2. Load one column of matrix B
-3. Load matrix C (16 x 6)
+    /*
+     * Load 3 elements of B
+     */
+    mov x6, x1              // current column of B
 
-In the **third version** we:
+    ldr s28, [x6]           // Column B(0)
+    add x6, x6, x4
 
-1. Load matrix A (16 x 1)
-2. Load one column of matrix B
-3. Load one column of matrix C (16 x 1)
+    ldr s29, [x6]           // Column B(1)
+    add x6, x6, x4
+
+    ldr s30, [x6]           // Column B(2)
+    add x6, x6, x4
+    
+    /*
+     * Multiply and accumulate (1 / 2)
+     */ 
+    fmla v4.4s, v0.4s, v28.s[0]
+    fmla v5.4s, v1.4s, v28.s[0]
+    fmla v6.4s, v2.4s, v28.s[0]
+    fmla v7.4s, v3.4s, v28.s[0]
+
+    fmla v8.4s,  v0.4s, v29.s[0]
+    fmla v9.4s,  v1.4s, v29.s[0]
+    fmla v10.4s, v2.4s, v29.s[0]
+    fmla v11.4s, v3.4s, v29.s[0]
+
+    fmla v12.4s, v0.4s, v30.s[0]
+    fmla v13.4s, v1.4s, v30.s[0]
+    fmla v14.4s, v2.4s, v30.s[0]
+    fmla v15.4s, v3.4s, v30.s[0]
+
+The **second version**:
+
+1. Load the entire Matrix A (16 x 1)
+2. Load **one** element of Matrix B
+3. Load the entire Matrix C (16 x 6)
+
+.. code-block:: asm
+    :caption: `b2_matmul_16_6_1.s <https://github.com/Shad00Z/machine-learning-compilers/blob/main/src/submissions/03_neon/02_microkernel/benchmark/b2_matmul_16_6_1.s>`_
+
+    /*
+     * Load column of B (1 / 6)
+     */
+    mov x6, x1              // current column of B
+
+    ldr s28, [x6]           // Column B(0)
+    add x6, x6, x4
+    
+    /*
+     * Multiply and accumulate (1 / 6)
+     */ 
+    fmla v4.4s, v0.4s, v28.s[0]
+    fmla v5.4s, v1.4s, v28.s[0]
+    fmla v6.4s, v2.4s, v28.s[0]
+    fmla v7.4s, v3.4s, v28.s[0]
+
+The **third version**:
+
+1. Load the entire Matrix A (16 x 1)
+2. Load **one** column of Matrix B
+3. Load **one** column of Matrix C (16 x 1)
+
+.. code-block:: asm
+    :caption: `b3_matmul_16_6_1.s <https://github.com/Shad00Z/machine-learning-compilers/blob/main/src/submissions/03_neon/02_microkernel/benchmark/b3_matmul_16_6_1.s>`_
+
+    /*
+     * Matrix C: Column 0
+     */
+    // Load column of B
+    ldr s8, [x6]
+
+    // Load column of C
+    ldp q4, q5, [x7]
+    ldp q6, q7, [x7, #32]
+
+    // Multiply and accumulate
+    fmla v4.4s, v0.4s, v8.s[0]
+    fmla v5.4s, v1.4s, v8.s[0]
+    fmla v6.4s, v2.4s, v8.s[0]
+    fmla v7.4s, v3.4s, v8.s[0]
+
+    // Store column of C
+    stp q4, q5, [x7]
+    stp q6, q7, [x7, #32]
 
 3.2.2 Testing and Benchmarking
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-To test and compare our versions with one another we:
+To validate and compare our implementations, we took the following steps:
 
-1. implemented a microkernel that would give us a visual indication of the results
-2. implemented a test using Catch2 to test the correctness of our implementations
-3. implemented a microbenchmark that would calculate the GFLOPs for each of the three versions
+1. We developed a basic `kernel driver <https://github.com/Shad00Z/machine-learning-compilers/blob/main/src/submissions/03_neon/02_microkernel/benchmark/microbench.cpp>`_ to inspect our output correctness visually
+2. We used Catch2 to verify the correctness of our implementations
+3. We implemented a benchmark to measure ``GFLOPs`` for all three versions
 
-The GFLOPs were calculated using the following formula:
+The ``GFLOPs`` were calculated with the following formula:
 
-.. literalinclude:: ../../src/submissions/03_neon/02_microkernel/benchmark/microbench.cpp
-    :language: cpp
-    :lines: 138-143
-    :lineno-match:
-    :caption: GFLOPs calculations
+.. code-block:: cpp
+    :caption: ``GFLOPs`` calculation
 
-For each version we would perform ``50,000`` iterations as a warmup to guarantee similar results for each execution of the benchmark.
-Using this approach we obtained the following results:
+    double totalOps = ( 6 * 16 ) * 2;
+    double opsPerIteration = totalOps * loopIterations;
+
+    double opsPerSec = opsPerIteration / elapsedTime;
+    double gflops = opsPerIteration / ( elapsedTime * 1e9 );
+
+Each kernel was executed with ``50,000`` warmup iterations to reduce variability and ensure fair comparisons. 
+The benchmark produced the following performance results:
 
 .. literalinclude:: ../../src/submissions/03_neon/02_microkernel/benchmark/benchmarking_results.txt
     :language: text
-    :caption: GFLOPs calculations
+    :caption: ``GFLOPs`` results for all three versions
 
-The GLFOPs results indicate that with every version we obtained slightly better results, resulting in 
-about ``1.7`` GLOPs in difference comparing our best with our worst approach.
+The results show that performance improved incrementally with each version. The best-performing kernel outperformed the least-performing by approximately ``1.7 GFLOPs``, highlighting the importance of careful memory and register management.
+
+.. note::
+    Even though the third implementation achieved the best performance, it is tailored specifically to the given matrix dimensions. As the ``K`` dimension increases, the kernel would repeatedly reload columns of matrix ``C``, leading to significant performance degradation.
 
 .. _3.3 Loops:
 
