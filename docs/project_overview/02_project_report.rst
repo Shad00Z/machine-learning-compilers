@@ -20,3 +20,5 @@ After spending the first two weeks experimenting with base instructions and writ
 We began by benchmarking the :ref:`throughput and latency<3.1-throughput-latency>` of the ``FMLA`` and ``FMADD`` instructions. This helped us understand the significance of instruction-level parallelism and how much instruction ordering and data dependencies can impact performance. 
 
 After these initial experiments, we shifted our focus toward understanding the role of microkernels. We explored key design considerations, like data reuse, register allocation, and memory access patterns, and conducted our first experiments with optimizing :ref:`microkernels<3.2-microkernel>` for performance. 
+
+In the following week, we extended our microkernel by wrapping it in loops to support larger matrix dimensions and improve the performance. Starting from our base kernel of ``16x6x1``, we progressively scaled it to handle matrices of size ``64x48x64``. This allowed us to reach the architectural performance limits of a M4 Chip. Further implementation details can be found in the :ref:`loops section <3.3 Loops>` of our project documentation. 

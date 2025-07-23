@@ -297,69 +297,71 @@ The results show that performance improved incrementally with each version. The 
 3.3 Loops
 ------------
 
-In this task, we had to add loops to the matrix multiplication kernel which we wrote in the previous task. The goal was to enable the 16x6x1 kernel to be used for larger matrices.
+After implementing and benchmarking our initial ``16x6x1`` Neon microkernel, the next step was to scale this kernel for the use with larger matrices. To achieve this, we extended the kernel along the three matrix dimensions ``K``, ``M``, and ``N``, by introducing loops around our base kernel.
 
-The first step was to implement a loop in the K dimension, resulting in a 16x6x64 kernel. The loading and storing of matrix C was left unchanged. The relevant code is shown below:
+3.3.1 Loop Implementations 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Our **first** step was to handle larger ``K`` dimensions. Therefore, we transformed our kernel into a ``16x6x64`` kernel. The core of the microkernel remained mostly unchanged, except that we updated the input pointers for matrices ``A`` and ``B`` in each iteration:
+
+* ``A`` is advanced by the given stride to move to the next column.
+* ``B`` is advanced row-by-row, with a 4-byte step for each 32-bit float value.
+
+The updated loop body is shown below:
 
 .. literalinclude:: ../../src/submissions/03_neon/03_loops/loops/matmul_16_6_64.s
     :language: asm
     :lines: 67-133
     :lineno-match:
-    :caption: Looping matmul_16_6_1 over K dimension
+    :caption: Looping the ``matmul_16_6_1`` kernel over the ``K`` dimension
 
 The ``matmul_16_6_1`` kernel mostly stayed the same, except that for each K loop, we now need to adjust the pointers to the input matrices A and B. At the end of each loop, we move the pointers to A to the next column by adding the given stride. In B, we need to move the pointer to the next row. Therefore, we jump by 4 Bytes (since we are using 32-bit floats) from the starting address of B. To keep jumping to the next row in each loop, we accumulate the offset of 4 Bytes in the register ``x9``.
 
-The second step was to implement a loop in the M dimension, resulting in a 64x6x64 kernel. To keep the code examples shorter, we exclude the K loop from the code snippets. The relevant code is shown below:
+In the **second** step we added a loop over the ``M`` dimension to build a ``64x6x64`` kernel. In this version, we reused the kernel for processing 16 rows of ``M`` at a time and iterated four times to cover all 64 rows. That means, at the end of the ``M`` loop, we advance the pointers of ``A`` and ``C`` to the next block.
 
 .. literalinclude:: ../../src/submissions/03_neon/03_loops/loops/matmul_64_6_64.s
     :language: asm
     :lines: 45-92
     :lineno-match:
-    :caption: First part of looping over M dimension
+    :caption: First part of looping over the ``M`` dimension
 
 .. literalinclude:: ../../src/submissions/03_neon/03_loops/loops/matmul_64_6_64.s
     :language: asm
     :lines: 153-193
     :lineno-match:
-    :caption: Second part of looping over M dimension
+    :caption: Second part of looping over the ``M`` dimension
 
-The M loop needs only 4 iterations, since we are extending the kernel from 16 to 64 in the M dimension by dividing the M dimension into 4 blocks of 16 elements. At the end of the M loop, we move the pointers of A and C to the next block. We jump by 16 elements in the M dimension, which means adding 16*4 Bytes to the pointer of A and C.
-
-The last step was to implement a loop in the N dimension, resulting in a 64x48x64 kernel. The relevant code is shown below:
+The **third** step was to implement a loop in the N dimension, extending the kernel to handle a ``64x48x64`` matrix multiplication. This required dividing ``N`` into 8 blocks of 6 columns, resulting in 8 loop iterations. For each ``N`` loop, it is important to first reset the pointer of ``A`` to the original address. After each iteration, we need to move the pointers of ``B`` and ``C`` to the next block: 
 
 .. literalinclude:: ../../src/submissions/03_neon/03_loops/loops/matmul_64_48_64.s
     :language: asm
     :lines: 49-66
     :lineno-match:
-    :caption: First part of looping over N dimension
+    :caption: First part of looping over the ``N`` dimension
 
 .. literalinclude:: ../../src/submissions/03_neon/03_loops/loops/matmul_64_48_64.s
     :language: asm
     :lines: 205-220
     :lineno-match:
-    :caption: Second part of looping over N dimension
+    :caption: Second part of looping over the ``N`` dimension
 
-Since we are extending the kernel from 6 to 48 in the N dimension, we need to divide the N dimension into 8 blocks of 6 elements. This means that the loop will have 8 iterations. For each N loop, it is important to first reset the pointer of A to the original address. After each iteration, we need to move the pointers of B and C to the next block. To do this, we jump by elements in the N dimension, that is specifically 6 columns of B and C. We do this by adding 6 times the stride of B and C to the pointers.
-
-3.3.1 Testing and Benchmarking
+3.3.2 Testing and Benchmarking
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-For all three kernels we have written unit tests. To execute the tests, one first needs to compile the code by invoking ``make`` from within the ``src/submissions/03_neon/03_loops`` directory. This will create an executable that can be run with ``./build/test``.
+To ensure correctness, we wrote unit tests for all three of our kernels. To execute the tests, we need to step in the correct directory (``src/submissions/03_neon/03_loops``) and compile the code by invoking ``make``. This will create an executable that can be run with ``./build/test``.
 
-We also calculated the GFLOPs for each of these matrix multiplications.
-To calculate them we followed the simple formula:
+We also benchmarked each kernel to measure their performance in ``GFLOPs``, using the standard formula:
 
 .. math:: M \cdot N \cdot K \cdot \text{Ops Per FMLA}
 
-The results that we obtained were:
+The benchmarking results that we obtained are:
 
 .. literalinclude:: ../../src/submissions/03_neon/03_loops/benchmark/benchmarking_results.txt
     :language: text
     :lineno-match:
-    :caption: GFLOPs calculations for MatMuls
+    :caption: ``GFLOPs`` calculations for the MatMul kernels
 
-Our results indicate that the number of GFLOPs is very consistent, even when scaling the size of our matrix.
-
+Our results indicate that the number of ``GFLOPs`` is very consistent, even when scaling the size of our matrices.
 
 3.4 SIMD Lanes
 ----------------
