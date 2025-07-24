@@ -363,12 +363,12 @@ The benchmarking results that we obtained are:
 
 Our results indicate that the number of ``GFLOPs`` is very consistent, even when scaling the size of our matrices.
 
+.. _3.4 SIMD:
+
 3.4 SIMD Lanes
 ----------------
 
-For this task we were supposed to create two kernels, that should be able 
-to function, even if we don't have a multiple of 4 for the ``M`` dimension.
-We created several versions for both:
+In this task, our goal was to implement two kernels capable of handling cases where the ``M`` dimension is not a multiple of 4. Specifically, we focused on the following matrix shapes:
 
 1. the ``M=14``, ``N=6`` and ``K=64``, and
 2. the ``M=15``, ``N=6`` and ``K=64``
@@ -376,110 +376,95 @@ We created several versions for both:
 3.4.1 Matmul_14_6_64
 ^^^^^^^^^^^^^^^^^^^^^^
 
-For the case ``M=14`` we considered four different versions:
+For the case ``M=14``, we explored four different implementations:
 
-Our **first approach** was to use two loops. The first loop was used to calculate 
-a (12 x 64) block of matrix C. That means, we would load 12 column elements of matrix A. 
-The second loop was then used to calculate the remaining (2 x 64) block of matrix C.
+In our **first approach** we used two loops. The first loop computes a ``12 x 64`` block of matrix C, while the second loop handles the remaining ``2 x 64`` block.
 
 .. literalinclude:: ../../src/submissions/03_neon/04_simd/matmul_14_6_64/v1_matmul_14_6_64.s
     :language: asm
     :lines: 157-200
     :lineno-match:
-    :caption: Second loop for the (2 x 64) matrix calculation
+    :caption: Second loop for the ``2 x 64`` matrix calculation
 
-The **second approach** was to use a single loop. We would load the whole matrix C, and matrix A 
-column-wise using one ``ldp qXX, qXX, [x7]``, one ``ldr qXX, [x7, #32]`` and one ``ldr dXX, [x7, #48]`` instruction. 
+For our **second approach** we used a single loop. Here, we load the entire matrix ``C`` and process each column of ``A`` in a loop iteration using three ``FMLA (4s)`` instructions and one ``FMLA (2s)`` instruction.
 
 .. literalinclude:: ../../src/submissions/03_neon/04_simd/matmul_14_6_64/v2_matmul_14_6_64.s
     :language: asm
-    :lines: 86-144
+    :lines: 86-145
     :lineno-match:
-    :caption: Calculate matrix C with a single loop using four loads
+    :caption: Calculating matrix ``C`` with a single loop using different calculations
 
-Our **third approach** was again to use a single loop. But this time we would load matrix A
-column-wise using two ``ldp qXX, qXX, [x7]`` instructions and then set the last two elements
-to zero using ``mov v27.s[2], wzr`` and ``mov v27.s[3], wzr``.
+In our **third approach** we were also using the single loop version, but this time we padded a register of ``A``, that holds the remaining two values with two zero values using ``mov v27.s[2], wzr`` and ``mov v27.s[3], wzr``. This allows us to use four ``FMLA (4s)`` instructions.
 
 .. literalinclude:: ../../src/submissions/03_neon/04_simd/matmul_14_6_64/v3_matmul_14_6_64.s
     :language: asm
-    :lines: 88-148
+    :lines: 88-150
     :lineno-match:
-    :caption: Calculate matrix C with a single loop using ``ldp`` loads
+    :caption: Using zero-padding to use four ``FMLA (4s)`` instructions
 
-In our **fourth approach** we simply copied the second version and changed
-our loads for matrix A and C. We used ``ld1`` instead of ``ldp``.
+In our **fourth approach** we simply copied the second version and changed our loads for matrix A and C. We used ``ld1`` instead of ``ldp``.
 
 .. literalinclude:: ../../src/submissions/03_neon/04_simd/matmul_14_6_64/v4_matmul_14_6_64.s
     :language: asm
-    :lines: 73-130
+    :lines: 73-131
     :lineno-match:
-    :caption: Calculate matrix C with a single loop and ``ld1`` loads
+    :caption: Single loop version using ``ld1`` loads
 
-When benchmarking our approaches we obtained the following results:
+To compare our different versions, we performed benchmarks on each kernel. Our benchmarking results are as follows:
 
 .. literalinclude:: ../../src/submissions/03_neon/04_simd/benchmark/benchmarking_results.txt
     :language: text
     :lines: 1-31
     :lineno-match:
-    :caption: Benchmarking results for matmul_14_6_64 approaches
+    :caption: Benchmarking results for ``matmul_14_6_64`` approaches
 
-The results indicate that the version with three different loads performed
-best, with an increase of about ``10 GFLOPs``. The switch from ``ldp`` to ``ld1`` however, didn't show 
-any significant changes in the number of GFLOPs.
+Our results indicate that the second version, using three ``FMLA (4s)`` instructions and one ``FMLA (2s)`` instruction, achieved the best performance. The version using ``ld1`` loads achieved a similar ``GFLOPs``. 
 
 3.4.2 Matmul_15_6_64
 ^^^^^^^^^^^^^^^^^^^^^^
 
-For the case ``M=15`` we considered three different versions:
+For the case ``M=15``, we implemented and tested three kernels:
 
-For our **first approach** we again considered two loops. Again, the first loop was used to calculate 
-a (12 x 64) block of matrix C. 
-The second loop was then used to calculate the remaining (3 x 64) block of matrix C.
+In our **first approach** we similarly to the ``M=14`` case, split the computation into two loops. The first loop handles a ``12 x 64`` block, and the second loop processed the remaining ``3 x 64`` block of matrix ``C``.
 
 .. literalinclude:: ../../src/submissions/03_neon/04_simd/matmul_15_6_64/v1_matmul_15_6_64.s
     :language: asm
     :lines: 211-256
     :lineno-match:
-    :caption: Second loop for the (3 x 64) matrix calculation
+    :caption: Second loop for the ``3 x 64`` matrix calculation
 
-In the **second approach** we use one loop. We load matrix A column-wise using two 
-two ``ldp qXX, qXX, [x7]`` instructions and then set the last element
-to zero using ``mov v27.s[3], wzr``.
+In the **second approach** we implement the kernel using a single loop. We load matrix ``A`` column-wise and calculate parts of matrix ``C`` using four ``FMLA (4s)`` instructions. We zeroed out the last element in the final vector register of matrix ``A`` with ``mov v27.s[3], wzr`` to safely operate on a full register.
 
 .. literalinclude:: ../../src/submissions/03_neon/04_simd/matmul_15_6_64/v2_matmul_15_6_64.s
     :language: asm
-    :lines: 99-158
+    :lines: 103-166
     :lineno-match:
-    :caption: Calculate matrix C with a single loop using ``ldp`` loads
+    :caption: Single loop version using ``ldp`` loads
 
-In the **third approach** we again changed the load instructions from ``ldp`` to
-``ld1``.
+In the **third approach** we again changed the load instructions from ``ldp`` to ``ld1``.
 
 .. literalinclude:: ../../src/submissions/03_neon/04_simd/matmul_15_6_64/v3_matmul_15_6_64.s
     :language: asm
-    :lines: 81-139
+    :lines: 85-147
     :lineno-match:
-    :caption: Calculate matrix C with a single loop using ``ld1`` loads
+    :caption: Single loop version using ``ld1`` loads
 
-Again, we performed some benchmarks:
+For these kernels we also executed benchmarks:
 
 .. literalinclude:: ../../src/submissions/03_neon/04_simd/benchmark/benchmarking_results.txt
     :language: text
     :lines: 41-63
     :lineno-match:
-    :caption: Benchmarking results for matmul_15_6_64 approaches
+    :caption: Benchmarking results for ``matmul_15_6_64`` approaches
 
-Similar to the benchmarks for the ``matmul_14_6_64`` the approach with the single loop
-performs much better than the other approach. This time, we even gain about 
-``23 GFLOPs`` with this approach.
+Similar to the benchmarks for the ``matmul_14_6_64``, the single loop approach significantly outperformed the two loop implementation. In this case, the difference was even bigger, with a gap of approximately ``20 GFLOPs``. However, unlike before, changing the load instruction from ``ldp`` to ``ld1`` had no impact on the overall performance.
 
 .. _generic-kernel:
 
 3.4.3 Generic Approach
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-Simply as a proof of concept we also implemented a generic approach for the ``matmul_14_6_64`` and ``matmul_15_6_64`` kernels. This kernel works for any ``M > 0``. The idea is to write specific kernels for ``M = 1, 2, ..., 8``. We then divide M by 8 (shift right by 3) and use that to loop the kernel for ``M = 8``. Basically we split the M dimension into blocks of 8 elements and compute the result using a ``matmul_8_6_64`` kernel. If there is a remainder, it is ``>=1 and <=7``, which we handle with specific kernels. The selection of the specific kernels is done using a jump table.
+As a proof of concept, we also implemented a generic matrix multiplication kernel capable of handling any ``M > 0``. The core idea is to write specific kernels for ``M = 1, 2, ..., 8``. For input sizes larger than ``M = 8``, we then divide ``M`` by 8 (shift right by 3) and use that to loop the ``M = 8`` kernel, which is basically a ``matmul_8_6_64`` kernel. Any remaining elements (``1 <= M % 8 <= 7``) are handled by using on of the smaller specialized remainder kernels. To enable this dynamic selection, we employ a jump table that maps the remainder values to their respective kernel entry points.
 
 We also benchmarked the performance of this **generic kernel**:
 
@@ -487,17 +472,15 @@ We also benchmarked the performance of this **generic kernel**:
     :language: text
     :lines: 33-39
     :lineno-match:
-    :caption: Benchmarking results for ``matmul_M_6_64`` (M = 14) approach
+    :caption: Benchmarking results for ``matmul_M_6_64`` (``M = 14``) approach
 
 .. literalinclude:: ../../src/submissions/03_neon/04_simd/benchmark/benchmarking_results.txt
     :language: text
     :lines: 65-71
     :lineno-match:
-    :caption: Benchmarking results for ``matmul_M_6_64`` (M = 15) approach
+    :caption: Benchmarking results for ``matmul_M_6_64`` (``M = 15``) approach
 
-Compared to our other approaches our obtained GFLOPs are slightly worse, losing
-about ``30 GFLOPs`` to our best approach for the ``matmul_14_6_64`` and about 
-``40 GFLOPs`` to our best approach for the ``matmul_15_6_64``.
+Compared to our best fixed-size implementations, the generic kernel shows a slightly lower performance, approximately ``20 GFLOPs`` lower for ``M = 14``, and around ``45 GFLOPs`` lower for ``M = 15``. This performance gap is expected due to the overhead of dynamic branching and the generalization of memory access patterns. 
 
 3.5 Accumulator Block Shapes
 -----------------------------

@@ -22,3 +22,7 @@ We began by benchmarking the :ref:`throughput and latency<3.1-throughput-latency
 After these initial experiments, we shifted our focus toward understanding the role of microkernels. We explored key design considerations, like data reuse, register allocation, and memory access patterns, and conducted our first experiments with optimizing :ref:`microkernels<3.2-microkernel>` for performance. 
 
 In the following week, we extended our microkernel by wrapping it in loops to support larger matrix dimensions and improve the performance. Starting from our base kernel of ``16x6x1``, we progressively scaled it to handle matrices of size ``64x48x64``. This allowed us to reach the architectural performance limits of a M4 Chip. Further implementation details can be found in the :ref:`loops section <3.3 Loops>` of our project documentation. 
+
+After exploring ideal kernel sizes aligned with our vector register widths, we also experimented with cases where the ``M`` dimension is not a multiple of 4 or 16. In these scenarios, special handling was required to maintain correctness and efficiency. We implemented and optimized dedicated kernels for two such cases, which are documented in detail in the :ref:`SIMD Lanes <3.4 SIMD>` section of our report.
+
+In week 5 ...
