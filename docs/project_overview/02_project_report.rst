@@ -23,6 +23,12 @@ After these initial experiments, we shifted our focus toward understanding the r
 
 In the following week, we extended our microkernel by wrapping it in loops to support larger matrix dimensions and improve the performance. Starting from our base kernel of ``16x6x1``, we progressively scaled it to handle matrices of size ``64x48x64``. This allowed us to reach the architectural performance limits of a M4 Chip. Further implementation details can be found in the :ref:`loops section <3.3 Loops>` of our project documentation. 
 
-After exploring ideal kernel sizes aligned with our vector register widths, we also experimented with cases where the ``M`` dimension is not a multiple of 4 or 16. In these scenarios, special handling was required to maintain correctness and efficiency. We implemented and optimized dedicated kernels for two such cases, which are documented in detail in the :ref:`SIMD Lanes <3.4 SIMD>` section of our report.
+After exploring ideal kernel sizes aligned with our vector register widths, we also experimented with cases where the ``M`` dimension is not a multiple of 4 or 16. In these scenarios, special handling was required to maintain correctness and efficiency. We implemented and optimized dedicated kernels for two such cases, which are documented in detail in the :ref:`SIMD Lanes <3.4 SIMD>` section of our report. 
 
-In week 5 ...
+In the same week, we also explored the impact of accumulator block shapes for performance reasons. Specifically, we implemented a microkernel for computing ``C+=AB`` with dimensions ``M=64``, ``N=64``, and ``K=64``. This required adapting our existing ``matmul_64_48_64`` kernel to support the extended ``N`` dimension. The details and benchmarking results of this extension are documented in the :ref:`Accumulator Block Shapes<3.5 Accumulator Block Shapes>` section. 
+
+In week 4 ... (we also started with the jitter)
+
+In week 5 ... (big 8h benchmark)
+
+In week 6 ... (unaries implemented)

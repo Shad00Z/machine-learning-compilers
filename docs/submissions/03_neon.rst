@@ -482,19 +482,27 @@ We also benchmarked the performance of this **generic kernel**:
 
 Compared to our best fixed-size implementations, the generic kernel shows a slightly lower performance, approximately ``20 GFLOPs`` lower for ``M = 14``, and around ``45 GFLOPs`` lower for ``M = 15``. This performance gap is expected due to the overhead of dynamic branching and the generalization of memory access patterns. 
 
+.. _3.5 Accumulator Block Shapes:
+
 3.5 Accumulator Block Shapes
 -----------------------------
 
-In this task we were supposed to implement a microkernel that computes C+=AB for M=64, N=64 and K=64. Recalling our ``matmul_64_48_64`` kernel, we only need to change the N dimension to 64. This kernel uses the ``matmul_16_6_64`` internally, which we changed to ``matmul_16_4_64``. Changing N from 6 to 4 allows us to divide the N dimension into 16 blocks of 4 elements. N = 8 was not suitable, as we ran into issues with the number of available SIMD lanes. We do not think it is necessary to show the code for this kernel, as it is very similar to the ``matmul_64_48_64`` kernel. The only difference is that we removed the logic for 2 of the 6 columns and increased the loop counter constant.
+In this task, we were supposed to implement a microkernel that computes ``C+=AB`` for ``M=64``, ``N=64`` and ``K=64``. 
 
-Benchmarking this kernel we obtained the following results:
+Starting from our previous ``matmul_64_48_64`` kernel, we adapted the implementation to support ``N=64``. Internally, this kernel relies on a smaller microkernel. In our previous version, we used ``matmul_16_6_64``, which we replaced with ``matmul_16_4_64``. Reducing ``N`` from 6 to 4 allows us to split the ``N`` dimension into 16 blocks of 4 columns. We found that using ``N=8`` caused issues due to the limited number of available SIMD registers, which made register allocation and performance tuning more difficult. 
+
+Since this kernel is very similar to our earlier ``matmul_64_48_64`` implementation, we chose to not include the code for this kernel here. 
+
+The benchmarking results for the new kernel are shown below:
 
 .. literalinclude:: ../../src/submissions/03_neon/05_accumulator_block_shapes/benchmark/benchmarking_results.txt
     :language: text
     :lineno-match:
-    :caption: Benchmarking results for matmul_64_64_64 approaches
+    :caption: Benchmarking results for ``matmul_64_64_64`` approaches
 
-V1 is the first version which we obtained by converting our best performing ``matmul_64_48_64`` kernel. Trying to squeeze out more performance, we made some minor changes to the computations of the strides (as shown below). We also removed loads and stores of callee-saved registers that were not used. This resulted in a performance increase of about 2-3 GFLOPs in V2 across multiple runs.
+Version V1was directly derived from the ``matmul_64_48_64`` kernel. Trying to improve its performance, we introduced minor optimizations to the stride calculations and removed unnecessary loads and stores of callee-saved registers that were not used. These adjustments led to a consistent performance improvement of ``2-3 GFLOPs``, resulting in version V2.
+
+Below, we compare the naive and the optimized stride calculations:
 
 .. literalinclude:: ../../src/submissions/03_neon/05_accumulator_block_shapes/optimization/v1_matmul_64_64_64.s
     :language: asm
