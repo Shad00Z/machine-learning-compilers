@@ -521,30 +521,36 @@ Below, we compare the naive and the optimized stride calculations:
 3.6 Batch-Reduce GEMM
 -----------------------------
 
-Based on the previous tasks, we are now implementing a batch-reduce GEMM kernel. 
-The goal is to implement a kernel that computes :math:`C+=\sum_i A_i B_i` for M=64, N=48 and K=64 matrices. 
-The kernel should be able to handle batches of matrices. 
-For now we are only implementing the case where the batch size is 16.
+Based on the previous tasks, we now implement a batch-reduce GEMM (BRGEMM) kernel. 
+The goal is to implement a kernel that computes the operation :math:`C+=\sum_i A_i B_i` for batched matrix inputs, with ``M=64``, ``N=48``, and ``K=64``. The kernel should be able to handle batches of matrices. For now, we restrict the implementation to the case where the batch size is 16.
 
-Similar to the previous tasks we implemented several versions of this kernel to optimize the performance.
+Similar to the previous tasks, we developed and benchmarked multiple versions of the kernel to optimize for performance.
 
-In our **first version** we simply used our ``matmul_64_48_64`` kernel from our :ref:`loops <3.3 Loops>` task and looped 16 times around that kernel.
-Key points that we needed to consider were the following:
+In our **first version** we used our ``matmul_64_48_64`` kernel from our :ref:`loops section<3.3 Loops>`. We wrapped it inside a loop that runs 16 times, once for each matrix pair in the batch.
+Two key aspects that we addressed were the following:
 
-.. literalinclude:: ../../src/submissions/03_neon/06_batch_reduce_gemm/optimization/v1_matmul_64_48_64_16.S
-    :language: asm
-    :lines: 56-59
-    :lineno-match:
+.. code-block:: asm
     :caption: Setting the batch counter
+
+    // Batch counter
+    mov x24, #16
+
+    _n_batch:
+
+    ... 
+
+    sub x24, x24, #1
+
+    cbnz x24, _n_batch
+    // END N BATCH
 
 .. literalinclude:: ../../src/submissions/03_neon/06_batch_reduce_gemm/optimization/v1_matmul_64_48_64_16.S
     :language: asm
     :lines: 230-244
     :lineno-match:
-    :caption: Jumping to the next matrix A and B in the batch
+    :caption: Jumping to the next matrix ``A`` and ``B`` in the batch
 
-In our **second version** we made some optimizations to the kernel.
-The changes we made were:
+In our **second version**, we applied some optimizations to the kernel. The changes we made were:
 
 .. literalinclude:: ../../src/submissions/03_neon/06_batch_reduce_gemm/optimization/v2_matmul_64_48_64_16.S
     :language: asm
@@ -558,7 +564,7 @@ The changes we made were:
     :lineno-match:
     :caption: Replacing all ``LDP``'s with ``LD1``'s and ``STP``'s with ``ST1``'s
 
-These optimizations resulted in a performance increase of about ``3-4 GFLOPs``.
+These optimizations resulted in a performance improvement of about ``3-4 GFLOPs``.
 
 .. literalinclude:: ../../src/submissions/03_neon/06_batch_reduce_gemm/benchmark/benchmarking_results_64_48_64_16.txt
     :language: text

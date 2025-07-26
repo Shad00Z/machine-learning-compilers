@@ -27,6 +27,8 @@ After exploring ideal kernel sizes aligned with our vector register widths, we a
 
 In the same week, we also explored the impact of accumulator block shapes for performance reasons. Specifically, we implemented a microkernel for computing ``C+=AB`` with dimensions ``M=64``, ``N=64``, and ``K=64``. This required adapting our existing ``matmul_64_48_64`` kernel to support the extended ``N`` dimension. The details and benchmarking results of this extension are documented in the :ref:`Accumulator Block Shapes<3.5 Accumulator Block Shapes>` section. 
 
+After implementing and optimizing standard matrix multiplication kernels, we extended our work to support :ref:`batch-reduce GEMM<3.6 Batch-Reduce GEMM>` operations. We reused and adapted our existing microkernels to handle multiple matrices efficiently. 
+
 In week 4 ... (we also started with the jitter)
 
 In week 5 ... (big 8h benchmark)
