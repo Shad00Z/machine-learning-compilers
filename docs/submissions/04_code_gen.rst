@@ -30,9 +30,8 @@ The first step to generating a kernel was to create C++ mappings to the A64 ARM 
 
 While we won't show all instructions that implemented, here are some examples:
 
-**LDR instruction (unsigned offset)**
-
-.. code:: cpp
+.. code-block:: cpp
+    :caption: LDR instruction (unsigned offset)
 
     /**
     * @brief Generates a base LDR (12-bit immediate) instruction using unsigned offset encoding.
@@ -73,9 +72,8 @@ While we won't show all instructions that implemented, here are some examples:
         return l_ins;
     }
 
-**ADD instruction (immediate)**
-
-.. code:: cpp
+.. code-block:: cpp
+    :caption: ADD instruction (immediate)
 
     /**
     * @brief Generates an ADD (immediate) instruction.
@@ -124,9 +122,8 @@ For more information on the instructions, please refer to :ref:`API: mini_jit:in
 
 Having implemented all necessary C++ functions for generating the assembly instructions, we then turned our attention to the microkernel generation. Here, the first kernel we approached was the ``matmul_16_6_1`` kernel. The process was to copy the assembly code line by line and replace all instructions with our C++ bindings. A part of the result can be seen in the following code snippet:
 
-**Loading of inputs section of the matmul_16_6_1 kernel using C++ JIT code generation**
-
-.. code:: cpp
+.. code-block:: cpp
+    :caption: Loading of inputs section of the matmul_16_6_1 kernel using C++ JIT code generation
 
     // Load Matrix A
     kernel.add_instr( simd_fp::ldp(simd_fp_t::v0, simd_fp_t::v1, gpr_t::x0, 0, neon_size_spec_t::q) );
@@ -157,9 +154,8 @@ Having implemented all necessary C++ functions for generating the assembly instr
     kernel.add_instr( simd_fp::ldp(simd_fp_t::v24, simd_fp_t::v25, gpr_t::x7, 0, neon_size_spec_t::q) );
     kernel.add_instr( simd_fp::ldp(simd_fp_t::v26, simd_fp_t::v27, gpr_t::x7, 32, neon_size_spec_t::q) );
 
-**FMLA section of the matmul_16_6_1 kernel using C++ JIT code generation**
-
-.. code:: cpp
+.. code-block:: cpp
+    :caption: FMLA section of the matmul_16_6_1 kernel using C++ JIT code generation
 
     // Load Column of Matrix B
     kernel.add_instr( base::mov(gpr_t::x6, gpr_t::x1) );
@@ -198,9 +194,8 @@ Having implemented all necessary C++ functions for generating the assembly instr
 
 Towards the goal of implementing a ``GEMM`` kernel, we now had to start supporting arbitrary dimension sizes. We decided to start implementing a loop over the ``k`` dimension, thus extending the ``matmul_16_6_1`` kernel to ``matmul_16_6_k``.
 
-**K-Loop section of the matmul_16_6_k kernel using C++ JIT code generation**
-
-.. code:: cpp
+.. code-block:: cpp
+    :caption: K-Loop section of the matmul_16_6_k kernel using C++ JIT code generation
 
     // Setup for Loop
     kernel.add_instr( base::mov(gpr_t::x6, k) ); // K loop counter
@@ -262,18 +257,16 @@ For a block size of M = 8 we already wrote a kernel in neon assembly, see :ref:`
 
 The kernel first computes the number of blocks along the M dimension, as well as any remaining elements. 
 
-**matmul_m_4_k: Computing the number of blocks in the M dimension**
-
-.. code:: cpp
+.. code-block:: cpp
+    :caption: matmul_m_4_k: Computing the number of blocks in the M dimension
 
     int mLoopIterations = m / 16;
     int mLoopRemainder = m % 16;
 
 Using these numbers, we can call the specialized kernels:
 
-**matmul_m_4_k: Calling specialized kernels for different M dimensions**
-
-.. code:: cpp
+.. code-block:: cpp
+    :caption: matmul_m_4_k: Calling specialized kernels for different M dimensions
 
     if (mLoopIterations > 0)
     {
@@ -343,9 +336,8 @@ Using these numbers, we can call the specialized kernels:
 
 But what does such a specialized kernel look like? For the most part, they are similar to the microkernels we implemented before. The only difference is that we need to adjust the loads, stores and FMLA instructions for a fixed M dimension. For example in the case of M = 3:
 
-**matmul_m_4_k: Loading a column of C with M = 3**
-
-.. code:: cpp
+.. code-block:: cpp
+    :caption: matmul_m_4_k: Loading a column of C with M = 3
 
     // first column
     kernel.add_instr(base::mov(gpr_t::x24, gpr_t::x12));
@@ -354,9 +346,8 @@ But what does such a specialized kernel look like? For the most part, they are s
 
 While we can simply load a double word when M = 2 or even a quad word when M = 4, we need to divide our loads into two parts when M = 3. First, we load a double word and then the remaining single word. The same applies to the stores:
 
-**matmul_m_4_k: Storing a column of C with M = 3**
-
-.. code:: cpp
+.. code-block:: cpp
+    :caption: matmul_m_4_k: Storing a column of C with M = 3
 
     // first column
     kernel.add_instr(base::mov(gpr_t::x24, gpr_t::x12));
@@ -365,9 +356,8 @@ While we can simply load a double word when M = 2 or even a quad word when M = 4
 
 The FMLA instructions are also adjusted based on M dimension. For example, when M = 3, we need to use two FMLA instructions to compute the result:
 
-**matmul_m_4_k: FMLA instructions with M = 3**
-
-.. code:: cpp
+.. code-block:: cpp
+    :caption: matmul_m_4_k: FMLA instructions with M = 3
 
     // B: COLUMN 0
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v29, gpr_t::x16, 0, neon_size_spec_t::s));
@@ -378,9 +368,8 @@ While one could use an ``fmla`` instruction and zero padding, we decided to use 
 
 Having implemented the ``matmul_m_4_k`` kernel, we can now turn our attention towards the ``matmul_m_n_k`` kernel. Since we decided to block N by 4, we can use the same approach as before. We first compute the number of blocks along the ``n`` dimension and the remaining elements.
 
-**matmul_m_n_k: Computing the number of blocks in the N dimension**
-
-.. code::
+.. code-block::
+    :caption: matmul_m_n_k: Computing the number of blocks in the N dimension
 
     int nLoopIterations = n / 4;
     int nLoopRemainder = n % 4;
@@ -389,9 +378,8 @@ Having implemented the ``matmul_m_4_k`` kernel, we can now turn our attention to
 
 For the whole N loop, we use switch statements to call the specialized kernels. The final implementation looks like this:
 
-**matmul_m_n_k: Calling kernels for different N**
-
-.. code:: cpp
+.. code-block:: cpp
+    :caption: matmul_m_n_k: Calling kernels for different N
 
     if (nLoopIterations > 0)
     {
@@ -522,7 +510,7 @@ Having implemented the code for the ``matmul_m_n_k``, we now had to find a way t
 This task requires us to verify the correctness of our ``matmul_m_n_k`` kernel by comparing it to a reference implementation for 1≤M≤64, 1≤N≤64, K∈[1,16,32,64,128], with lda=M, ldb=K, and ldc=M.
 We realized this verification using a ``Catch2`` unit test:
 
-.. code:: cpp
+.. code-block:: cpp
 
     TEST_CASE("Reference test for matmul kernel with variable M, N, K", "[matmul][parameterized]")
     {
@@ -591,7 +579,7 @@ The M and N dimensions are generated randomly, while the ``k`` dimension is fixe
 
 This task is very similar to the previous one, but we need to verify the correctness of our ``matmul_m_n_k`` kernel for 1≤M≤64, 1≤N≤64, K∈[1,16,32,64,128], and lda>M, ldb>K or ldc>M. This means that we need to store the matrices in a way that they are not contiguous in memory. We can do this by first choosing strides that are larger than the M, N and K dimensions. The next step is to use these strides to compute the addresses of the elements in the matrices. We can then use the strides to allocate memory larger larger than the matrices and set the elements used in the computation. The other elements, which will be skipped due to the strides, will be set to 0. Lastly, we call our kernel and compare the result to the expected result:
 
-.. code:: cpp
+.. code-block:: cpp
 
     TEST_CASE("Reference test for matmul kernel with variable M, N, K and lda>M, ldb>K or ldc>M", "[matmul][parameterized][larger strides]")
     {
@@ -693,9 +681,8 @@ Our idea was run each of these benchmarks for a time of ``1.5s`` in order to gua
 During this time we calculated the number of iterations our ``matmul_m_n_k`` kernel would perform.
 Using this metrics we could then calculate the performance in GFLOPs for the respective execution.
 
-**matmul_m_n_k benchmarking approach for different M, N, and K**
-
-.. code:: cpp
+.. code-block:: cpp
+    :caption: matmul_m_n_k benchmarking approach for different M, N, and K
 
     // Generate and get the kernel function
     mini_jit::Kernel l_kernel;
@@ -723,9 +710,8 @@ Using this metrics we could then calculate the performance in GFLOPs for the res
 
 The results that we obtained were saved under `benchmarks/gemm_perf.csv <https://github.com/Shad00Z/machine-learning-compilers/blob/main/benchmarks/gemm_perf.csv>`_. 
 
-**Snippet of executed benchmarks for matmul_m_n_k**
-
-.. code:: text
+.. code-block:: text
+    :caption: Snippet of executed benchmarks for matmul_m_n_k
 
     m,n,k,br_size,trans_a,trans_b,trans_c,ld_a,ld_b,ld_c,br_stride_a,br_stride_b,num_reps,time,gflops
     1,1,1,1,0,0,0,0,0,0,0,0,54127879,1.5,0.0721705
@@ -758,9 +744,8 @@ Apart from that, we were ready to start.
 
 The first step we took was to initialize the loop counter for the batch dimension.
 
-**matmul_br_m_n_k: br counter initialization**
-
-.. code:: cpp
+.. code-block:: cpp
+    :caption: matmul_br_m_n_k: br counter initialization
 
     // batch counter
     kernel.add_instr(base::mov(gpr_t::x25, br_size));
@@ -768,7 +753,7 @@ The first step we took was to initialize the loop counter for the batch dimensio
 
 The second step was to make sure that after a GEMM has finished, we would increment the pointers, to move to the next respective matrices.
 
-.. code:: cpp
+.. code-block:: cpp
 
     // handle batching
     // move to next A matrix
@@ -797,9 +782,8 @@ These were the only changes we had to make. Between initializing the loop and ju
 In order to actually call our ``GEMM`` and ``BRGEMM`` kernels, we had to implement a common entry point. The ``Brgemm`` class is responsible for this task.
 It first checks all input parameters for their validity and then makes calls to the kernels based on the batch-reduce size.
 
-**Brgemm.cpp**
-
-.. code:: cpp
+.. code-block:: cpp
+    :caption: Brgemm.cpp
 
     mini_jit::error_t mini_jit::Brgemm::generate(uint32_t m,
                                                 uint32_t n,
@@ -900,9 +884,8 @@ It first checks all input parameters for their validity and then makes calls to 
 
 The example below demonstrates how this function can be called:
 
-**Example code for generating and executing a kernel**
-
-.. code:: cpp
+.. code-block:: cpp
+    :caption: Example code for generating and executing a kernel
 
     mini_jit::Kernel l_kernel;
     mini_jit::kernels::matmul::matmul_m_n_k(l_kernel, M, N, K);
@@ -915,7 +898,7 @@ The example below demonstrates how this function can be called:
 Similar to the ``GEMM`` kernel, we also tested our implementation of the batch-reduce GEMM.
 We executed several initializations of our kernel, using a similar approach to the testing of the ``GEMM`` kernel:
 
-.. code:: cpp
+.. code-block:: cpp
 
     TEST_CASE("Reference test for batch reduce matmul kernel with variable M, N, K", "[br_matmul][parameterized]")
     {
@@ -989,7 +972,7 @@ We executed several initializations of our kernel, using a similar approach to t
 For the benchmarks, we enhanced our ``benchmarking.cpp`` file again.
 We introduced a new function that should handle 1≤M≤64, 1≤N≤64, K∈[1,16,32,64,128], lda=M, ldb=K and ldc=M and reduced the time for our benchmarks to ``1.0s``. The calculation for the GFLOPs is almost the same as for the ``GEMM`` kernel, however now we also need to multiply the number of operations by the Batch-Reduce dimension size ``br_size``.
 
-.. code:: cpp
+.. code-block:: cpp
 
     // Generate and get the kernel function
     mini_jit::Kernel l_kernel;
@@ -1017,9 +1000,8 @@ We introduced a new function that should handle 1≤M≤64, 1≤N≤64, K∈[1,1
 
 The results that we obtained were saved in `br_gemm_perf.csv <https://github.com/Shad00Z/machine-learning-compilers/blob/main/benchmarks/brgemm_perf.csv>`_. 
 
-**Snippet of executed benchmarks for matmul_br_m_n_k**
-
-.. code:: text
+.. code-block:: text
+    :caption: Snippet of executed benchmarks for matmul_br_m_n_k
 
     m,n,k,br_size,trans_a,trans_b,trans_c,ld_a,ld_b,ld_c,br_stride_a,br_stride_b,num_reps,time,gflops
     1,1,1,16,0,0,0,1,1,1,1,1,14713094,1,0.470819
@@ -1076,9 +1058,8 @@ For this reason, this primitive is exclusively executed as a first touch primiti
 
 The functionality of the zero primitive can be implemented in many different ways, but we started with using an ARM instruction which we had already implemented: ``STR``. We refer to this version as the ``XZR`` approach, because it uses the ``XZR`` (and sometimes ``WZR``) register to store zeroes in the output matrix. The limitation here is that the ``XZR`` is only 64 bits wide, which means we can only set 2 FP32 values to zero at once. To improve this, we implemented a second version that uses ``Neon`` instructions. We first created a zero register using the ``EOR`` instruction (eg. ``eor v31.16b, v31.16b, v31.16b`` sets ``v31`` to zero) and then use ``STP`` to zero 8 FP32 values at once. This version is called the ``EOR`` approach.
 
-**XZR Zero Primitive: main loop**
-
-.. code:: cpp
+.. code-block:: cpp
+    :caption: XZR Zero Primitive: main loop
 
     kernel.add_label("m_8_loop");
     // store 8 zeros
@@ -1096,9 +1077,8 @@ The functionality of the zero primitive can be implemented in many different way
     int l_mLoopInstrCount = kernel.getInstrCountFromLabel("m_8_loop");
     kernel.add_instr(base::cbnz(gpr_t::x6, -l_mLoopInstrCount * 4));
 
-**EOR Zero Primitive: main loop**
-
-.. code:: cpp
+.. code-block:: cpp
+    :caption: EOR Zero Primitive: main loop
 
     kernel.add_label("m_8_loop");
     // store 8 zeros
@@ -1118,9 +1098,8 @@ In this primitive, we handle one column at a time. For all matrices where the nu
 
 We benchmarked the performance of our zero primitive for the given parameters (M=N=50, M=N=64, M=N=512 and M=N=2048) and obtained the following results:
 
-**Benchmarking results for the zero primitives**
-
-.. code:: text
+.. code-block:: text
+    :caption: Benchmarking results for the zero primitives
 
     Running zero_eor_primitive 50x50 benchmark
     Total time (s):                       3
@@ -1199,9 +1178,8 @@ every 'zero store' with:
 #. a load from matrix ``A`` at the specific address, and
 #. a store, that would store the element from ``A`` in matrix ``B``.
 
-**Identity Primitive: main loop**
-
-.. code:: cpp
+.. code-block:: cpp
+    :caption: Identity Primitive: main loop
 
     kernel.add_label("m_8_loop");
     // load and store 8 rows of A and B
@@ -1218,9 +1196,8 @@ every 'zero store' with:
 
 For the edge cases where there was a remainder for the ``m`` dimension, we used the same procedure as before:
 
-**Identity Primitive: M = 5 edge case**
-
-.. code:: cpp
+.. code-block:: cpp
+    :caption: Identity Primitive: M = 5 edge case
 
     case 5:
     kernel.add_instr(simd_fp::ldrPost(simd_fp_t::v0, gpr_t::x8, 16, neon_size_spec_t::q));
@@ -1238,9 +1215,8 @@ Our intuition to transpose the identity was to look at the :ref:`4x4 tranpositio
 
 We decided to take the 4x4 matrix as our general case. 
 
-**Identity Transposition Primitive: main loop**
-
-.. code:: cpp
+.. code-block:: cpp
+    :caption: Identity Transposition Primitive: main loop
 
     // Load 4x4 block of A (input matrix)
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v0, gpr_t::x7, 0, neon_size_spec_t::q));
@@ -1284,9 +1260,8 @@ After processing a ``4x4`` block on the diagonal:
 
 By using this approach, we would guarantee that after processing a block in the matrix A, we could save it at the correct position in matrix B. For all cases where the ``m`` dimension is not be divisible by 4, we would need to implement specific kernels.
 
-**Identity Transposition Primitive: 2x4 edge case**
-
-.. code:: cpp
+.. code-block:: cpp
+    :caption: Identity Transposition Primitive: 2x4 edge case
 
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v3, gpr_t::x7, 0, neon_size_spec_t::d));
 
@@ -1316,9 +1291,8 @@ There were two things to consider:
 
 For both of these cases we would consider a similar implementing approach as for the ``m`` remainder implementation.
 
-**Identity Transposition Primitive: 4x2 edge case**
-
-.. code:: cpp
+.. code-block:: cpp
+    :caption: Identity Transposition Primitive: 4x2 edge case
 
     // Load 4x2 block of A (input matrix)
     kernel.add_instr(base::mov(gpr_t::x17, gpr_t::x7));
@@ -1355,9 +1329,8 @@ For both of these cases we would consider a similar implementing approach as for
 
 We benchmarked the performance of our identity primitive for the given parameters (M=N=50, M=N=64, M=N=512 and M=N=2048) and obtained the following results:
 
-**Benchmarking results for the identity primitives**
-
-.. code:: text
+.. code-block:: text
+    :caption: Benchmarking results for the identity primitives
 
     Running identity_primitive 50x50 benchmark
     Total time (s):                       3
@@ -1433,9 +1406,8 @@ To implement this, we first had to add support for the ``FMAX`` instruction, whi
 
 The first version does not transpose the output and is structurally the same as the zero primitive. However instead of always storing zero, we now store the maximum of the input value and zero.
 
-**ReLU Primitive: main loop**
-
-.. code:: cpp
+.. code-block:: cpp
+    :caption: ReLU Primitive: main loop
 
     kernel.add_label("m_8_loop");
     kernel.add_instr({
@@ -1457,9 +1429,8 @@ The first version does not transpose the output and is structurally the same as 
 
 To support transposition, we started with the identity transposition primitive. The only addition we had to make was to add the ``FMAX`` instruction between the load and store instructions. The rest of the implementation is structurally identical to the identity transposition primitive. The difference can be seen in the following code snippets:
 
-**Original transposition code (identity_trans_primitive)**
-
-.. code:: cpp
+.. code-block:: cpp
+    :caption: Original transposition code (identity_trans_primitive)
 
     // Load 4x4 block of A (input matrix)
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v0, gpr_t::x7, 0, neon_size_spec_t::q));
@@ -1484,9 +1455,8 @@ To support transposition, we started with the identity transposition primitive. 
     kernel.add_instr(simd_fp::zip2(simd_fp_t::v10, simd_fp_t::v4, simd_fp_t::v5, arr_spec_t::s4));
     kernel.add_instr(simd_fp::zip2(simd_fp_t::v11, simd_fp_t::v6, simd_fp_t::v7, arr_spec_t::s4));
 
-**Code with the FMAX instruction (relu_trans_primitive)**
-
-.. code:: cpp
+.. code-block:: cpp
+    :caption: Code with the FMAX instruction (relu_trans_primitive)
 
     // Load 4x4 block of A (input matrix)
     kernel.add_instr(simd_fp::ldr(simd_fp_t::v0, gpr_t::x7, 0, neon_size_spec_t::q));
@@ -1522,9 +1492,8 @@ To support transposition, we started with the identity transposition primitive. 
 
 We benchmarked the performance of our ReLU primitive for the given parameters (M=N=50, M=N=64, M=N=512 and M=N=2048), and obtained the following results:
 
-**Benchmarking results for the relu primitives**
-
-.. code:: text
+.. code-block:: text
+    :caption: Benchmarking results for the relu primitives
 
     Running relu_primitive 50x50 benchmark
     Total time (s):                       3
