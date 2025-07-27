@@ -42,8 +42,25 @@ The last part of the Neon section was to explore how to **transpose** matrices u
 Our goal was to handle a ``8x8`` matrix, which we handled by dividing it into four ``4x4`` submatrices. 
 More details and code can be found in the :ref:`transposition section<3.7 Transposition>` of our documentation. 
 
-In week 4 ... (we also started with the jitter)
+In week 4, we turned our attention to code generation.
+The idea was to generate the previously implemented Neon assembly kernels using C++ during runtime.
+Starting with a rather simple example, we began by implementing a ``matmul_16_6_k`` :ref:`microkernel <brgemm-microkernel>`.
+For this, we learned how to generate assembly instructions by setting each bit manually, writing the 32-bit instructions to previously allocated memory and lastly making that memory executable.
 
-In week 5 ... (big 8h benchmark)
+The next task was to extend the ``matmul_16_6_k`` by generating loops over the ``M`` and ``N`` dimensions, resulting in a **GEMM** kernel.
+This also involved writing a backend entry point for kernel generation and unit tests for verification.
+After verifying that the GEMM kernel generation worked as intended, we proceeded with implementing a **Batch-Reduce GEMM (BRGEMM)** kernel.
+Here too, we verified our implementation using unit tests.
+Lastly, we performed an extensive benchmark of the GEMM and BRGEMM kernels for different matrix dimensions.
+In total, this benchmark took over 8 hours on the provided Apple M4 machine.
+For more information, refer to :ref:`brgemm-primitive`.
 
-In week 6 ... (unaries implemented)
+In week 5, we extended our code generator by unary primitives of the form B:=op(A).
+Similarly to the BRGEMM backend, we first implemented a new entry point which can be used to generate various unary primitive kernels.
+The first unary primitive we implemented was the **Zero Primitive**, which sets all elements of the output tensor to zero.
+Secondly, we implemented the **Identity Primitive** which copies all elements of the input tensor to the output tensor.
+The complicated part here was to support transposition for arbitrary tensor sizes.
+Lastly, we implemented an activation function commonly found machine learning frameworks: the **ReLU Primitive**.
+This operation sets all negative elements to zero and keeps positive elements as they are.
+For all implemented unary operations we implemented unit tests and benchmarked the performance.
+Further information can be found in :ref:`unary-primitives`.

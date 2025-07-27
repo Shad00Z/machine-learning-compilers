@@ -6,13 +6,15 @@ After developing Neon kernels for the first few weeks, we gained valuable insigh
 In this phase of the project, our goal was to leverage that knowledge to build the backbone of a JIT C++ code generator. 
 This code generator is designed to produce assembly code for arbitrary matrix dimensions and execute the generated code on our machine.
 
+.. _brgemm-primitive:
+
 **********************
 4.1 BRGEMM Primitive
 **********************
 
 In this section, we explain how we implemented the BRGEMM primitive for our machine learning compiler.
 
-.. _4-1-1-microkernel:
+.. _brgemm-microkernel:
 
 4.1.1 Microkernel
 ===================
@@ -244,7 +246,7 @@ The last step of the task was to run benchmarks. We obtained the following resul
 4.1.2 GEMM
 ==================
 
-After setting the foundation for the execution of a specific ``GEMM`` kernel, our plan was now to extend the in :ref:`4-1-1-microkernel` implemented kernel to a more general ``GEMM`` kernel.
+After setting the foundation for the execution of a specific ``GEMM`` kernel, our plan was now to extend the in :ref:`brgemm-microkernel` implemented kernel to a more general ``GEMM`` kernel.
 
 4.1.2.1 Implementation of a GEMM kernel
 ----------------------------------------
@@ -1025,6 +1027,8 @@ Evaluating our GFLOP performance, we can see that we achieve a similar performan
 
     Both the :ref:`gemm <4.1.2.5 GEMM_bench>` and :ref:`brgemm <4.1.3.4 BRGEMM_bench>` benchmarks were executed using our initial kernel configurations of M=8 and N=4.
     Therefore, the results should be viewed carefully, as the new configuration M=16 and N=4 should drastically enhance the throughput, especially for large matrices.
+
+.. _unary-primitives:
 
 **********************
 4.2 Unary Primitives
