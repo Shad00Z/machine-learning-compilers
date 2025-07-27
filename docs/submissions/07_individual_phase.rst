@@ -787,6 +787,8 @@ After implementing the instructions we simply took our ``square`` kernel and rep
 
 After implementing both the ``increment`` and ``decrement`` kernel, we also implemented their transposed versions.
 
+.. _binary-primitives:
+
 7.3.2 Binary Primitives
 ====================================
 

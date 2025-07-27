@@ -2,112 +2,351 @@
 5. Tensor Operation Backend
 ##############################
 
-After experimenting with different neon implementations and developing kernels 
-for our GEMM and BRGEMM, and most recently for the unary primitives, it is now time 
-to combine all of these kernels together in a backend.
+After developing kernels for binary primitives such as GEMM and BRGEMM, as well as kernels for unary primitives like Zero and ReLU, 
+it was now time to implement common interfaces that let the user create tensor operation objects.
+The tensor operation object is not only be responsible for setting up and holding the used kernel objects,
+but also to block the input and output matrices and execute the kernels accordingly.
 
 *********************
 5.1 User Interface
 *********************
 
-The first thing that we need for our backend is a common entry point. 
-Our common entry point is our ``setup`` function. Within the setup function we 
-parse a number of configuration parameters, from which the corresponding kernels and 
-primitives are constructed at runtime.
+The first component of our tensor operation backend is a function that generates and sets up all necessary kernels.
+This ``setup`` function parses a number of configuration parameters, from which the corresponding kernels and primitives are constructed at runtime.
 
-In our setup function, we check several things:
+The first step of the setup is to validate the input parameters for correctness. That includes checking that
 
-.. literalinclude:: ../../src/TensorOperation.cpp
-    :language: cpp
-    :lines: 17-68
-    :lineno-match:
-    :caption: error handling for dimensions, execution types and data type
-    :dedent:
+#. All input vectors have the same size
+#. The number of primitive dimensions aligns with the given primitive type
+#. The chosen primitive types are valid and supported by our backend
+#. The given data type is supported
 
-.. literalinclude:: ../../src/TensorOperation.cpp
-    :language: cpp
-    :lines: 70-90
-    :lineno-match:
-    :caption: assigning configuration parameters to member variables
-    :dedent:
+If all supplied parameters are valid, the function scans the execution types of the dimensions for the first primitive dimension and the first sequential dimension.
 
-.. literalinclude:: ../../src/TensorOperation.cpp
-    :language: cpp
-    :lines: 92-113
-    :lineno-match:
-    :caption: find the first ``prim`` and ``seq`` position in ``exec_types``
-    :dedent:
+.. code-block:: cpp
+    :caption: Finding the first primitive and sequential dimension
 
-We need to know the position of the first prim, to determine when we need to call the main kernel instead of recursively going deeper into the loop structure. 
-In other words, we traverse the first sequential loops and as soon as we reach the first primary dimension, we start calling the main kernel.
+    /////////////////////////////////////////////////////////////////////
+    // Find first PRIM and SEQ dimensions in exec types
+    /////////////////////////////////////////////////////////////////////
+    auto it = std::find(exec_types.begin(), exec_types.end(), exec_t::prim);
+    if (it != exec_types.end())
+    {
+        m_id_first_primitive_loop = std::distance(exec_types.begin(), it);
+    }
+    else
+    {
+        m_id_first_primitive_loop = 0;
+    }
 
-.. literalinclude:: ../../src/TensorOperation.cpp
-    :language: cpp
-    :lines: 127-153
-    :lineno-match:
-    :caption: assign the size of the ``prim`` dimensions according to the order in ``dim_types``
-    :dedent:
+    it = std::find(exec_types.begin(), exec_types.end(), exec_t::seq);
+    if (it != exec_types.end())
+    {
+        m_id_first_seq_loop = std::distance(exec_types.begin(), it);
+    }
+    else
+    {
+        m_id_first_seq_loop = -1;
+    }
 
-.. literalinclude:: ../../src/TensorOperation.cpp
-    :language: cpp
-    :lines: 155-188
-    :lineno-match:
-    :caption: assign the size of the ``seq`` and ``shared`` dimensions according to the order in ``dim_types``
-    :dedent:
+The function then proceeds to determine the dimension IDs based on their types.
 
-After checking all these things, we were then able to create our kernels accordingly.
+.. code-block:: cpp
+    :caption: Assigning the dimension IDs based on the dimension types
 
-.. literalinclude:: ../../src/TensorOperation.cpp
-    :language: cpp
-    :lines: 256-317
-    :lineno-match:
-    :caption: construct kernels based on assigned member variables
-    :dedent:
+    /////////////////////////////////////////////////////////////////////
+    // Read PRIM dimensions using dim types (No Copy)
+    /////////////////////////////////////////////////////////////////////
+    // convert to int so negative values are allowed
+    int l_dim_types_size = static_cast<int>(m_dim_types.size());
+    for (int i = l_dim_types_size - 1; i >= 0; i--)
+    {
+        if (m_exec_types[i] == exec_t::prim)
+        {
+            if (m_dim_id_prim_M == -1 && m_dim_types[i] == dim_t::m)
+            {
+                m_dim_id_prim_M = i;
+            }
+            else if (m_dim_id_prim_N == -1 && m_dim_types[i] == dim_t::n)
+            {
+                m_dim_id_prim_N = i;
+            }
+            else if (m_dim_id_prim_K == -1 && m_dim_types[i] == dim_t::k)
+            {
+                m_dim_id_prim_K = i;
+            }
+            else if (m_dim_id_prim_K != -1 && m_dim_id_prim_BR == -1 && m_dim_types[i] == dim_t::k)
+            {
+                m_dim_id_prim_BR = i;
+            }
+        }
+    }
+
+    /////////////////////////////////////////////////////////////////////
+    // Read SEQ and SHARED dimensions
+    /////////////////////////////////////////////////////////////////////
+    for (size_t i = 0; i < m_dim_types.size(); ++i)
+    {
+        if (m_exec_types[i] == exec_t::seq)
+        {
+            if (m_dim_types[i] == dim_t::m)
+            {
+                m_dim_id_seq_M = i;
+            }
+            else if (m_dim_types[i] == dim_t::n)
+            {
+                m_dim_id_seq_N = i;
+            }
+            else if (m_dim_types[i] == dim_t::k)
+            {
+                m_dim_id_seq_K = i;
+            }
+        }
+    }
+
+    /////////////////////////////////////////////////////////////////////
+    // Find M and N dimensions for dim_t::c (PRIM, IDENTITY)
+    /////////////////////////////////////////////////////////////////////
+    if (prim_main == ptype_t::identity)
+    {
+        // For unary operations with dim_t::c, treat the first primitive dimension as M and the second as N
+        for (size_t i = 0; i < m_dim_types.size(); ++i)
+        {
+            if (m_exec_types[i] == exec_t::prim && m_dim_types[i] == dim_t::c)
+            {
+                if (m_strides_in0[i] == 1)
+                {
+                    m_dim_id_prim_M = i;
+                }
+                else
+                {
+                    m_dim_id_prim_N = i;
+                }
+            }
+        }
+    }
+
+The next step is to check whether the tensor operation includes a transposition, and to adjust all strides accordingly:
+
+.. code-block:: cpp
+    :caption: Checking for transposition and adjusting strides
+
+    /////////////////////////////////////////////////////////////////////
+    // Check for Transposition
+    /////////////////////////////////////////////////////////////////////
+    if (m_dim_id_prim_M != -1)
+    {
+        int64_t l_stride_in0 = m_strides_in0[m_dim_id_prim_M];
+        int64_t l_stride_out = m_strides_out[m_dim_id_prim_M];
+        // set transpose flag to true if the strides are different
+        m_transpose_output = l_stride_in0 != l_stride_out;
+    }
+    else
+    {
+        // idk if we can check for transposition without M
+        m_transpose_output = false;
+    }
+
+    /////////////////////////////////////////////////////////////////////
+    // Adjust strides based on primitive type and transposition
+    /////////////////////////////////////////////////////////////////////
+    if (prim_main == ptype_t::identity)
+    {
+        if (!m_transpose_output)
+        {
+            m_adjusted_stride_in0 = m_strides_in0[m_dim_id_prim_N];
+            m_adjusted_stride_in1 = 0;
+            m_adjusted_stride_out = m_strides_out[m_dim_id_prim_N];
+        }
+        else
+        {
+            m_adjusted_stride_in0 = m_strides_in0[m_dim_id_prim_N];
+            m_adjusted_stride_in1 = 0;
+            m_adjusted_stride_out = m_strides_out[m_dim_id_prim_M];
+        }
+    }
+    else if (prim_main == ptype_t::add || prim_main == ptype_t::sub ||
+             prim_main == ptype_t::mul || prim_main == ptype_t::div ||
+             prim_main == ptype_t::min || prim_main == ptype_t::max)
+    {
+        m_adjusted_stride_in0 = m_strides_in0[m_dim_id_prim_N];
+        m_adjusted_stride_in1 = m_strides_in1[m_dim_id_prim_N];
+        m_adjusted_stride_out = m_strides_out[m_dim_id_prim_N];
+    }
+    else
+    {
+        // GEMM & BRGEMM
+        m_adjusted_stride_in0 = m_strides_in0[m_dim_id_prim_K];
+        m_adjusted_stride_in1 = m_strides_in1[m_dim_id_prim_N];
+        m_adjusted_stride_out = m_strides_out[m_dim_id_prim_N];
+    }
+    m_adjusted_br_size_A = m_dim_id_prim_BR != -1 ? m_strides_in0[m_dim_id_prim_BR] : 1;
+    m_adjusted_br_size_B = m_dim_id_prim_BR != -1 ? m_strides_in1[m_dim_id_prim_BR] : 1;
+
+Lastly, we need to generate the kernels. As the process is very similar for most kernels, we will provide only a brief code snippet here.
+
+.. code-block::
+    :caption: First touch, gemm and brgemm kernel generation
+
+    if (prim_first_touch != ptype_t::none)
+    {
+        // no transposition
+        m_unary_first_touch.generate(m_dim_sizes[m_dim_id_prim_M],
+                                     m_dim_sizes[m_dim_id_prim_N],
+                                     0,
+                                     dtype,
+                                     prim_first_touch);
+        m_kernel_first_touch = m_unary_first_touch.get_kernel();
+    }
+    if (prim_main == ptype_t::gemm)
+    {
+        // no transposition
+        m_brgemm_main.generate(m_dim_sizes[m_dim_id_prim_M],
+                               m_dim_sizes[m_dim_id_prim_N],
+                               m_dim_sizes[m_dim_id_prim_K],
+                               1,
+                               0,
+                               0,
+                               0,
+                               dtype);
+        m_kernel_gemm_main = m_brgemm_main.get_kernel();
+    }
+    else if (prim_main == ptype_t::brgemm)
+    {
+        // no transposition
+        m_brgemm_main.generate(m_dim_sizes[m_dim_id_prim_M],
+                               m_dim_sizes[m_dim_id_prim_N],
+                               m_dim_sizes[m_dim_id_prim_K],
+                               m_dim_sizes[m_dim_id_prim_BR],
+                               0,
+                               0,
+                               0,
+                               dtype);
+        m_kernel_gemm_main = m_brgemm_main.get_kernel();
+    }
 
 *************************************
 5.2 Recursive Loops over Primitives
 *************************************
 
-After constructing our kernels, we still needed to build together an ``execution`` function, 
-in order to combine our main primitive with our first and last touches.
-
-Our starting point is an ``execute`` function that takes the pointers to our matrices and passes 
+After generating the kernels, we needed to implement a function to execute the tensor operation.
+The entry point is an ``execute`` function that takes the pointers to our matrices and passes 
 them to our ``execute_iter`` function.
 
-.. literalinclude:: ../../src/TensorOperation.cpp
-    :language: cpp
-    :lines: 326-340
-    :lineno-match:
-    :caption: starting point: ``execute`` function
-    :dedent:
+.. code-block:: cpp
+    :caption: Entry point function: execute
 
-The 'real' execution happens in the ``execute_iter`` function. We first check if the current iteration is the first or last access to a block in our output matrix.
-Next, we update the pointers to the matrices accordingly.
+    void mini_jit::TensorOperation::execute(void const* tensor_in0,
+                                            void const* tensor_in1,
+                                            void*       tensor_out)
+    {
+        if (!m_has_been_setup)
+        {
+            std::cerr << "TensorOperation has not been setup. Call setup() before execute()." << std::endl;
+            return;
+        }
 
-.. literalinclude:: ../../src/TensorOperation.cpp
-    :language: cpp
-    :lines: 367-378
-    :lineno-match:
-    :caption: calculate if it is the first or last access in our output matrix and update pointers
-    :dedent:
+        auto ptr_in0 = static_cast<char const*>(tensor_in0);
+        auto ptr_in1 = static_cast<char const*>(tensor_in1);
+        auto ptr_out = static_cast<char*>(tensor_out);
 
-In the following step, we use our ``execute_iter`` function to recursively call the ``execute_iter`` function based on how many ``seq`` dimensions exist in our ``exec_types``.
+        execute_iter(0,
+                     ptr_in0,
+                     ptr_in1,
+                     ptr_out,
+                     true,y
+                     true);
+    }
 
-.. literalinclude:: ../../src/TensorOperation.cpp
-    :language: cpp
-    :lines: 381-389
-    :lineno-match:
-    :caption: recursive call to ``execute_iter``
-    :dedent:
+The 'real' execution happens in the ``execute_iter`` function.
 
-If we have no further recursive call, we can execute the kernels.
+First, we determine the strides, retrieve the size of the current dimension and start a loop over the current dimension.
 
-.. literalinclude:: ../../src/TensorOperation.cpp
-    :language: cpp
-    :lines: 392-411
-    :lineno-match:
-    :caption: execute the kernels
-    :dedent:
+.. code-block:: cpp
+    :caption: Determining the strides and looping over the current dimension size
+
+    void mini_jit::TensorOperation::execute_iter(int64_t     id_loop,
+                                                 char const* ptr_in0,
+                                                 char const* ptr_in1,
+                                                 char*       ptr_out,
+                                                 bool        first_access,
+                                                 bool        last_access)
+    {
+        // there is only one iteration if the dimension is the first primitive
+        const int64_t l_size       = id_loop != m_id_first_primitive_loop ? m_dim_sizes[id_loop] : 1;
+        const int64_t dtype_sz     = dtype_size();
+        const int64_t l_stride_in0 = m_strides_in0[id_loop] * dtype_sz;
+        const int64_t l_stride_in1 = m_strides_in1[id_loop] * dtype_sz;
+        const int64_t l_stride_out = m_strides_out[id_loop] * dtype_sz;
+
+        for (int64_t l_iter = 0; l_iter < l_size; l_iter++)
+        {
+            [See code snippets below]
+        }
+    }
+
+Inside the loop, we first check if the current iteration is the first or last access to the block in the output matrix.
+
+.. code-block:: cpp
+    :caption: Determining if the current iteration is the first or last access to the block in the output matrix
+
+    bool is_first = first_access;
+    bool is_last  = last_access;
+    // if the size is 1, it is always the first and last access
+    if (l_size > 1 && m_dim_types[id_loop] == dim_t::k)
+    {
+        is_first = first_access && (l_iter == 0);
+        is_last  = last_access && (l_iter == m_dim_sizes[id_loop] - 1);
+    }
+
+Next, we adjust the pointers to the correct blocks of the matrices and execute the kernels if necessary.
+In the case that the current dimension, is a sequential dimension, we recursively call the ``execute_iter`` function again in order to go deeper into the loop structure.
+
+.. code-block:: cpp
+    :caption: Stride adjustment and recursive call to execute_iter
+
+    char const* sub_ptr_in0 = ptr_in0 + l_iter * l_stride_in0;
+    char const* sub_ptr_in1 = ptr_in1 + l_iter * l_stride_in1;
+    char*       sub_ptr_out = ptr_out + l_iter * l_stride_out;
+
+    // Recursive Call
+    if (id_loop + 1 < m_id_first_primitive_loop)
+    {
+        execute_iter(id_loop + 1,
+                        sub_ptr_in0,
+                        sub_ptr_in1,
+                        sub_ptr_out,
+                        is_first,
+                        is_last);
+    }
+
+However, in case the current dimension is the last sequential dimension and the next one the first primitive dimension, we need to execute the actual kernels. Depending on the ``is_first`` and ``is_last`` variables, the first and last touch kernels are also executed.
+
+.. code-block:: cpp
+    :caption: Executing the kernels
+
+    else
+    {
+        if (is_first)
+        {
+            execute_kernel_first_touch(sub_ptr_out,
+                                        m_adjusted_stride_out);
+        }
+        execute_kernel_main(sub_ptr_in0,
+                            sub_ptr_in1,
+                            sub_ptr_out,
+                            m_adjusted_stride_in0,
+                            m_adjusted_stride_in1,
+                            m_adjusted_stride_out,
+                            m_adjusted_br_size_A,
+                            m_adjusted_br_size_B);
+
+        if (is_last)
+        {
+            execute_kernel_last_touch(sub_ptr_out,
+                                        m_adjusted_stride_out);
+        }
+    }
 
 .. _5.3 Sequential Benchmarking:
 
@@ -118,7 +357,7 @@ If we have no further recursive call, we can execute the kernels.
 To test the performance of our at runtime constructed kernels and to see if everything works seamlessly together, 
 we were performing some reference benchmarks. 
 
-We were given a number of configuration parameters, that we should check:
+For this, we were given a number of configuration parameters:
 
 .. list-table:: Benchmark Configuration
    :widths: 25 25 25 25
@@ -169,40 +408,11 @@ We were given a number of configuration parameters, that we should check:
      - (32768, 1024, 0, 1, 32, 0)
      - (32768, 1024, 0, 1, 32, 0)
   
-However, when benchmarking our implementation with these strides, we were running into memory leaks. 
-For that reason, we decided to adjust the strides of the benchmarks slightly.
-
-.. list-table:: Our Benchmark Configuration (bold are changes)
-   :widths: 25 25 25 25
-   :header-rows: 1
-
-   * - Variable 
-     - 1st Value 
-     - 2nd Value
-     - 3rd Value
-   * - **dim_sizes**
-     - (32, 32, 8, 32, 32, 32)
-     - (32, 32, 8, 32, 32, 32)
-     - (32, 32, 8, 32, 32, 32)
-   * - **strides_in0**
-     - (**1024**, 0, **32768**, 1, 0, 32)
-     - (**1024**, 0, **32768**, 1, 0, 32)
-     - (**1024**, 0, **32768**, 1, 0, 32)
-   * - **strides_in1**
-     - (0, 8192, **32**, 0, **1024**, 1)
-     - (0, 8192, **32**, 0, **1024**, 1)
-     - (0, 8192, **32**, 0, **1024**, 1)
-   * - **strides_out**
-     - (**32**, **32768**, 0, 1, **1024**, 0)
-     - (**32**, **32768**, 0, 1, **1024**, 0)
-     - (**32**, **32768**, 0, 1, **1024**, 0)
-  
-When benchmarking our configurations we achieved the following ``GFLOP`` performance:
+When benchmarking the configurations we achieved the following performance in ``GFLOPs``:
 
 .. literalinclude:: ../../benchmarks/tensor_operation_benchmarks.txt
     :language: text
-    :lineno-match:
-    :caption: ``GFLOP`` performance of our benchmark configuration
+    :caption: ``GFLOP`` performance of the given configurations
     :dedent:
 
 The results show that we achieve between ``71-73 GFLOPs`` for all our executions. 
@@ -210,15 +420,13 @@ These results are somewhat consistent with calling the kernels themselves indepe
 
 .. note::
     Since the submission we made some minor changes to our implementation.
-    First, we fixed some errors and were then able to use the strides that we were provided with.
-    Secondly, we decided to enhance our ``matmul_m_n_k`` implementation. 
-    Afterwards we able to calculate kernels of size ``16x4`` instead of ``8x4``.
+    To improve performance, we decided to enhance our ``matmul_m_n_k`` implementation. 
+    Specifically, the matmul kernel now computes blocks with a size of ``16x4`` instead of ``8x4``.
     This helped us increase the results from ``71-73 GFLOPs`` to around ``90-91 GFLOPs``.
 
 .. literalinclude:: ../../benchmarks/tensor_operation_benchmarks_2.txt
     :language: text
-    :lineno-match:
-    :caption: ``GFLOP`` performance initial benchmark configuration with enhanced ``matmul`` kernel
+    :caption: ``GFLOP`` performance of the given configurations using the enhanced ``matmul`` kernel
     :dedent:
 
 **********************************
@@ -227,57 +435,170 @@ These results are somewhat consistent with calling the kernels themselves indepe
 
 To enable the execution of shared loops, we needed to make a few adjustments to our ``setup`` code:
 
-.. literalinclude:: ../../src/TensorOperation.cpp
-    :language: cpp
-    :lines: 340-348
-    :lineno-match:
-    :caption: gather shared loop id's and dimension sizes
-    :dedent:
+.. code-block:: cpp
+    :caption: Gathering shared loop IDs and dimension sizes
 
-.. literalinclude:: ../../src/TensorOperation.cpp
-    :language: cpp
-    :lines: 175-187
-    :lineno-match:
-    :caption: assign the size of the ``shared`` dimensions according to the order in ``dim_types``
-    :dedent:
+    /////////////////////////////////////////////////////////////////////
+    // Find SHARED dimensions in exec types
+    /////////////////////////////////////////////////////////////////////
+    m_shared_loop_ids.clear();
+    m_shared_loop_sizes.clear();
+    for (size_t i = 0; i < m_exec_types.size(); ++i)
+    {
+        if (m_exec_types[i] == exec_t::shared)
+        {
+            m_shared_loop_ids.push_back(i);
+            m_shared_loop_sizes.push_back(m_dim_sizes[i]);
+        }
+    }
 
-In our execute function we would just needed to check if our ``m_num_parallel_loops`` variable would be greater 
-than zero. If this was the case we would execute our ``execute_iter_parallel`` function:
+.. code-block:: cpp
+    :caption: Reading the shared dimension IDs
 
-.. literalinclude:: ../../src/TensorOperation.cpp
-    :language: cpp
-    :lines: 422-427
-    :lineno-match:
-    :caption: multiply ``shared`` loop sizes to get total number of iterations
-    :dedent:
+    /////////////////////////////////////////////////////////////////////
+    // Read SEQ and SHARED dimensions using dim types
+    /////////////////////////////////////////////////////////////////////
+    for (size_t i = 0; i < m_dim_types.size(); ++i)
+    {
+        if (m_exec_types[i] == exec_t::seq)
+        {
+            if (m_dim_types[i] == dim_t::m)
+            {
+                m_dim_id_seq_M = i;
+            }
+            else if (m_dim_types[i] == dim_t::n)
+            {
+                m_dim_id_seq_N = i;
+            }
+            else if (m_dim_types[i] == dim_t::k)
+            {
+                m_dim_id_seq_K = i;
+            }
+        }
+        else if (m_exec_types[i] == exec_t::shared)
+        {
+            if (m_dim_types[i] == dim_t::m)
+            {
+                m_dim_id_sha_M = i;
+                m_num_parallel_loops++;
+            }
+            else if (m_dim_types[i] == dim_t::n)
+            {
+                m_dim_id_sha_N = i;
+                m_num_parallel_loops++;
+            }
+        }
+    }
 
+In our execute function we needed to add a check if our ``m_num_parallel_loops`` variable would be greater 
+than zero. If this was the case we would then execute our ``execute_iter_parallel`` function:
+
+.. code-block:: cpp
+    :caption: Updated execute function
+
+    void mini_jit::TensorOperation::execute(void const* tensor_in0,
+                                            void const* tensor_in1,
+                                            void*       tensor_out)
+    {
+        if (!m_has_been_setup)
+        {
+            std::cerr << "TensorOperation has not been setup. Call setup() before execute()." << std::endl;
+            return;
+        }
+
+        auto ptr_in0 = static_cast<char const*>(tensor_in0);
+        auto ptr_in1 = static_cast<char const*>(tensor_in1);
+        auto ptr_out = static_cast<char*>(tensor_out);
+
+        if (m_num_parallel_loops == 0)
+        {
+            // No shared loops, execute sequentially
+            execute_iter(0,
+                        ptr_in0,
+                        ptr_in1,
+                        ptr_out,
+                        true,
+                        true);
+        }
+        else
+        {
+            // Shared loops, execute in parallel
+            execute_iter_parallel(ptr_in0,
+                                ptr_in1,
+                                ptr_out,
+                                true,
+                                true);
+        }
+    }
+
+Inside the ``execute_iter_parallel``, we first multiply the shared loop sizes to get the total number of iterations. 
 The idea is to get a flat iteration space that can be used to parallelize over.
 
-We 'unflatten' the OpenMP iteration index ``l_it_all`` into a set of loop indices, one for each shared loop dimension. 
+.. code-block:: cpp
+    :caption: multiply shared loop sizes to get the total number of iterations
+
+    // Compute total number of iterations over shared loops
+    int64_t l_size_parallel_loops = 1;
+    for (auto current_loop_size : m_shared_loop_sizes)
+    {
+        l_size_parallel_loops *= current_loop_size;
+    }
+
+    int64_t l_first_id_loop = (m_id_first_seq_loop != -1) ? m_id_first_seq_loop : m_id_first_primitive_loop;
+
+We unflatten the OpenMP iteration index ``l_it_all`` into a set of loop indices, one for each shared loop dimension. 
 These indices are then used to compute the offsets for the ``in0``, ``in1``, and ``out`` tensors: 
 
-.. literalinclude:: ../../src/TensorOperation.cpp
-    :language: cpp
-    :lines: 434-447
-    :lineno-match:
-    :caption: calculate the tensor ``offsets``
-    :dedent:
+.. code-block:: cpp
+    :caption: Calculating the tensor offsets
+
+    #pragma omp parallel for
+    for (int64_t l_it_all = 0; l_it_all < l_size_parallel_loops; ++l_it_all)
+    {
+        // Unflatten l_it_all into loop indices
+        int64_t              remainder = l_it_all;
+        std::vector<int64_t> loop_indices(m_shared_loop_ids.size());
+
+        for (int64_t i = m_shared_loop_ids.size() - 1; i >= 0; --i)
+        {
+            loop_indices[i] = remainder % m_shared_loop_sizes[i];
+            remainder /= m_shared_loop_sizes[i];
+        }
+
+        // Compute pointer offsets using strides and loop indices
+        char const* sub_ptr_in0 = ptr_in0;
+        char const* sub_ptr_in1 = ptr_in1;
+        char*       sub_ptr_out = ptr_out;
+
+        const int64_t dtype_sz = dtype_size();
+        for (size_t i = 0; i < m_shared_loop_ids.size(); ++i)
+        {
+            const int64_t dim_id = m_shared_loop_ids[i];
+            const int64_t idx    = loop_indices[i];
+
+            sub_ptr_in0 += idx * m_strides_in0[dim_id] * dtype_sz;
+            sub_ptr_in1 += idx * m_strides_in1[dim_id] * dtype_sz;
+            sub_ptr_out += idx * m_strides_out[dim_id] * dtype_sz;
+        }
 
 Here we are calculating the offset for the current thread. 
 Every shared loop contributes to the calculation with its corresponding stride. 
 
 Lastly, we call our ``execute_iter`` function. 
-Depending on whether we have a ``seq`` dimension, we need to be careful, which id we pass to the function:
 
-.. literalinclude:: ../../src/TensorOperation.cpp
-    :language: cpp
-    :lines: 461-466
-    :lineno-match:
-    :caption: call remaining loops with ``execute_iter``
-    :dedent:
+.. code-block:: cpp
+    :caption: Executing the remaining loops with execute_iter
 
-We were also executing the benchmark configurations from the :ref:`sequential execution<5.3 Sequential Benchmarking>` task.
-We were executing our benchmarks using ``OMP_NUM_THREADS=4``:
+    // Call remaining loops
+    execute_iter(l_first_id_loop,
+                    sub_ptr_in0,
+                    sub_ptr_in1,
+                    sub_ptr_out,
+                    first_access,
+                    last_access);
+
+After having implemented the shared loop parallelization, we benchmarked the configurations from the :ref:`sequential execution<5.3 Sequential Benchmarking>` task again.
+To enable multithreading, we called the executable with ``OMP_NUM_THREADS=4``.
 
 .. literalinclude:: ../../benchmarks/shared_tensor_operation_benchmarks.txt
     :language: text
@@ -285,68 +606,131 @@ We were executing our benchmarks using ``OMP_NUM_THREADS=4``:
     :caption: ``GFLOP`` performance for ``4 shared`` loop execution
     :dedent:
 
-With the parallelization we achieve about ``360 - 390 GFLOPs``. 
+With the parallelization we achieved about ``360 - 390 GFLOPs``. 
 
 **********************************
 5.5 Optimization Passes
 **********************************
 
-Our approach to enhancing the performance of the tensor operations was to use a vector of ``struct``'s for each dimension that we have got:
+To lay the foundation for our Optimizer, we first decided to implement a Dimension ``struct`` that wraps all information on a dimension.
 
-.. literalinclude:: ../../include/mlc/ir/Dimension.h
-    :language: cpp
-    :lines: 17-60
-    :lineno-match:
-    :caption: call remaining loops with ``execute_iter``
-    :dedent:
+.. code-block:: cpp
+    :caption: Dimension struct
 
-This ``struct`` is used to store all information about a dimension.
+    /**
+    * @brief The Dimension struct represents a dimension in a tensor operation.
+    * It contains information about the type of dimension (M, N, K), execution type (Prim, Seq, Shared),
+    * size, and strides for the input and output tensors.
+    */
+    struct Dimension
+    {
+        //! Type of the dimension (M, N, K)
+        dim_t type = dim_t::m;
+        //! Execution type (Prim, Seq, Shared, ...)
+        exec_t exec_type = exec_t::undefined;
+        //! Dimension size
+        int64_t size = 0;
+        //! Stride in the first input tensor
+        int64_t stride_in0 = 0;
+        //! Stride in the second input tensor
+        int64_t stride_in1 = 0;
+        //! Stride in the output tensor
+        int64_t stride_out = 0;
 
-After setting this up, we could create our optimization passes.
+        /**
+            * @brief Construct a new Dimension object.
+            *
+            * @param type Type of the dimension (M, N, K).
+            * @param exec_type Execution type (Prim, Seq, Shared, ...).
+            * @param size Size of the dimension.
+            * @param stride_in0 Stride in the first input tensor.
+            * @param stride_in1 Stride in the second input tensor.
+            * @param stride_out Stride in the output tensor.
+            */
+        Dimension(dim_t   type,
+                    exec_t  exec_type,
+                    int64_t size,
+                    int64_t stride_in0,
+                    int64_t stride_in1,
+                    int64_t stride_out)
+            : type(type),
+                exec_type(exec_type),
+                size(size),
+                stride_in0(stride_in0),
+                stride_in1(stride_in1),
+                stride_out(stride_out)
+        {
+            if (size <= 0)
+            {
+                throw std::invalid_argument("Dimension size needs to be greater than 0");
+            }
+        }
+    };
+
+This method seemed simpler to us in comparison to accessing and reordering all information of a Dimension using multiple vectors that only store a single property each.
 
 5.5.1 Primitive Identification
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The first optimization that we performed was to find primitive dimensions. 
-This optimization would be useful, for cases, where we were given only sequential loops. 
-Our approach to this optimization was the following: 
+The first optimization pass which we implemented was the primitive identification.
+This optimization is useful in cases where only sequential and shared loops are given.
 
-.. literalinclude:: ../../src/ir/Optimizer.cpp
-    :language: cpp
-    :lines: 209-231
-    :lineno-match:
-    :caption: finding the ``K2 prim`` dimension for the ``BRGEMM`` case
-    :dedent:
+First we need to check whether we are optimizing a unary operation (identity, permutation), a binary operation (Add, Sub, Mul; See :ref:`binary-primitives`) or a ternary operation (GEMM, BRGEMM).
 
-We were trying to identify the respective dimensions by looking at the strides of the ``in1`` and ``out`` tensors.
-As a starting point we use that for column-major ``BRGEMM``'s we have to have a certain mask for our tensors ``...M, ...K1 -> ...M``, which we were trying to follow.
-This means that the ``K2`` that we would need for our ``BRGEMM`` should not have any unit-stride in the first input tensor.
+.. code-block:: cpp
+    :caption: Checking for the existence of C and K dimensions
 
-Similarly, we did the same for:
+    auto l_has_c_dim = std::any_of(dimensions.begin(), dimensions.end(), [](const mini_jit::ir::Dimension& dim)
+                                   { return dim.type == dim_t::c; });
 
-- ``M`` dimension
-- ``N`` dimension
-- ``K1`` dimension
+    auto l_has_k_dim = std::any_of(dimensions.begin(), dimensions.end(), [](const mini_jit::ir::Dimension& dim)
+                                   { return dim.type == dim_t::k; });
 
-For the ``N`` dimension, where we did not have any indication about which matrix to choose, we simply choose the ``N`` dimension, with the smallest stride:
+If we find a ``C`` dimension, we assume that the current operation is a unary operation.
 
-.. literalinclude:: ../../src/ir/Optimizer.cpp
-    :language: cpp
-    :lines: 261-279
-    :lineno-match:
-    :caption: finding the ``N prim`` dimension with smallest stride
-    :dedent:
+If ``l_has_k_dim`` is true, the operation to be optimized is a ternary operation and if it is false, it is a binary operation. Sine the following code is rather complex, we decided to briefly describe it using words instead.
 
-We did the 'identification' process in the order ``K2, M, N, K1``. 
-The reason for this order was that after the identification, we would rotate the respective dimension to the end of the order.
-This would then ultimately lead to the structure: ``..., K2, M, N, K1`` for our 'identified' primitive dimensions.
+5.5.1.1 Unary Operation
+"""""""""""""""""""""""""""""""""
+
+In this case, we first check if all dimensions are of type ``C``.
+Only then it is a valid unary operation and we can start identifying the primitive dimensions.
+
+First, we identify the primitive ``M`` dimension as the dimension which has unit stride in the input tensor.
+If that dimension does not have unit stride in the output tensor, we assume that the unary operation uses transposition.
+
+In case of transposition, the primitive ``N`` dimension is the one with unit stride in the output tensor.
+In case there is no transposition, we choose the dimension with the smallest stride in the input tensor.
+That excludes the previously identified ``M`` dimension.
+
+Lastly, we set all remaining dimensions to ``sequential``.
+
+5.5.1.2 Binary Operation
+"""""""""""""""""""""""""""""""""
+
+In binary operations, the primitive ``M`` dimension has unit stride in all tensors and can thus be identified easily.
+For the primitive ``N`` dimension, we simply choose the dimension of type ``N`` that has the smallest strides.
+
+5.5.1.3 Ternary Operation
+"""""""""""""""""""""""""""""""""
+
+We first check for a second ``K`` dimension, which has no unit stride in the second input tensor and does not appear in the output tensor.
+If such a ``K`` dimension exists, we select it as the batch-reduce dimension and conclude that the current operation is a BRGEMM.
+If no such ``K`` dimension exists, we are handling a GEMM.
+
+Next, we identify the primitive ``M`` dimension by checking for an ``M`` dimension with unit stride in the first input and output tensor.
+
+The primary ``N`` dimension is then found by choosing the dimension with the smallest stride which appears only in the second input tensor and in the output tensor.
+
+Lastly, we identify the primitive ``K`` dimension by searching for a ``K`` dimension that has unit stride in the second input tensor and does not appear in the output tensor.
 
 5.5.2 Dimension Splitting
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-For our second optimization pass we decided to look at the dimension sizes of our loops. We introduced a ``max_kernel_size`` parameter,
-which specifies the maximum allowed size for a dimension. If a dimension with a size larger than the maximum is found, the dimension splitter
-will try to split it into new dimensions with optimized sizes. The entry point for this optimization is the ``splitDimensions`` function:
+For our second optimization pass we decided to look at the dimension sizes of our loops. 
+We introduced a ``max_kernel_size`` parameter, which specifies the maximum allowed size for a dimension.
+If a dimension with a size larger than the maximum is found, the dimension splitter will try to split it into new dimensions with optimized sizes. 
+The entry point for this optimization is the ``splitDimensions`` function:
 
 .. code-block:: cpp
     :caption: splitDimensions function of the Optimizer
@@ -384,7 +768,8 @@ will try to split it into new dimensions with optimized sizes. The entry point f
         }
     }
 
-For each dimension, it finds the bets split for our kernels if the dimension size is too large and creates a new dimension. The size of the original dimension is updated to ``l_size_dim_1``, and it will be smaller than or equal to ``max_kernel_size``. However, the new dimension ``l_dim_new`` might still have a larger dimension size than ``max_kernel_size``, which is why it is inserted at the end of the dimensions vector, where it will be checked for a possible split in a later iteration.
+For each dimension, it finds the bets split for our kernels if the dimension size is too large and creates a new dimension. 
+The size of the original dimension is updated to ``l_size_dim_1``, and it will be smaller than or equal to ``max_kernel_size``. However, the new dimension ``l_dim_new`` might still have a larger dimension size than ``max_kernel_size``, which is why it is inserted at the end of the dimensions vector, where it will be checked for a possible split in a later iteration.
 
 But what does ``findBestSplit`` do?
 
@@ -469,35 +854,60 @@ For the more curious reader, the implementation of ``findLargestMultipleOfDiviso
 5.5.3 Shared Memory Parallelization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Our third optimization pass was to make all loops that were not a ``prim`` dimension and of the dimension-type ``M`` or ``N`` a ``shared`` loop.
-For that we initially check how many loops are already of dimension-type ``shared``:
+Our third optimization pass was to make all loops that were not a ``prim`` dimension and of the dimension type ``M`` or ``N`` a ``shared`` loop.
+For that we initially check how many loops are already of dimension type ``shared``:
 
-.. literalinclude:: ../../src/ir/Optimizer.cpp
-    :language: cpp
-    :lines: 364-371
-    :lineno-match:
-    :caption: finding possible iterations for shared loops
-    :dedent:
+.. code-block:: cpp
+    :caption: Count already existing shared iterations
+
+    int64_t l_num_threads = 1;
+
+    // Count the number of existing iterations for shared loops
+    for (size_t i = 0; i < dimensions.size(); i++)
+    {
+        if (dimensions[i].exec_type == exec_t::shared)
+        {
+            // increase thread number for each existing shared dimension
+            l_num_threads *= dimensions[i].size;
+        }
+    }
 
 For the case that we already have a high number of ``shared`` loops we do not create any more and simply return. 
 Otherwise we check the ``seq`` dimensions for potential candidates:
 
-.. literalinclude:: ../../src/ir/Optimizer.cpp
-    :language: cpp
-    :lines: 386-398
-    :lineno-match:
-    :caption: select ``shared`` loop candidates
-    :dedent:
+.. code-block:: cpp
+    
+    if (l_num_threads >= thread_target)
+    {
+        // make sure that the shared loops are at the front
+        std::stable_partition(dimensions.begin(), dimensions.end(), [](const mini_jit::ir::Dimension& dim)
+                              { return dim.exec_type == exec_t::shared; });
+        // no need to create more shared loops
+        return;
+    }
+
+    // Creation of new shared loops:
+    for (size_t i = 0; i < dimensions.size(); i++)
+    {
+        // if the dimension can be set to shared and we did not reach the target number of threads yet
+        // we set the dimension to shared
+        // also dont parallelize the k dimension (see class slides)
+        if ((dimensions[i].exec_type == exec_t::seq || dimensions[i].exec_type == exec_t::undefined) &&
+            dimensions[i].type != dim_t::k &&
+            l_num_threads * dimensions[i].size <= thread_target)
+        {
+            dimensions[i].exec_type = exec_t::shared;
+            l_num_threads *= dimensions[i].size;
+        }
+    }
 
 As a last step we move all our ``shared`` loops to the front of the order:
 
-.. literalinclude:: ../../src/ir/Optimizer.cpp
-    :language: cpp
-    :lines: 401-405
-    :lineno-match:
-    :caption: move ``shared`` loops to the front
-    :dedent:
+.. code-block:: cpp
 
+    // Move all shared loops to the front
+    std::stable_partition(dimensions.begin(), dimensions.end(), [](const mini_jit::ir::Dimension& dim)
+                          { return dim.exec_type == exec_t::shared; });
 
 .. _dimension-fusion:
 
@@ -624,7 +1034,8 @@ Therefore, the new dimension splitter now outputs **50** and **32** as a split o
 5.5.6 Performance Benchmarks
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-We also benchmarked the results for some configurations:
+We performed benchmarks using different parameters to see what effect they have on the performance.
+We obtained the following results:
 
 .. literalinclude:: ../../benchmarks/optimized_tensor_operation_benchmarks.txt
     :language: text
@@ -638,114 +1049,105 @@ Depending on the selected dimensions our results varied massively. The highest p
 5.6 Unary Operations
 **********************************
 
-After supporting the standard primitives, with ``GEMM`` and ``BRGEMM`` we would now allow also primitives like 
-``copy`` / ``identity``, ``tranposition`` or ``permutation``.
-
 5.6.1 Backend Extension
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The distinction to the other primitves here is, that all dimensions are of type ``dim_t::c``. 
-To allow this kind of primitives, we would have to make some small adjustments to our ``TensorOperation``:
+In this task, we were supposed to add support for unary operations, such as permuting a tensor's dimensions, to our tensor operation backend.
+Furthermore, we had to implement primitive identification and shared memory parallelization optimization passes for these unary primitives.
 
-.. literalinclude:: ../../src/TensorOperation.cpp
-    :language: cpp
-    :lines: 190-210
-    :lineno-match:
-    :caption: find ``M`` and ``N`` dimensions based on stride in the input
-    :dedent:
+Instead of separating the documentation on unary, binary and ternary operations, we decided to merge them.
+This means that the code for handling unary operations has already been shown and explained in the previous section(s).
 
-.. literalinclude:: ../../src/TensorOperation.cpp
-    :language: cpp
-    :lines: 295-303
-    :lineno-match:
-    :caption: generate ``identity`` primitive
-    :dedent:
-
-5.6.2 Optimization Passes
+5.6.2 Reference Implementation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-To run our optimization passes on these primitives, we would again have to make some adjustment, this time in our ``Optimizer``.
+For our reference implementation, we used an example with 4 dimensions ``trus`` in which we reorder the dimensions to ``turs``.
 
-For our ``identifyPrimitives`` function we would first check if we have a ``dim_t::c`` as a dimension type.
-If this was the case, we would continue to find the ``prim`` dimensions:
+.. code-block:: cpp
+    :caption: Initialization of the tensor sizes
 
-.. literalinclude:: ../../src/ir/Optimizer.cpp
-    :language: cpp
-    :lines: 73-81
-    :lineno-match:
-    :caption: error handling for correct dimension types
-    :dedent:
+    const mini_jit::ptype_t first_touch_type = mini_jit::ptype_t::none;
+    const mini_jit::ptype_t main_type        = mini_jit::ptype_t::identity;
+    const mini_jit::ptype_t last_touch_type  = mini_jit::ptype_t::none;
 
-.. literalinclude:: ../../src/ir/Optimizer.cpp
-    :language: cpp
-    :lines: 82-91
-    :lineno-match:
-    :caption: exit early, if all ``prim`` dimensions are already set
-    :dedent:
+    const int T = GENERATE(3, 4, 7);
+    const int R = GENERATE(3, 4, 7);
+    const int U = GENERATE(3, 4, 7);
+    const int S = GENERATE(3, 4, 7);
 
-.. literalinclude:: ../../src/ir/Optimizer.cpp
-    :language: cpp
-    :lines: 97-125
-    :lineno-match:
-    :caption: exit early, if all ``prim`` dimensions are already set
-    :dedent:
+    const int SIZE = T * R * U * S;
 
-.. literalinclude:: ../../src/ir/Optimizer.cpp
-    :language: cpp
-    :lines: 127-155
-    :lineno-match:
-    :caption: check for ``transposition`` and find dimensions accordingly
-    :dedent:
+    float* A          = new float[SIZE];
+    float* C          = new float[SIZE];
+    float* C_expected = new float[SIZE];
 
-If we do not have a ``transposition`` we would simply look for the smallest stride and set the dimensions accordingly:
+.. code-block:: cpp
+    :caption: Filling the tensors with values
 
-.. literalinclude:: ../../src/ir/Optimizer.cpp
-    :language: cpp
-    :lines: 160-180
-    :lineno-match:
-    :caption: set dimensions for ``identity`` primitive
-    :dedent:
+    std::random_device                    rd;
+    std::mt19937                          gen(rd());
+    std::uniform_real_distribution<float> dist(-10.0f, 10.0f);
 
-The last step would be to set the remaining undefined dimensions to ``seq``, as the next optimization would be to find ideal ``shared`` loops.
+    for (int i = 0; i < SIZE; ++i)
+    {
+        A[i] = dist(gen);
+    }
 
-However, in our ``createSharedLoops`` function, we did not have to make any adjustments.
+    // Compute C_expected
+    for (int t = 0; t < T; ++t)
+    {
+        for (int r = 0; r < R; ++r)
+        {
+            for (int u = 0; u < U; ++u)
+            {
+                for (int s = 0; s < S; ++s)
+                {
+                    // Calculate index in output format (t,r,u,s) using strides_out
+                    int l_idx_c_exp = t * (U * R * S) + r * S + u * (R * S) + s;
+                    // Calculate index in input format (t,u,r,s) using strides_in0
+                    int l_idx_a             = t * (R * U * S) + u * S + r * (U * S) + s;
+                    C_expected[l_idx_c_exp] = A[l_idx_a];
+                }
+            }
+        }
+    }
 
-For our ``splitDimensions`` function, we would now also check if we had a ``dim_t::c`` as a dimension type:
+Then we prepared the execution by setting all arguments accordingly:
 
-.. literalinclude:: ../../src/ir/Optimizer.cpp
-    :language: cpp
-    :lines: 465-489
-    :lineno-match:
-    :caption: split dimensions of type ``dim_t::c``
-    :dedent:
+.. code-block:: cpp
+    :caption: Prepare arguments for execution
 
-5.6.3 Reference Implementation
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    std::vector<mini_jit::dim_t> dim_types = {
+        mini_jit::dim_t::c, // t
+        mini_jit::dim_t::c, // r
+        mini_jit::dim_t::c, // u
+        mini_jit::dim_t::c  // s
+    };
 
-For our reference implementation, we were using an example with 4 dimensions ``trus``. 
-We would change this ``trus`` order to ``turs``.
+    std::vector<mini_jit::exec_t> exec_types = {
+        mini_jit::exec_t::seq,  // t
+        mini_jit::exec_t::seq,  // r
+        mini_jit::exec_t::prim, // u
+        mini_jit::exec_t::prim  // s
+    };
 
-.. literalinclude:: ../../tests/unit/TensorOperation.test.cpp
-    :language: cpp
-    :lines: 301-318
-    :lineno-match:
-    :caption: initialize sizes for tensors
-    :dedent:
+    std::vector<int64_t> dim_sizes = {
+        T, R, U, S};
 
-.. literalinclude:: ../../tests/unit/TensorOperation.test.cpp
-    :language: cpp
-    :lines: 320-342
-    :lineno-match:
-    :caption: fill the tensors with values
-    :dedent:
+    std::vector<int64_t> strides_in0 = {
+        R * U * S, // t
+        U * S,     // r
+        S,         // u
+        1          // s
+    };
 
-Then we would prepare the execution, by setting all arguments accordingly:
+    std::vector<int64_t> strides_in1 = {0, 0, 0, 0};
 
-.. literalinclude:: ../../tests/unit/TensorOperation.test.cpp
-    :language: cpp
-    :lines: 344-376
-    :lineno-match:
-    :caption: prepare arguments for execution
-    :dedent:
+    std::vector<int64_t> strides_out = {
+        U * R * S, // t
+        S,         // r
+        R * S,     // u
+        1          // s
+    };
 
-Finally, we would execute our implementation.
+This code can be found in the ``TensorOperation.test.cpp`` file. Running the test resulted in a successful pass.

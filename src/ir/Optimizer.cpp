@@ -150,8 +150,6 @@ void mini_jit::ir::Optimizer::identifyPrimitives(std::vector<mini_jit::ir::Dimen
         }
         else
         {
-            // TODO: check if this is ok
-
             /////////////////////////////////////////////////////////////////
             // FIND UNARY PRIM N
             /////////////////////////////////////////////////////////////////
@@ -421,7 +419,7 @@ void mini_jit::ir::Optimizer::createSharedLoops(std::vector<mini_jit::ir::Dimens
 {
     int64_t l_num_threads = 1;
 
-    // Count the number of possible iterations for shared loops
+    // Count the number of existing iterations for shared loops
     for (size_t i = 0; i < dimensions.size(); i++)
     {
         if (dimensions[i].exec_type == exec_t::shared)
