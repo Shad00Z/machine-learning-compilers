@@ -60,7 +60,7 @@ Similarly to the BRGEMM backend, we first implemented a new entry point which ca
 The first unary primitive we implemented was the **Zero Primitive**, which sets all elements of the output tensor to zero.
 Secondly, we implemented the **Identity Primitive** which copies all elements of the input tensor to the output tensor.
 The complicated part here was to support transposition for arbitrary tensor sizes.
-Lastly, we implemented an activation function commonly found machine learning frameworks: the **ReLU Primitive**.
+Lastly, we implemented an activation function commonly found in machine learning frameworks: the **ReLU Primitive**.
 This operation sets all negative elements to zero and keeps positive elements as they are.
 For all implemented unary operations we implemented unit tests and benchmarked the performance.
 Further information can be found in :ref:`unary-primitives`.
