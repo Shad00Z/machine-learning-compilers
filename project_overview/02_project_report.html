@@ -134,9 +134,26 @@ We reused and adapted our existing microkernels to handle <strong>batches of mat
 <p>The last part of the Neon section was to explore how to <strong>transpose</strong> matrices using Neon assembly.
 Our goal was to handle a <code class="docutils literal notranslate"><span class="pre">8x8</span></code> matrix, which we handled by dividing it into four <code class="docutils literal notranslate"><span class="pre">4x4</span></code> submatrices.
 More details and code can be found in the <a class="reference internal" href="../submissions/03_neon.html#transposition"><span class="std std-ref">transposition section</span></a> of our documentation.</p>
-<p>In week 4 … (we also started with the jitter)</p>
-<p>In week 5 … (big 8h benchmark)</p>
-<p>In week 6 … (unaries implemented)</p>
+<p>In week 4, we turned our attention to code generation.
+The idea was to generate the previously implemented Neon assembly kernels using C++ during runtime.
+Starting with a rather simple example, we began by implementing a <code class="docutils literal notranslate"><span class="pre">matmul_16_6_k</span></code> <a class="reference internal" href="../submissions/04_code_gen.html#brgemm-microkernel"><span class="std std-ref">microkernel</span></a>.
+For this, we learned how to generate assembly instructions by setting each bit manually, writing the 32-bit instructions to previously allocated memory and lastly making that memory executable.</p>
+<p>The next task was to extend the <code class="docutils literal notranslate"><span class="pre">matmul_16_6_k</span></code> by generating loops over the <code class="docutils literal notranslate"><span class="pre">M</span></code> and <code class="docutils literal notranslate"><span class="pre">N</span></code> dimensions, resulting in a <strong>GEMM</strong> kernel.
+This also involved writing a backend entry point for kernel generation and unit tests for verification.
+After verifying that the GEMM kernel generation worked as intended, we proceeded with implementing a <strong>Batch-Reduce GEMM (BRGEMM)</strong> kernel.
+Here too, we verified our implementation using unit tests.
+Lastly, we performed an extensive benchmark of the GEMM and BRGEMM kernels for different matrix dimensions.
+In total, this benchmark took over 8 hours on the provided Apple M4 machine.
+For more information, refer to <a class="reference internal" href="../submissions/04_code_gen.html#brgemm-primitive"><span class="std std-ref">4.1 BRGEMM Primitive</span></a>.</p>
+<p>In week 5, we extended our code generator by unary primitives of the form B:=op(A).
+Similarly to the BRGEMM backend, we first implemented a new entry point which can be used to generate various unary primitive kernels.
+The first unary primitive we implemented was the <strong>Zero Primitive</strong>, which sets all elements of the output tensor to zero.
+Secondly, we implemented the <strong>Identity Primitive</strong> which copies all elements of the input tensor to the output tensor.
+The complicated part here was to support transposition for arbitrary tensor sizes.
+Lastly, we implemented an activation function commonly found in machine learning frameworks: the <strong>ReLU Primitive</strong>.
+This operation sets all negative elements to zero and keeps positive elements as they are.
+For all implemented unary operations we implemented unit tests and benchmarked the performance.
+Further information can be found in <a class="reference internal" href="../submissions/04_code_gen.html#unary-primitives"><span class="std std-ref">4.2 Unary Primitives</span></a>.</p>
 </section>
 
 

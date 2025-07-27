@@ -152,10 +152,10 @@
 In this phase of the project, our goal was to leverage that knowledge to build the backbone of a JIT C++ code generator.
 This code generator is designed to produce assembly code for arbitrary matrix dimensions and execute the generated code on our machine.</p>
 <section id="brgemm-primitive">
-<h2>4.1 BRGEMM Primitive<a class="headerlink" href="#brgemm-primitive" title="Link to this heading"></a></h2>
+<span id="id1"></span><h2>4.1 BRGEMM Primitive<a class="headerlink" href="#brgemm-primitive" title="Link to this heading"></a></h2>
 <p>In this section, we explain how we implemented the BRGEMM primitive for our machine learning compiler.</p>
 <section id="microkernel">
-<span id="id1"></span><h3>4.1.1 Microkernel<a class="headerlink" href="#microkernel" title="Link to this heading"></a></h3>
+<span id="brgemm-microkernel"></span><h3>4.1.1 Microkernel<a class="headerlink" href="#microkernel" title="Link to this heading"></a></h3>
 <p>Before we began implementing the Batch-Reduce General Matrix-Matrix Multiplication kernel, we first needed to take a look at how we could multiply matrices using the JIT C++ code generator for assembly. To simplify things, we first put our focus on generating the fixed size microkernels which we had previously implemented in A64 ARM assembly (see: <a class="reference internal" href="03_neon.html#neon"><span class="std std-ref">3. Neon</span></a>).</p>
 <section id="instruction-generation">
 <h4>4.1.1.1 Instruction Generation<a class="headerlink" href="#instruction-generation" title="Link to this heading"></a></h4>
@@ -165,7 +165,8 @@ This code generator is designed to produce assembly code for arbitrary matrix di
 <p>Instead of working with binary numbers directly, we decided to use hexadecimal representation.</p>
 </div>
 <p>While we won’t show all instructions that implemented, here are some examples:</p>
-<p><strong>LDR instruction (unsigned offset)</strong></p>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text">LDR instruction (unsigned offset)</span><a class="headerlink" href="#id6" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/**</span>
 <span class="cm">* @brief Generates a base LDR (12-bit immediate) instruction using unsigned offset encoding.</span>
 <span class="cm">*</span>
@@ -206,7 +207,9 @@ This code generator is designed to produce assembly code for arbitrary matrix di
 <span class="p">}</span>
 </pre></div>
 </div>
-<p><strong>ADD instruction (immediate)</strong></p>
+</div>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text">ADD instruction (immediate)</span><a class="headerlink" href="#id7" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/**</span>
 <span class="cm">* @brief Generates an ADD (immediate) instruction.</span>
 <span class="cm">*</span>
@@ -248,12 +251,14 @@ This code generator is designed to produce assembly code for arbitrary matrix di
 <span class="p">}</span>
 </pre></div>
 </div>
+</div>
 <p>For more information on the instructions, please refer to <a class="reference internal" href="../api/namespaces/mini_jit_instructions.html#api-mini-jit-instructions"><span class="std std-ref">API: mini_jit:instructions</span></a>.</p>
 </section>
 <section id="microkernel-generation">
 <h4>4.1.1.2 Microkernel Generation<a class="headerlink" href="#microkernel-generation" title="Link to this heading"></a></h4>
 <p>Having implemented all necessary C++ functions for generating the assembly instructions, we then turned our attention to the microkernel generation. Here, the first kernel we approached was the <code class="docutils literal notranslate"><span class="pre">matmul_16_6_1</span></code> kernel. The process was to copy the assembly code line by line and replace all instructions with our C++ bindings. A part of the result can be seen in the following code snippet:</p>
-<p><strong>Loading of inputs section of the matmul_16_6_1 kernel using C++ JIT code generation</strong></p>
+<div class="literal-block-wrapper docutils container" id="id8">
+<div class="code-block-caption"><span class="caption-text">Loading of inputs section of the matmul_16_6_1 kernel using C++ JIT code generation</span><a class="headerlink" href="#id8" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Load Matrix A</span>
 <span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">simd_fp</span><span class="o">::</span><span class="n">ldp</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">neon_size_spec_t</span><span class="o">::</span><span class="n">q</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
 <span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">simd_fp</span><span class="o">::</span><span class="n">ldp</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v2</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v3</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x0</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="p">,</span><span class="w"> </span><span class="n">neon_size_spec_t</span><span class="o">::</span><span class="n">q</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
@@ -284,7 +289,9 @@ This code generator is designed to produce assembly code for arbitrary matrix di
 <span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">simd_fp</span><span class="o">::</span><span class="n">ldp</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v26</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v27</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x7</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="p">,</span><span class="w"> </span><span class="n">neon_size_spec_t</span><span class="o">::</span><span class="n">q</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
 </pre></div>
 </div>
-<p><strong>FMLA section of the matmul_16_6_1 kernel using C++ JIT code generation</strong></p>
+</div>
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text">FMLA section of the matmul_16_6_1 kernel using C++ JIT code generation</span><a class="headerlink" href="#id9" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Load Column of Matrix B</span>
 <span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">base</span><span class="o">::</span><span class="n">mov</span><span class="p">(</span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x6</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x1</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
 <span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">simd_fp</span><span class="o">::</span><span class="n">ldr</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v28</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x6</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">neon_size_spec_t</span><span class="o">::</span><span class="n">s</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
@@ -317,12 +324,14 @@ This code generator is designed to produce assembly code for arbitrary matrix di
 <span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">simd_fp</span><span class="o">::</span><span class="n">fmlaElem</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v15</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v3</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v30</span><span class="p">,</span><span class="w"> </span><span class="n">arr_spec_t</span><span class="o">::</span><span class="n">s4</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
 </pre></div>
 </div>
+</div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>All instructions are added to a <code class="docutils literal notranslate"><span class="pre">kernel</span></code> object. This code structure was already given to us, so we will not explain it in detail here. Basically, the <code class="docutils literal notranslate"><span class="pre">kernel</span></code> object is responsible for holding all instructions in a buffer, allocating the necessary memory, writing the instructions to the memory and then making the allocated memory executable. The <code class="docutils literal notranslate"><span class="pre">kernel</span></code> object is also able to later release the allocated memory again.</p>
 </div>
 <p>Towards the goal of implementing a <code class="docutils literal notranslate"><span class="pre">GEMM</span></code> kernel, we now had to start supporting arbitrary dimension sizes. We decided to start implementing a loop over the <code class="docutils literal notranslate"><span class="pre">k</span></code> dimension, thus extending the <code class="docutils literal notranslate"><span class="pre">matmul_16_6_1</span></code> kernel to <code class="docutils literal notranslate"><span class="pre">matmul_16_6_k</span></code>.</p>
-<p><strong>K-Loop section of the matmul_16_6_k kernel using C++ JIT code generation</strong></p>
+<div class="literal-block-wrapper docutils container" id="id10">
+<div class="code-block-caption"><span class="caption-text">K-Loop section of the matmul_16_6_k kernel using C++ JIT code generation</span><a class="headerlink" href="#id10" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Setup for Loop</span>
 <span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">base</span><span class="o">::</span><span class="n">mov</span><span class="p">(</span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x6</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="p">)</span><span class="w"> </span><span class="p">);</span><span class="w"> </span><span class="c1">// K loop counter</span>
 <span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">base</span><span class="o">::</span><span class="n">mov</span><span class="p">(</span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x7</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x0</span><span class="p">)</span><span class="w"> </span><span class="p">);</span><span class="w"> </span><span class="c1">// Matrix A pointer</span>
@@ -342,6 +351,7 @@ This code generator is designed to produce assembly code for arbitrary matrix di
 <span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">base</span><span class="o">::</span><span class="n">sub</span><span class="p">(</span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x6</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x6</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
 <span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="w"> </span><span class="n">base</span><span class="o">::</span><span class="n">cbnz</span><span class="p">(</span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x6</span><span class="p">,</span><span class="w"> </span><span class="mi">-168</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
 </pre></div>
+</div>
 </div>
 </section>
 <section id="microkernel-benchmark">
@@ -368,20 +378,23 @@ Estimated GFLOPS:   134.331 GFLOPS/sec
 </section>
 <section id="gemm">
 <span id="id2"></span><h3>4.1.2 GEMM<a class="headerlink" href="#gemm" title="Link to this heading"></a></h3>
-<p>After setting the foundation for the execution of a specific <code class="docutils literal notranslate"><span class="pre">GEMM</span></code> kernel, our plan was now to extend the in <a class="reference internal" href="#microkernel"><span class="std std-ref">4.1.1 Microkernel</span></a> implemented kernel to a more general <code class="docutils literal notranslate"><span class="pre">GEMM</span></code> kernel.</p>
+<p>After setting the foundation for the execution of a specific <code class="docutils literal notranslate"><span class="pre">GEMM</span></code> kernel, our plan was now to extend the in <a class="reference internal" href="#brgemm-microkernel"><span class="std std-ref">4.1.1 Microkernel</span></a> implemented kernel to a more general <code class="docutils literal notranslate"><span class="pre">GEMM</span></code> kernel.</p>
 <section id="implementation-of-a-gemm-kernel">
 <h4>4.1.2.1 Implementation of a GEMM kernel<a class="headerlink" href="#implementation-of-a-gemm-kernel" title="Link to this heading"></a></h4>
 <p>The general <code class="docutils literal notranslate"><span class="pre">GEMM</span></code> kernel should be able to compute C+=AB for arbitrary A, B and C matrices in the range of 1≤M≤1024, 1≤N≤1024, and 1≤K≤2048.</p>
 <p>At first, we had to decide on how to block the matrices. In the M dimension, we decided to use a block size of 16 and in the <code class="docutils literal notranslate"><span class="pre">n</span></code> dimension we decided to use a block size of 4. The larger we keep the block size, the more efficiently we can use loads, stores and FMLA instructions. However, the issue with large block sizes is that we need to write a lot of specialized kernels for all M and N dimensions smaller or equal to the block size. If the input parameters are not multiples of the block size, we need to write additional code to handle the remaining elements.</p>
 <p>For a block size of M = 8 we already wrote a kernel in neon assembly, see <a class="reference internal" href="03_neon.html#generic-kernel"><span class="std std-ref">3.4.3 Generic Approach</span></a>. Using this generic kernel as a starting point, we have reduced the <code class="docutils literal notranslate"><span class="pre">n</span></code> dimension from 6 to 4. Our reasoning was that we wanted to reduce the number of specialized kernels we would need to write. Additionally, we assumed that in practice more numbers would be multiples of 4 instead of 6, thus not depending on such specialized kernels. Nevertheless, we made the decision to increase M from 8 to 16 to increase our overall performance. With this change, we introduced the <code class="docutils literal notranslate"><span class="pre">matmul_m_4_k</span></code> kernel, which computes C+=AB for matrices where M and K are freely configurable, and N is fixed at size 4.</p>
 <p>The kernel first computes the number of blocks along the M dimension, as well as any remaining elements.</p>
-<p><strong>matmul_m_4_k: Computing the number of blocks in the M dimension</strong></p>
+<div class="literal-block-wrapper docutils container" id="id11">
+<div class="code-block-caption"><span class="caption-text">matmul_m_4_k: Computing the number of blocks in the M dimension</span><a class="headerlink" href="#id11" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="n">mLoopIterations</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">16</span><span class="p">;</span>
 <span class="kt">int</span><span class="w"> </span><span class="n">mLoopRemainder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">16</span><span class="p">;</span>
 </pre></div>
 </div>
+</div>
 <p>Using these numbers, we can call the specialized kernels:</p>
-<p><strong>matmul_m_4_k: Calling specialized kernels for different M dimensions</strong></p>
+<div class="literal-block-wrapper docutils container" id="id12">
+<div class="code-block-caption"><span class="caption-text">matmul_m_4_k: Calling specialized kernels for different M dimensions</span><a class="headerlink" href="#id12" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">mLoopIterations</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
 <span class="p">{</span>
 <span class="w">    </span><span class="n">mini_jit</span><span class="o">::</span><span class="n">kernels</span><span class="o">::</span><span class="n">matmul</span><span class="o">::</span><span class="n">subkernels</span><span class="o">::</span><span class="n">internal</span><span class="o">::</span><span class="n">generateM16N4Loop</span><span class="p">(</span><span class="n">kernel</span><span class="p">,</span><span class="w"> </span><span class="n">mLoopIterations</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="p">);</span>
@@ -449,40 +462,50 @@ Estimated GFLOPS:   134.331 GFLOPS/sec
 <span class="p">}</span>
 </pre></div>
 </div>
+</div>
 <p>But what does such a specialized kernel look like? For the most part, they are similar to the microkernels we implemented before. The only difference is that we need to adjust the loads, stores and FMLA instructions for a fixed M dimension. For example in the case of M = 3:</p>
-<p><strong>matmul_m_4_k: Loading a column of C with M = 3</strong></p>
+<div class="literal-block-wrapper docutils container" id="id13">
+<div class="code-block-caption"><span class="caption-text">matmul_m_4_k: Loading a column of C with M = 3</span><a class="headerlink" href="#id13" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// first column</span>
 <span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="n">base</span><span class="o">::</span><span class="n">mov</span><span class="p">(</span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x24</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x12</span><span class="p">));</span>
 <span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="n">simd_fp</span><span class="o">::</span><span class="n">ldrPost</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x24</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="n">neon_size_spec_t</span><span class="o">::</span><span class="n">d</span><span class="p">));</span>
 <span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="n">simd_fp</span><span class="o">::</span><span class="n">ldr</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x24</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">neon_size_spec_t</span><span class="o">::</span><span class="n">s</span><span class="p">));</span>
 </pre></div>
 </div>
+</div>
 <p>While we can simply load a double word when M = 2 or even a quad word when M = 4, we need to divide our loads into two parts when M = 3. First, we load a double word and then the remaining single word. The same applies to the stores:</p>
-<p><strong>matmul_m_4_k: Storing a column of C with M = 3</strong></p>
+<div class="literal-block-wrapper docutils container" id="id14">
+<div class="code-block-caption"><span class="caption-text">matmul_m_4_k: Storing a column of C with M = 3</span><a class="headerlink" href="#id14" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// first column</span>
 <span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="n">base</span><span class="o">::</span><span class="n">mov</span><span class="p">(</span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x24</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x12</span><span class="p">));</span>
 <span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="n">simd_fp</span><span class="o">::</span><span class="n">strPost</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x24</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="n">neon_size_spec_t</span><span class="o">::</span><span class="n">d</span><span class="p">));</span>
 <span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="n">simd_fp</span><span class="o">::</span><span class="n">str</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x24</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">neon_size_spec_t</span><span class="o">::</span><span class="n">s</span><span class="p">));</span>
 </pre></div>
 </div>
+</div>
 <p>The FMLA instructions are also adjusted based on M dimension. For example, when M = 3, we need to use two FMLA instructions to compute the result:</p>
-<p><strong>matmul_m_4_k: FMLA instructions with M = 3</strong></p>
+<div class="literal-block-wrapper docutils container" id="id15">
+<div class="code-block-caption"><span class="caption-text">matmul_m_4_k: FMLA instructions with M = 3</span><a class="headerlink" href="#id15" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// B: COLUMN 0</span>
 <span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="n">simd_fp</span><span class="o">::</span><span class="n">ldr</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v29</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x16</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">neon_size_spec_t</span><span class="o">::</span><span class="n">s</span><span class="p">));</span>
 <span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="n">simd_fp</span><span class="o">::</span><span class="n">fmlaElem</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v24</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v29</span><span class="p">,</span><span class="w"> </span><span class="n">arr_spec_t</span><span class="o">::</span><span class="n">s2</span><span class="p">));</span>
 <span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="n">simd_fp</span><span class="o">::</span><span class="n">fmadd</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v25</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v29</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">neon_size_spec_t</span><span class="o">::</span><span class="n">s</span><span class="p">));</span>
 </pre></div>
 </div>
+</div>
 <p>While one could use an <code class="docutils literal notranslate"><span class="pre">fmla</span></code> instruction and zero padding, we decided to use one <code class="docutils literal notranslate"><span class="pre">fmla</span></code> instruction for the first two elements and one <code class="docutils literal notranslate"><span class="pre">fmadd</span></code> instruction for the last element. We did not observe any performance differences between the two approaches, but chose the second one because to us it seemed more readable and easier to understand. The other specialized kernels for M = 1, 2, 4, 5, 6 and 7 are implemented similarly.</p>
 <p>Having implemented the <code class="docutils literal notranslate"><span class="pre">matmul_m_4_k</span></code> kernel, we can now turn our attention towards the <code class="docutils literal notranslate"><span class="pre">matmul_m_n_k</span></code> kernel. Since we decided to block N by 4, we can use the same approach as before. We first compute the number of blocks along the <code class="docutils literal notranslate"><span class="pre">n</span></code> dimension and the remaining elements.</p>
-<p><strong>matmul_m_n_k: Computing the number of blocks in the N dimension</strong></p>
+<div class="literal-block-wrapper docutils container" id="id16">
+<div class="code-block-caption"><span class="caption-text">matmul_m_n_k: Computing the number of blocks in the N dimension</span><a class="headerlink" href="#id16" title="Link to this code"></a></div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="n">nLoopIterations</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">4</span><span class="p">;</span>
 <span class="kt">int</span><span class="w"> </span><span class="n">nLoopRemainder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">4</span><span class="p">;</span>
 </pre></div>
 </div>
+</div>
 <p><code class="docutils literal notranslate"><span class="pre">nLoopRemainder</span></code> can take any value between 0 and 3, which means that additionally to the <code class="docutils literal notranslate"><span class="pre">matmul_m_4_k</span></code> kernel where <code class="docutils literal notranslate"><span class="pre">nLoopRemainder</span></code> is 0, we need to implement specialized kernels for <code class="docutils literal notranslate"><span class="pre">nLoopRemainder</span></code> = 1, 2 and 3. The specialized kernels are basically the same as the <code class="docutils literal notranslate"><span class="pre">matmul_m_4_k</span></code> kernel, but we simply removed some of the loads, stores and FMLA instructions. For the more curious reader, we recommend viewing <a class="reference internal" href="../api/namespaces/mini_jit_kernels.html#api-mini-jit-kernels"><span class="std std-ref">API: mini_jit:kernels</span></a>.</p>
 <p>For the whole N loop, we use switch statements to call the specialized kernels. The final implementation looks like this:</p>
-<p><strong>matmul_m_n_k: Calling kernels for different N</strong></p>
+<div class="literal-block-wrapper docutils container" id="id17">
+<div class="code-block-caption"><span class="caption-text">matmul_m_n_k: Calling kernels for different N</span><a class="headerlink" href="#id17" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">nLoopIterations</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
 <span class="p">{</span>
 <span class="w">    </span><span class="c1">// n_loop:</span>
@@ -595,6 +618,7 @@ Estimated GFLOPS:   134.331 GFLOPS/sec
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
+</div>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -773,7 +797,8 @@ performance for 1≤M≤64, 1≤N≤64, K∈[1,16,32,64,128], lda=M, ldb=K and l
 Our idea was run each of these benchmarks for a time of <code class="docutils literal notranslate"><span class="pre">1.5s</span></code> in order to guarantee comparable results.
 During this time we calculated the number of iterations our <code class="docutils literal notranslate"><span class="pre">matmul_m_n_k</span></code> kernel would perform.
 Using this metrics we could then calculate the performance in GFLOPs for the respective execution.</p>
-<p><strong>matmul_m_n_k benchmarking approach for different M, N, and K</strong></p>
+<div class="literal-block-wrapper docutils container" id="id18">
+<div class="code-block-caption"><span class="caption-text">matmul_m_n_k benchmarking approach for different M, N, and K</span><a class="headerlink" href="#id18" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Generate and get the kernel function</span>
 <span class="n">mini_jit</span><span class="o">::</span><span class="n">Kernel</span><span class="w"> </span><span class="n">l_kernel</span><span class="p">;</span>
 <span class="n">mini_jit</span><span class="o">::</span><span class="n">kernels</span><span class="o">::</span><span class="n">matmul</span><span class="o">::</span><span class="n">matmul_m_n_k</span><span class="p">(</span><span class="n">l_kernel</span><span class="p">,</span><span class="w"> </span><span class="n">m_M</span><span class="p">,</span><span class="w"> </span><span class="n">m_N</span><span class="p">,</span><span class="w"> </span><span class="n">m_K</span><span class="p">);</span>
@@ -799,8 +824,10 @@ Using this metrics we could then calculate the performance in GFLOPs for the res
 <span class="kt">double</span><span class="w"> </span><span class="n">l_gflops</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">((</span><span class="kt">double</span><span class="p">)</span><span class="n">l_totalOperations</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="n">l_elapsed</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">1e9</span><span class="p">);</span>
 </pre></div>
 </div>
+</div>
 <p>The results that we obtained were saved under <a class="reference external" href="https://github.com/Shad00Z/machine-learning-compilers/blob/main/benchmarks/gemm_perf.csv">benchmarks/gemm_perf.csv</a>.</p>
-<p><strong>Snippet of executed benchmarks for matmul_m_n_k</strong></p>
+<div class="literal-block-wrapper docutils container" id="id19">
+<div class="code-block-caption"><span class="caption-text">Snippet of executed benchmarks for matmul_m_n_k</span><a class="headerlink" href="#id19" title="Link to this code"></a></div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>m,n,k,br_size,trans_a,trans_b,trans_c,ld_a,ld_b,ld_c,br_stride_a,br_stride_b,num_reps,time,gflops
 1,1,1,1,0,0,0,0,0,0,0,0,54127879,1.5,0.0721705
 1,1,16,1,0,0,0,0,0,0,0,0,44228413,1.5,0.943539
@@ -818,6 +845,7 @@ Using this metrics we could then calculate the performance in GFLOPs for the res
 1,3,64,1,0,0,0,0,0,0,0,0,18859806,1.5,4.82811
 </pre></div>
 </div>
+</div>
 </section>
 </section>
 <section id="batch-reduce-gemm">
@@ -830,11 +858,13 @@ This means we now had to implement kernels that support matrix multiplications o
 As we now had the additional values <code class="docutils literal notranslate"><span class="pre">br_stride_a</span></code> and <code class="docutils literal notranslate"><span class="pre">br_stride_a</span></code> we needed to slightly adjust the use of our registers.
 Apart from that, we were ready to start.</p>
 <p>The first step we took was to initialize the loop counter for the batch dimension.</p>
-<p><strong>matmul_br_m_n_k: br counter initialization</strong></p>
+<div class="literal-block-wrapper docutils container" id="id20">
+<div class="code-block-caption"><span class="caption-text">matmul_br_m_n_k: br counter initialization</span><a class="headerlink" href="#id20" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// batch counter</span>
 <span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="n">base</span><span class="o">::</span><span class="n">mov</span><span class="p">(</span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x25</span><span class="p">,</span><span class="w"> </span><span class="n">br_size</span><span class="p">));</span>
 <span class="n">kernel</span><span class="p">.</span><span class="n">add_label</span><span class="p">(</span><span class="s">&quot;batch_loop&quot;</span><span class="p">);</span>
 </pre></div>
+</div>
 </div>
 <p>The second step was to make sure that after a GEMM has finished, we would increment the pointers, to move to the next respective matrices.</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// handle batching</span>
@@ -861,7 +891,8 @@ Apart from that, we were ready to start.</p>
 <span id="id3"></span><h4>4.1.3.2 Calling the Batch-Reduce GEMM kernel<a class="headerlink" href="#calling-the-batch-reduce-gemm-kernel" title="Link to this heading"></a></h4>
 <p>In order to actually call our <code class="docutils literal notranslate"><span class="pre">GEMM</span></code> and <code class="docutils literal notranslate"><span class="pre">BRGEMM</span></code> kernels, we had to implement a common entry point. The <code class="docutils literal notranslate"><span class="pre">Brgemm</span></code> class is responsible for this task.
 It first checks all input parameters for their validity and then makes calls to the kernels based on the batch-reduce size.</p>
-<p><strong>Brgemm.cpp</strong></p>
+<div class="literal-block-wrapper docutils container" id="id21">
+<div class="code-block-caption"><span class="caption-text">Brgemm.cpp</span><a class="headerlink" href="#id21" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">mini_jit</span><span class="o">::</span><span class="n">error_t</span><span class="w"> </span><span class="nf">mini_jit::Brgemm::generate</span><span class="p">(</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">m</span><span class="p">,</span>
 <span class="w">                                            </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">n</span><span class="p">,</span>
 <span class="w">                                            </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">k</span><span class="p">,</span>
@@ -960,13 +991,16 @@ It first checks all input parameters for their validity and then makes calls to 
 <span class="p">}</span>
 </pre></div>
 </div>
+</div>
 <p>The example below demonstrates how this function can be called:</p>
-<p><strong>Example code for generating and executing a kernel</strong></p>
+<div class="literal-block-wrapper docutils container" id="id22">
+<div class="code-block-caption"><span class="caption-text">Example code for generating and executing a kernel</span><a class="headerlink" href="#id22" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">mini_jit</span><span class="o">::</span><span class="n">Kernel</span><span class="w"> </span><span class="n">l_kernel</span><span class="p">;</span>
 <span class="n">mini_jit</span><span class="o">::</span><span class="n">kernels</span><span class="o">::</span><span class="n">matmul</span><span class="o">::</span><span class="n">matmul_m_n_k</span><span class="p">(</span><span class="n">l_kernel</span><span class="p">,</span><span class="w"> </span><span class="n">M</span><span class="p">,</span><span class="w"> </span><span class="n">N</span><span class="p">,</span><span class="w"> </span><span class="n">K</span><span class="p">);</span>
 <span class="n">mini_jit</span><span class="o">::</span><span class="n">Brgemm</span><span class="o">::</span><span class="n">kernel_t</span><span class="w"> </span><span class="n">l_kernel_t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="n">mini_jit</span><span class="o">::</span><span class="n">Brgemm</span><span class="o">::</span><span class="n">kernel_t</span><span class="o">&gt;</span><span class="p">(</span><span class="k">const_cast</span><span class="o">&lt;</span><span class="kt">void</span><span class="w"> </span><span class="o">*&gt;</span><span class="p">(</span><span class="n">l_kernel</span><span class="p">.</span><span class="n">get_kernel</span><span class="p">()));</span>
 <span class="n">l_kernel_t</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">B</span><span class="p">,</span><span class="w"> </span><span class="n">C</span><span class="p">,</span><span class="w"> </span><span class="n">M</span><span class="p">,</span><span class="w"> </span><span class="n">K</span><span class="p">,</span><span class="w"> </span><span class="n">M</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
 </pre></div>
+</div>
 </div>
 </section>
 <section id="verification-of-the-batch-reduce-gemm-kernel">
@@ -1069,7 +1103,8 @@ We introduced a new function that should handle 1≤M≤64, 1≤N≤64, K∈[1,1
 </pre></div>
 </div>
 <p>The results that we obtained were saved in <a class="reference external" href="https://github.com/Shad00Z/machine-learning-compilers/blob/main/benchmarks/brgemm_perf.csv">br_gemm_perf.csv</a>.</p>
-<p><strong>Snippet of executed benchmarks for matmul_br_m_n_k</strong></p>
+<div class="literal-block-wrapper docutils container" id="id23">
+<div class="code-block-caption"><span class="caption-text">Snippet of executed benchmarks for matmul_br_m_n_k</span><a class="headerlink" href="#id23" title="Link to this code"></a></div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>m,n,k,br_size,trans_a,trans_b,trans_c,ld_a,ld_b,ld_c,br_stride_a,br_stride_b,num_reps,time,gflops
 1,1,1,16,0,0,0,1,1,1,1,1,14713094,1,0.470819
 1,1,16,16,0,0,0,1,16,1,16,16,3412968,1,1.74744
@@ -1087,6 +1122,7 @@ We introduced a new function that should handle 1≤M≤64, 1≤N≤64, K∈[1,1
 1,3,64,16,0,0,0,1,64,1,64,192,1004800,1,6.17349
 </pre></div>
 </div>
+</div>
 <p>Evaluating our GFLOP performance, we can see that we achieve a similar performance as in our <code class="docutils literal notranslate"><span class="pre">matmul_m_n_k</span></code> benchmark.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -1097,7 +1133,7 @@ Therefore, the results should be viewed carefully, as the new configuration M=16
 </section>
 </section>
 <section id="unary-primitives">
-<h2>4.2 Unary Primitives<a class="headerlink" href="#unary-primitives" title="Link to this heading"></a></h2>
+<span id="id4"></span><h2>4.2 Unary Primitives<a class="headerlink" href="#unary-primitives" title="Link to this heading"></a></h2>
 <p>After implementing our main primitives using the <code class="docutils literal notranslate"><span class="pre">GEMM</span></code> and <code class="docutils literal notranslate"><span class="pre">BRGEMM</span></code> kernels, the next step was to implement unary primitives.
 These can be called before an operation is executed (first touch) or after the final block of a matrix has been processed (last touch).
 Specifically we are implementing three of those primitives:</p>
@@ -1122,7 +1158,8 @@ For this reason, this primitive is exclusively executed as a first touch primiti
 <section id="zero-primitive-implementation">
 <h4>4.2.1.1 Zero Primitive Implementation<a class="headerlink" href="#zero-primitive-implementation" title="Link to this heading"></a></h4>
 <p>The functionality of the zero primitive can be implemented in many different ways, but we started with using an ARM instruction which we had already implemented: <code class="docutils literal notranslate"><span class="pre">STR</span></code>. We refer to this version as the <code class="docutils literal notranslate"><span class="pre">XZR</span></code> approach, because it uses the <code class="docutils literal notranslate"><span class="pre">XZR</span></code> (and sometimes <code class="docutils literal notranslate"><span class="pre">WZR</span></code>) register to store zeroes in the output matrix. The limitation here is that the <code class="docutils literal notranslate"><span class="pre">XZR</span></code> is only 64 bits wide, which means we can only set 2 FP32 values to zero at once. To improve this, we implemented a second version that uses <code class="docutils literal notranslate"><span class="pre">Neon</span></code> instructions. We first created a zero register using the <code class="docutils literal notranslate"><span class="pre">EOR</span></code> instruction (eg. <code class="docutils literal notranslate"><span class="pre">eor</span> <span class="pre">v31.16b,</span> <span class="pre">v31.16b,</span> <span class="pre">v31.16b</span></code> sets <code class="docutils literal notranslate"><span class="pre">v31</span></code> to zero) and then use <code class="docutils literal notranslate"><span class="pre">STP</span></code> to zero 8 FP32 values at once. This version is called the <code class="docutils literal notranslate"><span class="pre">EOR</span></code> approach.</p>
-<p><strong>XZR Zero Primitive: main loop</strong></p>
+<div class="literal-block-wrapper docutils container" id="id24">
+<div class="code-block-caption"><span class="caption-text">XZR Zero Primitive: main loop</span><a class="headerlink" href="#id24" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">kernel</span><span class="p">.</span><span class="n">add_label</span><span class="p">(</span><span class="s">&quot;m_8_loop&quot;</span><span class="p">);</span>
 <span class="c1">// store 8 zeros</span>
 <span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="n">base</span><span class="o">::</span><span class="n">mov</span><span class="p">(</span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x8</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x7</span><span class="p">));</span>
@@ -1140,7 +1177,9 @@ For this reason, this primitive is exclusively executed as a first touch primiti
 <span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="n">base</span><span class="o">::</span><span class="n">cbnz</span><span class="p">(</span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x6</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="n">l_mLoopInstrCount</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">4</span><span class="p">));</span>
 </pre></div>
 </div>
-<p><strong>EOR Zero Primitive: main loop</strong></p>
+</div>
+<div class="literal-block-wrapper docutils container" id="id25">
+<div class="code-block-caption"><span class="caption-text">EOR Zero Primitive: main loop</span><a class="headerlink" href="#id25" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">kernel</span><span class="p">.</span><span class="n">add_label</span><span class="p">(</span><span class="s">&quot;m_8_loop&quot;</span><span class="p">);</span>
 <span class="c1">// store 8 zeros</span>
 <span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="n">simd_fp</span><span class="o">::</span><span class="n">stp</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v31</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v31</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x7</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">neon_size_spec_t</span><span class="o">::</span><span class="n">q</span><span class="p">));</span>
@@ -1153,12 +1192,14 @@ For this reason, this primitive is exclusively executed as a first touch primiti
 <span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="n">base</span><span class="o">::</span><span class="n">cbnz</span><span class="p">(</span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x6</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="n">l_mLoopInstrCount</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">4</span><span class="p">));</span>
 </pre></div>
 </div>
+</div>
 <p>In this primitive, we handle one column at a time. For all matrices where the number of rows is not divisible by 8, we implemented edge cases that handle the remaining elements. This approach is the same as the one we used in the matrix multiplication kernels, with the only difference being that we do not need to handle the K dimension.</p>
 </section>
 <section id="zero-primitive-benchmarks">
 <h4>4.2.1.1 Zero Primitive Benchmarks<a class="headerlink" href="#zero-primitive-benchmarks" title="Link to this heading"></a></h4>
 <p>We benchmarked the performance of our zero primitive for the given parameters (M=N=50, M=N=64, M=N=512 and M=N=2048) and obtained the following results:</p>
-<p><strong>Benchmarking results for the zero primitives</strong></p>
+<div class="literal-block-wrapper docutils container" id="id26">
+<div class="code-block-caption"><span class="caption-text">Benchmarking results for the zero primitives</span><a class="headerlink" href="#id26" title="Link to this code"></a></div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Running zero_eor_primitive 50x50 benchmark
 Total time (s):                       3
 Total reps:                           24095571
@@ -1217,6 +1258,7 @@ Bandwidth (GiB/s)                     85.5719
 --------------------------------------------------
 </pre></div>
 </div>
+</div>
 <p>In all cases, we can see that the <code class="docutils literal notranslate"><span class="pre">EOR</span></code> approach is significantly faster than the <code class="docutils literal notranslate"><span class="pre">XZR</span></code> approach. Transposition was not benchmarked, since the dimension swapping happens in the high-level code and not in the assembly code.</p>
 </section>
 </section>
@@ -1234,7 +1276,8 @@ every ‘zero store’ with:</p>
 <li><p>a load from matrix <code class="docutils literal notranslate"><span class="pre">A</span></code> at the specific address, and</p></li>
 <li><p>a store, that would store the element from <code class="docutils literal notranslate"><span class="pre">A</span></code> in matrix <code class="docutils literal notranslate"><span class="pre">B</span></code>.</p></li>
 </ol>
-<p><strong>Identity Primitive: main loop</strong></p>
+<div class="literal-block-wrapper docutils container" id="id27">
+<div class="code-block-caption"><span class="caption-text">Identity Primitive: main loop</span><a class="headerlink" href="#id27" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">kernel</span><span class="p">.</span><span class="n">add_label</span><span class="p">(</span><span class="s">&quot;m_8_loop&quot;</span><span class="p">);</span>
 <span class="c1">// load and store 8 rows of A and B</span>
 <span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="n">simd_fp</span><span class="o">::</span><span class="n">ldp</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x8</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">neon_size_spec_t</span><span class="o">::</span><span class="n">q</span><span class="p">));</span>
@@ -1249,8 +1292,10 @@ every ‘zero store’ with:</p>
 <span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="n">base</span><span class="o">::</span><span class="n">cbnz</span><span class="p">(</span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x6</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="n">l_mLoopInstrCount</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">4</span><span class="p">));</span>
 </pre></div>
 </div>
+</div>
 <p>For the edge cases where there was a remainder for the <code class="docutils literal notranslate"><span class="pre">m</span></code> dimension, we used the same procedure as before:</p>
-<p><strong>Identity Primitive: M = 5 edge case</strong></p>
+<div class="literal-block-wrapper docutils container" id="id28">
+<div class="code-block-caption"><span class="caption-text">Identity Primitive: M = 5 edge case</span><a class="headerlink" href="#id28" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">case</span><span class="w"> </span><span class="mi">5</span><span class="p">:</span>
 <span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="n">simd_fp</span><span class="o">::</span><span class="n">ldrPost</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x8</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="n">neon_size_spec_t</span><span class="o">::</span><span class="n">q</span><span class="p">));</span>
 <span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="n">simd_fp</span><span class="o">::</span><span class="n">ldr</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x8</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">neon_size_spec_t</span><span class="o">::</span><span class="n">s</span><span class="p">));</span>
@@ -1260,13 +1305,15 @@ every ‘zero store’ with:</p>
 <span class="k">break</span><span class="p">;</span>
 </pre></div>
 </div>
+</div>
 </section>
 <section id="identity-transposition-implementation">
 <h4>4.2.2.2 Identity Transposition Implementation<a class="headerlink" href="#identity-transposition-implementation" title="Link to this heading"></a></h4>
 <p>After implementing the general identity, we implemented a transposition version.
 Our intuition to transpose the identity was to look at the <a class="reference internal" href="03_neon.html#transposition"><span class="std std-ref">4x4 tranposition kernel</span></a>.</p>
 <p>We decided to take the 4x4 matrix as our general case.</p>
-<p><strong>Identity Transposition Primitive: main loop</strong></p>
+<div class="literal-block-wrapper docutils container" id="id29">
+<div class="code-block-caption"><span class="caption-text">Identity Transposition Primitive: main loop</span><a class="headerlink" href="#id29" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Load 4x4 block of A (input matrix)</span>
 <span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="n">simd_fp</span><span class="o">::</span><span class="n">ldr</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x7</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">neon_size_spec_t</span><span class="o">::</span><span class="n">q</span><span class="p">));</span>
 <span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="n">base</span><span class="o">::</span><span class="n">add</span><span class="p">(</span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x7</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x7</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x2</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">));</span>
@@ -1300,6 +1347,7 @@ Our intuition to transpose the identity was to look at the <a class="reference i
 <span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="n">simd_fp</span><span class="o">::</span><span class="n">str</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v11</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x8</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">neon_size_spec_t</span><span class="o">::</span><span class="n">q</span><span class="p">));</span>
 </pre></div>
 </div>
+</div>
 <p>To handle the different stores for <code class="docutils literal notranslate"><span class="pre">4x4</span></code> blocks that are not on the matrix diagonal, we
 would do the following:</p>
 <p>After processing a <code class="docutils literal notranslate"><span class="pre">4x4</span></code> block on the diagonal:</p>
@@ -1308,7 +1356,8 @@ would do the following:</p>
 <li><p>Jump by 4 columns in Matrix B</p></li>
 </ol>
 <p>By using this approach, we would guarantee that after processing a block in the matrix A, we could save it at the correct position in matrix B. For all cases where the <code class="docutils literal notranslate"><span class="pre">m</span></code> dimension is not be divisible by 4, we would need to implement specific kernels.</p>
-<p><strong>Identity Transposition Primitive: 2x4 edge case</strong></p>
+<div class="literal-block-wrapper docutils container" id="id30">
+<div class="code-block-caption"><span class="caption-text">Identity Transposition Primitive: 2x4 edge case</span><a class="headerlink" href="#id30" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="n">simd_fp</span><span class="o">::</span><span class="n">ldr</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v3</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x7</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">neon_size_spec_t</span><span class="o">::</span><span class="n">d</span><span class="p">));</span>
 
 <span class="c1">// Transpose 2x4 block</span>
@@ -1328,6 +1377,7 @@ would do the following:</p>
 <span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="n">base</span><span class="o">::</span><span class="n">add</span><span class="p">(</span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x8</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x8</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x3</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">));</span>
 </pre></div>
 </div>
+</div>
 <p>After implementing the edge cases for remainders of <code class="docutils literal notranslate"><span class="pre">m</span></code>, we would be able to process <code class="docutils literal notranslate"><span class="pre">mx4</span></code> blocks of our matrix.</p>
 <p>That meant we needed to consider cases where there was a remainder of <code class="docutils literal notranslate"><span class="pre">n</span></code>.
 There were two things to consider:</p>
@@ -1336,7 +1386,8 @@ There were two things to consider:</p>
 <li><p>The last piece in the rightmost corner (remainder of <code class="docutils literal notranslate"><span class="pre">m</span></code> and <code class="docutils literal notranslate"><span class="pre">n</span></code>)</p></li>
 </ol>
 <p>For both of these cases we would consider a similar implementing approach as for the <code class="docutils literal notranslate"><span class="pre">m</span></code> remainder implementation.</p>
-<p><strong>Identity Transposition Primitive: 4x2 edge case</strong></p>
+<div class="literal-block-wrapper docutils container" id="id31">
+<div class="code-block-caption"><span class="caption-text">Identity Transposition Primitive: 4x2 edge case</span><a class="headerlink" href="#id31" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Load 4x2 block of A (input matrix)</span>
 <span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="n">base</span><span class="o">::</span><span class="n">mov</span><span class="p">(</span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x17</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x7</span><span class="p">));</span>
 <span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="n">simd_fp</span><span class="o">::</span><span class="n">ldrPost</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x17</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="n">neon_size_spec_t</span><span class="o">::</span><span class="n">d</span><span class="p">));</span>
@@ -1368,11 +1419,13 @@ There were two things to consider:</p>
 <span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="n">simd_fp</span><span class="o">::</span><span class="n">str</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v7</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x8</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">neon_size_spec_t</span><span class="o">::</span><span class="n">d</span><span class="p">));</span>
 </pre></div>
 </div>
+</div>
 </section>
 <section id="benchmarks-the-identity-kernel-performance">
 <h4>4.2.2.3 Benchmarks the Identity Kernel Performance<a class="headerlink" href="#benchmarks-the-identity-kernel-performance" title="Link to this heading"></a></h4>
 <p>We benchmarked the performance of our identity primitive for the given parameters (M=N=50, M=N=64, M=N=512 and M=N=2048) and obtained the following results:</p>
-<p><strong>Benchmarking results for the identity primitives</strong></p>
+<div class="literal-block-wrapper docutils container" id="id32">
+<div class="code-block-caption"><span class="caption-text">Benchmarking results for the identity primitives</span><a class="headerlink" href="#id32" title="Link to this code"></a></div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Running identity_primitive 50x50 benchmark
 Total time (s):                       3
 Total reps:                           20635000
@@ -1431,18 +1484,20 @@ Bandwidth (GiB/s)                     3.60391
 --------------------------------------------------
 </pre></div>
 </div>
+</div>
 <p>Most notably, we can see that the performance of the transposition kernel is significantly lower for larger matrices, such as 512x512 and 2048x2048. Here, we achieved a bandwidth of only 3.6 to 4 GiB/s, while all other configurations achieved bandwidths greater than 100 GiB/s.</p>
 </section>
 </section>
 <section id="relu-primitive">
-<span id="id4"></span><h3>4.2.3 ReLU Primitive<a class="headerlink" href="#relu-primitive" title="Link to this heading"></a></h3>
+<span id="id5"></span><h3>4.2.3 ReLU Primitive<a class="headerlink" href="#relu-primitive" title="Link to this heading"></a></h3>
 <p>The last unary primitive we implemented was the ReLU primitive, a commonly employed function machine learning models.
 The Rectified Linear Unit activation function is defined as: <code class="docutils literal notranslate"><span class="pre">f(x)</span> <span class="pre">=</span> <span class="pre">max(0,</span> <span class="pre">x)</span></code>, meaning that all negative values are set to zero and all positive values are kept as they are.</p>
 <section id="relu-primitive-implementation">
 <h4>4.2.3.1 ReLU Primitive Implementation<a class="headerlink" href="#relu-primitive-implementation" title="Link to this heading"></a></h4>
 <p>To implement this, we first had to add support for the <code class="docutils literal notranslate"><span class="pre">FMAX</span></code> instruction, which computes the maximum of two values. Using the <code class="docutils literal notranslate"><span class="pre">EOR</span></code> instruction which we implemented for the zero primitive, we can create a zero register and then use the <code class="docutils literal notranslate"><span class="pre">FMAX</span></code> instruction to compute the maximum of the input value and zero. Since the primitive should also support transposition, we implemented two versions.</p>
 <p>The first version does not transpose the output and is structurally the same as the zero primitive. However instead of always storing zero, we now store the maximum of the input value and zero.</p>
-<p><strong>ReLU Primitive: main loop</strong></p>
+<div class="literal-block-wrapper docutils container" id="id33">
+<div class="code-block-caption"><span class="caption-text">ReLU Primitive: main loop</span><a class="headerlink" href="#id33" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">kernel</span><span class="p">.</span><span class="n">add_label</span><span class="p">(</span><span class="s">&quot;m_8_loop&quot;</span><span class="p">);</span>
 <span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">({</span>
 <span class="c1">// load 8 elements from A</span>
@@ -1462,8 +1517,10 @@ The Rectified Linear Unit activation function is defined as: <code class="docuti
 <span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="n">base</span><span class="o">::</span><span class="n">cbnz</span><span class="p">(</span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x7</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="n">kernel</span><span class="p">.</span><span class="n">getInstrCountFromLabel</span><span class="p">(</span><span class="s">&quot;m_8_loop&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">4</span><span class="p">));</span>
 </pre></div>
 </div>
+</div>
 <p>To support transposition, we started with the identity transposition primitive. The only addition we had to make was to add the <code class="docutils literal notranslate"><span class="pre">FMAX</span></code> instruction between the load and store instructions. The rest of the implementation is structurally identical to the identity transposition primitive. The difference can be seen in the following code snippets:</p>
-<p><strong>Original transposition code (identity_trans_primitive)</strong></p>
+<div class="literal-block-wrapper docutils container" id="id34">
+<div class="code-block-caption"><span class="caption-text">Original transposition code (identity_trans_primitive)</span><a class="headerlink" href="#id34" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Load 4x4 block of A (input matrix)</span>
 <span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="n">simd_fp</span><span class="o">::</span><span class="n">ldr</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x7</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">neon_size_spec_t</span><span class="o">::</span><span class="n">q</span><span class="p">));</span>
 <span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="n">base</span><span class="o">::</span><span class="n">add</span><span class="p">(</span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x7</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x7</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x2</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">));</span>
@@ -1488,7 +1545,9 @@ The Rectified Linear Unit activation function is defined as: <code class="docuti
 <span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="n">simd_fp</span><span class="o">::</span><span class="n">zip2</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v11</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v6</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v7</span><span class="p">,</span><span class="w"> </span><span class="n">arr_spec_t</span><span class="o">::</span><span class="n">s4</span><span class="p">));</span>
 </pre></div>
 </div>
-<p><strong>Code with the FMAX instruction (relu_trans_primitive)</strong></p>
+</div>
+<div class="literal-block-wrapper docutils container" id="id35">
+<div class="code-block-caption"><span class="caption-text">Code with the FMAX instruction (relu_trans_primitive)</span><a class="headerlink" href="#id35" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Load 4x4 block of A (input matrix)</span>
 <span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="n">simd_fp</span><span class="o">::</span><span class="n">ldr</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x7</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">neon_size_spec_t</span><span class="o">::</span><span class="n">q</span><span class="p">));</span>
 <span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="n">base</span><span class="o">::</span><span class="n">add</span><span class="p">(</span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x7</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x7</span><span class="p">,</span><span class="w"> </span><span class="n">gpr_t</span><span class="o">::</span><span class="n">x2</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">));</span>
@@ -1519,11 +1578,13 @@ The Rectified Linear Unit activation function is defined as: <code class="docuti
 <span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">(</span><span class="n">simd_fp</span><span class="o">::</span><span class="n">zip2</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v11</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v6</span><span class="p">,</span><span class="w"> </span><span class="n">simd_fp_t</span><span class="o">::</span><span class="n">v7</span><span class="p">,</span><span class="w"> </span><span class="n">arr_spec_t</span><span class="o">::</span><span class="n">s4</span><span class="p">));</span>
 </pre></div>
 </div>
+</div>
 </section>
 <section id="relu-primitive-benchmarks">
 <h4>4.2.3.2 ReLU Primitive Benchmarks<a class="headerlink" href="#relu-primitive-benchmarks" title="Link to this heading"></a></h4>
 <p>We benchmarked the performance of our ReLU primitive for the given parameters (M=N=50, M=N=64, M=N=512 and M=N=2048), and obtained the following results:</p>
-<p><strong>Benchmarking results for the relu primitives</strong></p>
+<div class="literal-block-wrapper docutils container" id="id36">
+<div class="code-block-caption"><span class="caption-text">Benchmarking results for the relu primitives</span><a class="headerlink" href="#id36" title="Link to this code"></a></div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Running relu_primitive 50x50 benchmark
 Total time (s):                       3
 Total reps:                           19774014
@@ -1581,6 +1642,7 @@ Total amount of processed data (GiB): 10.8438
 Bandwidth (GiB/s)                     3.6136
 --------------------------------------------------
 </pre></div>
+</div>
 </div>
 <p>The results match the pattern we saw for the zero and identity primitives. The transposition version is significantly slower than the non-transposition version, especially for larger matrices. Here as well, the 2048x2048 benchmark achieved worse results than the smaller matrices, both with and without transposition.</p>
 </section>
