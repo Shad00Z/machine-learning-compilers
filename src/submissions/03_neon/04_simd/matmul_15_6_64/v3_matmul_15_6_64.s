@@ -64,7 +64,11 @@ v3_matmul_15_6_64:
     mov v19.s[3], wzr
     add x8, x8, x5
     // sixth column
-    ld1 {v20.4s-v23.4s}, [x8] // possible memory leak
+    ld1 {v20.4s-v22.4s}, [x8]
+    ldr d23, [x8, #48]
+    ldr s24, [x8, #56]
+
+    mov v23.s[2], v24.s[0]
     mov v23.s[3], wzr
 
 
@@ -80,7 +84,11 @@ v3_matmul_15_6_64:
 
 _k1_loop:
     // load column of A
-    ld1 {v24.4s-v27.4s}, [x7]
+    ld1 {v24.4s-v26.4s}, [x7]  // 12 values
+    ldr d27, [x7, #48]         // 2 values
+    ldr s28, [x7, #56]         // 1 value
+
+    mov v27.s[2], v28.s[0]
     mov v27.s[3], wzr
 
     // B: COLUMN 0
@@ -157,7 +165,11 @@ _k1_loop:
     st1 {v16.4s-v19.4s}, [x8]
     add x8, x8, x5
     // sixth column
-    st1 {v20.4s-v23.4s}, [x8]
+    st1 {v20.4s-v22.4s}, [x8]
+    str d23, [x8, #48]
+
+    mov v24.s[0], v23.s[2]
+    str s24, [x8, #56]
 
 // #################### START PCS ####################
     // restore callee-saved registers
