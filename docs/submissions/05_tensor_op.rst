@@ -734,7 +734,7 @@ Lastly, we identify the primitive ``K`` dimension by searching for a ``K`` dimen
 
 For our second optimization pass we decided to look at the dimension sizes of our loops. 
 We introduced a ``max_kernel_size`` parameter, which specifies the maximum allowed size for a dimension.
-If a dimension with a size larger than the maximum is found, the dimension splitter will try to split it into new dimensions with optimized sizes. 
+If a dimension size exceeds the maximum size, the dimension splitter will try to split it into new dimensions with optimized sizes. 
 The entry point for this optimization is the ``splitDimensions`` function:
 
 .. code-block:: cpp
@@ -1068,7 +1068,7 @@ This means that the code for handling unary operations has already been shown an
 5.6.2 Reference Implementation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-For our reference implementation, we used an example with 4 dimensions ``trus`` in which we reorder the dimensions to ``turs``.
+For our reference implementation, we used an example with 4 dimensions, ``trus``, where we reorder the dimensions to ``turs``.
 
 .. code-block:: cpp
     :caption: Initialization of the tensor sizes
