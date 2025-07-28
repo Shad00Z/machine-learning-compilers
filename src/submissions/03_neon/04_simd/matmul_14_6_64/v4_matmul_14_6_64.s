@@ -6,7 +6,7 @@
     * with the dimensions M=14, N=6, and K=64.
     * 
     * Idea:
-    * Equal to Version 2 but with different loads
+    * Equal to Version 2 but with different loads (LD1)
     * 
     * @param x0 pointer to column-major matrix A.
     * @param x1 pointer to column-major matrix B.
@@ -59,7 +59,8 @@ v4_matmul_14_6_64:
     ld1 {v16.4s-v19.4s}, [x8]
     add x8, x8, x5
     // sixth column
-    ld1 {v20.4s-v23.4s}, [x8] // possible memory leak
+    ld1 {v20.4s-v22.4s}, [x8]
+    ldr d23, [x8, #48]
 
     //  K loop counter
     mov x6, #64

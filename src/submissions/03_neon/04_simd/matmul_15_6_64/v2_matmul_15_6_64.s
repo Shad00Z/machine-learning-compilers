@@ -82,7 +82,11 @@ v2_matmul_15_6_64:
     // sixth column
     add x8, x8, x5
     ldp q20, q21, [x8]
-    ldp q22, q23, [x8, #32] // possible memory leak
+    ldr q22, [x8, #32]
+    ldr d23, [x8, #48]
+    ldr s24, [x8, #56]
+
+    mov v23.s[2], v24.s[0]
     mov v23.s[3], wzr
 
 
@@ -99,7 +103,11 @@ v2_matmul_15_6_64:
 _k1_loop:
     // load column of A
     ldp q24, q25, [x7] // 4 + 4 values
-    ldp q26, q27, [x7, #32] // 4 + 4 values - possible memory leak
+    ldr q26, [x7, #32] // 4 values
+    ldr d27, [x7, #48] // 2 values
+    ldr s28, [x7, #56] // 1 value
+
+    mov v27.s[2], v28.s[0]
     mov v27.s[3], wzr
 
     // B: COLUMN 0
@@ -183,6 +191,10 @@ _k1_loop:
     add x8, x8, x5
     stp q20, q21, [x8]
     stp q22, q23, [x8, #32]
+    str d23, [x8, #48]
+
+    mov v24.s[0], v23.s[2]
+    str s24, [x8, #56]
 
 
     

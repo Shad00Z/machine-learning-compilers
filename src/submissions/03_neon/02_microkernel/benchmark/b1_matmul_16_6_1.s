@@ -4,7 +4,7 @@
     /*
     * Computes C+=AB for three matrices
     * Loads matrix A and C completely and for matrix B
-    * 2 times 3 columns.
+    * 2 times 3 individual elements.
     *
     * @param x0 pointer to column-major matrix A.
     * @param x1 pointer to column-major matrix B.

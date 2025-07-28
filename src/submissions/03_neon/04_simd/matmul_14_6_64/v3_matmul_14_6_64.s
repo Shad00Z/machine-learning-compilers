@@ -72,7 +72,8 @@ v3_matmul_14_6_64:
     // sixth column
     add x8, x8, x5
     ldp q20, q21, [x8]
-    ldp q22, q23, [x8, #32] // possible memory leak
+    ldr q22, [x8, #32]
+    ldr q23, [x8, #48]
 
 
     //  K loop counter
@@ -88,7 +89,8 @@ v3_matmul_14_6_64:
 _k1_loop:
     // load column of A
     ldp q24, q25, [x7] // 4 + 4 values
-    ldp q26, q27, [x7, #32] // 4 + 4 values - possible memory leak
+    ldr q26, [x7, #32] // 4 values
+    ldr d27, [x7, #48] // 2 values
     mov v27.s[2], wzr
     mov v27.s[3], wzr
 
