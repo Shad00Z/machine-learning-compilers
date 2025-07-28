@@ -55,7 +55,7 @@ Lastly, we performed an extensive benchmark of the GEMM and BRGEMM kernels for d
 In total, this benchmark took over 8 hours on the provided Apple M4 machine.
 For more information, refer to :ref:`brgemm-primitive`.
 
-In week 5, we extended our code generator by unary primitives of the form B:=op(A).
+In week 5, we extended our code generator by **Unary Primitives** of the form B:=op(A).
 Similarly to the BRGEMM backend, we first implemented a new entry point which can be used to generate various unary primitive kernels.
 The first unary primitive we implemented was the **Zero Primitive**, which sets all elements of the output tensor to zero.
 Secondly, we implemented the **Identity Primitive** which copies all elements of the input tensor to the output tensor.
@@ -64,3 +64,26 @@ Lastly, we implemented an activation function commonly found in machine learning
 This operation sets all negative elements to zero and keeps positive elements as they are.
 For all implemented unary operations we implemented unit tests and benchmarked the performance.
 Further information can be found in :ref:`unary-primitives`.
+
+In week 6 we received the task of developing a **Tensor Operation Backend**, see :ref:`tensor-op-backend`.
+This backend not only **sets up and holds the kernel objects**,
+but also **blocks the input and output tensors** and executes the kernels accordingly.
+We started with a verification of all input parameters and then implemented an ``execute`` function,
+which calls itself recursively to work through the nested sequential loops of an input tensor.
+To end this weeks task, we performed extensive benchmarks with various configuration parameters.
+
+In the following week, we added support for **Shared Memory Parallelization**.
+This meant that we had to check whether the input tensor contained any dimensions that should be executed in parallel.
+If that was the case, we flattened all shared dimensions into one big iteration space and then parallelized it using **OpenMP**.
+You can find more information :ref:`here <shared-memory-parallelization>`.
+
+The second task of week 7 was to implement optimization passes, see :ref:`optimization-passes`.
+First, we developed an intermediate representation of the tensors consisting of Dimension ``struct``'s.
+Then, we applied **Primitive Identification**, **Dimension Splitting** and the **Parallelization of Sequential Dimensions** to the vectors of the Dimension ``struct``'s that represent each input tensor.
+
+In week 8, we enhanced our tensor operation backend and our optimizer by supporting **Unary Operations**, such as permuting a tensor's dimensions.
+Here, we first had to verify that all dimensions of such an operation are of type ``C`` and appear both in the input and the output tensor. Next, the second input tensor had to be automatically set to ``nullptr``, as unary operations only support one input.
+Additionally, we had to implement new primitive identification and shared memory parallelization optimization passes for the unary operations and finally verify the correctness of our code against a reference implementation.
+To view the results and implementations, visit our :ref:`detailed report <unary-operations>`.
+
+Week 9: Einsum + Individual Phase Pitch and Sketch

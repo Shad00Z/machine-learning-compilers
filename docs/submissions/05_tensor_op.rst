@@ -1,11 +1,12 @@
+.. _tensor-op-backend:
+
 ##############################
 5. Tensor Operation Backend
 ##############################
 
-After developing kernels for binary primitives such as GEMM and BRGEMM, as well as kernels for unary primitives like Zero and ReLU, 
-it was now time to implement common interfaces that let the user create tensor operation objects.
-The tensor operation object is not only be responsible for setting up and holding the used kernel objects,
-but also to block the input and output matrices and execute the kernels accordingly.
+After developing kernels for binary primitives such as GEMM and BRGEMM, as well as kernels for unary primitives like Zero and ReLU, it was now time to implement common interfaces that let the user create tensor operation objects.
+The tensor operation backend is not only responsible for setting up and holding the used kernel objects,
+but also to block the input and output tensors and execute the kernels accordingly.
 
 *********************
 5.1 User Interface
@@ -429,6 +430,8 @@ These results are somewhat consistent with calling the kernels themselves indepe
     :caption: ``GFLOP`` performance of the given configurations using the enhanced ``matmul`` kernel
     :dedent:
 
+.. _shared-memory-parallelization:
+
 **********************************
 5.4 Shared Memory Parallelization
 **********************************
@@ -607,6 +610,8 @@ To enable multithreading, we called the executable with ``OMP_NUM_THREADS=4``.
     :dedent:
 
 With the parallelization we achieved about ``360 - 390 GFLOPs``. 
+
+.. _optimization-passes:
 
 **********************************
 5.5 Optimization Passes
@@ -1044,6 +1049,8 @@ We obtained the following results:
     :dedent:
 
 Depending on the selected dimensions our results varied massively. The highest performance we achieved was around ``350 GFLOPs``. 
+
+.. _unary-operations:
 
 **********************************
 5.6 Unary Operations
