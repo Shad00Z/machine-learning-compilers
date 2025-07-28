@@ -82,8 +82,8 @@ First, we developed an intermediate representation of the tensors consisting of 
 Then, we applied **Primitive Identification**, **Dimension Splitting** and the **Parallelization of Sequential Dimensions** to the vectors of the Dimension ``struct``'s that represent each input tensor.
 
 In week 8, we enhanced our tensor operation backend and our optimizer by supporting **Unary Operations**, such as permuting a tensor's dimensions.
-Here, we first had to verify that all dimensions of such an operation are of type ``C`` and appear both in the input and the output tensor. Next, the second input tensor had to be automatically set to ``nullptr``, as unary operations only support one input.
-Additionally, we had to implement new primitive identification and shared memory parallelization optimization passes for the unary operations and finally verify the correctness of our code against a reference implementation.
+Here, we first had to verify that all dimensions of such an operation are of type ``C`` and appear both in the input and the output tensor. Additionally, the second input tensor had to be automatically set to ``nullptr``, as unary operations only support one input.
+Next, we had to implement new primitive identification and shared memory parallelization optimization passes for the unary operations and finally verify the correctness of our code against a reference implementation.
 To view the results and implementations, visit our :ref:`detailed report <unary-operations>`.
 
 Week 9: Einsum + Individual Phase Pitch and Sketch
