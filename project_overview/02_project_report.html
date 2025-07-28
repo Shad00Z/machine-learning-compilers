@@ -145,7 +145,7 @@ Here too, we verified our implementation using unit tests.
 Lastly, we performed an extensive benchmark of the GEMM and BRGEMM kernels for different matrix dimensions.
 In total, this benchmark took over 8 hours on the provided Apple M4 machine.
 For more information, refer to <a class="reference internal" href="../submissions/04_code_gen.html#brgemm-primitive"><span class="std std-ref">4.1 BRGEMM Primitive</span></a>.</p>
-<p>In week 5, we extended our code generator by unary primitives of the form B:=op(A).
+<p>In week 5, we extended our code generator by <strong>Unary Primitives</strong> of the form B:=op(A).
 Similarly to the BRGEMM backend, we first implemented a new entry point which can be used to generate various unary primitive kernels.
 The first unary primitive we implemented was the <strong>Zero Primitive</strong>, which sets all elements of the output tensor to zero.
 Secondly, we implemented the <strong>Identity Primitive</strong> which copies all elements of the input tensor to the output tensor.
@@ -154,6 +154,24 @@ Lastly, we implemented an activation function commonly found in machine learning
 This operation sets all negative elements to zero and keeps positive elements as they are.
 For all implemented unary operations we implemented unit tests and benchmarked the performance.
 Further information can be found in <a class="reference internal" href="../submissions/04_code_gen.html#unary-primitives"><span class="std std-ref">4.2 Unary Primitives</span></a>.</p>
+<p>In week 6 we received the task of developing a <strong>Tensor Operation Backend</strong>, see <a class="reference internal" href="../submissions/05_tensor_op.html#tensor-op-backend"><span class="std std-ref">5. Tensor Operation Backend</span></a>.
+This backend not only <strong>sets up and holds the kernel objects</strong>,
+but also <strong>blocks the input and output tensors</strong> and executes the kernels accordingly.
+We started with a verification of all input parameters and then implemented an <code class="docutils literal notranslate"><span class="pre">execute</span></code> function,
+which calls itself recursively to work through the nested sequential loops of an input tensor.
+To end this weeks task, we performed extensive benchmarks with various configuration parameters.</p>
+<p>In the following week, we added support for <strong>Shared Memory Parallelization</strong>.
+This meant that we had to check whether the input tensor contained any dimensions that should be executed in parallel.
+If that was the case, we flattened all shared dimensions into one big iteration space and then parallelized it using <strong>OpenMP</strong>.
+You can find more information <a class="reference internal" href="../submissions/05_tensor_op.html#shared-memory-parallelization"><span class="std std-ref">here</span></a>.</p>
+<p>The second task of week 7 was to implement optimization passes, see <a class="reference internal" href="../submissions/05_tensor_op.html#optimization-passes"><span class="std std-ref">5.5 Optimization Passes</span></a>.
+First, we developed an intermediate representation of the tensors consisting of Dimension <code class="docutils literal notranslate"><span class="pre">struct</span></code>’s.
+Then, we applied <strong>Primitive Identification</strong>, <strong>Dimension Splitting</strong> and the <strong>Parallelization of Sequential Dimensions</strong> to the vectors of the Dimension <code class="docutils literal notranslate"><span class="pre">struct</span></code>’s that represent each input tensor.</p>
+<p>In week 8, we enhanced our tensor operation backend and our optimizer by supporting <strong>Unary Operations</strong>, such as permuting a tensor’s dimensions.
+Here, we first had to verify that all dimensions of such an operation are of type <code class="docutils literal notranslate"><span class="pre">C</span></code> and appear both in the input and the output tensor. Additionally, the second input tensor had to be automatically set to <code class="docutils literal notranslate"><span class="pre">nullptr</span></code>, as unary operations only support one input.
+Next, we had to implement new primitive identification and shared memory parallelization optimization passes for the unary operations and finally verify the correctness of our code against a reference implementation.
+To view the results and implementations, visit our <a class="reference internal" href="../submissions/05_tensor_op.html#unary-operations"><span class="std std-ref">detailed report</span></a>.</p>
+<p>Week 9: Einsum + Individual Phase Pitch and Sketch</p>
 </section>
 
 
