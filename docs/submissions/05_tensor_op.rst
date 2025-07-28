@@ -705,7 +705,7 @@ First, we identify the primitive ``M`` dimension as the dimension which has unit
 If that dimension does not have unit stride in the output tensor, we assume that the unary operation uses transposition.
 
 In case of transposition, the primitive ``N`` dimension is the one with unit stride in the output tensor.
-In case there is no transposition, we choose the dimension with the smallest stride in the input tensor.
+If there is no transposition, we choose the dimension with the smallest stride in the input tensor.
 That excludes the previously identified ``M`` dimension.
 
 Lastly, we set all remaining dimensions to ``sequential``.
