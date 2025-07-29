@@ -179,7 +179,7 @@ The approach for constructing this kernel was similar to the ``zero``, ``ReLU`` 
     int mLoopIterations = m / 16;
     int mLoopRemainder = m % 16;
 
-As a first step, we would calculate how many iterations we had to perform. 
+As a first step, we calculated how many iterations we had to perform. 
 With this number, we were then able to execute our main kernel accordingly:
 
 .. code-block:: cpp
@@ -233,7 +233,7 @@ After implementing the kernel, we also verified its correctness for different co
     uint32_t N = GENERATE(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
     test_square_primitive(M, N);
 
-In order to be universally usable, we have also implemented a transposition square kernel. 
+In order to be universally usable, we also implemented a transposition square kernel. 
 The implementation for this kernel was simple, as we could reuse the ``ReLU`` kernel and replace the ReLU operation with the square operation: 
 
 .. code-block:: cpp
@@ -805,7 +805,8 @@ We implemented the kernels in the following order:
 7.3.2.1 Add and Sub Primitive
 ---------------------------------
 
-The first binary primitive which we implemented is the element-wise addition and the subtraction of two matrices. Fortunately, the required instructions ``FADD`` and ``FSUB`` were already implemented in :ref:`increment-decrement`.
+The first binary primitive which we implemented was the element-wise addition and the subtraction of two matrices. 
+Fortunately, the required instructions ``FADD`` and ``FSUB`` were already implemented in :ref:`increment-decrement`.
 Since the subtraction kernel is fundamentally the same as the addition kernel, we will only consider the addition kernel in this section.
 
 Similar to previous kernels, we first implemented a main loop for 16 elements in the ``M`` dimension and 1 element in the ``N`` dimension.
