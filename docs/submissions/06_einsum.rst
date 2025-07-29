@@ -14,6 +14,8 @@ The first task was to parse einsum trees as string expressions of the form ``[..
 A tree object should then be lowered to our tensor operation backend, meaning that contraction and permutation nodes had to be mapped to executable tensor operations.
 Furthermore, we had to run a series of optimization passes on the einsum tree and benchmark its performance.
 
+.. _einsum-parsing:
+
 6.1.1 Expression Parsing
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -360,6 +362,8 @@ After creating and initializing an einsum tree, we run the previously implemente
 
 This function first makes a recursive call on its children and then executes the optimizer on the previously set vectors.
 
+.. _einsum-lowering-subchapter:
+
 6.1.4 Lowering to Tensor Backend
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -447,6 +451,8 @@ Lastly, all that is left is to call the setup function of the tensor operation u
                                  root_node->m_strides_in0,
                                  root_node->m_strides_in1,
                                  root_node->m_strides_out);
+
+.. _einsum-execution:
 
 6.1.4 Einsum Tree Execution
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -775,7 +781,7 @@ Similar to the primary ``M`` dimension in the left input tensor, we need to ensu
 
 We start by finding the right most dimension in the left input tensor that also exists in the right input tensor. This is because the requirement for ``K`` dimensions is that they exist in both input tensors. Furthermore, it is beneficial for the primary ``K`` dimension to have a low stride (for shorter jumps in memory), which is why we choose the right most ``K``.
 
-.. code:: cpp
+.. code-block:: cpp
     :caption: Finding a K dimension
 
     int64_t l_k_dim_index = l_unit_stride_left_child;

@@ -70,7 +70,7 @@ This backend not only **sets up and holds the kernel objects**,
 but also **blocks the input and output tensors** and executes the kernels accordingly.
 We started with a verification of all input parameters and then implemented an ``execute`` function,
 which calls itself recursively to work through the nested sequential loops of an input tensor.
-To end this weeks task, we performed extensive benchmarks with various configuration parameters.
+To end this week's task, we performed extensive benchmarks with various configuration parameters.
 
 In the following week, we added support for **Shared Memory Parallelization**.
 This meant that we had to check whether the input tensor contained any dimensions that should be executed in parallel.
@@ -86,4 +86,22 @@ Here, we first had to verify that all dimensions of such an operation are of typ
 Next, we had to implement new primitive identification and shared memory parallelization optimization passes for the unary operations and finally verify the correctness of our code against a reference implementation.
 To view the results and implementations, visit our :ref:`detailed report <unary-operations>`.
 
-Week 9: Einsum + Individual Phase Pitch and Sketch
+In the final weekly submission of our project, we made important enhancements to the flexibility of our tensor compiler.
+The first major task was the support for **Einsum Tree Expressions**.
+Starting with a :ref:`string parser <einsum-parsing>` that creates an internal tree representation from string expressions of the form ``[...],[...]->[...]``, we also had to find a way to :ref:`lower the einsum tree to our tensor operation backend <einsum-lowering-subchapter>`.
+Next, we had to ensure that our previously implemented :ref:`optimization passes <einsum-node-optimizations>` were applicable here too and lastly ensure that the tree could be :ref:`executed <einsum-execution>`. To validate the correctness and effectiveness of our implementation, we performed various benchmarks.
+The detailed report on this task can be found in :ref:`einsum-lowering`
+
+The second major task was to implement **Optimization Passes for Einsum Trees**.
+These differ from the previous optimization which focused on the internals of a single tensor operation.
+In this task, we looked at **Node Swapping**, **Dimension Reordering** and the **Insertion of Permutation Nodes**.
+These tree optimizations come before the initialization of each tree node, and reshape the einsum tree to improve performance.
+Refer to :ref:`einsum-tree-optimizations` to learn more about our implementations.
+
+The last task was to propose a pitch and write a short sketch on the individual phase that would conclude this project.
+To read our pitch and sketch, please take a look at :ref:`individual-phase`.
+
+During the last two weeks, we had to fulfill the pitch that we had written in the prior week.
+We used the first week of the individual phase to extend the flexibility of our tensor compiler by implementing various unary and binary primitives.
+In the second week, we put our attention on the rather complex sigmoid activation function and added multiple implementations with different speeds and accuracies.
+Lastly, we improved our optimizer by adding support for **Dimension Fusion**.

@@ -34,7 +34,7 @@ Project Background
 
 Having explained the motivation behind the project, we would now like to provide some further background information.
 Everything you'll encounter in this guide and the accompanying `GitHub repository <https://github.com/Shad00Z/machine-learning-compilers>`_ was developed as part of the **Machine Learning Compilers** class at the `University of Jena <https://www.uni-jena.de/en>`_ during the summer semester of 2025.
-The codebase was created through a series of weekly assignments we completed throughout the semester.  
+The codebase was created through a series of weekly assignments which we completed throughout the semester.  
 Alongside the class sessions, we were also provided with `an online book <https://scalable.uni-jena.de/opt/pbtc/index.html>`_ that outlines the core concepts behind this project. 
 If you are more interested in the theoretical background of the project, we recommend checking out the book first.
 
