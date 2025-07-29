@@ -4,7 +4,8 @@
 7. Individual Phase
 ##############################
 
-After following the given steps for the first couple of weeks, we were given the opportunity to explore the customizations of machine learning compilers.
+After completing the assigned tasks during the initial weeks of the project, we were granted the opportunity to define our own objectives for the final individual phase.
+As part of this phase, we were required to propose a pitch and develop a short sketch to present and explore our individual ideas.
 
 **********************************
 7.1 Our Pitch
@@ -101,7 +102,7 @@ For the unary primitives we were looking at **Square**, **Reciprocal**, **Increm
 
 Our initial approach was to use instructions that we already had implemented.
 Therefore, we started by using the ``FMLA`` instruction.
-However, we quickly realized that the performance from multiplying two values and adding a zero value to it was not great. We decided to implement new instructions which would make our code more performant:
+However, we quickly realized that the performance from multiplying two values and adding a zero value to it was not great. We decided to implement new instructions which would increase the performance of our code:
 
 .. code-block:: cpp
     :caption: ``FMUL`` (vector) instruction generation
@@ -136,7 +137,7 @@ However, we quickly realized that the performance from multiplying two values an
     }
 
 This ``FMUL`` (vector) allowed us to multiply several elements simultaneously. 
-For the cases where we needed to multiply single elements (``arr_spec_t::``) together, we implemented the following instruction:
+For cases where we needed to multiply single elements (``arr_spec_t::``), we implemented the following instruction:
 
 .. code-block:: cpp
     :caption: ``FMUL`` (scalar) instruction generation
@@ -169,7 +170,7 @@ For the cases where we needed to multiply single elements (``arr_spec_t::``) tog
         return l_ins;
     }
 
-These instructions allowed us to develop a kernel for the squared primitive. 
+These instructions allowed us to develop a kernel for the squaring primitive. 
 The approach for constructing this kernel was similar to the ``zero``, ``ReLU`` or ``identity`` kernel. 
 
 .. code-block:: cpp
@@ -182,7 +183,7 @@ As a first step, we would calculate how many iterations we had to perform.
 With this number, we were then able to execute our main kernel accordingly:
 
 .. code-block:: cpp
-    :caption: squared primitive main loop calculation
+    :caption: squaring primitive main loop calculation
 
     ldp(v0, v1, x8, 0, q)
     ldp(v2, v3, x8, 32, q)
@@ -199,7 +200,7 @@ That means, in our main loop we would calculate 16 squared elements in one itera
 If there were no iterations left, we had to check if there would be a remainder: 
 
 .. code-block:: cpp
-    :caption: Squared kernel remainder calculation
+    :caption: Squaring kernel remainder calculation
 
     case 8:
         kernel.add_instr({
