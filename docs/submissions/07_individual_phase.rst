@@ -170,7 +170,7 @@ For cases where we needed to multiply single elements (``arr_spec_t::``), we imp
         return l_ins;
     }
 
-These instructions allowed us to develop a kernel for the squaring primitive. 
+These instructions allowed us to develop a kernel for the square primitive. 
 The approach for constructing this kernel was similar to the ``zero``, ``ReLU`` or ``identity`` kernel. 
 
 .. code-block:: cpp
@@ -183,7 +183,7 @@ As a first step, we would calculate how many iterations we had to perform.
 With this number, we were then able to execute our main kernel accordingly:
 
 .. code-block:: cpp
-    :caption: squaring primitive main loop calculation
+    :caption: Square primitive main loop calculation
 
     ldp(v0, v1, x8, 0, q)
     ldp(v2, v3, x8, 32, q)
@@ -200,7 +200,7 @@ That means, in our main loop we would calculate 16 squared elements in one itera
 If there were no iterations left, we had to check if there would be a remainder: 
 
 .. code-block:: cpp
-    :caption: Squaring kernel remainder calculation
+    :caption: Square kernel remainder calculation
 
     case 8:
         kernel.add_instr({
@@ -237,7 +237,7 @@ In order to be universally usable, we have also implemented a transposition squa
 The implementation for this kernel was simple, as we could reuse the ``ReLU`` kernel and replace the ReLU operation with the square operation: 
 
 .. code-block:: cpp
-    :caption: Squared transposition primitive main loop calculation
+    :caption: Square transposition primitive main loop calculation
 
     // Load 4x4 block of A (input matrix)
     ldr(v0, x7, 0, q)
@@ -277,15 +277,14 @@ The implementation for this kernel was simple, as we could reuse the ``ReLU`` ke
     add(x8, x8, x3, 0, 0)
     str(v11, x8, 0, q)
 
-However, that also meant we were limited to a ``4x4`` kernel, which would reduce our overall performance. 
-For the transposition kernel, we did not implement any further optimizations. 
-
-On the other hand, for the normal squared kernel we enhanced our initial dimension size from ``M=8`` to ``M=16``.
+This meant that we were limited to a ``4x4`` kernel, which might reduce our overall performance. 
+To combat this, we increased the initial dimension size from ``M=8`` to ``M=16`` in the normal square kernel.
+For the transposition kernel however, we did not implement any further optimizations.
 
 Lastly, we performed benchmarks similar to those of the other unary kernels: 
 
 .. code-block:: text
-    :caption: Benchmarking ``squared`` kernel
+    :caption: Benchmarking ``square`` kernel
 
     --------------------------------------------------
     Running square_primitive 50x50 benchmark
@@ -314,7 +313,7 @@ Lastly, we performed benchmarks similar to those of the other unary kernels:
     --------------------------------------------------
 
 .. code-block:: text 
-    :caption: Benchmarking ``squared`` transposition kernel
+    :caption: Benchmarking ``square`` transposition kernel
 
     Running square_trans_primitive 50x50 benchmark
     Total time (s):                       3
@@ -341,13 +340,13 @@ Lastly, we performed benchmarks similar to those of the other unary kernels:
     Estimated GFLOPS/sec:                 0.47774
     --------------------------------------------------
 
-This time we were measuring the throughput of our kernel, differently to the ``zero``, ``identity``, and ``ReLU`` kernel, where we were measuring the data transfer rate.
+This time we measured the throughput of our kernel, differently to the ``zero``, ``identity``, and ``ReLU`` kernel, where we measured the data transfer rate.
 
 7.3.1.2 Reciprocal Primitive
 ------------------------------
 
-The next primitive we implemented is the ``reciprocal`` operation, which computes ``1.0 / x`` for all input values ``x``.
-For this, the AArch64 ISA already provides two instructions ``FRECPE`` and ``FRECPS``. ``FRECPE`` is the ``floating point reciprocal compute estimate`` instruction, which computes a first estimate of ``1.0 / x``. However, this estimate is generally not good enough for 32-bit floating point precision. To solve this, we can utilize ``FRECPS`` (``floating point reciprocal compute step``) iteratively, which improves the accuracy of the previously calculated estimate. We decided to perform only one step, as this already satisfied our used 32-bit floating point precision.
+The next primitive we implemented was the ``reciprocal`` function, which computes ``1.0 / x`` for all input values ``x``.
+For this, the A64 ISA already provides two instructions ``FRECPE`` and ``FRECPS``. ``FRECPE`` is the ``floating point reciprocal compute estimate`` instruction, which computes a first estimate of ``1.0 / x``. However, this estimate is generally not good enough for 32-bit floating point precision. To solve this, we utilized ``FRECPS`` (``floating point reciprocal compute step``) iteratively, which improved the accuracy of the previously calculated estimate. We decided to perform only one step, as this already satisfied the 32-bit floating point precision.
 
 .. code-block:: cpp
     :caption: ``FRECPE`` instruction generation 
