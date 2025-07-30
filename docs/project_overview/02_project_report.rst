@@ -88,9 +88,7 @@ To view the results and implementations, visit our :ref:`detailed report <unary-
 
 In the final weekly submission of our project, we made important enhancements to the flexibility of our tensor compiler.
 The first major task was the support for **Einsum Tree Expressions**.
-Starting with a :ref:`string parser <einsum-parsing>` that creates an internal tree representation from string expressions of the form ``[...],[...]->[...]``, we also had to find a way to :ref:`lower the einsum tree to our tensor operation backend <einsum-lowering-subchapter>`.
-Next, we had to ensure that our previously implemented :ref:`optimization passes <einsum-node-optimizations>` were applicable here too and lastly ensure that the tree could be :ref:`executed <einsum-execution>`. To validate the correctness and effectiveness of our implementation, we performed various benchmarks.
-The detailed report on this task can be found in :ref:`einsum-lowering`
+We began with a :ref:`string parser <einsum-parsing>` that transforms expressions of the form ``[...],[...]->[...]`` into an internal tree representation. The next step involved :ref:`lowering this einsum tree to our tensor operation backend <einsum-lowering-subchapter>`. We then applied our existing :ref:`optimization passes <einsum-node-optimizations>` on this tree structure, and finally ensured that the tree could be correctly :ref:`executed <einsum-execution>`. To assess the correctness and performance of our implementation, we ran a series of benchmarks. A comprehensive report on this work is available in :ref:`einsum-lowering`.
 
 The second major task was to implement **Optimization Passes for Einsum Trees**.
 These differ from the previous optimization which focused on the internals of a single tensor operation.

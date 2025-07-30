@@ -672,8 +672,8 @@ that all nodes of the tree are looked at:
 6.2.2 Reordering Dimensions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-As we tried to benchmark further unoptimized einsum trees, we realized that swapping operands alone is not sufficient. This is because during the identification process of primitive dimensions, our implementation looks for specific strides.
-For example, our code requires that a primary ``M`` dimension, which should appear in the left input and also output tensor, needs to have unit stride in both tensors for contractions such as ``GEMM`` and ``BRGEMM``. 
+As we tried to benchmark further unoptimized einsum trees, we realized that swapping operands alone was not sufficient. This is because during the identification process of primitive dimensions, our implementation looks for specific strides.
+For example, our code requires that a primary ``M`` dimension, which should appear in the left input tensor and also in the output tensor, needs to have a unit stride in both tensors for contractions such as ``GEMM`` and ``BRGEMM``. 
 However, should this primary ``M`` dimension not be in the right most position in the tensor expression, it will not have unit stride. 
 Therefore, we need to perform a dimension reordering to make the tree executable in our implementation.
 
