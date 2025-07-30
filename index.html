@@ -1,0 +1,286 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Machine Learning Compilers &mdash; Machine Learning Compilers  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+      <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="_static/copybutton.js?v=f281be69"></script>
+      <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Introduction" href="project_overview/01_project_information.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="#" class="icon icon-home">
+            Machine Learning Compilers
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Project Overview</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="project_overview/01_project_information.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="project_overview/02_project_report.html">Project Report</a></li>
+<li class="toctree-l1"><a class="reference internal" href="project_overview/03_user_guide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="project_overview/04_docu_setup.html">Documentation Setup</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Submissions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="submissions/01_assembly.html">1. Assembly</a></li>
+<li class="toctree-l1"><a class="reference internal" href="submissions/02_base.html">2. Base</a></li>
+<li class="toctree-l1"><a class="reference internal" href="submissions/03_neon.html">3. Neon</a></li>
+<li class="toctree-l1"><a class="reference internal" href="submissions/04_code_gen.html">4. Code Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="submissions/05_tensor_op.html">5. Tensor Operation Backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="submissions/06_einsum.html">6. Einsum Trees</a></li>
+<li class="toctree-l1"><a class="reference internal" href="submissions/07_individual_phase.html">7. Individual Phase</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/namespaces/mini_jit.html">mini_jit</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/namespaces/mini_jit_benchmarks.html">mini_jit::benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/namespaces/mini_jit_converters.html">mini_jit::converters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/namespaces/mini_jit_einsum.html">mini_jit::einsum</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/namespaces/mini_jit_instructions.html">mini_jit::instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/namespaces/mini_jit_ir.html">mini_jit::ir</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/namespaces/mini_jit_kernels.html">mini_jit::kernels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/namespaces/mini_jit_registers.html">mini_jit::registers</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">Machine Learning Compilers</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Machine Learning Compilers</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="machine-learning-compilers">
+<h1>Machine Learning Compilers<a class="headerlink" href="#machine-learning-compilers" title="Link to this heading"></a></h1>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Project Overview</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="project_overview/01_project_information.html">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="project_overview/01_project_information.html#what-are-machine-learning-compilers">What are Machine Learning Compilers?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project_overview/01_project_information.html#project-background">Project Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project_overview/01_project_information.html#project-structure">Project Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project_overview/01_project_information.html#where-to-go-next">Where to Go Next?</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="project_overview/02_project_report.html">Project Report</a></li>
+<li class="toctree-l1"><a class="reference internal" href="project_overview/03_user_guide.html">User Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="project_overview/03_user_guide.html#installing-dependencies">Installing Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project_overview/03_user_guide.html#building-from-source">Building from Source</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project_overview/03_user_guide.html#using-our-tensor-compiler">Using our Tensor Compiler</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="project_overview/04_docu_setup.html">Documentation Setup</a></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Submissions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="submissions/01_assembly.html">1. Assembly</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="submissions/01_assembly.html#hello-assembly">1.1 Hello Assembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="submissions/01_assembly.html#assembly-function">1.2 Assembly Function</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="submissions/02_base.html">2. Base</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="submissions/02_base.html#copying-data">2.1 Copying Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="submissions/02_base.html#instruction-throughput-and-latency">2.2 Instruction Throughput and Latency</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="submissions/03_neon.html">3. Neon</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="submissions/03_neon.html#execution-throughput-and-latency">3.1 Execution Throughput and Latency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="submissions/03_neon.html#microkernel">3.2 Microkernel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="submissions/03_neon.html#loops">3.3 Loops</a></li>
+<li class="toctree-l2"><a class="reference internal" href="submissions/03_neon.html#simd-lanes">3.4 SIMD Lanes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="submissions/03_neon.html#accumulator-block-shapes">3.5 Accumulator Block Shapes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="submissions/03_neon.html#batch-reduce-gemm">3.6 Batch-Reduce GEMM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="submissions/03_neon.html#transposition">3.7 Transposition</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="submissions/04_code_gen.html">4. Code Generation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="submissions/04_code_gen.html#brgemm-primitive">4.1 BRGEMM Primitive</a></li>
+<li class="toctree-l2"><a class="reference internal" href="submissions/04_code_gen.html#unary-primitives">4.2 Unary Primitives</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="submissions/05_tensor_op.html">5. Tensor Operation Backend</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="submissions/05_tensor_op.html#user-interface">5.1 User Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="submissions/05_tensor_op.html#recursive-loops-over-primitives">5.2 Recursive Loops over Primitives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="submissions/05_tensor_op.html#performance-benchmarking">5.3 Performance Benchmarking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="submissions/05_tensor_op.html#shared-memory-parallelization">5.4 Shared Memory Parallelization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="submissions/05_tensor_op.html#optimization-passes">5.5 Optimization Passes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="submissions/05_tensor_op.html#unary-operations">5.6 Unary Operations</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="submissions/06_einsum.html">6. Einsum Trees</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="submissions/06_einsum.html#lowering">6.1 Lowering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="submissions/06_einsum.html#einsum-tree-optimization">6.2 Einsum Tree Optimization</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="submissions/07_individual_phase.html">7. Individual Phase</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="submissions/07_individual_phase.html#our-pitch">7.1 Our Pitch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="submissions/07_individual_phase.html#sketch">7.2 Sketch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="submissions/07_individual_phase.html#progress-of-week-1">7.3 Progress of Week 1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="submissions/07_individual_phase.html#progress-of-week-2">7.4 Progress of Week 2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="submissions/07_individual_phase.html#wrap-up">7.5 Wrap-Up</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/namespaces/mini_jit.html">mini_jit</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit.html#_CPPv4N8mini_jit6exec_tE"><code class="docutils literal notranslate"><span class="pre">exec_t</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit.html#_CPPv4N8mini_jit7ptype_tE"><code class="docutils literal notranslate"><span class="pre">ptype_t</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit.html#_CPPv4N8mini_jit5dim_tE"><code class="docutils literal notranslate"><span class="pre">dim_t</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit.html#_CPPv4N8mini_jit7dtype_tE"><code class="docutils literal notranslate"><span class="pre">dtype_t</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit.html#_CPPv4N8mini_jit7error_tE"><code class="docutils literal notranslate"><span class="pre">error_t</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit.html#_CPPv4N8mini_jit9to_stringE6exec_t"><code class="docutils literal notranslate"><span class="pre">to_string()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit.html#_CPPv4N8mini_jit9to_stringE7ptype_t"><code class="docutils literal notranslate"><span class="pre">to_string()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit.html#_CPPv4N8mini_jit9to_stringE5dim_t"><code class="docutils literal notranslate"><span class="pre">to_string()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit.html#_CPPv4N8mini_jit9to_stringE7dtype_t"><code class="docutils literal notranslate"><span class="pre">to_string()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit.html#_CPPv4N8mini_jit9to_stringE7error_t"><code class="docutils literal notranslate"><span class="pre">to_string()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit.html#_CPPv4N8mini_jit8mini_jit9BenchmarkE"><code class="docutils literal notranslate"><span class="pre">mini_jit::Benchmark</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit.html#_CPPv4N8mini_jit8mini_jit6BinaryE"><code class="docutils literal notranslate"><span class="pre">mini_jit::Binary</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit.html#_CPPv4N8mini_jit8mini_jit6BrgemmE"><code class="docutils literal notranslate"><span class="pre">mini_jit::Brgemm</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit.html#_CPPv4N8mini_jit8mini_jit6KernelE"><code class="docutils literal notranslate"><span class="pre">mini_jit::Kernel</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit.html#_CPPv4N8mini_jit8mini_jit15TensorOperationE"><code class="docutils literal notranslate"><span class="pre">mini_jit::TensorOperation</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit.html#_CPPv4N8mini_jit8mini_jit5UnaryE"><code class="docutils literal notranslate"><span class="pre">mini_jit::Unary</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/namespaces/mini_jit_benchmarks.html">mini_jit::benchmarks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit_benchmarks.html#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks15EinsumTreeBenchE"><code class="docutils literal notranslate"><span class="pre">mini_jit::benchmarks::EinsumTreeBench</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit_benchmarks.html#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks25FastSigmoidPrimitiveBenchE"><code class="docutils literal notranslate"><span class="pre">mini_jit::benchmarks::FastSigmoidPrimitiveBench</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit_benchmarks.html#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks22IdentityPrimitiveBenchE"><code class="docutils literal notranslate"><span class="pre">mini_jit::benchmarks::IdentityPrimitiveBench</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit_benchmarks.html#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks27IdentityTransPrimitiveBenchE"><code class="docutils literal notranslate"><span class="pre">mini_jit::benchmarks::IdentityTransPrimitiveBench</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit_benchmarks.html#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks16MatmulBrMNKBenchE"><code class="docutils literal notranslate"><span class="pre">mini_jit::benchmarks::MatmulBrMNKBench</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit_benchmarks.html#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks14MatmulMNKBenchE"><code class="docutils literal notranslate"><span class="pre">mini_jit::benchmarks::MatmulMNKBench</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit_benchmarks.html#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks24ReciprocalPrimitiveBenchE"><code class="docutils literal notranslate"><span class="pre">mini_jit::benchmarks::ReciprocalPrimitiveBench</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit_benchmarks.html#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks18ReLUPrimitiveBenchE"><code class="docutils literal notranslate"><span class="pre">mini_jit::benchmarks::ReLUPrimitiveBench</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit_benchmarks.html#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks23ReLUTransPrimitiveBenchE"><code class="docutils literal notranslate"><span class="pre">mini_jit::benchmarks::ReLUTransPrimitiveBench</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit_benchmarks.html#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks34SigmoidInterpolationPrimitiveBenchE"><code class="docutils literal notranslate"><span class="pre">mini_jit::benchmarks::SigmoidInterpolationPrimitiveBench</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit_benchmarks.html#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks27SigmoidTaylorPrimitiveBenchE"><code class="docutils literal notranslate"><span class="pre">mini_jit::benchmarks::SigmoidTaylorPrimitiveBench</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit_benchmarks.html#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks20SquarePrimitiveBenchE"><code class="docutils literal notranslate"><span class="pre">mini_jit::benchmarks::SquarePrimitiveBench</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit_benchmarks.html#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks25SquareTransPrimitiveBenchE"><code class="docutils literal notranslate"><span class="pre">mini_jit::benchmarks::SquareTransPrimitiveBench</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit_benchmarks.html#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks20TensorOperationBenchE"><code class="docutils literal notranslate"><span class="pre">mini_jit::benchmarks::TensorOperationBench</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit_benchmarks.html#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks21ZeroEorPrimitiveBenchE"><code class="docutils literal notranslate"><span class="pre">mini_jit::benchmarks::ZeroEorPrimitiveBench</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit_benchmarks.html#_CPPv4N8mini_jit10benchmarks8mini_jit10benchmarks21ZeroXZRPrimitiveBenchE"><code class="docutils literal notranslate"><span class="pre">mini_jit::benchmarks::ZeroXZRPrimitiveBench</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/namespaces/mini_jit_converters.html">mini_jit::converters</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit_converters.html#_CPPv4N8mini_jit10converters13to_string_binE8uint32_t"><code class="docutils literal notranslate"><span class="pre">to_string_bin()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit_converters.html#_CPPv4N8mini_jit10converters13to_string_hexE8uint32_t"><code class="docutils literal notranslate"><span class="pre">to_string_hex()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/namespaces/mini_jit_einsum.html">mini_jit::einsum</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit_einsum.html#_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumNodeE"><code class="docutils literal notranslate"><span class="pre">mini_jit::einsum::EinsumNode</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit_einsum.html#_CPPv4N8mini_jit6einsum8mini_jit6einsum10EinsumTreeE"><code class="docutils literal notranslate"><span class="pre">mini_jit::einsum::EinsumTree</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/namespaces/mini_jit_instructions.html">mini_jit::instructions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit_instructions.html#mini-jit-instructions-base">mini_jit::instructions::base</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit_instructions.html#mini-jit-instructions-simd-fp">mini_jit::instructions::simd_fp</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/namespaces/mini_jit_ir.html">mini_jit::ir</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit_ir.html#_CPPv4N8mini_jit2ir8mini_jit2ir9DimensionE"><code class="docutils literal notranslate"><span class="pre">mini_jit::ir::Dimension</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit_ir.html#_CPPv4N8mini_jit2ir8mini_jit2ir11IRConverterE"><code class="docutils literal notranslate"><span class="pre">mini_jit::ir::IRConverter</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit_ir.html#_CPPv4N8mini_jit2ir8mini_jit2ir9OptimizerE"><code class="docutils literal notranslate"><span class="pre">mini_jit::ir::Optimizer</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/namespaces/mini_jit_kernels.html">mini_jit::kernels</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit_kernels.html#mini-jit-kernels-matmul">mini_jit::kernels::matmul</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit_kernels.html#mini-jit-kernels-unary">mini_jit::kernels::unary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit_kernels.html#mini-jit-kernels-binary">mini_jit::kernels::binary</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/namespaces/mini_jit_registers.html">mini_jit::registers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit_registers.html#_CPPv4N8mini_jit9registers5gpr_tE"><code class="docutils literal notranslate"><span class="pre">gpr_t</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit_registers.html#_CPPv4N8mini_jit9registers9simd_fp_tE"><code class="docutils literal notranslate"><span class="pre">simd_fp_t</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit_registers.html#_CPPv4N8mini_jit9registers10arr_spec_tE"><code class="docutils literal notranslate"><span class="pre">arr_spec_t</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/namespaces/mini_jit_registers.html#_CPPv4N8mini_jit9registers16neon_size_spec_tE"><code class="docutils literal notranslate"><span class="pre">neon_size_spec_t</span></code></a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="project_overview/01_project_information.html" class="btn btn-neutral float-right" title="Introduction" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Lucas Obitz, Luca-Philipp Grumbach.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
