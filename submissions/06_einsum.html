@@ -66,13 +66,13 @@
 <li class="toctree-l2"><a class="reference internal" href="#lowering">6.1 Lowering</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#expression-parsing">6.1.1 Expression Parsing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#initializing-the-einsum-nodes">6.1.2 Initializing the Einsum Nodes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#run-optimization-passes">6.1.3 Run Optimization Passes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#optimization-passes-on-nodes">6.1.3 Optimization Passes on Nodes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#lowering-to-tensor-backend">6.1.4 Lowering to Tensor Backend</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#einsum-tree-execution">6.1.4 Einsum Tree Execution</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#performance-benchmarks">6.1.5 Performance Benchmarks</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#optimization">6.2 Optimization</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#einsum-tree-optimization">6.2 Einsum Tree Optimization</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#swapping-operands">6.2.1 Swapping Operands</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reordering-dimensions">6.2.2 Reordering Dimensions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#benchmarks">6.2.3 Benchmarks</a></li>
@@ -120,15 +120,18 @@
              
   <section id="einsum-trees">
 <h1>6. Einsum Trees<a class="headerlink" href="#einsum-trees" title="Link to this heading"></a></h1>
-<p>After creating our backend with the implementation of tensor objects, we now want to perform
-tensor computations on larger expressions in the form einsum trees.</p>
+<p>In this section, we explain how we expanded the capabilities of our tensor compiler by adding support for einsum trees.</p>
 <section id="lowering">
-<h2>6.1 Lowering<a class="headerlink" href="#lowering" title="Link to this heading"></a></h2>
-<p>Our first step is to accept expressions of the form <code class="docutils literal notranslate"><span class="pre">[...],[...]-&gt;[...]</span></code>.</p>
+<span id="einsum-lowering"></span><h2>6.1 Lowering<a class="headerlink" href="#lowering" title="Link to this heading"></a></h2>
+<p>The first task was to parse einsum trees as string expressions of the form <code class="docutils literal notranslate"><span class="pre">[...],[...]-&gt;[...]</span></code> into tree objects.
+A tree object should then be lowered to our tensor operation backend, meaning that contraction and permutation nodes had to be mapped to executable tensor operations.
+Furthermore, we had to run a series of optimization passes on the einsum tree and benchmark its performance.</p>
 <section id="expression-parsing">
-<h3>6.1.1 Expression Parsing<a class="headerlink" href="#expression-parsing" title="Link to this heading"></a></h3>
-<p>To transform our string expression into a tree of connected objects, we first implemented an <code class="docutils literal notranslate"><span class="pre">EinsumNode</span></code> class.</p>
-<p>An <code class="docutils literal notranslate"><span class="pre">EinsumNode</span></code> holds information about a single node from the expression e.g. <code class="docutils literal notranslate"><span class="pre">[...]</span></code>:</p>
+<span id="einsum-parsing"></span><h3>6.1.1 Expression Parsing<a class="headerlink" href="#expression-parsing" title="Link to this heading"></a></h3>
+<p>In order to transform string expressions into a tree of connected objects, we first implemented an <code class="docutils literal notranslate"><span class="pre">EinsumNode</span></code> class.
+An <code class="docutils literal notranslate"><span class="pre">EinsumNode</span></code> represents a node in the einsum tree and has the form <code class="docutils literal notranslate"><span class="pre">[...]</span></code> in the string representation.</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">EinsumNode class</span><a class="headerlink" href="#id1" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">/// The IDs of the dimensions in the output tensor</span>
 <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int64_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">m_output_dimension_ids</span><span class="p">;</span>
 <span class="c1">/// The IDs of the dimensions in the operation</span>
@@ -169,20 +172,28 @@ tensor computations on larger expressions in the form einsum trees.</p>
 <span class="kt">double</span><span class="w"> </span><span class="n">m_computational_operations</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span>
 </pre></div>
 </div>
-<p>To disassemble our einsum expression, we perform a number of steps.</p>
+</div>
+<p>To disassemble an einsum expression, we perform a number of steps:</p>
 <p>We initially check all allowed characters and then begin the connection of our <code class="docutils literal notranslate"><span class="pre">EinsumNode</span></code> objects using
-the <code class="docutils literal notranslate"><span class="pre">parse_einsum_expression_recursive</span></code> function. The first split we perform on our expression, is when we
-find the rightmost arrow <code class="docutils literal notranslate"><span class="pre">-&gt;</span></code>.</p>
+the <code class="docutils literal notranslate"><span class="pre">parse_einsum_expression_recursive</span></code> function.
+The first split we perform on the input expression is at the rightmost arrow <code class="docutils literal notranslate"><span class="pre">-&gt;</span></code>.</p>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">Determining the position of the rightmost arrow</span><a class="headerlink" href="#id2" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">size_t</span><span class="w"> </span><span class="n">l_arrow_pos</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">einsum_expression</span><span class="p">.</span><span class="n">rfind</span><span class="p">(</span><span class="s">&quot;-&gt;&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
-<p>If we find such an arrow, we split the expression into two pieces, where the left part is the <code class="docutils literal notranslate"><span class="pre">input</span></code> for the <code class="docutils literal notranslate"><span class="pre">output</span></code> expression on the right side. Note that here, we already remove the brackets around the output expression.</p>
+</div>
+<p>If we find such an arrow, we split the expression into two pieces, where the left part is the <code class="docutils literal notranslate"><span class="pre">input</span></code> for the <code class="docutils literal notranslate"><span class="pre">output</span></code> expression on the right side. Note that here we already remove the brackets around the output expression.</p>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">Splitting the einsum expression at the arrow position</span><a class="headerlink" href="#id3" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">l_inputs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">einsum_expression</span><span class="p">.</span><span class="n">substr</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">l_arrow_pos</span><span class="p">);</span>
 <span class="n">l_output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">einsum_expression</span><span class="p">.</span><span class="n">substr</span><span class="p">(</span><span class="n">l_arrow_pos</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="n">einsum_expression</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">l_arrow_pos</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">4</span><span class="p">);</span>
 </pre></div>
 </div>
-<p>The second step is to split the <code class="docutils literal notranslate"><span class="pre">input</span></code> again, but this time at a <code class="docutils literal notranslate"><span class="pre">,</span></code> that divides the <code class="docutils literal notranslate"><span class="pre">input</span></code> into two valid expressions. Specifically, we look for the <code class="docutils literal notranslate"><span class="pre">,</span></code> that is between two brackets <code class="docutils literal notranslate"><span class="pre">],[</span></code> and where the number of open and closed brackets is the same.</p>
-<p>If there is such a <code class="docutils literal notranslate"><span class="pre">,</span></code>, we have more than one input:</p>
+</div>
+<p>The second step is to split the <code class="docutils literal notranslate"><span class="pre">input</span></code> again, but this time at a <code class="docutils literal notranslate"><span class="pre">,</span></code> that divides the <code class="docutils literal notranslate"><span class="pre">input</span></code> into two valid expressions. Specifically, we look for the <code class="docutils literal notranslate"><span class="pre">,</span></code> that is between two brackets <code class="docutils literal notranslate"><span class="pre">],[</span></code> and where the number of open and closed brackets is the same. If such a <code class="docutils literal notranslate"><span class="pre">,</span></code> exists, we have more than one input:</p>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">Splitting the input into two parts</span><a class="headerlink" href="#id4" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// if the first char is not a bracket, there is only one input</span>
 <span class="kt">int64_t</span><span class="w"> </span><span class="n">l_split_input_pos</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">-1</span><span class="p">;</span>
 <span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">l_inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">&#39;[&#39;</span><span class="p">)</span>
@@ -230,27 +241,31 @@ find the rightmost arrow <code class="docutils literal notranslate"><span class=
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>We connect these constructed components, by recursively calling the <code class="docutils literal notranslate"><span class="pre">parse_einsum_expression_recursive</span></code> function, for
-the children of the current node:</p>
+</div>
+<p>Lastly, we create an <code class="docutils literal notranslate"><span class="pre">EinsumNode</span></code> for the current output expression and recursively sets its children to the respective input expressions, thus creating a tree.</p>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text">Creation of a new EinsumNode</span><a class="headerlink" href="#id5" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">EinsumNode</span><span class="p">(</span><span class="n">get_dimensions_from_expression</span><span class="p">(</span><span class="n">l_output</span><span class="p">),</span>
 <span class="w">                      </span><span class="n">l_output</span><span class="p">,</span>
 <span class="w">                      </span><span class="n">parse_einsum_expression_recursive</span><span class="p">(</span><span class="n">l_left_input_expression</span><span class="p">),</span>
 <span class="w">                      </span><span class="n">parse_einsum_expression_recursive</span><span class="p">(</span><span class="n">l_right_input_expression</span><span class="p">));</span>
 </pre></div>
 </div>
-<p>For the current node, we are now calculating all information (size, strides, etc.) that would be needed to execute a primitive operation.</p>
+</div>
 </section>
 <section id="initializing-the-einsum-nodes">
-<span id="id1"></span><h3>6.1.2 Initializing the Einsum Nodes<a class="headerlink" href="#initializing-the-einsum-nodes" title="Link to this heading"></a></h3>
-<p>After creating an einsum tree, the next step is to initialize the nodes with the correct values for the dimensions, strides, etc. We implemented a <code class="docutils literal notranslate"><span class="pre">initialize_einsum_nodes</span></code> for this.</p>
+<span id="initialize-einsum-nodes"></span><h3>6.1.2 Initializing the Einsum Nodes<a class="headerlink" href="#initializing-the-einsum-nodes" title="Link to this heading"></a></h3>
+<p>After creating an einsum tree, the next step was to initialize the nodes with the correct values, such as the dimensions or strides. We implemented a <code class="docutils literal notranslate"><span class="pre">initialize_einsum_nodes</span></code> function for this.</p>
 <p>Since we evaluate the tree from the leaves to the root, the first step is to call the function recursively on the children of the current node:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">initialize_einsum_nodes</span><span class="p">(</span><span class="n">root_node</span><span class="o">-&gt;</span><span class="n">m_left_child</span><span class="p">,</span><span class="w"> </span><span class="n">dimension_sizes</span><span class="p">);</span>
 <span class="n">initialize_einsum_nodes</span><span class="p">(</span><span class="n">root_node</span><span class="o">-&gt;</span><span class="n">m_right_child</span><span class="p">,</span><span class="w"> </span><span class="n">dimension_sizes</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>Next, the actual computations take place.</p>
-<p>The first step is to gather all dimension IDs that are used in the operation. These are the dimension IDs of the current (output) nodes tensor and the dimension IDs of the childrens output tensors.</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">//////////////////////////////////////////////////////////////////</span>
+<p>The first step is to gather all dimension IDs that are used in the tensor operation. These are the dimension IDs of the current (output) node’s tensor and the dimension IDs of the children’s output tensors.</p>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text">Gathering all dimension IDs involved in the tensor operation</span><a class="headerlink" href="#id6" title="Link to this code"></a></div>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">//////////////////////////////////////////////////////////////////</span>
 <span class="c1">// GATHER AND SORT ALL USED IDS</span>
 <span class="c1">//////////////////////////////////////////////////////////////////</span>
 <span class="c1">// this is already given</span>
@@ -291,14 +306,17 @@ the children of the current node:</p>
 <span class="p">}</span>
 </pre></div>
 </div>
+</div>
 <p>This information allows us to compute the size that the output tensor of the current node will have:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// compute the size of the output tensor</span>
-<span class="n">root_node</span><span class="o">-&gt;</span><span class="n">m_tensor_size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text">Computing the size of the output tensor</span><a class="headerlink" href="#id7" title="Link to this code"></a></div>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">root_node</span><span class="o">-&gt;</span><span class="n">m_tensor_size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
 <span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="n">dim_id</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="o">*</span><span class="n">l_output_dimension_ids</span><span class="p">)</span>
 <span class="p">{</span>
 <span class="w">    </span><span class="n">root_node</span><span class="o">-&gt;</span><span class="n">m_tensor_size</span><span class="w"> </span><span class="o">*=</span><span class="w"> </span><span class="n">dimension_sizes</span><span class="p">[</span><span class="n">dim_id</span><span class="p">];</span>
 <span class="p">}</span>
 </pre></div>
+</div>
 </div>
 <p>Knowing all used IDs and sizes, we can initialize the vectors for the dimension and execution types, as well as the vectors for the strides.</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">//////////////////////////////////////////////////////////////////</span>
@@ -323,7 +341,9 @@ the children of the current node:</p>
 <li><p>Dimension exists in output and right input: <code class="docutils literal notranslate"><span class="pre">N</span></code></p></li>
 <li><p>All other dimensions: <code class="docutils literal notranslate"><span class="pre">K</span></code> (in both inputs, but not in the output)</p></li>
 </ul>
-<p>As for the strides, we simply need to multiply dimension sizes. Consider the following example, where a tensor has the expression <code class="docutils literal notranslate"><span class="pre">abc</span></code>. Since <code class="docutils literal notranslate"><span class="pre">c</span></code> is the right most dimension, we assume a stride of 1. The next dimension to the left of it is <code class="docutils literal notranslate"><span class="pre">b</span></code> and we compute its stride as the product of the dimension sizes to the right of it. This results in the stride of <code class="docutils literal notranslate"><span class="pre">b</span></code> being the dimension size of <code class="docutils literal notranslate"><span class="pre">c</span></code>. For <code class="docutils literal notranslate"><span class="pre">a</span></code>, the stride is therefore the product of the dimension sizes of <code class="docutils literal notranslate"><span class="pre">b</span></code> and <code class="docutils literal notranslate"><span class="pre">c</span></code>.</p>
+<p>As for the strides, we simply need to multiply dimension sizes. Consider the following example, where a tensor has the expression <code class="docutils literal notranslate"><span class="pre">abc</span></code>. Since <code class="docutils literal notranslate"><span class="pre">c</span></code> is the right most dimension, we assume a stride of 1. The next dimension to the left of it is <code class="docutils literal notranslate"><span class="pre">b</span></code>, and we compute its stride as the product of the dimension sizes to the right of it. This results in the stride of <code class="docutils literal notranslate"><span class="pre">b</span></code> being the dimension size of <code class="docutils literal notranslate"><span class="pre">c</span></code>. For <code class="docutils literal notranslate"><span class="pre">a</span></code>, the stride is therefore the product of the dimension sizes of <code class="docutils literal notranslate"><span class="pre">b</span></code> and <code class="docutils literal notranslate"><span class="pre">c</span></code>.</p>
+<div class="literal-block-wrapper docutils container" id="id8">
+<div class="code-block-caption"><span class="caption-text">Setting the type and stride for each dimension</span><a class="headerlink" href="#id8" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">l_operation_dim_ids</span><span class="o">-&gt;</span><span class="n">size</span><span class="p">();</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
 <span class="p">{</span>
 <span class="w">    </span><span class="c1">//////////////////////////////////////////////////////////////////</span>
@@ -401,13 +421,14 @@ the children of the current node:</p>
 <span class="p">}</span>
 </pre></div>
 </div>
+</div>
 </section>
-<section id="run-optimization-passes">
-<h3>6.1.3 Run Optimization Passes<a class="headerlink" href="#run-optimization-passes" title="Link to this heading"></a></h3>
-<p>For running optimization passes, we implemented an <code class="docutils literal notranslate"><span class="pre">optimize</span></code> function.</p>
+<section id="optimization-passes-on-nodes">
+<span id="einsum-node-optimizations"></span><h3>6.1.3 Optimization Passes on Nodes<a class="headerlink" href="#optimization-passes-on-nodes" title="Link to this heading"></a></h3>
+<p>After creating and initializing an einsum tree, we run the previously implemented Optimizer on each node in the einsum tree:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">mini_jit::einsum::EinsumTree::optimize_einsum_nodes</span><span class="p">(</span><span class="n">EinsumNode</span><span class="w"> </span><span class="o">*</span><span class="n">root_node</span><span class="p">,</span>
-<span class="w">                                                     </span><span class="kt">int64_t</span><span class="w"> </span><span class="n">thread_target</span><span class="p">,</span>
-<span class="w">                                                     </span><span class="kt">int64_t</span><span class="w"> </span><span class="n">max_kernel_size</span><span class="p">)</span>
+<span class="w">                                                         </span><span class="kt">int64_t</span><span class="w"> </span><span class="n">thread_target</span><span class="p">,</span>
+<span class="w">                                                         </span><span class="kt">int64_t</span><span class="w"> </span><span class="n">max_kernel_size</span><span class="p">)</span>
 <span class="p">{</span>
 <span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">root_node</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="k">nullptr</span><span class="p">)</span>
 <span class="w">    </span><span class="p">{</span>
@@ -423,22 +444,23 @@ the children of the current node:</p>
 <span class="w">    </span><span class="n">optimize_einsum_nodes</span><span class="p">(</span><span class="n">root_node</span><span class="o">-&gt;</span><span class="n">m_right_child</span><span class="p">,</span><span class="w"> </span><span class="n">thread_target</span><span class="p">,</span><span class="w"> </span><span class="n">max_kernel_size</span><span class="p">);</span>
 <span class="w">    </span><span class="c1">// optimize current node</span>
 <span class="w">    </span><span class="n">mini_jit</span><span class="o">::</span><span class="n">ir</span><span class="o">::</span><span class="n">Optimizer</span><span class="o">::</span><span class="n">optimize</span><span class="p">(</span><span class="n">root_node</span><span class="o">-&gt;</span><span class="n">m_dim_types</span><span class="p">,</span>
-<span class="w">                                     </span><span class="n">root_node</span><span class="o">-&gt;</span><span class="n">m_exec_types</span><span class="p">,</span>
-<span class="w">                                     </span><span class="n">root_node</span><span class="o">-&gt;</span><span class="n">m_dim_sizes</span><span class="p">,</span>
-<span class="w">                                     </span><span class="n">root_node</span><span class="o">-&gt;</span><span class="n">m_strides_in0</span><span class="p">,</span>
-<span class="w">                                     </span><span class="n">root_node</span><span class="o">-&gt;</span><span class="n">m_strides_in1</span><span class="p">,</span>
-<span class="w">                                     </span><span class="n">root_node</span><span class="o">-&gt;</span><span class="n">m_strides_out</span><span class="p">,</span>
-<span class="w">                                     </span><span class="n">thread_target</span><span class="p">,</span>
-<span class="w">                                     </span><span class="n">max_kernel_size</span><span class="p">);</span>
+<span class="w">                                      </span><span class="n">root_node</span><span class="o">-&gt;</span><span class="n">m_exec_types</span><span class="p">,</span>
+<span class="w">                                      </span><span class="n">root_node</span><span class="o">-&gt;</span><span class="n">m_dim_sizes</span><span class="p">,</span>
+<span class="w">                                      </span><span class="n">root_node</span><span class="o">-&gt;</span><span class="n">m_strides_in0</span><span class="p">,</span>
+<span class="w">                                      </span><span class="n">root_node</span><span class="o">-&gt;</span><span class="n">m_strides_in1</span><span class="p">,</span>
+<span class="w">                                      </span><span class="n">root_node</span><span class="o">-&gt;</span><span class="n">m_strides_out</span><span class="p">,</span>
+<span class="w">                                      </span><span class="n">thread_target</span><span class="p">,</span>
+<span class="w">                                      </span><span class="n">max_kernel_size</span><span class="p">);</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 <p>This function first makes a recursive call on its children and then executes the optimizer on the previously set vectors.</p>
 </section>
 <section id="lowering-to-tensor-backend">
-<h3>6.1.4 Lowering to Tensor Backend<a class="headerlink" href="#lowering-to-tensor-backend" title="Link to this heading"></a></h3>
-<p>In this step, we call a function <code class="docutils literal notranslate"><span class="pre">lower_einsum_nodes_to_tensor_operations</span></code> that sets up <code class="docutils literal notranslate"><span class="pre">TensorOperation</span></code> objects for each node, which can later be executed.</p>
-<p>For all nodes, we first set the data type and initialize the number of computational operations to zero.</p>
+<span id="einsum-lowering-subchapter"></span><h3>6.1.4 Lowering to Tensor Backend<a class="headerlink" href="#lowering-to-tensor-backend" title="Link to this heading"></a></h3>
+<p>While the optimization step for each node was optional, this step is required to make the einsum tree executable.
+We call a function <code class="docutils literal notranslate"><span class="pre">lower_einsum_nodes_to_tensor_operations</span></code> that sets up <code class="docutils literal notranslate"><span class="pre">TensorOperation</span></code> objects for each node, which can later be executed.</p>
+<p>For every node, we first set the data type and initialize the number of computational operations to zero.</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// operations for all nodes</span>
 <span class="n">root_node</span><span class="o">-&gt;</span><span class="n">m_dtype</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dtype</span><span class="p">;</span>
 <span class="n">root_node</span><span class="o">-&gt;</span><span class="n">m_computational_operations</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span>
@@ -449,14 +471,18 @@ the children of the current node:</p>
 <p class="admonition-title">Note</p>
 <p>The need for saving the computational operations comes from our benchmarks. The idea is to evaluate the nodes from the leaves to the root, and for each node to compute the computational operations in that node and to add the computational operations of the children on top. This way, each node knows the number of computational operations for the whole subtree which it is the root of. Consequently, the root node of the tree will hold the number of computational operations for the whole tree.</p>
 </div>
-<p>Next, we perform the recursive call before doing any calculations. This way, we evaluate the tree from the leaves to the root.</p>
+<p>Next, we perform the recursive call before doing any calculations.
+This way, we evaluate the tree from the leaves to the root.</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// lower children</span>
 <span class="n">lower_einsum_nodes_to_tensor_operations</span><span class="p">(</span><span class="n">root_node</span><span class="o">-&gt;</span><span class="n">m_left_child</span><span class="p">,</span><span class="w"> </span><span class="n">dimension_sizes</span><span class="p">,</span><span class="w"> </span><span class="n">dtype</span><span class="p">);</span>
 <span class="n">lower_einsum_nodes_to_tensor_operations</span><span class="p">(</span><span class="n">root_node</span><span class="o">-&gt;</span><span class="n">m_right_child</span><span class="p">,</span><span class="w"> </span><span class="n">dimension_sizes</span><span class="p">,</span><span class="w"> </span><span class="n">dtype</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>The actual computations for a node happen next.</p>
-<p>We start by identifying the type of the operation, based on the number of primitive dimensions. Conveniently, we use this step to also set the number of computational operations for the current tensor operation.</p>
+<p>We start by identifying the type of the operation, based on the number of primitive dimensions.
+Conveniently, we use this step to also set the number of computational operations for the current tensor operation.</p>
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text">Identifying the primitive type for each tensor operation</span><a class="headerlink" href="#id9" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// lower current node</span>
 <span class="kt">int</span><span class="w"> </span><span class="n">l_prim_count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">count</span><span class="p">(</span><span class="n">root_node</span><span class="o">-&gt;</span><span class="n">m_exec_types</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">root_node</span><span class="o">-&gt;</span><span class="n">m_exec_types</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span><span class="w"> </span><span class="n">exec_t</span><span class="o">::</span><span class="n">prim</span><span class="p">);</span>
 <span class="n">mini_jit</span><span class="o">::</span><span class="n">ptype_t</span><span class="w"> </span><span class="n">l_main_ptype</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mini_jit</span><span class="o">::</span><span class="n">ptype_t</span><span class="o">::</span><span class="n">none</span><span class="p">;</span>
@@ -485,13 +511,16 @@ the children of the current node:</p>
 <span class="p">}</span>
 </pre></div>
 </div>
+</div>
 <p>As mentioned above, we also need to add the computational operations of the children.</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// add child ops</span>
 <span class="n">root_node</span><span class="o">-&gt;</span><span class="n">m_computational_operations</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">root_node</span><span class="o">-&gt;</span><span class="n">m_left_child</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">root_node</span><span class="o">-&gt;</span><span class="n">m_left_child</span><span class="o">-&gt;</span><span class="n">m_computational_operations</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span>
 <span class="n">root_node</span><span class="o">-&gt;</span><span class="n">m_computational_operations</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">root_node</span><span class="o">-&gt;</span><span class="n">m_right_child</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">root_node</span><span class="o">-&gt;</span><span class="n">m_right_child</span><span class="o">-&gt;</span><span class="n">m_computational_operations</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span>
 </pre></div>
 </div>
-<p>Lastly, all that is left is to call the setup function of the tensor operation using the identified operation type and the vectors we computed in <a class="reference internal" href="#id1"><span class="std std-ref">6.1.2 Initializing the Einsum Nodes</span></a>.</p>
+<p>Lastly, all that is left is to call the setup function of the tensor operation using the identified operation type and the vectors we computed in <a class="reference internal" href="#initialize-einsum-nodes"><span class="std std-ref">6.1.2 Initializing the Einsum Nodes</span></a>.</p>
+<div class="literal-block-wrapper docutils container" id="id10">
+<div class="code-block-caption"><span class="caption-text">Setting up the Tensor Operation for an EinsumNode</span><a class="headerlink" href="#id10" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">root_node</span><span class="o">-&gt;</span><span class="n">m_operation</span><span class="p">.</span><span class="n">setup</span><span class="p">(</span><span class="n">root_node</span><span class="o">-&gt;</span><span class="n">m_dtype</span><span class="p">,</span>
 <span class="w">                             </span><span class="n">ptype_t</span><span class="o">::</span><span class="n">none</span><span class="p">,</span>
 <span class="w">                             </span><span class="n">l_main_ptype</span><span class="p">,</span>
@@ -504,10 +533,16 @@ the children of the current node:</p>
 <span class="w">                             </span><span class="n">root_node</span><span class="o">-&gt;</span><span class="n">m_strides_out</span><span class="p">);</span>
 </pre></div>
 </div>
+</div>
 </section>
 <section id="einsum-tree-execution">
-<h3>6.1.4 Einsum Tree Execution<a class="headerlink" href="#einsum-tree-execution" title="Link to this heading"></a></h3>
-<p>After parsing, optimizing and lowering the einsum tree, we are now able to execute the operations. For this, we use an <code class="docutils literal notranslate"><span class="pre">execute</span></code> function as a common entry point. We initially provide the function with the <code class="docutils literal notranslate"><span class="pre">root</span></code> node and initialize the tensor output for this node with zero. If this is the first execution, we allocate a new array and if not, we simply fill it with zeroes.</p>
+<span id="einsum-execution"></span><h3>6.1.4 Einsum Tree Execution<a class="headerlink" href="#einsum-tree-execution" title="Link to this heading"></a></h3>
+<p>After parsing, optimizing and lowering the einsum tree, we are now able to execute the operations.
+For this, we use an <code class="docutils literal notranslate"><span class="pre">execute</span></code> function as a common entry point.
+We initially provide the function with the <code class="docutils literal notranslate"><span class="pre">root</span></code> node and initialize the tensor output for this node with zero.
+If this is the first execution, we allocate a new array and if not, we simply fill it with zeroes.</p>
+<div class="literal-block-wrapper docutils container" id="id11">
+<div class="code-block-caption"><span class="caption-text">Management of intermediate result tensors</span><a class="headerlink" href="#id11" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">const</span><span class="w"> </span><span class="kt">int64_t</span><span class="w"> </span><span class="n">l_tensor_size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">root_node</span><span class="o">-&gt;</span><span class="n">m_tensor_size</span><span class="p">;</span>
 
 <span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">root_node</span><span class="o">-&gt;</span><span class="n">m_dtype</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">mini_jit</span><span class="o">::</span><span class="n">dtype_t</span><span class="o">::</span><span class="n">fp32</span><span class="p">)</span>
@@ -538,7 +573,11 @@ the children of the current node:</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>Next, there are two options for each node. Either it is an interior node or a leaf node. If the current node happens to be a leaf node, we retrieve the pointer to the input tensor from a map using the tensor expression, and simply copy it to the output tensor:</p>
+</div>
+<p>Next, there are two options for each node. Either it is an interior node or a leaf node.
+If the current node happens to be a leaf node, we retrieve the pointer to the input tensor from a map using the tensor expression, and simply copy it to the output tensor:</p>
+<div class="literal-block-wrapper docutils container" id="id12">
+<div class="code-block-caption"><span class="caption-text">Copying the input tensors for leaf nodes</span><a class="headerlink" href="#id12" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">root_node</span><span class="o">-&gt;</span><span class="n">get_number_of_children</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
 <span class="p">{</span>
 <span class="w">    </span><span class="c1">// check if input tensor is given</span>
@@ -568,6 +607,7 @@ the children of the current node:</p>
 <span class="p">}</span>
 </pre></div>
 </div>
+</div>
 <p>The argument <code class="docutils literal notranslate"><span class="pre">tensor_inputs</span></code> is a C++ map of the type <code class="docutils literal notranslate"><span class="pre">std::map&lt;std::string,</span> <span class="pre">void</span> <span class="pre">const</span> <span class="pre">*&gt;</span></code>. For each input tensor expression, it holds the corresponding pointer to the input tensor. For example:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">*&gt;</span><span class="w"> </span><span class="n">tensor_inputs</span><span class="p">;</span>
 <span class="kt">float</span><span class="w"> </span><span class="o">*</span><span class="n">tensor_A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="kt">float</span><span class="p">[</span><span class="n">SIZE_A</span><span class="p">];</span>
@@ -582,8 +622,8 @@ the children of the current node:</p>
 <span class="c1">// execute operation</span>
 <span class="k">auto</span><span class="w"> </span><span class="n">l_ptr_right_child</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">root_node</span><span class="o">-&gt;</span><span class="n">m_right_child</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">root_node</span><span class="o">-&gt;</span><span class="n">m_right_child</span><span class="o">-&gt;</span><span class="n">m_tensor_out</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
 <span class="n">root_node</span><span class="o">-&gt;</span><span class="n">m_operation</span><span class="p">.</span><span class="n">execute</span><span class="p">(</span><span class="n">root_node</span><span class="o">-&gt;</span><span class="n">m_left_child</span><span class="o">-&gt;</span><span class="n">m_tensor_out</span><span class="p">,</span>
-<span class="w">                                </span><span class="n">l_ptr_right_child</span><span class="p">,</span>
-<span class="w">                                </span><span class="n">root_node</span><span class="o">-&gt;</span><span class="n">m_tensor_out</span><span class="p">);</span>
+<span class="w">                               </span><span class="n">l_ptr_right_child</span><span class="p">,</span>
+<span class="w">                               </span><span class="n">root_node</span><span class="o">-&gt;</span><span class="n">m_tensor_out</span><span class="p">);</span>
 </pre></div>
 </div>
 </section>
@@ -591,33 +631,33 @@ the children of the current node:</p>
 <h3>6.1.5 Performance Benchmarks<a class="headerlink" href="#performance-benchmarks" title="Link to this heading"></a></h3>
 <p>To validate the correctness and effectiveness of our implementation we performed benchmarks.
 Our first benchmark was to compare our new einsum implementation to the performance of the <a class="reference internal" href="05_tensor_op.html#performance-benchmarks"><span class="std std-ref">tensor optimization</span></a> benchmark.</p>
-<div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text">comparison of <code class="docutils literal notranslate"><span class="pre">einsum</span></code> with <code class="docutils literal notranslate"><span class="pre">tensor</span> <span class="pre">optimization</span></code></span><a class="headerlink" href="#id2" title="Link to this code"></a></div>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 81</span>--------------------------------------------------
-<span class="linenos"> 82</span>Running SharedTensorOperationBench benchmark (thread_target: 64, max_kernel_size: 125)
-<span class="linenos"> 83</span>Total time (s):                  3.0038
-<span class="linenos"> 84</span>Total reps:                      127
-<span class="linenos"> 85</span>Total floating point operations: 1040384000000
-<span class="linenos"> 86</span>Estimated GFLOPS/sec:            346.356
-<span class="linenos"> 87</span>--------------------------------------------------
-<span class="linenos"> 88</span>Running SharedTensorOperationBench benchmark (thread_target: 256, max_kernel_size: 125)
-<span class="linenos"> 89</span>Total time (s):                  3.0175
-<span class="linenos"> 90</span>Total reps:                      128
-<span class="linenos"> 91</span>Total floating point operations: 1048576000000
-<span class="linenos"> 92</span>Estimated GFLOPS/sec:            347.499
-<span class="linenos"> 93</span>--------------------------------------------------
-<span class="linenos"> 94</span>Running EinsumTensorOperationBench benchmark (thread_target: 64, max_kernel_size: 125)
-<span class="linenos"> 95</span>Total time (s):                  3.01127
-<span class="linenos"> 96</span>Total reps:                      122
-<span class="linenos"> 97</span>Total floating point operations: 999424000000
-<span class="linenos"> 98</span>Estimated GFLOPS/sec:            331.895
-<span class="linenos"> 99</span>--------------------------------------------------
-<span class="linenos">100</span>Running EinsumTensorOperationBench benchmark (thread_target: 256, max_kernel_size: 125)
-<span class="linenos">101</span>Total time (s):                  3.00229
-<span class="linenos">102</span>Total reps:                      124
-<span class="linenos">103</span>Total floating point operations: 1015808000000
-<span class="linenos">104</span>Estimated GFLOPS/sec:            338.345
-<span class="linenos">105</span>--------------------------------------------------
+<div class="literal-block-wrapper docutils container" id="id13">
+<div class="code-block-caption"><span class="caption-text">comparison of <code class="docutils literal notranslate"><span class="pre">einsum</span></code> with <code class="docutils literal notranslate"><span class="pre">tensor</span> <span class="pre">optimization</span></code></span><a class="headerlink" href="#id13" title="Link to this code"></a></div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>--------------------------------------------------
+Running SharedTensorOperationBench benchmark (thread_target: 64, max_kernel_size: 125)
+Total time (s):                  3.0038
+Total reps:                      127
+Total floating point operations: 1040384000000
+Estimated GFLOPS/sec:            346.356
+--------------------------------------------------
+Running SharedTensorOperationBench benchmark (thread_target: 256, max_kernel_size: 125)
+Total time (s):                  3.0175
+Total reps:                      128
+Total floating point operations: 1048576000000
+Estimated GFLOPS/sec:            347.499
+--------------------------------------------------
+Running EinsumTensorOperationBench benchmark (thread_target: 64, max_kernel_size: 125)
+Total time (s):                  3.01127
+Total reps:                      122
+Total floating point operations: 999424000000
+Estimated GFLOPS/sec:            331.895
+--------------------------------------------------
+Running EinsumTensorOperationBench benchmark (thread_target: 256, max_kernel_size: 125)
+Total time (s):                  3.00229
+Total reps:                      124
+Total floating point operations: 1015808000000
+Estimated GFLOPS/sec:            338.345
+--------------------------------------------------
 </pre></div>
 </div>
 </div>
@@ -626,41 +666,41 @@ Our first benchmark was to compare our new einsum implementation to the performa
 <li><p><code class="docutils literal notranslate"><span class="pre">[[8,4],[7,3,8]-&gt;[7,3,4]],[[[2,6,7],[1,5,6]-&gt;[1,2,5,7]],[0,5]-&gt;[0,1,2,7]]-&gt;[0,1,2,3,4]</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">[[[[3,6,8,9]-&gt;[8,6,9,3]],[[2,5,7,9]-&gt;[7,5,2,9]]-&gt;[7,8,5,6,2,3]],[0,4,5,6]-&gt;[0,4,7,8,2,3]],[1,4,7,8]-&gt;[0,1,2,3]</span></code></p></li>
 </ol>
-<div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-text">benchmark for reference einsum expressions</span><a class="headerlink" href="#id3" title="Link to this code"></a></div>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span>Running EinsumTree benchmark #1
-<span class="linenos"> 2</span>Total time (s):                  3.2658
-<span class="linenos"> 3</span>Total reps:                      11
-<span class="linenos"> 4</span>Total floating point operations: 435706748928
-<span class="linenos"> 5</span>Estimated GFLOPS/sec:            133.415
-<span class="linenos"> 6</span>--------------------------------------------------
-<span class="linenos"> 7</span>Running EinsumTree benchmark #2
-<span class="linenos"> 8</span>Total time (s):                  3.00192
-<span class="linenos"> 9</span>Total reps:                      231
-<span class="linenos">10</span>Total floating point operations: 710010470400
-<span class="linenos">11</span>Estimated GFLOPS/sec:            236.519
-<span class="linenos">12</span>--------------------------------------------------
+<div class="literal-block-wrapper docutils container" id="id14">
+<div class="code-block-caption"><span class="caption-text">benchmark for reference einsum expressions</span><a class="headerlink" href="#id14" title="Link to this code"></a></div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Running EinsumTree benchmark #1
+Total time (s):                  3.2658
+Total reps:                      11
+Total floating point operations: 435706748928
+Estimated GFLOPS/sec:            133.415
+--------------------------------------------------
+Running EinsumTree benchmark #2
+Total time (s):                  3.00192
+Total reps:                      231
+Total floating point operations: 710010470400
+Estimated GFLOPS/sec:            236.519
+--------------------------------------------------
 </pre></div>
 </div>
 </div>
 </section>
 </section>
-<section id="optimization">
-<h2>6.2 Optimization<a class="headerlink" href="#optimization" title="Link to this heading"></a></h2>
-<p>Being able to compute pre-optimized einsum trees is only the starting point for einsum tree execution.
+<section id="einsum-tree-optimization">
+<span id="einsum-tree-optimizations"></span><h2>6.2 Einsum Tree Optimization<a class="headerlink" href="#einsum-tree-optimization" title="Link to this heading"></a></h2>
+<p>Being able to compute pre-optimized einsum trees is only the starting point of our einsum tree support.
 The general case would be that an einsum tree can be optimized to enhance the execution time and therefore improve the throughput.
-In the following, we will look at several of these problems and how to resolve them.</p>
+In this section, we consider several optimization passes that we implemented for einsum trees.</p>
 <section id="swapping-operands">
 <h3>6.2.1 Swapping Operands<a class="headerlink" href="#swapping-operands" title="Link to this heading"></a></h3>
 <p>The first step towards an optimization pass for the einsum tree was a <code class="docutils literal notranslate"><span class="pre">swap_nodes</span></code> function, which would swap two input nodes if the dimensions did not fit our schema.</p>
 <p>Consider the following einsum tree: <code class="docutils literal notranslate"><span class="pre">[[7,3,8],[8,4]-&gt;[7,3,4]]</span></code>.
 At first glance this tree expression seems fine, however, as our execution demands, that:</p>
 <ol class="arabic simple">
-<li><p>the unit stride of our <code class="docutils literal notranslate"><span class="pre">left_child</span></code> and  the unit stride of our <code class="docutils literal notranslate"><span class="pre">parent</span></code> have to be the same (<code class="docutils literal notranslate"><span class="pre">dim_t::M</span></code>) and</p></li>
+<li><p>the unit stride of our <code class="docutils literal notranslate"><span class="pre">left_child</span></code> and the unit stride of our <code class="docutils literal notranslate"><span class="pre">parent</span></code> have to be the same (<code class="docutils literal notranslate"><span class="pre">dim_t::M</span></code>) and</p></li>
 <li><p>the unit stride of our <code class="docutils literal notranslate"><span class="pre">right_child</span></code> is a <code class="docutils literal notranslate"><span class="pre">dim_t::K</span></code>,</p></li>
 </ol>
-<p>there seems to be a problem. For this example, the swapping of <code class="docutils literal notranslate"><span class="pre">children</span></code> / <code class="docutils literal notranslate"><span class="pre">operands</span></code> comes in handy.
-The swap of the children would transform the einsum tree:</p>
+<p>The given expression however does not fulfill these demands.
+In this example, the swapping of <code class="docutils literal notranslate"><span class="pre">children</span></code> / <code class="docutils literal notranslate"><span class="pre">operands</span></code> comes in handy and would transform the einsum tree:</p>
 <ol class="arabic simple">
 <li><p>from <code class="docutils literal notranslate"><span class="pre">[[7,3,8],[8,4]-&gt;[7,3,4]]</span></code></p></li>
 <li><p>to <code class="docutils literal notranslate"><span class="pre">[[8,4],[7,3,8]-&gt;[7,3,4]]</span></code></p></li>
@@ -678,8 +718,8 @@ more importantly, we did not initialize our einsum nodes yet:</p>
 </pre></div>
 </div>
 <p>This positioning of the node swap is important, because by executing it before our node initialization, we save a redundant ‘initialization’ later on.</p>
-<p>For example, considering our simple example <code class="docutils literal notranslate"><span class="pre">[[7,3,8],[8,4]-&gt;[7,3,4]]</span></code> the biggest problem would be that after the einsum nodes for this tree are initialized,
-the <code class="docutils literal notranslate"><span class="pre">dimension</span></code> with <code class="docutils literal notranslate"><span class="pre">id=4</span></code> would be initialized as <code class="docutils literal notranslate"><span class="pre">dim_t::N</span></code>. After swapping the children nodes, we would have to ‘recompute’ these dimensions,
+<p>For example, considering our simple example <code class="docutils literal notranslate"><span class="pre">[[7,3,8],[8,4]-&gt;[7,3,4]]</span></code> the biggest problem would be that after the einsum nodes for this tree are initialized, the <code class="docutils literal notranslate"><span class="pre">dimension</span></code> with <code class="docutils literal notranslate"><span class="pre">id=4</span></code> would be initialized as <code class="docutils literal notranslate"><span class="pre">dim_t::N</span></code>.
+After swapping the children nodes, we would have to ‘recompute’ these dimensions,
 because the <code class="docutils literal notranslate"><span class="pre">dimension</span></code> with <code class="docutils literal notranslate"><span class="pre">id=4</span></code> would now have to be of type <code class="docutils literal notranslate"><span class="pre">dim_t::M</span></code>.</p>
 <p>A node swapping can only happen, if there are two children present. That means if we look at a leaf node, we simply return,
 and if we look at a node with one child, we call our <code class="docutils literal notranslate"><span class="pre">swap_nodes</span></code> function only on one child and return:</p>
@@ -715,9 +755,9 @@ and if we look at a node with one child, we call our <code class="docutils liter
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>For the cases, where these conditions are not met, we rely on our other optimization techniques
+<p>For the cases, where the conditions are not met, we rely on our other optimization techniques
 to find matching unit strides either by reordering or permuting single tree nodes.</p>
-<p>The last step is to recursively call our <code class="docutils literal notranslate"><span class="pre">swap_nodes</span></code> function on the children nodes, to guarantee,
+<p>The last step is to recursively call our <code class="docutils literal notranslate"><span class="pre">swap_nodes</span></code> function on the children nodes to guarantee
 that all nodes of the tree are looked at:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// recursively swap children</span>
 <span class="n">swap_nodes</span><span class="p">(</span><span class="n">einsum_node</span><span class="o">-&gt;</span><span class="n">leftChild</span><span class="p">);</span>
@@ -727,9 +767,12 @@ that all nodes of the tree are looked at:</p>
 </section>
 <section id="reordering-dimensions">
 <h3>6.2.2 Reordering Dimensions<a class="headerlink" href="#reordering-dimensions" title="Link to this heading"></a></h3>
-<p>As we tried to benchmark further unoptimized einsum trees, we realized that swapping operands alone is not sufficient. This is because during the identification process of primitive dimensions, our implementation looks for specific strides. For example, our code requires that a primary <code class="docutils literal notranslate"><span class="pre">M</span></code> dimension, which should appear in the left input and also output tensor, needs to have unit stride in both tensors for contractions such as <code class="docutils literal notranslate"><span class="pre">GEMM</span></code> and <code class="docutils literal notranslate"><span class="pre">BRGEMM</span></code>. However, should this primary <code class="docutils literal notranslate"><span class="pre">M</span></code> dimension not be in the right most position in the tensor expression, it will not have unit stride. Therefore, we need to perform a dimension reordering to make the tree executable in our implementation.</p>
+<p>As we tried to benchmark further unoptimized einsum trees, we realized that swapping operands alone was not sufficient. This is because during the identification process of primitive dimensions, our implementation looks for specific strides.
+For example, our code requires that a primary <code class="docutils literal notranslate"><span class="pre">M</span></code> dimension, which should appear in the left input tensor and also in the output tensor, needs to have a unit stride in both tensors for contractions such as <code class="docutils literal notranslate"><span class="pre">GEMM</span></code> and <code class="docutils literal notranslate"><span class="pre">BRGEMM</span></code>.
+However, should this primary <code class="docutils literal notranslate"><span class="pre">M</span></code> dimension not be in the right most position in the tensor expression, it will not have unit stride.
+Therefore, we need to perform a dimension reordering to make the tree executable in our implementation.</p>
 <p>Our <code class="docutils literal notranslate"><span class="pre">reorder_node_dimensions</span></code> function starts by checking the number of children the currently evaluated node has.</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">root_node</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="k">nullptr</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">root_node</span><span class="o">-&gt;</span><span class="n">get_number_of_children</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">root_node</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="k">nullptr</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">root_node</span><span class="o">-&gt;</span><span class="n">get_number_of_children</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
 <span class="p">{</span>
 <span class="w">    </span><span class="c1">// since we view root_node as the parent node where the children are reordered,</span>
 <span class="w">    </span><span class="c1">// we do not need to do anything for leaf nodes</span>
@@ -745,15 +788,20 @@ that all nodes of the tree are looked at:</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>In the code after this section, we are safe to assume that the current node has two children. Furthermore, we make the assumption that the current node is a parent and therefore the order of its dimensions is correct. In other words, the order of the dimensions of the current node specifies the correct dimension order to which we need to adapt the children.</p>
+<p>In the code after this section, we are safe to assume that the current node has two children. Furthermore, we make the assumption that the current node is a parent and therefore the order of its dimensions is correct.
+In other words, the order of the dimensions of the current node specifies the correct dimension order to which we need to adapt the children.</p>
 <p>We start by saving the index at which the dimension with unit stride in the left input and output tensor should be.</p>
+<div class="literal-block-wrapper docutils container" id="id15">
+<div class="code-block-caption"><span class="caption-text">Determining the dimension ID that has unit stride</span><a class="headerlink" href="#id15" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">int64_t</span><span class="w"> </span><span class="n">l_unit_stride_root_node</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">root_node</span><span class="o">-&gt;</span><span class="n">m_output_dimension_ids</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
 <span class="kt">int64_t</span><span class="w"> </span><span class="n">l_parent_dim_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">root_node</span><span class="o">-&gt;</span><span class="n">m_output_dimension_ids</span><span class="p">[</span><span class="n">l_unit_stride_root_node</span><span class="p">];</span>
-
 <span class="kt">int64_t</span><span class="w"> </span><span class="n">l_unit_stride_left_child</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">root_node</span><span class="o">-&gt;</span><span class="n">m_left_child</span><span class="o">-&gt;</span><span class="n">m_output_dimension_ids</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
 </pre></div>
 </div>
+</div>
 <p>Next, we perform a swap of the input tensors if required. This step makes the <code class="docutils literal notranslate"><span class="pre">swap_nodes</span></code> function redundant, which is why we do not actually use <code class="docutils literal notranslate"><span class="pre">swap_nodes</span></code> in our final implementation.</p>
+<div class="literal-block-wrapper docutils container" id="id16">
+<div class="code-block-caption"><span class="caption-text">Swapping children if necessary</span><a class="headerlink" href="#id16" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Find unit stride for M</span>
 <span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">contains</span><span class="p">(</span><span class="n">root_node</span><span class="o">-&gt;</span><span class="n">m_right_child</span><span class="o">-&gt;</span><span class="n">m_output_dimension_ids</span><span class="p">,</span>
 <span class="w">             </span><span class="n">root_node</span><span class="o">-&gt;</span><span class="n">m_output_dimension_ids</span><span class="p">[</span><span class="n">l_unit_stride_root_node</span><span class="p">]))</span>
@@ -766,8 +814,11 @@ that all nodes of the tree are looked at:</p>
 <span class="p">}</span>
 </pre></div>
 </div>
+</div>
 <p>We can now assume that the primary <code class="docutils literal notranslate"><span class="pre">M</span></code> dimension should be present in the left input and also the output tensor. Furthermore, we assume that the primary <code class="docutils literal notranslate"><span class="pre">M</span></code> dimension has unit stride in the output tensor, because the output tensor is ordered correctly.
 With these assumptions, we now need to check where the primary <code class="docutils literal notranslate"><span class="pre">M</span></code> dimension is in the left input tensor and move it to the right most position if it is not already there.</p>
+<div class="literal-block-wrapper docutils container" id="id17">
+<div class="code-block-caption"><span class="caption-text">Moving the M dimension to the right most position in the first input node</span><a class="headerlink" href="#id17" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">l_dim_child_m_it</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">find_if</span><span class="p">(</span><span class="n">root_node</span><span class="o">-&gt;</span><span class="n">m_left_child</span><span class="o">-&gt;</span><span class="n">m_output_dimension_ids</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span>
 <span class="w">                                     </span><span class="n">root_node</span><span class="o">-&gt;</span><span class="n">m_left_child</span><span class="o">-&gt;</span><span class="n">m_output_dimension_ids</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span>
 <span class="w">                                     </span><span class="p">[</span><span class="n">l_parent_dim_id</span><span class="p">](</span><span class="k">const</span><span class="w"> </span><span class="kt">int64_t</span><span class="w"> </span><span class="n">dim_id</span><span class="p">)</span>
@@ -814,11 +865,13 @@ With these assumptions, we now need to check where the primary <code class="docu
 <span class="p">}</span>
 </pre></div>
 </div>
+</div>
 <p>In order to actually perform the reordering, we insert a permutation node instead of editing the child nodes. The new permutation node becomes the new left child of the current node and the previous left child is now the child of the new permutation node.</p>
 <p>Similar to the primary <code class="docutils literal notranslate"><span class="pre">M</span></code> dimension in the left input tensor, we need to ensure that the primary <code class="docutils literal notranslate"><span class="pre">K</span></code> dimension has unit stride in the right input tensor.</p>
 <p>We start by finding the right most dimension in the left input tensor that also exists in the right input tensor. This is because the requirement for <code class="docutils literal notranslate"><span class="pre">K</span></code> dimensions is that they exist in both input tensors. Furthermore, it is beneficial for the primary <code class="docutils literal notranslate"><span class="pre">K</span></code> dimension to have a low stride (for shorter jumps in memory), which is why we choose the right most <code class="docutils literal notranslate"><span class="pre">K</span></code>.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Find K in left child</span>
-<span class="kt">int64_t</span><span class="w"> </span><span class="n">l_k_dim_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">l_unit_stride_left_child</span><span class="p">;</span>
+<div class="literal-block-wrapper docutils container" id="id18">
+<div class="code-block-caption"><span class="caption-text">Finding a K dimension</span><a class="headerlink" href="#id18" title="Link to this code"></a></div>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">int64_t</span><span class="w"> </span><span class="n">l_k_dim_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">l_unit_stride_left_child</span><span class="p">;</span>
 <span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">l_unit_stride_left_child</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">--</span><span class="p">)</span>
 <span class="p">{</span>
 <span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">contains</span><span class="p">(</span><span class="n">root_node</span><span class="o">-&gt;</span><span class="n">m_right_child</span><span class="o">-&gt;</span><span class="n">m_output_dimension_ids</span><span class="p">,</span>
@@ -830,7 +883,11 @@ With these assumptions, we now need to check where the primary <code class="docu
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>Having found such a <code class="docutils literal notranslate"><span class="pre">K</span></code> dimension, we now need to ensure that it is the right most dimension in the right input tensor, to ensure that it will have unit stride there. This process is exactly the same as shown above for the <code class="docutils literal notranslate"><span class="pre">M</span></code> dimension, where we also had to insert a permutation node and update the respective child pointers.</p>
+</div>
+<p>Having found such a <code class="docutils literal notranslate"><span class="pre">K</span></code> dimension, we now need to ensure that it is the right most dimension in the right input tensor, to ensure that it will have unit stride there.
+This process is exactly the same as shown above for the <code class="docutils literal notranslate"><span class="pre">M</span></code> dimension, where we also had to insert a permutation node and update the respective child pointers.</p>
+<div class="literal-block-wrapper docutils container" id="id19">
+<div class="code-block-caption"><span class="caption-text">Moving the K dimension to the right most position in the second input node</span><a class="headerlink" href="#id19" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">int64_t</span><span class="w"> </span><span class="n">l_k_dim_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">root_node</span><span class="o">-&gt;</span><span class="n">m_left_child</span><span class="o">-&gt;</span><span class="n">m_output_dimension_ids</span><span class="p">[</span><span class="n">l_k_dim_index</span><span class="p">];</span>
 <span class="k">auto</span><span class="w"> </span><span class="n">l_dim_child_k_it</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">find_if</span><span class="p">(</span><span class="n">root_node</span><span class="o">-&gt;</span><span class="n">m_right_child</span><span class="o">-&gt;</span><span class="n">m_output_dimension_ids</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span>
 <span class="w">                                     </span><span class="n">root_node</span><span class="o">-&gt;</span><span class="n">m_right_child</span><span class="o">-&gt;</span><span class="n">m_output_dimension_ids</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span>
@@ -877,6 +934,7 @@ With these assumptions, we now need to check where the primary <code class="docu
 <span class="w">    </span><span class="n">root_node</span><span class="o">-&gt;</span><span class="n">m_right_child</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">l_right_child_permute</span><span class="p">;</span>
 <span class="p">}</span>
 </pre></div>
+</div>
 </div>
 <p>We can now say that the children are also ordered correctly, which is why we make the recusive call on the children in the last step. This way, the correct order of the parent is always guaranteed.</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// recursively call children</span>

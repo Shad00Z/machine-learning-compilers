@@ -1,8 +1,11 @@
+.. _individual-phase:
+
 ##############################
 7. Individual Phase
 ##############################
 
-After following the given steps for the first couple of weeks, we were given the opportunity to explore the customizations of machine learning compilers.
+After completing the assigned tasks during the initial weeks of the project, we were granted the opportunity to define our own objectives for the final individual phase.
+As part of this phase, we were required to propose a pitch and develop a short sketch to present and explore our individual ideas.
 
 **********************************
 7.1 Our Pitch
@@ -99,7 +102,7 @@ For the unary primitives we were looking at **Square**, **Reciprocal**, **Increm
 
 Our initial approach was to use instructions that we already had implemented.
 Therefore, we started by using the ``FMLA`` instruction.
-However, we quickly realized that the performance from multiplying two values and adding a zero value to it was not great. We decided to implement new instructions which would make our code more performant:
+However, we quickly realized that the performance from multiplying two values and adding a zero value to it was not great. We decided to implement new instructions which would increase the performance of our code:
 
 .. code-block:: cpp
     :caption: ``FMUL`` (vector) instruction generation
@@ -134,7 +137,7 @@ However, we quickly realized that the performance from multiplying two values an
     }
 
 This ``FMUL`` (vector) allowed us to multiply several elements simultaneously. 
-For the cases where we needed to multiply single elements (``arr_spec_t::``) together, we implemented the following instruction:
+For cases where we needed to multiply single elements (``arr_spec_t::``), we implemented the following instruction:
 
 .. code-block:: cpp
     :caption: ``FMUL`` (scalar) instruction generation
@@ -167,7 +170,7 @@ For the cases where we needed to multiply single elements (``arr_spec_t::``) tog
         return l_ins;
     }
 
-These instructions allowed us to develop a kernel for the squared primitive. 
+These instructions allowed us to develop a kernel for the square primitive. 
 The approach for constructing this kernel was similar to the ``zero``, ``ReLU`` or ``identity`` kernel. 
 
 .. code-block:: cpp
@@ -176,11 +179,11 @@ The approach for constructing this kernel was similar to the ``zero``, ``ReLU`` 
     int mLoopIterations = m / 16;
     int mLoopRemainder = m % 16;
 
-As a first step, we would calculate how many iterations we had to perform. 
+As a first step, we calculated how many iterations we had to perform. 
 With this number, we were then able to execute our main kernel accordingly:
 
 .. code-block:: cpp
-    :caption: squared primitive main loop calculation
+    :caption: Square primitive main loop calculation
 
     ldp(v0, v1, x8, 0, q)
     ldp(v2, v3, x8, 32, q)
@@ -197,7 +200,7 @@ That means, in our main loop we would calculate 16 squared elements in one itera
 If there were no iterations left, we had to check if there would be a remainder: 
 
 .. code-block:: cpp
-    :caption: Squared kernel remainder calculation
+    :caption: Square kernel remainder calculation
 
     case 8:
         kernel.add_instr({
@@ -230,11 +233,11 @@ After implementing the kernel, we also verified its correctness for different co
     uint32_t N = GENERATE(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
     test_square_primitive(M, N);
 
-In order to be universally usable, we have also implemented a transposition square kernel. 
+In order to be universally usable, we also implemented a transposition square kernel. 
 The implementation for this kernel was simple, as we could reuse the ``ReLU`` kernel and replace the ReLU operation with the square operation: 
 
 .. code-block:: cpp
-    :caption: Squared transposition primitive main loop calculation
+    :caption: Square transposition primitive main loop calculation
 
     // Load 4x4 block of A (input matrix)
     ldr(v0, x7, 0, q)
@@ -274,77 +277,15 @@ The implementation for this kernel was simple, as we could reuse the ``ReLU`` ke
     add(x8, x8, x3, 0, 0)
     str(v11, x8, 0, q)
 
-However, that also meant we were limited to a ``4x4`` kernel, which would reduce our overall performance. 
-For the transposition kernel, we did not implement any further optimizations. 
-
-On the other hand, for the normal squared kernel we enhanced our initial dimension size from ``M=8`` to ``M=16``.
-
-Lastly, we performed benchmarks similar to those of the other unary kernels: 
-
-.. code-block:: text
-    :caption: Benchmarking ``squared`` kernel
-
-    --------------------------------------------------
-    Running square_primitive 50x50 benchmark
-    Total time (s):                       3
-    Total reps:                           19109506
-    Total floating point operations:      47773765000
-    Estimated GFLOPS/sec:                 15.9246
-    --------------------------------------------------
-    Running square_primitive 64x64 benchmark
-    Total time (s):                       3
-    Total reps:                           13569270
-    Total floating point operations:      55579729920
-    Estimated GFLOPS/sec:                 18.5266
-    --------------------------------------------------
-    Running square_primitive 512x512 benchmark
-    Total time (s):                       3.00001
-    Total reps:                           175397
-    Total floating point operations:      45979271168
-    Estimated GFLOPS/sec:                 15.3264
-    --------------------------------------------------
-    Running square_primitive 2048x2048 benchmark
-    Total time (s):                       3.00007
-    Total reps:                           9832
-    Total floating point operations:      41238396928
-    Estimated GFLOPS/sec:                 13.7458
-    --------------------------------------------------
-
-.. code-block:: text 
-    :caption: Benchmarking ``squared`` transposition kernel
-
-    Running square_trans_primitive 50x50 benchmark
-    Total time (s):                       3
-    Total reps:                           17201142
-    Total floating point operations:      43002855000
-    Estimated GFLOPS/sec:                 14.3343
-    --------------------------------------------------
-    Running square_trans_primitive 64x64 benchmark
-    Total time (s):                       3
-    Total reps:                           10953385
-    Total floating point operations:      44865064960
-    Estimated GFLOPS/sec:                 14.955
-    --------------------------------------------------
-    Running square_trans_primitive 512x512 benchmark
-    Total time (s):                       3.00041
-    Total reps:                           6112
-    Total floating point operations:      1602224128
-    Estimated GFLOPS/sec:                 0.534002
-    --------------------------------------------------
-    Running square_trans_primitive 2048x2048 benchmark
-    Total time (s):                       3.00258
-    Total reps:                           342
-    Total floating point operations:      1434451968
-    Estimated GFLOPS/sec:                 0.47774
-    --------------------------------------------------
-
-This time we were measuring the throughput of our kernel, differently to the ``zero``, ``identity``, and ``ReLU`` kernel, where we were measuring the data transfer rate.
+This meant that we were limited to a ``4x4`` kernel, which might reduce our overall performance. 
+To combat this, we increased the initial dimension size from ``M=8`` to ``M=16`` in the normal square kernel.
+For the transposition kernel however, we did not implement any further optimizations.
 
 7.3.1.2 Reciprocal Primitive
 ------------------------------
 
-The next primitive we implemented is the ``reciprocal`` operation, which computes ``1.0 / x`` for all input values ``x``.
-For this, the AArch64 ISA already provides two instructions ``FRECPE`` and ``FRECPS``. ``FRECPE`` is the ``floating point reciprocal compute estimate`` instruction, which computes a first estimate of ``1.0 / x``. However, this estimate is generally not good enough for 32-bit floating point precision. To solve this, we can utilize ``FRECPS`` (``floating point reciprocal compute step``) iteratively, which improves the accuracy of the previously calculated estimate. We decided to perform only one step, as this already satisfied our used 32-bit floating point precision.
+The next primitive we implemented was the ``reciprocal`` function, which computes ``1.0 / x`` for all input values ``x``.
+For this, the A64 ISA already provides two instructions ``FRECPE`` and ``FRECPS``. ``FRECPE`` is the ``floating point reciprocal compute estimate`` instruction, which computes a first estimate of ``1.0 / x``. However, this estimate is generally not good enough for 32-bit floating point precision. To solve this, we utilized ``FRECPS`` (``floating point reciprocal compute step``) iteratively, which improved the accuracy of the previously calculated estimate. We decided to perform only one step, as this already satisfied the 32-bit floating point precision.
 
 .. code-block:: cpp
     :caption: ``FRECPE`` instruction generation 
@@ -803,7 +744,8 @@ We implemented the kernels in the following order:
 7.3.2.1 Add and Sub Primitive
 ---------------------------------
 
-The first binary primitive which we implemented is the element-wise addition and the subtraction of two matrices. Fortunately, the required instructions ``FADD`` and ``FSUB`` were already implemented in :ref:`increment-decrement`.
+The first binary primitive which we implemented was the element-wise addition and the subtraction of two matrices. 
+Fortunately, the required instructions ``FADD`` and ``FSUB`` were already implemented in :ref:`increment-decrement`.
 Since the subtraction kernel is fundamentally the same as the addition kernel, we will only consider the addition kernel in this section.
 
 Similar to previous kernels, we first implemented a main loop for 16 elements in the ``M`` dimension and 1 element in the ``N`` dimension.

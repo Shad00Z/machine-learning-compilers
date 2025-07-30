@@ -139,12 +139,13 @@
            <div itemprop="articleBody">
              
   <section id="individual-phase">
-<h1>7. Individual Phase<a class="headerlink" href="#individual-phase" title="Link to this heading"></a></h1>
-<p>After following the given steps for the first couple of weeks, we were given the opportunity to explore the customizations of machine learning compilers.</p>
+<span id="id1"></span><h1>7. Individual Phase<a class="headerlink" href="#individual-phase" title="Link to this heading"></a></h1>
+<p>After completing the assigned tasks during the initial weeks of the project, we were granted the opportunity to define our own objectives for the final individual phase.
+As part of this phase, we were required to propose a pitch and develop a short sketch to present and explore our individual ideas.</p>
 <section id="our-pitch">
 <h2>7.1 Our Pitch<a class="headerlink" href="#our-pitch" title="Link to this heading"></a></h2>
 <section id="roadmap">
-<span id="id1"></span><h3>7.1.1 Roadmap<a class="headerlink" href="#roadmap" title="Link to this heading"></a></h3>
+<span id="id2"></span><h3>7.1.1 Roadmap<a class="headerlink" href="#roadmap" title="Link to this heading"></a></h3>
 <ul>
 <li><p><a class="reference external" href="https://arxiv.org/pdf/2104.05755">Unary Primitives (Tensor Processing Primitives, Table 1)</a></p>
 <blockquote>
@@ -231,9 +232,9 @@ Since we already have some other optimizations in place, integrating these shoul
 <h4>7.3.1.1 Square Primitive<a class="headerlink" href="#square-primitive" title="Link to this heading"></a></h4>
 <p>Our initial approach was to use instructions that we already had implemented.
 Therefore, we started by using the <code class="docutils literal notranslate"><span class="pre">FMLA</span></code> instruction.
-However, we quickly realized that the performance from multiplying two values and adding a zero value to it was not great. We decided to implement new instructions which would make our code more performant:</p>
-<div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">FMUL</span></code> (vector) instruction generation</span><a class="headerlink" href="#id3" title="Link to this code"></a></div>
+However, we quickly realized that the performance from multiplying two values and adding a zero value to it was not great. We decided to implement new instructions which would increase the performance of our code:</p>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">FMUL</span></code> (vector) instruction generation</span><a class="headerlink" href="#id4" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">constexpr</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="nf">fmulVec</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="w"> </span><span class="n">reg_dest</span><span class="p">,</span>
 <span class="w">                           </span><span class="n">simd_fp_t</span><span class="w"> </span><span class="n">reg_src1</span><span class="p">,</span>
 <span class="w">                           </span><span class="n">simd_fp_t</span><span class="w"> </span><span class="n">reg_src2</span><span class="p">,</span>
@@ -266,9 +267,9 @@ However, we quickly realized that the performance from multiplying two values an
 </div>
 </div>
 <p>This <code class="docutils literal notranslate"><span class="pre">FMUL</span></code> (vector) allowed us to multiply several elements simultaneously.
-For the cases where we needed to multiply single elements (<code class="docutils literal notranslate"><span class="pre">arr_spec_t::</span></code>) together, we implemented the following instruction:</p>
-<div class="literal-block-wrapper docutils container" id="id4">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">FMUL</span></code> (scalar) instruction generation</span><a class="headerlink" href="#id4" title="Link to this code"></a></div>
+For cases where we needed to multiply single elements (<code class="docutils literal notranslate"><span class="pre">arr_spec_t::</span></code>), we implemented the following instruction:</p>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">FMUL</span></code> (scalar) instruction generation</span><a class="headerlink" href="#id5" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">constexpr</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="nf">fmulScalar</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="w"> </span><span class="n">reg_dest</span><span class="p">,</span>
 <span class="w">                              </span><span class="n">simd_fp_t</span><span class="w"> </span><span class="n">reg_src1</span><span class="p">,</span>
 <span class="w">                              </span><span class="n">simd_fp_t</span><span class="w"> </span><span class="n">reg_src2</span><span class="p">,</span>
@@ -299,19 +300,19 @@ For the cases where we needed to multiply single elements (<code class="docutils
 </pre></div>
 </div>
 </div>
-<p>These instructions allowed us to develop a kernel for the squared primitive.
+<p>These instructions allowed us to develop a kernel for the square primitive.
 The approach for constructing this kernel was similar to the <code class="docutils literal notranslate"><span class="pre">zero</span></code>, <code class="docutils literal notranslate"><span class="pre">ReLU</span></code> or <code class="docutils literal notranslate"><span class="pre">identity</span></code> kernel.</p>
-<div class="literal-block-wrapper docutils container" id="id5">
-<div class="code-block-caption"><span class="caption-text">Calculating iterations and remainder</span><a class="headerlink" href="#id5" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text">Calculating iterations and remainder</span><a class="headerlink" href="#id6" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="n">mLoopIterations</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">16</span><span class="p">;</span>
 <span class="kt">int</span><span class="w"> </span><span class="n">mLoopRemainder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">16</span><span class="p">;</span>
 </pre></div>
 </div>
 </div>
-<p>As a first step, we would calculate how many iterations we had to perform.
+<p>As a first step, we calculated how many iterations we had to perform.
 With this number, we were then able to execute our main kernel accordingly:</p>
-<div class="literal-block-wrapper docutils container" id="id6">
-<div class="code-block-caption"><span class="caption-text">squared primitive main loop calculation</span><a class="headerlink" href="#id6" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text">Square primitive main loop calculation</span><a class="headerlink" href="#id7" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">ldp</span><span class="p">(</span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">x8</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">q</span><span class="p">)</span>
 <span class="n">ldp</span><span class="p">(</span><span class="n">v2</span><span class="p">,</span><span class="w"> </span><span class="n">v3</span><span class="p">,</span><span class="w"> </span><span class="n">x8</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="p">,</span><span class="w"> </span><span class="n">q</span><span class="p">)</span>
 
@@ -327,8 +328,8 @@ With this number, we were then able to execute our main kernel accordingly:</p>
 </div>
 <p>That means, in our main loop we would calculate 16 squared elements in one iteration.
 If there were no iterations left, we had to check if there would be a remainder:</p>
-<div class="literal-block-wrapper docutils container" id="id7">
-<div class="code-block-caption"><span class="caption-text">Squared kernel remainder calculation</span><a class="headerlink" href="#id7" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id8">
+<div class="code-block-caption"><span class="caption-text">Square kernel remainder calculation</span><a class="headerlink" href="#id8" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">case</span><span class="w"> </span><span class="mi">8</span><span class="p">:</span>
 <span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">({</span>
 <span class="w">        </span><span class="n">ldp</span><span class="p">(</span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">x8</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">q</span><span class="p">),</span>
@@ -354,18 +355,18 @@ If there were no iterations left, we had to check if there would be a remainder:
 </div>
 <p>We had to calculate the remainder for all of our 15 cases, in order to guarantee a correctly functioning kernel.
 After implementing the kernel, we also verified its correctness for different configurations:</p>
-<div class="literal-block-wrapper docutils container" id="id8">
-<div class="code-block-caption"><span class="caption-text">Testing dimensions</span><a class="headerlink" href="#id8" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text">Testing dimensions</span><a class="headerlink" href="#id9" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">M</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GENERATE</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="mi">9</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">11</span><span class="p">,</span><span class="w"> </span><span class="mi">12</span><span class="p">,</span><span class="w"> </span><span class="mi">13</span><span class="p">,</span><span class="w"> </span><span class="mi">14</span><span class="p">,</span><span class="w"> </span><span class="mi">15</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="p">);</span>
 <span class="kt">uint32_t</span><span class="w"> </span><span class="n">N</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GENERATE</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="mi">9</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">11</span><span class="p">,</span><span class="w"> </span><span class="mi">12</span><span class="p">,</span><span class="w"> </span><span class="mi">13</span><span class="p">,</span><span class="w"> </span><span class="mi">14</span><span class="p">,</span><span class="w"> </span><span class="mi">15</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="p">);</span>
 <span class="n">test_square_primitive</span><span class="p">(</span><span class="n">M</span><span class="p">,</span><span class="w"> </span><span class="n">N</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
-<p>In order to be universally usable, we have also implemented a transposition square kernel.
+<p>In order to be universally usable, we also implemented a transposition square kernel.
 The implementation for this kernel was simple, as we could reuse the <code class="docutils literal notranslate"><span class="pre">ReLU</span></code> kernel and replace the ReLU operation with the square operation:</p>
-<div class="literal-block-wrapper docutils container" id="id9">
-<div class="code-block-caption"><span class="caption-text">Squared transposition primitive main loop calculation</span><a class="headerlink" href="#id9" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id10">
+<div class="code-block-caption"><span class="caption-text">Square transposition primitive main loop calculation</span><a class="headerlink" href="#id10" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Load 4x4 block of A (input matrix)</span>
 <span class="n">ldr</span><span class="p">(</span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">x7</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">q</span><span class="p">)</span>
 <span class="n">add</span><span class="p">(</span><span class="n">x7</span><span class="p">,</span><span class="w"> </span><span class="n">x7</span><span class="p">,</span><span class="w"> </span><span class="n">x2</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
@@ -406,77 +407,16 @@ The implementation for this kernel was simple, as we could reuse the <code class
 </pre></div>
 </div>
 </div>
-<p>However, that also meant we were limited to a <code class="docutils literal notranslate"><span class="pre">4x4</span></code> kernel, which would reduce our overall performance.
-For the transposition kernel, we did not implement any further optimizations.</p>
-<p>On the other hand, for the normal squared kernel we enhanced our initial dimension size from <code class="docutils literal notranslate"><span class="pre">M=8</span></code> to <code class="docutils literal notranslate"><span class="pre">M=16</span></code>.</p>
-<p>Lastly, we performed benchmarks similar to those of the other unary kernels:</p>
-<div class="literal-block-wrapper docutils container" id="id10">
-<div class="code-block-caption"><span class="caption-text">Benchmarking <code class="docutils literal notranslate"><span class="pre">squared</span></code> kernel</span><a class="headerlink" href="#id10" title="Link to this code"></a></div>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>--------------------------------------------------
-Running square_primitive 50x50 benchmark
-Total time (s):                       3
-Total reps:                           19109506
-Total floating point operations:      47773765000
-Estimated GFLOPS/sec:                 15.9246
---------------------------------------------------
-Running square_primitive 64x64 benchmark
-Total time (s):                       3
-Total reps:                           13569270
-Total floating point operations:      55579729920
-Estimated GFLOPS/sec:                 18.5266
---------------------------------------------------
-Running square_primitive 512x512 benchmark
-Total time (s):                       3.00001
-Total reps:                           175397
-Total floating point operations:      45979271168
-Estimated GFLOPS/sec:                 15.3264
---------------------------------------------------
-Running square_primitive 2048x2048 benchmark
-Total time (s):                       3.00007
-Total reps:                           9832
-Total floating point operations:      41238396928
-Estimated GFLOPS/sec:                 13.7458
---------------------------------------------------
-</pre></div>
-</div>
-</div>
-<div class="literal-block-wrapper docutils container" id="id11">
-<div class="code-block-caption"><span class="caption-text">Benchmarking <code class="docutils literal notranslate"><span class="pre">squared</span></code> transposition kernel</span><a class="headerlink" href="#id11" title="Link to this code"></a></div>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Running square_trans_primitive 50x50 benchmark
-Total time (s):                       3
-Total reps:                           17201142
-Total floating point operations:      43002855000
-Estimated GFLOPS/sec:                 14.3343
---------------------------------------------------
-Running square_trans_primitive 64x64 benchmark
-Total time (s):                       3
-Total reps:                           10953385
-Total floating point operations:      44865064960
-Estimated GFLOPS/sec:                 14.955
---------------------------------------------------
-Running square_trans_primitive 512x512 benchmark
-Total time (s):                       3.00041
-Total reps:                           6112
-Total floating point operations:      1602224128
-Estimated GFLOPS/sec:                 0.534002
---------------------------------------------------
-Running square_trans_primitive 2048x2048 benchmark
-Total time (s):                       3.00258
-Total reps:                           342
-Total floating point operations:      1434451968
-Estimated GFLOPS/sec:                 0.47774
---------------------------------------------------
-</pre></div>
-</div>
-</div>
-<p>This time we were measuring the throughput of our kernel, differently to the <code class="docutils literal notranslate"><span class="pre">zero</span></code>, <code class="docutils literal notranslate"><span class="pre">identity</span></code>, and <code class="docutils literal notranslate"><span class="pre">ReLU</span></code> kernel, where we were measuring the data transfer rate.</p>
+<p>This meant that we were limited to a <code class="docutils literal notranslate"><span class="pre">4x4</span></code> kernel, which might reduce our overall performance.
+To combat this, we increased the initial dimension size from <code class="docutils literal notranslate"><span class="pre">M=8</span></code> to <code class="docutils literal notranslate"><span class="pre">M=16</span></code> in the normal square kernel.
+For the transposition kernel however, we did not implement any further optimizations.</p>
 </section>
 <section id="reciprocal-primitive">
 <h4>7.3.1.2 Reciprocal Primitive<a class="headerlink" href="#reciprocal-primitive" title="Link to this heading"></a></h4>
-<p>The next primitive we implemented is the <code class="docutils literal notranslate"><span class="pre">reciprocal</span></code> operation, which computes <code class="docutils literal notranslate"><span class="pre">1.0</span> <span class="pre">/</span> <span class="pre">x</span></code> for all input values <code class="docutils literal notranslate"><span class="pre">x</span></code>.
-For this, the AArch64 ISA already provides two instructions <code class="docutils literal notranslate"><span class="pre">FRECPE</span></code> and <code class="docutils literal notranslate"><span class="pre">FRECPS</span></code>. <code class="docutils literal notranslate"><span class="pre">FRECPE</span></code> is the <code class="docutils literal notranslate"><span class="pre">floating</span> <span class="pre">point</span> <span class="pre">reciprocal</span> <span class="pre">compute</span> <span class="pre">estimate</span></code> instruction, which computes a first estimate of <code class="docutils literal notranslate"><span class="pre">1.0</span> <span class="pre">/</span> <span class="pre">x</span></code>. However, this estimate is generally not good enough for 32-bit floating point precision. To solve this, we can utilize <code class="docutils literal notranslate"><span class="pre">FRECPS</span></code> (<code class="docutils literal notranslate"><span class="pre">floating</span> <span class="pre">point</span> <span class="pre">reciprocal</span> <span class="pre">compute</span> <span class="pre">step</span></code>) iteratively, which improves the accuracy of the previously calculated estimate. We decided to perform only one step, as this already satisfied our used 32-bit floating point precision.</p>
-<div class="literal-block-wrapper docutils container" id="id12">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">FRECPE</span></code> instruction generation</span><a class="headerlink" href="#id12" title="Link to this code"></a></div>
+<p>The next primitive we implemented was the <code class="docutils literal notranslate"><span class="pre">reciprocal</span></code> function, which computes <code class="docutils literal notranslate"><span class="pre">1.0</span> <span class="pre">/</span> <span class="pre">x</span></code> for all input values <code class="docutils literal notranslate"><span class="pre">x</span></code>.
+For this, the A64 ISA already provides two instructions <code class="docutils literal notranslate"><span class="pre">FRECPE</span></code> and <code class="docutils literal notranslate"><span class="pre">FRECPS</span></code>. <code class="docutils literal notranslate"><span class="pre">FRECPE</span></code> is the <code class="docutils literal notranslate"><span class="pre">floating</span> <span class="pre">point</span> <span class="pre">reciprocal</span> <span class="pre">compute</span> <span class="pre">estimate</span></code> instruction, which computes a first estimate of <code class="docutils literal notranslate"><span class="pre">1.0</span> <span class="pre">/</span> <span class="pre">x</span></code>. However, this estimate is generally not good enough for 32-bit floating point precision. To solve this, we utilized <code class="docutils literal notranslate"><span class="pre">FRECPS</span></code> (<code class="docutils literal notranslate"><span class="pre">floating</span> <span class="pre">point</span> <span class="pre">reciprocal</span> <span class="pre">compute</span> <span class="pre">step</span></code>) iteratively, which improved the accuracy of the previously calculated estimate. We decided to perform only one step, as this already satisfied the 32-bit floating point precision.</p>
+<div class="literal-block-wrapper docutils container" id="id11">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">FRECPE</span></code> instruction generation</span><a class="headerlink" href="#id11" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">constexpr</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="nf">frecpeVec</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="w"> </span><span class="n">reg_dest</span><span class="p">,</span>
 <span class="w">                             </span><span class="n">simd_fp_t</span><span class="w"> </span><span class="n">reg_src</span><span class="p">,</span>
 <span class="w">                             </span><span class="n">arr_spec_t</span><span class="w"> </span><span class="n">arr_spec</span><span class="p">)</span>
@@ -512,8 +452,8 @@ For this, the AArch64 ISA already provides two instructions <code class="docutil
 </pre></div>
 </div>
 </div>
-<div class="literal-block-wrapper docutils container" id="id13">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">FRECPS</span></code> instruction generation</span><a class="headerlink" href="#id13" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id12">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">FRECPS</span></code> instruction generation</span><a class="headerlink" href="#id12" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">constexpr</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="nf">frecpsVec</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="w"> </span><span class="n">reg_dest</span><span class="p">,</span>
 <span class="w">                             </span><span class="n">simd_fp_t</span><span class="w"> </span><span class="n">reg_src1</span><span class="p">,</span>
 <span class="w">                             </span><span class="n">simd_fp_t</span><span class="w"> </span><span class="n">reg_src2</span><span class="p">,</span>
@@ -562,8 +502,8 @@ For this, the AArch64 ISA already provides two instructions <code class="docutil
 </pre></div>
 </div>
 <p>With these instructions, we began implementing the new kernel. Structurally it is identical to the square primitive. We simply replaced the calculations with the new instructions:</p>
-<div class="literal-block-wrapper docutils container" id="id14">
-<div class="code-block-caption"><span class="caption-text">Reciprocal primitive main loop calculation</span><a class="headerlink" href="#id14" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id13">
+<div class="code-block-caption"><span class="caption-text">Reciprocal primitive main loop calculation</span><a class="headerlink" href="#id13" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">({</span>
 <span class="w">    </span><span class="c1">// load 16 elements from A</span>
 <span class="w">    </span><span class="n">ldp</span><span class="p">(</span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">x8</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">q</span><span class="p">),</span>
@@ -599,8 +539,8 @@ For this, the AArch64 ISA already provides two instructions <code class="docutil
 </pre></div>
 </div>
 </div>
-<div class="literal-block-wrapper docutils container" id="id15">
-<div class="code-block-caption"><span class="caption-text">Reciprocal transposition primitive main loop calculation</span><a class="headerlink" href="#id15" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id14">
+<div class="code-block-caption"><span class="caption-text">Reciprocal transposition primitive main loop calculation</span><a class="headerlink" href="#id14" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">({</span>
 <span class="w">    </span><span class="c1">// working pointer for A and B</span>
 <span class="w">    </span><span class="n">mov</span><span class="p">(</span><span class="n">x7</span><span class="p">,</span><span class="w"> </span><span class="n">x4</span><span class="p">)</span>
@@ -673,8 +613,8 @@ For this, the AArch64 ISA already provides two instructions <code class="docutil
 <p>Similar to the other primitives, we had to first implement a few new instructions.
 Instructions that were directly needed for these primitives are <code class="docutils literal notranslate"><span class="pre">FADD</span></code> and <code class="docutils literal notranslate"><span class="pre">FSUB</span></code>.
 To fully utilize these instructions, we were implementing both a scalar and a vector version for these instructions:</p>
-<div class="literal-block-wrapper docutils container" id="id16">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">FADD</span></code> instruction generation</span><a class="headerlink" href="#id16" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id15">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">FADD</span></code> instruction generation</span><a class="headerlink" href="#id15" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">constexpr</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="nf">faddVec</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="w"> </span><span class="n">reg_dest</span><span class="p">,</span>
 <span class="w">                           </span><span class="n">simd_fp_t</span><span class="w"> </span><span class="n">reg_src1</span><span class="p">,</span>
 <span class="w">                           </span><span class="n">simd_fp_t</span><span class="w"> </span><span class="n">reg_src2</span><span class="p">,</span>
@@ -728,8 +668,8 @@ Implementing the <code class="docutils literal notranslate"><span class="pre">FM
 The main reason for this special behavior is the split of the 8-bit immediate into 1 signed bit, a 3-bit exponent and a 4-bit precision part.
 This unique characteristic changes the use of these 8-bits slightly.</p>
 <p>For example, we have looked at different scenarios for moving a floating point value:</p>
-<table class="docutils align-default" id="id17">
-<caption><span class="caption-text">Different FMOV Floating-Point Movements</span><a class="headerlink" href="#id17" title="Link to this table"></a></caption>
+<table class="docutils align-default" id="id16">
+<caption><span class="caption-text">Different FMOV Floating-Point Movements</span><a class="headerlink" href="#id16" title="Link to this table"></a></caption>
 <colgroup>
 <col style="width: 20.0%" />
 <col style="width: 10.0%" />
@@ -827,8 +767,8 @@ This unique characteristic changes the use of these 8-bits slightly.</p>
 </tbody>
 </table>
 <p>Looking at these examples we were able to find some special cases (e.g. <code class="docutils literal notranslate"><span class="pre">1</span></code>), but also patterns, that we were trying to apply to our implementation:</p>
-<div class="literal-block-wrapper docutils container" id="id18">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">FMOV</span></code> (vector, immediate) instruction generation</span><a class="headerlink" href="#id18" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id17">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">FMOV</span></code> (vector, immediate) instruction generation</span><a class="headerlink" href="#id17" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">constexpr</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="nf">fmovVec</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="w"> </span><span class="n">reg_dest</span><span class="p">,</span>
 <span class="w">                           </span><span class="kt">int32_t</span><span class="w"> </span><span class="n">imm8</span><span class="p">,</span>
 <span class="w">                           </span><span class="n">arr_spec_t</span><span class="w"> </span><span class="n">arr_spec</span><span class="p">)</span>
@@ -902,8 +842,8 @@ This unique characteristic changes the use of these 8-bits slightly.</p>
 </div>
 <p>In practice, we would need the <code class="docutils literal notranslate"><span class="pre">FMOV</span></code> instruction to transfer the <code class="docutils literal notranslate"><span class="pre">1.0f</span></code> into a vector, in order to be able to execute vector addition and subtraction operations.</p>
 <p>After implementing the instructions we simply took our <code class="docutils literal notranslate"><span class="pre">square</span></code> kernel and replaced all multiplication operations with a <code class="docutils literal notranslate"><span class="pre">FADD</span></code> or a <code class="docutils literal notranslate"><span class="pre">FSUB</span></code> operation:</p>
-<div class="literal-block-wrapper docutils container" id="id19">
-<div class="code-block-caption"><span class="caption-text">square calculation in main loop</span><a class="headerlink" href="#id19" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id18">
+<div class="code-block-caption"><span class="caption-text">square calculation in main loop</span><a class="headerlink" href="#id18" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Set register with value 1</span>
 <span class="n">fmovVec</span><span class="p">(</span><span class="n">v19</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">)</span>
 
@@ -935,7 +875,7 @@ This unique characteristic changes the use of these 8-bits slightly.</p>
 </section>
 </section>
 <section id="binary-primitives">
-<span id="id2"></span><h3>7.3.2 Binary Primitives<a class="headerlink" href="#binary-primitives" title="Link to this heading"></a></h3>
+<span id="id3"></span><h3>7.3.2 Binary Primitives<a class="headerlink" href="#binary-primitives" title="Link to this heading"></a></h3>
 <p>Our second step to get a diverse machine learning compiler was to introduce binary operations.
 In order to incorporate these operations into our current framework, our first step was to implement different kernels.
 We implemented the kernels in the following order:</p>
@@ -946,11 +886,12 @@ We implemented the kernels in the following order:</p>
 </ol>
 <section id="add-and-sub-primitive">
 <h4>7.3.2.1 Add and Sub Primitive<a class="headerlink" href="#add-and-sub-primitive" title="Link to this heading"></a></h4>
-<p>The first binary primitive which we implemented is the element-wise addition and the subtraction of two matrices. Fortunately, the required instructions <code class="docutils literal notranslate"><span class="pre">FADD</span></code> and <code class="docutils literal notranslate"><span class="pre">FSUB</span></code> were already implemented in <a class="reference internal" href="#increment-decrement"><span class="std std-ref">7.3.1.3 Increment and Decrement Primitive</span></a>.
+<p>The first binary primitive which we implemented was the element-wise addition and the subtraction of two matrices.
+Fortunately, the required instructions <code class="docutils literal notranslate"><span class="pre">FADD</span></code> and <code class="docutils literal notranslate"><span class="pre">FSUB</span></code> were already implemented in <a class="reference internal" href="#increment-decrement"><span class="std std-ref">7.3.1.3 Increment and Decrement Primitive</span></a>.
 Since the subtraction kernel is fundamentally the same as the addition kernel, we will only consider the addition kernel in this section.</p>
 <p>Similar to previous kernels, we first implemented a main loop for 16 elements in the <code class="docutils literal notranslate"><span class="pre">M</span></code> dimension and 1 element in the <code class="docutils literal notranslate"><span class="pre">N</span></code> dimension.</p>
-<div class="literal-block-wrapper docutils container" id="id20">
-<div class="code-block-caption"><span class="caption-text">Addition kernel: main loop</span><a class="headerlink" href="#id20" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id19">
+<div class="code-block-caption"><span class="caption-text">Addition kernel: main loop</span><a class="headerlink" href="#id19" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">kernel</span><span class="p">.</span><span class="n">add_label</span><span class="p">(</span><span class="s">&quot;m_16_loop&quot;</span><span class="p">);</span>
 <span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">({</span>
 <span class="w">    </span><span class="c1">// load 16 elements from A</span>
@@ -985,8 +926,8 @@ Since the subtraction kernel is fundamentally the same as the addition kernel, w
 </div>
 </div>
 <p>If there is a remainder that is smaller than 16, we execute special cases, for example:</p>
-<div class="literal-block-wrapper docutils container" id="id21">
-<div class="code-block-caption"><span class="caption-text">Addition kernel: special cases for M = 1…4</span><a class="headerlink" href="#id21" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id20">
+<div class="code-block-caption"><span class="caption-text">Addition kernel: special cases for M = 1…4</span><a class="headerlink" href="#id20" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">mLoopRemainder</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
 <span class="p">{</span>
 <span class="w">    </span><span class="k">switch</span><span class="w"> </span><span class="p">(</span><span class="n">mLoopRemainder</span><span class="p">)</span>
@@ -1044,8 +985,8 @@ Since the subtraction kernel is fundamentally the same as the addition kernel, w
 matrices (not element-wise) could be achieved by taking the reciprocal of one of the inputs and multiplying it by the second input.</p>
 <p>The implementation for the element-wise multiplication and division was again straight forward, as we could take our <code class="docutils literal notranslate"><span class="pre">ADD</span></code> and <code class="docutils literal notranslate"><span class="pre">SUB</span></code> kernels,
 and replace the <code class="docutils literal notranslate"><span class="pre">FADD</span></code> and <code class="docutils literal notranslate"><span class="pre">FSUB</span></code> operations with <code class="docutils literal notranslate"><span class="pre">FMUL</span></code> and <code class="docutils literal notranslate"><span class="pre">FDIV</span></code> respectively:</p>
-<div class="literal-block-wrapper docutils container" id="id22">
-<div class="code-block-caption"><span class="caption-text">Mul primitive main loop calculation</span><a class="headerlink" href="#id22" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id21">
+<div class="code-block-caption"><span class="caption-text">Mul primitive main loop calculation</span><a class="headerlink" href="#id21" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// load 16 elements from A</span>
 <span class="n">ldp</span><span class="p">(</span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">x11</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">q</span><span class="p">)</span>
 <span class="n">ldp</span><span class="p">(</span><span class="n">v2</span><span class="p">,</span><span class="w"> </span><span class="n">v3</span><span class="p">,</span><span class="w"> </span><span class="n">x11</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="p">,</span><span class="w"> </span><span class="n">q</span><span class="p">)</span>
@@ -1078,8 +1019,8 @@ and replace the <code class="docutils literal notranslate"><span class="pre">FAD
 <section id="max-and-min-primitive">
 <h4>7.3.2.3 Max and Min Primitive<a class="headerlink" href="#max-and-min-primitive" title="Link to this heading"></a></h4>
 <p>As we had already implemented the <code class="docutils literal notranslate"><span class="pre">FMAX</span></code> instruction for our <a class="reference internal" href="04_code_gen.html#relu-primitive"><span class="std std-ref">4.2.3 ReLU Primitive</span></a>, we only needed to implement the <code class="docutils literal notranslate"><span class="pre">FMIN</span></code> instruction generation:</p>
-<div class="literal-block-wrapper docutils container" id="id23">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">FMIN</span></code> instruction generation</span><a class="headerlink" href="#id23" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id22">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">FMIN</span></code> instruction generation</span><a class="headerlink" href="#id22" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">constexpr</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="nf">fminScalar</span><span class="p">(</span><span class="n">simd_fp_t</span><span class="w"> </span><span class="n">reg_dest</span><span class="p">,</span>
 <span class="w">                              </span><span class="n">simd_fp_t</span><span class="w"> </span><span class="n">reg_src1</span><span class="p">,</span>
 <span class="w">                              </span><span class="n">simd_fp_t</span><span class="w"> </span><span class="n">reg_src2</span><span class="p">,</span>
@@ -1126,8 +1067,8 @@ and replace the <code class="docutils literal notranslate"><span class="pre">FAD
 </div>
 </div>
 <p>The final primitive is almost identical to the previous kernels, except that we now make calls to the <code class="docutils literal notranslate"><span class="pre">FMIN</span></code> and <code class="docutils literal notranslate"><span class="pre">FMAX</span></code> instructions:</p>
-<div class="literal-block-wrapper docutils container" id="id24">
-<div class="code-block-caption"><span class="caption-text">Max primitive main loop calculation</span><a class="headerlink" href="#id24" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id23">
+<div class="code-block-caption"><span class="caption-text">Max primitive main loop calculation</span><a class="headerlink" href="#id23" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">kernel</span><span class="p">.</span><span class="n">add_label</span><span class="p">(</span><span class="s">&quot;m_16_loop&quot;</span><span class="p">);</span>
 <span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">({</span>
 <span class="w">    </span><span class="c1">// load 16 elements from A</span>
@@ -1168,8 +1109,8 @@ and replace the <code class="docutils literal notranslate"><span class="pre">FAD
 <h3>7.3.3 Integration in Framework<a class="headerlink" href="#integration-in-framework" title="Link to this heading"></a></h3>
 <p>After implementing our unary and binary kernels, we needed to integrate them into our TensorOperation backend.
 We started by adjusting our allowed main primitives, and our first and last touches.</p>
-<div class="literal-block-wrapper docutils container" id="id25">
-<div class="code-block-caption"><span class="caption-text">allowed primitive types in a TensorOperation</span><a class="headerlink" href="#id25" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id24">
+<div class="code-block-caption"><span class="caption-text">allowed primitive types in a TensorOperation</span><a class="headerlink" href="#id24" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">/////////////////////////////////////////////////////////////////////</span>
 <span class="c1">// Check allowed primitive types</span>
 <span class="c1">/////////////////////////////////////////////////////////////////////</span>
@@ -1208,8 +1149,8 @@ We started by adjusting our allowed main primitives, and our first and last touc
 <p>As we had already implemented our <code class="docutils literal notranslate"><span class="pre">Unary</span></code> endpoint, which connects the unary primitives to the <code class="docutils literal notranslate"><span class="pre">TensorOperation</span></code>, this was all we had to do for these primitives.
 For the <code class="docutils literal notranslate"><span class="pre">Binary</span></code> primitives the situation was slightly different. First we had to set up our binary primitives.
 We did that by implementing a <code class="docutils literal notranslate"><span class="pre">Binary</span></code> endpoint, which makes calls the new binary primitives based on the input parameters:</p>
-<div class="literal-block-wrapper docutils container" id="id26">
-<div class="code-block-caption"><span class="caption-text">Binary kernel interface</span><a class="headerlink" href="#id26" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id25">
+<div class="code-block-caption"><span class="caption-text">Binary kernel interface</span><a class="headerlink" href="#id25" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">switch</span><span class="w"> </span><span class="p">(</span><span class="n">ptype</span><span class="p">)</span>
 <span class="p">{</span>
 <span class="k">case</span><span class="w"> </span><span class="no">ptype_t</span><span class="o">::</span><span class="no">add</span><span class="p">:</span>
@@ -1286,8 +1227,8 @@ We did that by implementing a <code class="docutils literal notranslate"><span c
 </div>
 </div>
 <p>Inside our TensorOperation, we now also check if there are exactly two primitive dimensions for the new binary primitives:</p>
-<div class="literal-block-wrapper docutils container" id="id27">
-<div class="code-block-caption"><span class="caption-text">Checking the number of primitive dimensions for binary primitives</span><a class="headerlink" href="#id27" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id26">
+<div class="code-block-caption"><span class="caption-text">Checking the number of primitive dimensions for binary primitives</span><a class="headerlink" href="#id26" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">prim_main</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ptype_t</span><span class="o">::</span><span class="n">add</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">prim_main</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ptype_t</span><span class="o">::</span><span class="n">sub</span><span class="w"> </span><span class="o">||</span>
 <span class="w">         </span><span class="n">prim_main</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ptype_t</span><span class="o">::</span><span class="n">mul</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">prim_main</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ptype_t</span><span class="o">::</span><span class="n">div</span><span class="w"> </span><span class="o">||</span>
 <span class="w">         </span><span class="n">prim_main</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ptype_t</span><span class="o">::</span><span class="n">min</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">prim_main</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ptype_t</span><span class="o">::</span><span class="n">max</span><span class="p">)</span>
@@ -1301,8 +1242,8 @@ We did that by implementing a <code class="docutils literal notranslate"><span c
 </div>
 </div>
 <p>Next, we call the generate function of our <code class="docutils literal notranslate"><span class="pre">Binary</span></code> endpoint:</p>
-<div class="literal-block-wrapper docutils container" id="id28">
-<div class="code-block-caption"><span class="caption-text">Generating the binary kernels</span><a class="headerlink" href="#id28" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id27">
+<div class="code-block-caption"><span class="caption-text">Generating the binary kernels</span><a class="headerlink" href="#id27" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">prim_main</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ptype_t</span><span class="o">::</span><span class="n">add</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">prim_main</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ptype_t</span><span class="o">::</span><span class="n">sub</span><span class="w"> </span><span class="o">||</span>
 <span class="w">         </span><span class="n">prim_main</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ptype_t</span><span class="o">::</span><span class="n">mul</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">prim_main</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ptype_t</span><span class="o">::</span><span class="n">div</span><span class="w"> </span><span class="o">||</span>
 <span class="w">         </span><span class="n">prim_main</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ptype_t</span><span class="o">::</span><span class="n">min</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">prim_main</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ptype_t</span><span class="o">::</span><span class="n">max</span><span class="p">)</span>
@@ -1319,8 +1260,8 @@ We did that by implementing a <code class="docutils literal notranslate"><span c
 </div>
 </div>
 <p>And lastly, we just need to execute the generated binary kernels:</p>
-<div class="literal-block-wrapper docutils container" id="id29">
-<div class="code-block-caption"><span class="caption-text">Executing the binary kernels</span><a class="headerlink" href="#id29" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id28">
+<div class="code-block-caption"><span class="caption-text">Executing the binary kernels</span><a class="headerlink" href="#id28" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">m_kernel_main_type</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ptype_t</span><span class="o">::</span><span class="n">add</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">m_kernel_main_type</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ptype_t</span><span class="o">::</span><span class="n">sub</span><span class="w"> </span><span class="o">||</span>
 <span class="w">         </span><span class="n">m_kernel_main_type</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ptype_t</span><span class="o">::</span><span class="n">mul</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">m_kernel_main_type</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ptype_t</span><span class="o">::</span><span class="n">div</span><span class="w"> </span><span class="o">||</span>
 <span class="w">         </span><span class="n">m_kernel_main_type</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ptype_t</span><span class="o">::</span><span class="n">min</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">m_kernel_main_type</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ptype_t</span><span class="o">::</span><span class="n">max</span><span class="p">)</span>
@@ -1352,8 +1293,8 @@ performed if both new dimensions are at least of size <code class="docutils lite
 <p>The second optimization we applied was in some unary kernels that support transposition. Previously, we always performed the respective unary operation before transposing.
 In some cases however, it is more efficient to perform the respective operation after transposing, because of a better fitting memory layout.
 To illustrate this, we will look at the following example of the reciprocal with transposition kernel:</p>
-<div class="literal-block-wrapper docutils container" id="id30">
-<div class="code-block-caption"><span class="caption-text">Unoptimized Reciprocal Transposition Kernel: case M=1 and N=4</span><a class="headerlink" href="#id30" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id29">
+<div class="code-block-caption"><span class="caption-text">Unoptimized Reciprocal Transposition Kernel: case M=1 and N=4</span><a class="headerlink" href="#id29" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">mini_jit::kernels::unary::internal::reciprocalM1N4</span><span class="p">(</span><span class="w"> </span><span class="n">mini_jit</span><span class="o">::</span><span class="n">Kernel</span><span class="w"> </span><span class="o">&amp;</span><span class="n">kernel</span><span class="w"> </span><span class="p">)</span>
 <span class="p">{</span>
 <span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">({</span>
@@ -1404,8 +1345,8 @@ To illustrate this, we will look at the following example of the reciprocal with
 </pre></div>
 </div>
 </div>
-<div class="literal-block-wrapper docutils container" id="id31">
-<div class="code-block-caption"><span class="caption-text">Optimized Reciprocal Transposition Kernel: case M=1 and N=4</span><a class="headerlink" href="#id31" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id30">
+<div class="code-block-caption"><span class="caption-text">Optimized Reciprocal Transposition Kernel: case M=1 and N=4</span><a class="headerlink" href="#id30" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">mini_jit::kernels::unary::internal::reciprocalM1N4</span><span class="p">(</span><span class="w"> </span><span class="n">mini_jit</span><span class="o">::</span><span class="n">Kernel</span><span class="w"> </span><span class="o">&amp;</span><span class="n">kernel</span><span class="w"> </span><span class="p">)</span>
 <span class="p">{</span>
 <span class="w">    </span><span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">({</span>
@@ -1467,8 +1408,8 @@ This method is based on the observation that the sigmoid function can be approxi
 <p>This function produces a similar S-shaped curve but avoids the exponential calculation, making it faster to compute while maintaining similar properties for many practical applications, especially in neural networks.</p>
 <p>To implement this approximation, we first had to implement the <code class="docutils literal notranslate"><span class="pre">FABS</span></code> instruction to get the absolute value for each input element. Since it is conceptually the same as other instructions, we won’t go into detail here.
 Having gained <code class="docutils literal notranslate"><span class="pre">FABS</span></code> as a new tool, we then implemented the fast sigmoid kernel. The following code snippet will show the computation for a block with dimensions <strong>M=16</strong> and <strong>N=1</strong>.</p>
-<div class="literal-block-wrapper docutils container" id="id32">
-<div class="code-block-caption"><span class="caption-text">Fast sigmoid for M=16 and N=1</span><a class="headerlink" href="#id32" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id31">
+<div class="code-block-caption"><span class="caption-text">Fast sigmoid for M=16 and N=1</span><a class="headerlink" href="#id31" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">kernel</span><span class="p">.</span><span class="n">add_label</span><span class="p">(</span><span class="s">&quot;m_16_loop&quot;</span><span class="p">);</span>
 <span class="n">kernel</span><span class="p">.</span><span class="n">add_instr</span><span class="p">({</span>
 <span class="w">    </span><span class="c1">// load 16 elements from A</span>
@@ -1539,8 +1480,8 @@ as possible, we decided to approximate the sigmoid function by using the 5th tay
 <div class="math notranslate nohighlight">
 \[\sigma(x) \approx 0.5 + 0.25x - 0.020833 x^3 + 0.002083 x^5\]</div>
 <p>Our approach would be to load the constant values (<code class="docutils literal notranslate"><span class="pre">0.5</span></code>, <code class="docutils literal notranslate"><span class="pre">0.25</span></code>, …) as an additional parameter into our kernel.</p>
-<div class="literal-block-wrapper docutils container" id="id33">
-<div class="code-block-caption"><span class="caption-text">Taylor series constant values</span><a class="headerlink" href="#id33" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id32">
+<div class="code-block-caption"><span class="caption-text">Taylor series constant values</span><a class="headerlink" href="#id32" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">sig_taylor_values</span><span class="p">[</span><span class="mi">16</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
 <span class="w">          </span><span class="mf">0.5f</span><span class="p">,</span><span class="w">       </span><span class="mf">0.5f</span><span class="p">,</span><span class="w">       </span><span class="mf">0.5f</span><span class="p">,</span><span class="w">       </span><span class="mf">0.5f</span><span class="p">,</span>
 <span class="w">         </span><span class="mf">0.25f</span><span class="p">,</span><span class="w">      </span><span class="mf">0.25f</span><span class="p">,</span><span class="w">      </span><span class="mf">0.25f</span><span class="p">,</span><span class="w">      </span><span class="mf">0.25f</span><span class="p">,</span>
@@ -1552,8 +1493,8 @@ as possible, we decided to approximate the sigmoid function by using the 5th tay
 </div>
 <p>That meant, to be able to process this table we needed an additional parameter in the kernel type in our <code class="docutils literal notranslate"><span class="pre">Unary</span></code> class,
 that would allow us to handle these values:</p>
-<div class="literal-block-wrapper docutils container" id="id34">
-<div class="code-block-caption"><span class="caption-text">New kernel type signature</span><a class="headerlink" href="#id34" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id33">
+<div class="code-block-caption"><span class="caption-text">New kernel type signature</span><a class="headerlink" href="#id33" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/*</span>
 <span class="cm"> * Generalized kernel type.</span>
 <span class="cm"> * The kernel is a function that takes the following parameters:</span>
@@ -1580,8 +1521,8 @@ The approach was to:</p>
 <li><p>Combine the polynomials into the approximation</p></li>
 </ol>
 <p>Just as for the fast sigmoid kernel, our base kernel is able to compute blocks of <strong>M=16</strong> and <strong>N=1</strong>:</p>
-<div class="literal-block-wrapper docutils container" id="id35">
-<div class="code-block-caption"><span class="caption-text">Taylor approximation sigmoid for M=16 and N=1</span><a class="headerlink" href="#id35" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id34">
+<div class="code-block-caption"><span class="caption-text">Taylor approximation sigmoid for M=16 and N=1</span><a class="headerlink" href="#id34" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Load fixed values</span>
 <span class="n">ldp</span><span class="p">(</span><span class="n">v31</span><span class="p">,</span><span class="w"> </span><span class="n">v30</span><span class="p">,</span><span class="w"> </span><span class="n">x4</span><span class="p">,</span><span class="w">  </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">q</span><span class="p">),</span>
 <span class="n">ldp</span><span class="p">(</span><span class="n">v29</span><span class="p">,</span><span class="w"> </span><span class="n">v28</span><span class="p">,</span><span class="w"> </span><span class="n">x4</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="p">,</span><span class="w"> </span><span class="n">q</span><span class="p">),</span>
@@ -1671,8 +1612,8 @@ To get an idea how close each function gets in comparison to the true sigmoid fu
 <p>However, the linear interpolation approach would quickly turn out to be more complex than we initially assumed.</p>
 <p>To make the approach possible, we would again need to pre calculate values in a lookup table.
 As we wanted to keep it simple, we decided for a table consisting of <code class="docutils literal notranslate"><span class="pre">33</span></code> values:</p>
-<div class="literal-block-wrapper docutils container" id="id36">
-<div class="code-block-caption"><span class="caption-text">Linear interpolation lookup table</span><a class="headerlink" href="#id36" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id35">
+<div class="code-block-caption"><span class="caption-text">Linear interpolation lookup table</span><a class="headerlink" href="#id35" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">sig_table</span><span class="p">[</span><span class="mi">33</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="c1">// -8.0, -7.5, ..., -5.0</span>
 <span class="w">    </span><span class="mf">0.000335f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.000553f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.000911f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.001503f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.002473f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.004070f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.006693f</span><span class="p">,</span>
@@ -1697,8 +1638,8 @@ But let us go about it step by step.</p>
 <p>After loading our first few values into the kernel, the <strong>first step</strong> is to clamp our values.
 Clamping means, that we only consider values that are within in our specified range from <code class="docutils literal notranslate"><span class="pre">[-8.0,8.0]</span></code>.
 All other values, that are above or below this range are simply mapped to either <code class="docutils literal notranslate"><span class="pre">-8.0</span></code> or <code class="docutils literal notranslate"><span class="pre">8.0</span></code>:</p>
-<div class="literal-block-wrapper docutils container" id="id37">
-<div class="code-block-caption"><span class="caption-text">Clamping values in range <code class="docutils literal notranslate"><span class="pre">[-8.0,8.0]</span></code></span><a class="headerlink" href="#id37" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id36">
+<div class="code-block-caption"><span class="caption-text">Clamping values in range <code class="docutils literal notranslate"><span class="pre">[-8.0,8.0]</span></code></span><a class="headerlink" href="#id36" title="Link to this code"></a></div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">fmovIntVec</span><span class="p">(</span><span class="n">v31</span><span class="p">,</span><span class="w"> </span><span class="mi">-8</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">)</span>
 <span class="n">fmovIntVec</span><span class="p">(</span><span class="n">v30</span><span class="p">,</span><span class="w">  </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">)</span>
 
@@ -1719,8 +1660,8 @@ x =  8.0 \rightarrow 2 * ( 8.0 + 8.0) = 32 = i\end{split}\]</div>
 <p>However, there is another important detail that we need to consider, which is that our highest allowed value for this calculation is actually <code class="docutils literal notranslate"><span class="pre">31</span></code>.
 This is the case, as for the interpolation we look at the current index <code class="docutils literal notranslate"><span class="pre">i</span></code>, and at the following index <code class="docutils literal notranslate"><span class="pre">i+1</span></code>.
 To ensure, that we do not go out of bounds we need to clamp again with the value <code class="docutils literal notranslate"><span class="pre">31</span></code>:</p>
-<div class="literal-block-wrapper docutils container" id="id38">
-<div class="code-block-caption"><span class="caption-text">Index calculation and index clamping</span><a class="headerlink" href="#id38" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id37">
+<div class="code-block-caption"><span class="caption-text">Index calculation and index clamping</span><a class="headerlink" href="#id37" title="Link to this code"></a></div>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">fmovIntVec</span><span class="p">(</span><span class="n">v30</span><span class="p">,</span><span class="w">  </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
 <span class="n">fmovIntVec</span><span class="p">(</span><span class="n">v29</span><span class="p">,</span><span class="w">  </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
 <span class="n">fmovIntVec</span><span class="p">(</span><span class="n">v28</span><span class="p">,</span><span class="w"> </span><span class="mi">31</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">),</span>
@@ -1755,8 +1696,8 @@ This detail justifies the use of both <code class="docutils literal notranslate"
 <p>The result from <code class="docutils literal notranslate"><span class="pre">FRINTM</span></code> is then used to calculate the fractional part of our pre-calculated indix.
 The fractional part is defined as the difference from the real table index minus the clean integer.
 This fractional part will later help us calculate the correct interpolated value:</p>
-<div class="literal-block-wrapper docutils container" id="id39">
-<div class="code-block-caption"><span class="caption-text">prepare table lookup and interpolation calculation</span><a class="headerlink" href="#id39" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id38">
+<div class="code-block-caption"><span class="caption-text">prepare table lookup and interpolation calculation</span><a class="headerlink" href="#id38" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// v2 = pre-calculated floating-point index</span>
 <span class="n">frintmVec</span><span class="p">(</span><span class="n">v3</span><span class="p">,</span><span class="w"> </span><span class="n">v2</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">)</span>
 <span class="n">fsubVec</span><span class="p">(</span><span class="n">v5</span><span class="p">,</span><span class="w"> </span><span class="n">v2</span><span class="p">,</span><span class="w"> </span><span class="n">v3</span><span class="p">,</span><span class="w"> </span><span class="n">s4</span><span class="p">)</span>
@@ -1766,8 +1707,8 @@ This fractional part will later help us calculate the correct interpolated value
 </div>
 <p>As shortly described before, we then use the value from our <code class="docutils literal notranslate"><span class="pre">FCVTMS</span></code> instruction and move the value into a general purpose register using <code class="docutils literal notranslate"><span class="pre">UMOV</span></code>.
 This means, our <strong>fourth step</strong> uses the calculated values from step three and makes the last preparation for our lookup table loads:</p>
-<div class="literal-block-wrapper docutils container" id="id40">
-<div class="code-block-caption"><span class="caption-text">calculate offset</span><a class="headerlink" href="#id40" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id39">
+<div class="code-block-caption"><span class="caption-text">calculate offset</span><a class="headerlink" href="#id39" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">umov</span><span class="p">(</span><span class="n">w10</span><span class="p">,</span><span class="w"> </span><span class="n">v4</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">)</span><span class="w"> </span><span class="c1">// s4[0]</span>
 <span class="n">umov</span><span class="p">(</span><span class="n">w11</span><span class="p">,</span><span class="w"> </span><span class="n">v4</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">)</span><span class="w"> </span><span class="c1">// s4[1]</span>
 <span class="n">umov</span><span class="p">(</span><span class="n">w12</span><span class="p">,</span><span class="w"> </span><span class="n">v4</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">)</span><span class="w"> </span><span class="c1">// s4[2]</span>
@@ -1788,8 +1729,8 @@ rather all table information are located in a register, we needed to implement <
 The critical thing about this instruction is that in order to load from a register as an offset, you need to set the <code class="docutils literal notranslate"><span class="pre">UXTW</span></code> option.
 <code class="docutils literal notranslate"><span class="pre">UXTW</span></code> stands for unsigned extend word and is generally used for register addressing mode extensions.
 This means internally, we take a 32-bit register like <code class="docutils literal notranslate"><span class="pre">w10</span></code> as our offset and zero-extend it to 64 bits before adding it to the base address:</p>
-<div class="literal-block-wrapper docutils container" id="id41">
-<div class="code-block-caption"><span class="caption-text">load from the lookup table</span><a class="headerlink" href="#id41" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id40">
+<div class="code-block-caption"><span class="caption-text">load from the lookup table</span><a class="headerlink" href="#id40" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">ldrReg</span><span class="p">(</span><span class="w"> </span><span class="n">v6</span><span class="p">,</span><span class="w"> </span><span class="n">x2</span><span class="p">,</span><span class="w"> </span><span class="n">w10</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">)</span>
 <span class="n">ldrReg</span><span class="p">(</span><span class="w"> </span><span class="n">v7</span><span class="p">,</span><span class="w"> </span><span class="n">x2</span><span class="p">,</span><span class="w"> </span><span class="n">w11</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">)</span>
 <span class="n">ldrReg</span><span class="p">(</span><span class="n">v16</span><span class="p">,</span><span class="w"> </span><span class="n">x2</span><span class="p">,</span><span class="w"> </span><span class="n">w12</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">)</span>
@@ -1799,8 +1740,8 @@ This means internally, we take a 32-bit register like <code class="docutils lite
 </div>
 <p><strong>Step six</strong> reassembles the values that we just loaded from our lookup table into a single SIMD&amp;FP register.
 To do that, we use the <code class="docutils literal notranslate"><span class="pre">INS</span></code> instruction, that lets us specify the indices from which we want to load and where to load to:</p>
-<div class="literal-block-wrapper docutils container" id="id42">
-<div class="code-block-caption"><span class="caption-text">reassembling of the table index values</span><a class="headerlink" href="#id42" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id41">
+<div class="code-block-caption"><span class="caption-text">reassembling of the table index values</span><a class="headerlink" href="#id41" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">ins</span><span class="p">(</span><span class="n">v18</span><span class="p">,</span><span class="w">  </span><span class="n">v6</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">)</span>
 <span class="n">ins</span><span class="p">(</span><span class="n">v18</span><span class="p">,</span><span class="w">  </span><span class="n">v7</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">)</span>
 <span class="n">ins</span><span class="p">(</span><span class="n">v18</span><span class="p">,</span><span class="w"> </span><span class="n">v16</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">)</span>
@@ -1844,8 +1785,8 @@ For the calculation we need:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\sigma(x) = v18 + v5 * (v23 - v18) \\\end{split}\]</div>
 <p>The last step is to store our results back at the correct position:</p>
-<div class="literal-block-wrapper docutils container" id="id43">
-<div class="code-block-caption"><span class="caption-text">store interpolated values</span><a class="headerlink" href="#id43" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id42">
+<div class="code-block-caption"><span class="caption-text">store interpolated values</span><a class="headerlink" href="#id42" title="Link to this code"></a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">str</span><span class="p">(</span><span class="n">v18</span><span class="p">,</span><span class="w"> </span><span class="n">x17</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">q</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -1859,8 +1800,8 @@ This error could be decreased by simply using a larger lookup table.</p>
 <section id="benchmarks-and-approach-comparison">
 <h4>7.4.2.4 Benchmarks and approach comparison<a class="headerlink" href="#benchmarks-and-approach-comparison" title="Link to this heading"></a></h4>
 <p>To compare the errors of the different approaches, we have created a small overview for different input values:</p>
-<div class="literal-block-wrapper docutils container" id="id44">
-<div class="code-block-caption"><span class="caption-text">sigmoid error margin comparison</span><a class="headerlink" href="#id44" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id43">
+<div class="code-block-caption"><span class="caption-text">sigmoid error margin comparison</span><a class="headerlink" href="#id43" title="Link to this code"></a></div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>=== Sigmoid Comparison Results ===
  Input     | True Sigmoid | Approx (Interp) | Approx (Taylor) | Difference (Interp - True)
 -----------|--------------|-----------------|-----------------|----------------------------
@@ -1877,8 +1818,8 @@ This error could be decreased by simply using a larger lookup table.</p>
 </div>
 <p>The overview clearly shows that the interpolation approach is pretty close over the whole range of values, whereas the taylor approximation has pretty big errors outside the <code class="docutils literal notranslate"><span class="pre">[-2,2]</span></code> range.</p>
 <p>Apart from that we also created benchmarks for the different sigmoid approaches:</p>
-<div class="literal-block-wrapper docutils container" id="id45">
-<div class="code-block-caption"><span class="caption-text">sigmoid function benchmarks</span><a class="headerlink" href="#id45" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id44">
+<div class="code-block-caption"><span class="caption-text">sigmoid function benchmarks</span><a class="headerlink" href="#id44" title="Link to this code"></a></div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Running FastSigmoidPrimitiveBench 50x50 benchmark
 Total time (s):                       3
 Total reps:                           9493261
@@ -1971,8 +1912,8 @@ However, the taylor approximation comes pretty close to these values as well.
 The linear interpolation approach on the other side has the weakest performance of the three approaches.</p>
 <p>This comparison shows, that with these three approaches we have a trade off between the precision compared to the true sigmoid function and the amount of data we can transfer per second.</p>
 <p>We also wrote a python script, that benchmarks the bandwidth performance of the sigmoid function from torch:</p>
-<div class="literal-block-wrapper docutils container" id="id46">
-<div class="code-block-caption"><span class="caption-text">torch sigmoid benchmarks</span><a class="headerlink" href="#id46" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id45">
+<div class="code-block-caption"><span class="caption-text">torch sigmoid benchmarks</span><a class="headerlink" href="#id45" title="Link to this code"></a></div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Running benchmarks on: CPU
 PyTorch version: 2.7.1
 ==================================================

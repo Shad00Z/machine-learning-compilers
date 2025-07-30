@@ -159,7 +159,7 @@ This backend not only <strong>sets up and holds the kernel objects</strong>,
 but also <strong>blocks the input and output tensors</strong> and executes the kernels accordingly.
 We started with a verification of all input parameters and then implemented an <code class="docutils literal notranslate"><span class="pre">execute</span></code> function,
 which calls itself recursively to work through the nested sequential loops of an input tensor.
-To end this weeks task, we performed extensive benchmarks with various configuration parameters.</p>
+To end this week’s task, we performed extensive benchmarks with various configuration parameters.</p>
 <p>In the following week, we added support for <strong>Shared Memory Parallelization</strong>.
 This meant that we had to check whether the input tensor contained any dimensions that should be executed in parallel.
 If that was the case, we flattened all shared dimensions into one big iteration space and then parallelized it using <strong>OpenMP</strong>.
@@ -171,7 +171,20 @@ Then, we applied <strong>Primitive Identification</strong>, <strong>Dimension Sp
 Here, we first had to verify that all dimensions of such an operation are of type <code class="docutils literal notranslate"><span class="pre">C</span></code> and appear both in the input and the output tensor. Additionally, the second input tensor had to be automatically set to <code class="docutils literal notranslate"><span class="pre">nullptr</span></code>, as unary operations only support one input.
 Next, we had to implement new primitive identification and shared memory parallelization optimization passes for the unary operations and finally verify the correctness of our code against a reference implementation.
 To view the results and implementations, visit our <a class="reference internal" href="../submissions/05_tensor_op.html#unary-operations"><span class="std std-ref">detailed report</span></a>.</p>
-<p>Week 9: Einsum + Individual Phase Pitch and Sketch</p>
+<p>In the final weekly submission of our project, we made important enhancements to the flexibility of our tensor compiler.
+The first major task was the support for <strong>Einsum Tree Expressions</strong>.
+We began with a <a class="reference internal" href="../submissions/06_einsum.html#einsum-parsing"><span class="std std-ref">string parser</span></a> that transforms expressions of the form <code class="docutils literal notranslate"><span class="pre">[...],[...]-&gt;[...]</span></code> into an internal tree representation. The next step involved <a class="reference internal" href="../submissions/06_einsum.html#einsum-lowering-subchapter"><span class="std std-ref">lowering this einsum tree to our tensor operation backend</span></a>. We then applied our existing <a class="reference internal" href="../submissions/06_einsum.html#einsum-node-optimizations"><span class="std std-ref">optimization passes</span></a> on this tree structure, and finally ensured that the tree could be correctly <a class="reference internal" href="../submissions/06_einsum.html#einsum-execution"><span class="std std-ref">executed</span></a>. To assess the correctness and performance of our implementation, we ran a series of benchmarks. A comprehensive report on this work is available in <a class="reference internal" href="../submissions/06_einsum.html#einsum-lowering"><span class="std std-ref">6.1 Lowering</span></a>.</p>
+<p>The second major task was to implement <strong>Optimization Passes for Einsum Trees</strong>.
+These differ from the previous optimization which focused on the internals of a single tensor operation.
+In this task, we looked at <strong>Node Swapping</strong>, <strong>Dimension Reordering</strong> and the <strong>Insertion of Permutation Nodes</strong>.
+These tree optimizations come before the initialization of each tree node, and reshape the einsum tree to improve performance.
+Refer to <a class="reference internal" href="../submissions/06_einsum.html#einsum-tree-optimizations"><span class="std std-ref">6.2 Einsum Tree Optimization</span></a> to learn more about our implementations.</p>
+<p>The last task was to propose a pitch and write a short sketch on the individual phase that would conclude this project.
+To read our pitch and sketch, please take a look at <a class="reference internal" href="../submissions/07_individual_phase.html#individual-phase"><span class="std std-ref">7. Individual Phase</span></a>.</p>
+<p>During the last two weeks, we had to fulfill the pitch that we had written in the prior week.
+We used the first week of the individual phase to extend the flexibility of our tensor compiler by implementing various unary and binary primitives.
+In the second week, we put our attention on the rather complex sigmoid activation function and added multiple implementations with different speeds and accuracies.
+Lastly, we improved our optimizer by adding support for <strong>Dimension Fusion</strong>.</p>
 </section>
 
 

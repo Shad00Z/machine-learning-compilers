@@ -45,8 +45,8 @@ While macOS comes with a default C++ compiler (Apple Clang), it **does not suppo
 .. note::
 
     If you are already using Homebrew's GCC, that will work also, but you will have to adjust our Makefile.
-    It automatically switches to **LLVM** on macOS, because we could not figure out a stable way to distinguish
-    between the default Apple Clang and Homebrew's GCC.
+    It automatically switches to **LLVM** on macOS, because we could not figure out a stable way to automatically
+    distinguish between the default Apple Clang and Homebrew's GCC.
 
 Make (Build System)
 ===================================

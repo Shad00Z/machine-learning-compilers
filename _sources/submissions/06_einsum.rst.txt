@@ -2,23 +2,28 @@
 6. Einsum Trees
 ##############################
 
-After creating our backend with the implementation of tensor objects, we now want to perform 
-tensor computations on larger expressions in the form einsum trees. 
+In this section, we explain how we expanded the capabilities of our tensor compiler by adding support for einsum trees.
+
+.. _einsum-lowering:
 
 **********************************
 6.1 Lowering
 **********************************
 
-Our first step is to accept expressions of the form ``[...],[...]->[...]``. 
+The first task was to parse einsum trees as string expressions of the form ``[...],[...]->[...]`` into tree objects.
+A tree object should then be lowered to our tensor operation backend, meaning that contraction and permutation nodes had to be mapped to executable tensor operations.
+Furthermore, we had to run a series of optimization passes on the einsum tree and benchmark its performance.
+
+.. _einsum-parsing:
 
 6.1.1 Expression Parsing
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-To transform our string expression into a tree of connected objects, we first implemented an ``EinsumNode`` class. 
+In order to transform string expressions into a tree of connected objects, we first implemented an ``EinsumNode`` class.
+An ``EinsumNode`` represents a node in the einsum tree and has the form ``[...]`` in the string representation.
 
-An ``EinsumNode`` holds information about a single node from the expression e.g. ``[...]``:
-
-.. code:: cpp
+.. code-block:: cpp
+    :caption: EinsumNode class
 
     /// The IDs of the dimensions in the output tensor
     std::vector<int64_t> m_output_dimension_ids;
@@ -59,28 +64,29 @@ An ``EinsumNode`` holds information about a single node from the expression e.g.
     /// The number of operations performed by this node
     double m_computational_operations = 0.0;
 
-To disassemble our einsum expression, we perform a number of steps.
+To disassemble an einsum expression, we perform a number of steps:
 
 We initially check all allowed characters and then begin the connection of our ``EinsumNode`` objects using 
-the ``parse_einsum_expression_recursive`` function. The first split we perform on our expression, is when we 
-find the rightmost arrow ``->``. 
+the ``parse_einsum_expression_recursive`` function. 
+The first split we perform on the input expression is at the rightmost arrow ``->``. 
 
-.. code:: cpp
+.. code-block:: cpp
+    :caption: Determining the position of the rightmost arrow
 
     size_t l_arrow_pos = einsum_expression.rfind("->");
 
-If we find such an arrow, we split the expression into two pieces, where the left part is the ``input`` for the ``output`` expression on the right side. Note that here, we already remove the brackets around the output expression.
+If we find such an arrow, we split the expression into two pieces, where the left part is the ``input`` for the ``output`` expression on the right side. Note that here we already remove the brackets around the output expression.
 
-.. code:: cpp
+.. code-block:: cpp
+    :caption: Splitting the einsum expression at the arrow position
 
     l_inputs = einsum_expression.substr(0, l_arrow_pos);
     l_output = einsum_expression.substr(l_arrow_pos + 3, einsum_expression.size() - l_arrow_pos - 4);
 
-The second step is to split the ``input`` again, but this time at a ``,`` that divides the ``input`` into two valid expressions. Specifically, we look for the ``,`` that is between two brackets ``],[`` and where the number of open and closed brackets is the same.
+The second step is to split the ``input`` again, but this time at a ``,`` that divides the ``input`` into two valid expressions. Specifically, we look for the ``,`` that is between two brackets ``],[`` and where the number of open and closed brackets is the same. If such a ``,`` exists, we have more than one input:
 
-If there is such a ``,``, we have more than one input:
-
-.. code:: cpp
+.. code-block:: cpp
+    :caption: Splitting the input into two parts
 
     // if the first char is not a bracket, there is only one input
     int64_t l_split_input_pos = -1;
@@ -128,24 +134,22 @@ If there is such a ``,``, we have more than one input:
         l_right_input_expression = l_inputs.substr(l_split_input_pos + 2, l_inputs.size() - l_split_input_pos - 3);
     }
 
-We connect these constructed components, by recursively calling the ``parse_einsum_expression_recursive`` function, for 
-the children of the current node: 
+Lastly, we create an ``EinsumNode`` for the current output expression and recursively sets its children to the respective input expressions, thus creating a tree.
 
-.. code:: cpp
+.. code-block:: cpp
+    :caption: Creation of a new EinsumNode
 
     return new EinsumNode(get_dimensions_from_expression(l_output),
                           l_output,
                           parse_einsum_expression_recursive(l_left_input_expression),
                           parse_einsum_expression_recursive(l_right_input_expression));
 
-For the current node, we are now calculating all information (size, strides, etc.) that would be needed to execute a primitive operation. 
-
-.. _6-1-2:
+.. _initialize-einsum-nodes:
 
 6.1.2 Initializing the Einsum Nodes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-After creating an einsum tree, the next step is to initialize the nodes with the correct values for the dimensions, strides, etc. We implemented a ``initialize_einsum_nodes`` for this.
+After creating an einsum tree, the next step was to initialize the nodes with the correct values, such as the dimensions or strides. We implemented a ``initialize_einsum_nodes`` function for this.
 
 Since we evaluate the tree from the leaves to the root, the first step is to call the function recursively on the children of the current node:
 
@@ -156,9 +160,10 @@ Since we evaluate the tree from the leaves to the root, the first step is to cal
 
 Next, the actual computations take place.
 
-The first step is to gather all dimension IDs that are used in the operation. These are the dimension IDs of the current (output) nodes tensor and the dimension IDs of the childrens output tensors. 
+The first step is to gather all dimension IDs that are used in the tensor operation. These are the dimension IDs of the current (output) node's tensor and the dimension IDs of the children's output tensors. 
 
-.. code::
+.. code-block:: cpp
+    :caption: Gathering all dimension IDs involved in the tensor operation
 
     //////////////////////////////////////////////////////////////////
     // GATHER AND SORT ALL USED IDS
@@ -202,9 +207,9 @@ The first step is to gather all dimension IDs that are used in the operation. Th
 
 This information allows us to compute the size that the output tensor of the current node will have:
 
-.. code:: cpp
+.. code-block:: cpp
+    :caption: Computing the size of the output tensor
 
-    // compute the size of the output tensor
     root_node->m_tensor_size = 1;
     for (auto &dim_id : *l_output_dimension_ids)
     {
@@ -213,7 +218,7 @@ This information allows us to compute the size that the output tensor of the cur
 
 Knowing all used IDs and sizes, we can initialize the vectors for the dimension and execution types, as well as the vectors for the strides. 
 
-.. code:: cpp
+.. code-block:: cpp
 
     //////////////////////////////////////////////////////////////////
     // INIT VECTORS
@@ -238,9 +243,10 @@ Computing dimension types can be done using the following rules:
 
 * All other dimensions: ``K`` (in both inputs, but not in the output)
 
-As for the strides, we simply need to multiply dimension sizes. Consider the following example, where a tensor has the expression ``abc``. Since ``c`` is the right most dimension, we assume a stride of 1. The next dimension to the left of it is ``b`` and we compute its stride as the product of the dimension sizes to the right of it. This results in the stride of ``b`` being the dimension size of ``c``. For ``a``, the stride is therefore the product of the dimension sizes of ``b`` and ``c``.
+As for the strides, we simply need to multiply dimension sizes. Consider the following example, where a tensor has the expression ``abc``. Since ``c`` is the right most dimension, we assume a stride of 1. The next dimension to the left of it is ``b``, and we compute its stride as the product of the dimension sizes to the right of it. This results in the stride of ``b`` being the dimension size of ``c``. For ``a``, the stride is therefore the product of the dimension sizes of ``b`` and ``c``.
 
-.. code:: cpp
+.. code-block:: cpp
+    :caption: Setting the type and stride for each dimension
 
     for (size_t i = 0; i < l_operation_dim_ids->size(); i++)
     {
@@ -318,16 +324,18 @@ As for the strides, we simply need to multiply dimension sizes. Consider the fol
         }
     }
 
-6.1.3 Run Optimization Passes
+.. _einsum-node-optimizations:
+
+6.1.3 Optimization Passes on Nodes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-For running optimization passes, we implemented an ``optimize`` function.
+After creating and initializing an einsum tree, we run the previously implemented Optimizer on each node in the einsum tree:
 
-.. code:: cpp
+.. code-block:: cpp
 
     void mini_jit::einsum::EinsumTree::optimize_einsum_nodes(EinsumNode *root_node,
-                                                         int64_t thread_target,
-                                                         int64_t max_kernel_size)
+                                                             int64_t thread_target,
+                                                             int64_t max_kernel_size)
     {
         if (root_node == nullptr)
         {
@@ -343,23 +351,26 @@ For running optimization passes, we implemented an ``optimize`` function.
         optimize_einsum_nodes(root_node->m_right_child, thread_target, max_kernel_size);
         // optimize current node
         mini_jit::ir::Optimizer::optimize(root_node->m_dim_types,
-                                         root_node->m_exec_types,
-                                         root_node->m_dim_sizes,
-                                         root_node->m_strides_in0,
-                                         root_node->m_strides_in1,
-                                         root_node->m_strides_out,
-                                         thread_target,
-                                         max_kernel_size);
+                                          root_node->m_exec_types,
+                                          root_node->m_dim_sizes,
+                                          root_node->m_strides_in0,
+                                          root_node->m_strides_in1,
+                                          root_node->m_strides_out,
+                                          thread_target,
+                                          max_kernel_size);
     }
 
 This function first makes a recursive call on its children and then executes the optimizer on the previously set vectors.
 
+.. _einsum-lowering-subchapter:
+
 6.1.4 Lowering to Tensor Backend
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-In this step, we call a function ``lower_einsum_nodes_to_tensor_operations`` that sets up ``TensorOperation`` objects for each node, which can later be executed.
+While the optimization step for each node was optional, this step is required to make the einsum tree executable.
+We call a function ``lower_einsum_nodes_to_tensor_operations`` that sets up ``TensorOperation`` objects for each node, which can later be executed.
 
-For all nodes, we first set the data type and initialize the number of computational operations to zero.
+For every node, we first set the data type and initialize the number of computational operations to zero.
 
 .. code:: cpp
 
@@ -373,7 +384,8 @@ In case the currently evaluated node is a leaf node, this is all we do here and 
 
     The need for saving the computational operations comes from our benchmarks. The idea is to evaluate the nodes from the leaves to the root, and for each node to compute the computational operations in that node and to add the computational operations of the children on top. This way, each node knows the number of computational operations for the whole subtree which it is the root of. Consequently, the root node of the tree will hold the number of computational operations for the whole tree.
 
-Next, we perform the recursive call before doing any calculations. This way, we evaluate the tree from the leaves to the root.
+Next, we perform the recursive call before doing any calculations.
+This way, we evaluate the tree from the leaves to the root.
 
 .. code:: cpp
 
@@ -383,9 +395,11 @@ Next, we perform the recursive call before doing any calculations. This way, we 
 
 The actual computations for a node happen next. 
 
-We start by identifying the type of the operation, based on the number of primitive dimensions. Conveniently, we use this step to also set the number of computational operations for the current tensor operation.
+We start by identifying the type of the operation, based on the number of primitive dimensions. 
+Conveniently, we use this step to also set the number of computational operations for the current tensor operation.
 
-.. code:: cpp
+.. code-block:: cpp
+    :caption: Identifying the primitive type for each tensor operation
 
     // lower current node
     int l_prim_count = std::count(root_node->m_exec_types.begin(), root_node->m_exec_types.end(), exec_t::prim);
@@ -422,9 +436,10 @@ As mentioned above, we also need to add the computational operations of the chil
     root_node->m_computational_operations += root_node->m_left_child ? root_node->m_left_child->m_computational_operations : 0.0;
     root_node->m_computational_operations += root_node->m_right_child ? root_node->m_right_child->m_computational_operations : 0.0;
 
-Lastly, all that is left is to call the setup function of the tensor operation using the identified operation type and the vectors we computed in :ref:`6.1.2 Initializing the Einsum Nodes <6-1-2>`.
+Lastly, all that is left is to call the setup function of the tensor operation using the identified operation type and the vectors we computed in :ref:`initialize-einsum-nodes`.
 
-.. code:: cpp
+.. code-block:: cpp
+    :caption: Setting up the Tensor Operation for an EinsumNode
 
     root_node->m_operation.setup(root_node->m_dtype,
                                  ptype_t::none,
@@ -437,12 +452,18 @@ Lastly, all that is left is to call the setup function of the tensor operation u
                                  root_node->m_strides_in1,
                                  root_node->m_strides_out);
 
+.. _einsum-execution:
+
 6.1.4 Einsum Tree Execution
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-After parsing, optimizing and lowering the einsum tree, we are now able to execute the operations. For this, we use an ``execute`` function as a common entry point. We initially provide the function with the ``root`` node and initialize the tensor output for this node with zero. If this is the first execution, we allocate a new array and if not, we simply fill it with zeroes.
+After parsing, optimizing and lowering the einsum tree, we are now able to execute the operations. 
+For this, we use an ``execute`` function as a common entry point. 
+We initially provide the function with the ``root`` node and initialize the tensor output for this node with zero. 
+If this is the first execution, we allocate a new array and if not, we simply fill it with zeroes.
 
-.. code:: cpp
+.. code-block:: cpp
+    :caption: Management of intermediate result tensors
 
     const int64_t l_tensor_size = root_node->m_tensor_size;
 
@@ -473,9 +494,11 @@ After parsing, optimizing and lowering the einsum tree, we are now able to execu
         }
     }
 
-Next, there are two options for each node. Either it is an interior node or a leaf node. If the current node happens to be a leaf node, we retrieve the pointer to the input tensor from a map using the tensor expression, and simply copy it to the output tensor:
+Next, there are two options for each node. Either it is an interior node or a leaf node. 
+If the current node happens to be a leaf node, we retrieve the pointer to the input tensor from a map using the tensor expression, and simply copy it to the output tensor:
 
-.. code:: cpp
+.. code-block:: cpp
+    :caption: Copying the input tensors for leaf nodes
 
     if (root_node->get_number_of_children() == 0)
     {
@@ -524,8 +547,8 @@ If the current node happens to be an interior node, we can simply execute the te
     // execute operation
     auto l_ptr_right_child = root_node->m_right_child ? root_node->m_right_child->m_tensor_out : nullptr;
     root_node->m_operation.execute(root_node->m_left_child->m_tensor_out,
-                                    l_ptr_right_child,
-                                    root_node->m_tensor_out);
+                                   l_ptr_right_child,
+                                   root_node->m_tensor_out);
 
 6.1.5 Performance Benchmarks
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -536,7 +559,6 @@ Our first benchmark was to compare our new einsum implementation to the performa
 .. literalinclude:: ../../benchmarks/optimized_tensor_and_einsum_operation_benchmarks_old.txt
     :language: text
     :lines: 81-105
-    :lineno-match:
     :caption: comparison of ``einsum`` with ``tensor optimization``
     :dedent:
 
@@ -547,18 +569,18 @@ Secondly we compared our implementation with two reference einsum expressions:
 
 .. literalinclude:: ../../benchmarks/einsum_benchmark.txt
     :language: text
-    :lineno-match:
     :caption: benchmark for reference einsum expressions
     :dedent:
 
+.. _einsum-tree-optimizations:
+
 **********************************
-6.2 Optimization
+6.2 Einsum Tree Optimization
 **********************************
 
-Being able to compute pre-optimized einsum trees is only the starting point for einsum tree execution. 
+Being able to compute pre-optimized einsum trees is only the starting point of our einsum tree support.
 The general case would be that an einsum tree can be optimized to enhance the execution time and therefore improve the throughput. 
-In the following, we will look at several of these problems and how to resolve them.
-
+In this section, we consider several optimization passes that we implemented for einsum trees.
 
 6.2.1 Swapping Operands
 ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -568,11 +590,11 @@ The first step towards an optimization pass for the einsum tree was a ``swap_nod
 Consider the following einsum tree: ``[[7,3,8],[8,4]->[7,3,4]]``. 
 At first glance this tree expression seems fine, however, as our execution demands, that:
 
-1. the unit stride of our ``left_child`` and  the unit stride of our ``parent`` have to be the same (``dim_t::M``) and
+1. the unit stride of our ``left_child`` and the unit stride of our ``parent`` have to be the same (``dim_t::M``) and
 2. the unit stride of our ``right_child`` is a ``dim_t::K``,
 
-there seems to be a problem. For this example, the swapping of ``children`` / ``operands`` comes in handy. 
-The swap of the children would transform the einsum tree:
+The given expression however does not fulfill these demands.
+In this example, the swapping of ``children`` / ``operands`` comes in handy and would transform the einsum tree:
 
 1. from ``[[7,3,8],[8,4]->[7,3,4]]``
 2. to ``[[8,4],[7,3,8]->[7,3,4]]``
@@ -593,8 +615,8 @@ more importantly, we did not initialize our einsum nodes yet:
 
 This positioning of the node swap is important, because by executing it before our node initialization, we save a redundant 'initialization' later on.
 
-For example, considering our simple example ``[[7,3,8],[8,4]->[7,3,4]]`` the biggest problem would be that after the einsum nodes for this tree are initialized,
-the ``dimension`` with ``id=4`` would be initialized as ``dim_t::N``. After swapping the children nodes, we would have to 'recompute' these dimensions, 
+For example, considering our simple example ``[[7,3,8],[8,4]->[7,3,4]]`` the biggest problem would be that after the einsum nodes for this tree are initialized, the ``dimension`` with ``id=4`` would be initialized as ``dim_t::N``.
+After swapping the children nodes, we would have to 'recompute' these dimensions, 
 because the ``dimension`` with ``id=4`` would now have to be of type ``dim_t::M``.
 
 A node swapping can only happen, if there are two children present. That means if we look at a leaf node, we simply return, 
@@ -635,10 +657,10 @@ If these two conditions are met, we swap the two children nodes:
         einsum_node->rightChild = l_temp_node;
     }
 
-For the cases, where these conditions are not met, we rely on our other optimization techniques 
+For the cases, where the conditions are not met, we rely on our other optimization techniques 
 to find matching unit strides either by reordering or permuting single tree nodes.
 
-The last step is to recursively call our ``swap_nodes`` function on the children nodes, to guarantee, 
+The last step is to recursively call our ``swap_nodes`` function on the children nodes to guarantee 
 that all nodes of the tree are looked at:
 
 .. code:: cpp
@@ -650,11 +672,14 @@ that all nodes of the tree are looked at:
 6.2.2 Reordering Dimensions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-As we tried to benchmark further unoptimized einsum trees, we realized that swapping operands alone is not sufficient. This is because during the identification process of primitive dimensions, our implementation looks for specific strides. For example, our code requires that a primary ``M`` dimension, which should appear in the left input and also output tensor, needs to have unit stride in both tensors for contractions such as ``GEMM`` and ``BRGEMM``. However, should this primary ``M`` dimension not be in the right most position in the tensor expression, it will not have unit stride. Therefore, we need to perform a dimension reordering to make the tree executable in our implementation.
+As we tried to benchmark further unoptimized einsum trees, we realized that swapping operands alone was not sufficient. This is because during the identification process of primitive dimensions, our implementation looks for specific strides.
+For example, our code requires that a primary ``M`` dimension, which should appear in the left input tensor and also in the output tensor, needs to have a unit stride in both tensors for contractions such as ``GEMM`` and ``BRGEMM``. 
+However, should this primary ``M`` dimension not be in the right most position in the tensor expression, it will not have unit stride. 
+Therefore, we need to perform a dimension reordering to make the tree executable in our implementation.
 
 Our ``reorder_node_dimensions`` function starts by checking the number of children the currently evaluated node has.
 
-.. code::
+.. code:: cpp
 
     if (root_node == nullptr || root_node->get_number_of_children() == 0)
     {
@@ -671,20 +696,22 @@ Our ``reorder_node_dimensions`` function starts by checking the number of childr
         return;
     }
 
-In the code after this section, we are safe to assume that the current node has two children. Furthermore, we make the assumption that the current node is a parent and therefore the order of its dimensions is correct. In other words, the order of the dimensions of the current node specifies the correct dimension order to which we need to adapt the children.
+In the code after this section, we are safe to assume that the current node has two children. Furthermore, we make the assumption that the current node is a parent and therefore the order of its dimensions is correct. 
+In other words, the order of the dimensions of the current node specifies the correct dimension order to which we need to adapt the children.
 
 We start by saving the index at which the dimension with unit stride in the left input and output tensor should be.
 
-.. code:: cpp
+.. code-block:: cpp
+    :caption: Determining the dimension ID that has unit stride
 
     int64_t l_unit_stride_root_node = root_node->m_output_dimension_ids.size() - 1;
     int64_t l_parent_dim_id = root_node->m_output_dimension_ids[l_unit_stride_root_node];
-
     int64_t l_unit_stride_left_child = root_node->m_left_child->m_output_dimension_ids.size() - 1;
 
 Next, we perform a swap of the input tensors if required. This step makes the ``swap_nodes`` function redundant, which is why we do not actually use ``swap_nodes`` in our final implementation.
 
-.. code:: cpp
+.. code-block:: cpp
+    :caption: Swapping children if necessary
 
     // Find unit stride for M
     if (contains(root_node->m_right_child->m_output_dimension_ids,
@@ -700,7 +727,8 @@ Next, we perform a swap of the input tensors if required. This step makes the ``
 We can now assume that the primary ``M`` dimension should be present in the left input and also the output tensor. Furthermore, we assume that the primary ``M`` dimension has unit stride in the output tensor, because the output tensor is ordered correctly. 
 With these assumptions, we now need to check where the primary ``M`` dimension is in the left input tensor and move it to the right most position if it is not already there.
 
-.. code:: cpp
+.. code-block:: cpp
+    :caption: Moving the M dimension to the right most position in the first input node
 
     auto l_dim_child_m_it = std::find_if(root_node->m_left_child->m_output_dimension_ids.begin(),
                                          root_node->m_left_child->m_output_dimension_ids.end(),
@@ -753,9 +781,9 @@ Similar to the primary ``M`` dimension in the left input tensor, we need to ensu
 
 We start by finding the right most dimension in the left input tensor that also exists in the right input tensor. This is because the requirement for ``K`` dimensions is that they exist in both input tensors. Furthermore, it is beneficial for the primary ``K`` dimension to have a low stride (for shorter jumps in memory), which is why we choose the right most ``K``.
 
-.. code:: cpp
+.. code-block:: cpp
+    :caption: Finding a K dimension
 
-    // Find K in left child
     int64_t l_k_dim_index = l_unit_stride_left_child;
     for (int i = l_unit_stride_left_child; i >= 0; i--)
     {
@@ -767,9 +795,11 @@ We start by finding the right most dimension in the left input tensor that also 
         }
     }
 
-Having found such a ``K`` dimension, we now need to ensure that it is the right most dimension in the right input tensor, to ensure that it will have unit stride there. This process is exactly the same as shown above for the ``M`` dimension, where we also had to insert a permutation node and update the respective child pointers.
+Having found such a ``K`` dimension, we now need to ensure that it is the right most dimension in the right input tensor, to ensure that it will have unit stride there. 
+This process is exactly the same as shown above for the ``M`` dimension, where we also had to insert a permutation node and update the respective child pointers.
 
-.. code:: cpp
+.. code-block:: cpp
+    :caption: Moving the K dimension to the right most position in the second input node
 
     int64_t l_k_dim_id = root_node->m_left_child->m_output_dimension_ids[l_k_dim_index];
     auto l_dim_child_k_it = std::find_if(root_node->m_right_child->m_output_dimension_ids.begin(),
