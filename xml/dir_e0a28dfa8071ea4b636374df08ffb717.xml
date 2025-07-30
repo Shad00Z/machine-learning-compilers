@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_e0a28dfa8071ea4b636374df08ffb717" kind="dir">
+    <compoundname>/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/kernels/unary</compoundname>
+    <innerfile refid="decrement__primitive_8cpp">decrement_primitive.cpp</innerfile>
+    <innerfile refid="decrement__trans__primitive_8cpp">decrement_trans_primitive.cpp</innerfile>
+    <innerfile refid="fast__sigmoid__primitive_8cpp">fast_sigmoid_primitive.cpp</innerfile>
+    <innerfile refid="identity__primitive_8cpp">identity_primitive.cpp</innerfile>
+    <innerfile refid="identity__trans__primitive_8cpp">identity_trans_primitive.cpp</innerfile>
+    <innerfile refid="increment__primitive_8cpp">increment_primitive.cpp</innerfile>
+    <innerfile refid="increment__trans__primitive_8cpp">increment_trans_primitive.cpp</innerfile>
+    <innerfile refid="reciprocal__primitive_8cpp">reciprocal_primitive.cpp</innerfile>
+    <innerfile refid="reciprocal__trans__primitive_8cpp">reciprocal_trans_primitive.cpp</innerfile>
+    <innerfile refid="relu__primitive_8cpp">relu_primitive.cpp</innerfile>
+    <innerfile refid="relu__trans__primitive_8cpp">relu_trans_primitive.cpp</innerfile>
+    <innerfile refid="sigmoid__interp__primitive_8cpp">sigmoid_interp_primitive.cpp</innerfile>
+    <innerfile refid="sigmoid__taylor__primitive_8cpp">sigmoid_taylor_primitive.cpp</innerfile>
+    <innerfile refid="square__primitive_8cpp">square_primitive.cpp</innerfile>
+    <innerfile refid="square__trans__primitive_8cpp">square_trans_primitive.cpp</innerfile>
+    <innerfile refid="zero__primitive_8cpp">zero_primitive.cpp</innerfile>
+    <innerfile refid="zero__primitive__xzr_8cpp">zero_primitive_xzr.cpp</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/kernels/unary/"/>
+  </compounddef>
+</doxygen>

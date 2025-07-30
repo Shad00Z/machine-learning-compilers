@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_b0dce357a3b74f0d7759fd6d8e47b00f" kind="dir">
+    <compoundname>/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/03_neon/05_accumulator_block_shapes/benchmark</compoundname>
+    <innerfile refid="03__neon_205__accumulator__block__shapes_2benchmark_2microbench_8cpp">microbench.cpp</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/03_neon/05_accumulator_block_shapes/benchmark/"/>
+  </compounddef>
+</doxygen>

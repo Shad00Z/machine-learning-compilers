@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_0368d9aa12c340e330b73559723964af" kind="dir">
+    <compoundname>/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/03_neon/02_microkernel/tests</compoundname>
+    <innerfile refid="matmul__16__6__1_8test_8cpp">matmul_16_6_1.test.cpp</innerfile>
+    <innerfile refid="02__microkernel_2tests_2tests_8cpp">tests.cpp</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/03_neon/02_microkernel/tests/"/>
+  </compounddef>
+</doxygen>

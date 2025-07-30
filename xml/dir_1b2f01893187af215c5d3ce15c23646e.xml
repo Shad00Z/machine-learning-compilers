@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_1b2f01893187af215c5d3ce15c23646e" kind="dir">
+    <compoundname>/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/03_neon/07_transposition/tests</compoundname>
+    <innerfile refid="07__transposition_2tests_2tests_8cpp">tests.cpp</innerfile>
+    <innerfile refid="trans__neon__4__4_8test_8cpp">trans_neon_4_4.test.cpp</innerfile>
+    <innerfile refid="trans__neon__8__8_8test_8cpp">trans_neon_8_8.test.cpp</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/03_neon/07_transposition/tests/"/>
+  </compounddef>
+</doxygen>

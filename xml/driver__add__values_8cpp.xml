@@ -1,0 +1,98 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="driver__add__values_8cpp" kind="file" language="C++">
+    <compoundname>driver_add_values.cpp</compoundname>
+    <includes local="no">iostream</includes>
+    <incdepgraph>
+      <node id="1">
+        <label>/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/01_assembly/02_task/driver_add_values.cpp</label>
+        <link refid="driver__add__values_8cpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iostream</label>
+      </node>
+    </incdepgraph>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="driver__add__values_8cpp_1a24c294fc02992465ead4f15a569e7edf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void add_values</definition>
+        <argsstring>(int32_t *a, int32_t *b, int32_t *c)</argsstring>
+        <name>add_values</name>
+        <param>
+          <type>int32_t *</type>
+          <declname>a</declname>
+        </param>
+        <param>
+          <type>int32_t *</type>
+          <declname>b</declname>
+        </param>
+        <param>
+          <type>int32_t *</type>
+          <declname>c</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/01_assembly/02_task/driver_add_values.cpp" line="3" column="17" declfile="/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/01_assembly/02_task/driver_add_values.cpp" declline="3" declcolumn="17"/>
+      </memberdef>
+      <memberdef kind="function" id="driver__add__values_8cpp_1ae66f6b31b5ad750f1fe042a706a4e3d4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int main</definition>
+        <argsstring>()</argsstring>
+        <name>main</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/01_assembly/02_task/driver_add_values.cpp" line="9" column="5" bodyfile="/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/01_assembly/02_task/driver_add_values.cpp" bodystart="9" bodyend="33"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#include<sp/>&lt;iostream&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;C&quot;</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>add_values(</highlight></codeline>
+<codeline lineno="4"><highlight class="normal"><sp/><sp/><sp/><sp/>int32_t<sp/>*<sp/>a,</highlight></codeline>
+<codeline lineno="5"><highlight class="normal"><sp/><sp/><sp/><sp/>int32_t<sp/>*<sp/>b,</highlight></codeline>
+<codeline lineno="6"><highlight class="normal"><sp/><sp/><sp/><sp/>int32_t<sp/>*<sp/>c<sp/></highlight></codeline>
+<codeline lineno="7"><highlight class="normal">);</highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>main()</highlight></codeline>
+<codeline lineno="10"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="11"><highlight class="normal"><sp/><sp/><sp/><sp/>std::cout<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;Calling<sp/>assembly<sp/>&apos;add_value&apos;<sp/>function...\n&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Test<sp/>Data</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"><sp/><sp/><sp/><sp/>int32_t<sp/>l_value_1<sp/>=<sp/>4;</highlight></codeline>
+<codeline lineno="15"><highlight class="normal"><sp/><sp/><sp/><sp/>int32_t<sp/>*<sp/>l_ptr_1<sp/>=<sp/>&amp;l_value_1;</highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"><sp/><sp/><sp/><sp/>int32_t<sp/>l_value_2<sp/>=<sp/>7;</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"><sp/><sp/><sp/><sp/>int32_t<sp/>*<sp/>l_ptr_2<sp/>=<sp/>&amp;l_value_2;</highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"><sp/><sp/><sp/><sp/>int32_t<sp/>l_value_o;</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"><sp/><sp/><sp/><sp/>int32_t<sp/>*<sp/>l_ptr_o<sp/>=<sp/>&amp;l_value_o;</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Call<sp/>to<sp/>add_values</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/>add_values(<sp/>l_ptr_1,<sp/>l_ptr_2,<sp/>l_ptr_o<sp/>);</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/>std::cout<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;l_data_1<sp/>/<sp/>l_value_2<sp/>/<sp/>l_value_o\n&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/>l_value_1<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;<sp/>/<sp/>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/>l_value_2<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;<sp/>/<sp/>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/>l_value_o</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/>std::endl;</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>0;</highlight></codeline>
+<codeline lineno="33"><highlight class="normal">}</highlight></codeline>
+    </programlisting>
+    <location file="/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/01_assembly/02_task/driver_add_values.cpp"/>
+  </compounddef>
+</doxygen>

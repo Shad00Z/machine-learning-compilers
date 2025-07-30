@@ -1,0 +1,110 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespacesigmoid__comparison" kind="namespace" language="Python">
+    <compoundname>sigmoid_comparison</compoundname>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="namespacesigmoid__comparison_1add5d7d00818258dc3d0102a1df1ef489" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>sigmoid_comparison.real_sigmoid</definition>
+        <argsstring>(x)</argsstring>
+        <name>real_sigmoid</name>
+        <qualifiedname>sigmoid_comparison.real_sigmoid</qualifiedname>
+        <param>
+          <type>x</type>
+          <defname>x</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><verbatim>Real sigmoid function: σ(x) = 1 / (1 + e^(-x))</verbatim> </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/python/sigmoid_comparison.py" line="14" column="1" bodyfile="/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/python/sigmoid_comparison.py" bodystart="14" bodyend="17"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacesigmoid__comparison_1a999cc8d21422abe109379a7a0b7ef149" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>sigmoid_comparison.fast_sigmoid</definition>
+        <argsstring>(x)</argsstring>
+        <name>fast_sigmoid</name>
+        <qualifiedname>sigmoid_comparison.fast_sigmoid</qualifiedname>
+        <param>
+          <type>x</type>
+          <defname>x</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><verbatim>Fast sigmoid approximation: f(x) = 0.5 * (x / (1 + abs(x)) + 1)</verbatim> </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/python/sigmoid_comparison.py" line="18" column="1" bodyfile="/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/python/sigmoid_comparison.py" bodystart="18" bodyend="21"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacesigmoid__comparison_1aaaa0d245c26d5f18da7e248bf40746bf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>sigmoid_comparison.taylor_sigmoid</definition>
+        <argsstring>(x)</argsstring>
+        <name>taylor_sigmoid</name>
+        <qualifiedname>sigmoid_comparison.taylor_sigmoid</qualifiedname>
+        <param>
+          <type>x</type>
+          <defname>x</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><verbatim>Taylor series approximation (5th order): f(x) = 0.5 + 0.25*x - 0.020833*x^3 + 0.002083*x^5</verbatim> </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/python/sigmoid_comparison.py" line="22" column="1" bodyfile="/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/python/sigmoid_comparison.py" bodystart="22" bodyend="28"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacesigmoid__comparison_1a19afb369986a75527131287a9cdf923f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>sigmoid_comparison.interpolation_sigmoid</definition>
+        <argsstring>(x)</argsstring>
+        <name>interpolation_sigmoid</name>
+        <qualifiedname>sigmoid_comparison.interpolation_sigmoid</qualifiedname>
+        <param>
+          <type>x</type>
+          <defname>x</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><verbatim>Linear interpolation using lookup table with 33 values</verbatim> </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/python/sigmoid_comparison.py" line="29" column="1" bodyfile="/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/python/sigmoid_comparison.py" bodystart="29" bodyend="50"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacesigmoid__comparison_1ab6dd38140ecc26cba8ee66d4f6d50d19" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>sigmoid_comparison.main</definition>
+        <argsstring>()</argsstring>
+        <name>main</name>
+        <qualifiedname>sigmoid_comparison.main</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/python/sigmoid_comparison.py" line="51" column="1" bodyfile="/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/python/sigmoid_comparison.py" bodystart="51" bodyend="90"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para><verbatim>Sigmoid Function Comparison Plot
+
+This script plots the fast sigmoid function, sigmoid Taylor approximation, 
+and sigmoid linear interpolation function against the real sigmoid function.
+
+The linear interpolation is defined with a lookup table over the range [-8, 8] with 0.5 steps.
+</verbatim> </para>
+    </detaileddescription>
+    <location file="/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/python/sigmoid_comparison.py" line="1" column="1"/>
+  </compounddef>
+</doxygen>

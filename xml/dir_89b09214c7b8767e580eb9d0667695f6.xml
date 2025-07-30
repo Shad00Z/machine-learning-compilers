@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_89b09214c7b8767e580eb9d0667695f6" kind="dir">
+    <compoundname>/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions</compoundname>
+    <innerdir refid="dir_4943c33995f7629dbe8d56e3fd3c66f7">/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/01_assembly</innerdir>
+    <innerdir refid="dir_8f3814d38748b7c73405fc75327b8ba3">/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/02_base</innerdir>
+    <innerdir refid="dir_b2c563f7bf427f5a0c17c9a95cb1f2fd">/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/03_neon</innerdir>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/"/>
+  </compounddef>
+</doxygen>

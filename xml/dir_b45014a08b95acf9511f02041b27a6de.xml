@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_b45014a08b95acf9511f02041b27a6de" kind="dir">
+    <compoundname>/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/03_neon/06_batch_reduce_gemm/tests</compoundname>
+    <innerfile refid="matmul__64__48__64__16_8test_8cpp">matmul_64_48_64_16.test.cpp</innerfile>
+    <innerfile refid="06__batch__reduce__gemm_2tests_2tests_8cpp">tests.cpp</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/03_neon/06_batch_reduce_gemm/tests/"/>
+  </compounddef>
+</doxygen>

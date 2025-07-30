@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_b2c563f7bf427f5a0c17c9a95cb1f2fd" kind="dir">
+    <compoundname>/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/03_neon</compoundname>
+    <innerdir refid="dir_db0c44b6c99babc115391fee31ffffd2">/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/03_neon/01_execution_throughput_and_latency</innerdir>
+    <innerdir refid="dir_e6eb231c0e4101fda6c4d8d8fac3babc">/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/03_neon/02_microkernel</innerdir>
+    <innerdir refid="dir_fdaeb624d648c5eadf33e2657c6f49fc">/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/03_neon/03_loops</innerdir>
+    <innerdir refid="dir_1bbf329644173ab09491115de8dab028">/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/03_neon/04_simd</innerdir>
+    <innerdir refid="dir_3574dc578a2032e7bffd7af1f5b71dbd">/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/03_neon/05_accumulator_block_shapes</innerdir>
+    <innerdir refid="dir_f78ac28d176dc5803113e6f9814f5964">/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/03_neon/06_batch_reduce_gemm</innerdir>
+    <innerdir refid="dir_f92c61175547b9411dbb5558edf13cfd">/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/03_neon/07_transposition</innerdir>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/03_neon/"/>
+  </compounddef>
+</doxygen>

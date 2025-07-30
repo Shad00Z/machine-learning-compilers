@@ -1,0 +1,458 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygenindex xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="index.xsd" version="1.9.8" xml:lang="en-US">
+  <compound refid="namespacemini__jit_1_1instructions" kind="namespace"><name>mini_jit::instructions</name>
+  </compound>
+  <compound refid="namespacemini__jit_1_1instructions_1_1base" kind="namespace"><name>mini_jit::instructions::base</name>
+  </compound>
+  <compound refid="namespacemini__jit_1_1instructions_1_1simd__fp" kind="namespace"><name>mini_jit::instructions::simd_fp</name>
+  </compound>
+  <compound refid="namespacesigmoid__benchmark" kind="namespace"><name>sigmoid_benchmark</name>
+    <member refid="namespacesigmoid__benchmark_1ab311a8210518d31e511583377e634ea5" kind="function"><name>real_sigmoid</name></member>
+    <member refid="namespacesigmoid__benchmark_1a57dd65b8e6a8c2917a96a3ba6f211fc7" kind="function"><name>fast_sigmoid</name></member>
+    <member refid="namespacesigmoid__benchmark_1adbb94c43232ba604e2ba5d2199850a25" kind="function"><name>taylor_sigmoid</name></member>
+    <member refid="namespacesigmoid__benchmark_1accae2279c40934686e95f06fc325dca9" kind="function"><name>benchmark_sigmoid</name></member>
+    <member refid="namespacesigmoid__benchmark_1af602c9ef9bb51f5d2562ab6587b48032" kind="function"><name>format_benchmark_results</name></member>
+    <member refid="namespacesigmoid__benchmark_1aa8b8895823cd07e9fd11b6250581c88b" kind="function"><name>main</name></member>
+  </compound>
+  <compound refid="namespacesigmoid__comparison" kind="namespace"><name>sigmoid_comparison</name>
+    <member refid="namespacesigmoid__comparison_1add5d7d00818258dc3d0102a1df1ef489" kind="function"><name>real_sigmoid</name></member>
+    <member refid="namespacesigmoid__comparison_1a999cc8d21422abe109379a7a0b7ef149" kind="function"><name>fast_sigmoid</name></member>
+    <member refid="namespacesigmoid__comparison_1aaaa0d245c26d5f18da7e248bf40746bf" kind="function"><name>taylor_sigmoid</name></member>
+    <member refid="namespacesigmoid__comparison_1a19afb369986a75527131287a9cdf923f" kind="function"><name>interpolation_sigmoid</name></member>
+    <member refid="namespacesigmoid__comparison_1ab6dd38140ecc26cba8ee66d4f6d50d19" kind="function"><name>main</name></member>
+  </compound>
+  <compound refid="benchmarks_8cpp" kind="file"><name>benchmarks.cpp</name>
+    <member refid="benchmarks_8cpp_1a97cdbe9fcd6d831debd086608734ada2" kind="function"><name>gemm_benchmark</name></member>
+    <member refid="benchmarks_8cpp_1a1ec48b74144de1360e1f1a1386ba0833" kind="function"><name>brgemm_benchmark</name></member>
+    <member refid="benchmarks_8cpp_1a0622fffcb38288cd7578ddbac161d1fe" kind="function"><name>print_bandwidth</name></member>
+    <member refid="benchmarks_8cpp_1ac56ee6433b8bb3b9232cee2b7d7b3a22" kind="function"><name>print_throughput</name></member>
+    <member refid="benchmarks_8cpp_1ae4f2505700972c06e25b0257bcf54e35" kind="function"><name>optimized_tensor_benchmark</name></member>
+    <member refid="benchmarks_8cpp_1a8482511b8ce39afdbf8d8273ab30e7fd" kind="function"><name>optimized_tensor_benchmark_einsum</name></member>
+    <member refid="benchmarks_8cpp_1ad1b75b2d11f87e9a637a3158e1e56157" kind="function"><name>einsum_benchmark_1</name></member>
+    <member refid="benchmarks_8cpp_1a6c46fec58aa2f8d92cad3137bb88e6a3" kind="function"><name>einsum_benchmark_2</name></member>
+    <member refid="benchmarks_8cpp_1af2bebfce491d6853f416ac5794190df1" kind="function"><name>einsum_benchmark_optimization_example_1</name></member>
+    <member refid="benchmarks_8cpp_1a0c8e323d700f20af90d371c33132b10c" kind="function"><name>einsum_benchmark_optimization_example_2</name></member>
+    <member refid="benchmarks_8cpp_1a4fbb363e27f4964cb4b00437047d5f2b" kind="function"><name>einsum_benchmark_optimization_example_3</name></member>
+    <member refid="benchmarks_8cpp_1a0ddf1224851353fc92bfbff6f499fa97" kind="function"><name>main</name></member>
+  </compound>
+  <compound refid="EinsumTree_8bench_8cpp" kind="file"><name>EinsumTree.bench.cpp</name>
+  </compound>
+  <compound refid="Matmul__br__m__n__k_8bench_8cpp" kind="file"><name>Matmul_br_m_n_k.bench.cpp</name>
+  </compound>
+  <compound refid="matmul__m__n__k_8bench_8cpp" kind="file"><name>matmul_m_n_k.bench.cpp</name>
+  </compound>
+  <compound refid="TensorOperation_8bench_8cpp" kind="file"><name>TensorOperation.bench.cpp</name>
+  </compound>
+  <compound refid="fast__sigmoid__primitive_8bench_8cpp" kind="file"><name>fast_sigmoid_primitive.bench.cpp</name>
+  </compound>
+  <compound refid="identity__primitive_8bench_8cpp" kind="file"><name>identity_primitive.bench.cpp</name>
+  </compound>
+  <compound refid="identity__trans__primitive_8bench_8cpp" kind="file"><name>identity_trans_primitive.bench.cpp</name>
+  </compound>
+  <compound refid="reciprocal__primitive_8bench_8cpp" kind="file"><name>reciprocal_primitive.bench.cpp</name>
+  </compound>
+  <compound refid="relu__primitive_8bench_8cpp" kind="file"><name>relu_primitive.bench.cpp</name>
+  </compound>
+  <compound refid="relu__trans__primitive_8bench_8cpp" kind="file"><name>relu_trans_primitive.bench.cpp</name>
+  </compound>
+  <compound refid="sigmoid__interpolation__primitive_8bench_8cpp" kind="file"><name>sigmoid_interpolation_primitive.bench.cpp</name>
+  </compound>
+  <compound refid="sigmoid__taylor__primitive_8bench_8cpp" kind="file"><name>sigmoid_taylor_primitive.bench.cpp</name>
+  </compound>
+  <compound refid="square__primitive_8bench_8cpp" kind="file"><name>square_primitive.bench.cpp</name>
+  </compound>
+  <compound refid="square__trans__primitive_8bench_8cpp" kind="file"><name>square_trans_primitive.bench.cpp</name>
+  </compound>
+  <compound refid="zero__eor__primitive_8bench_8cpp" kind="file"><name>zero_eor_primitive.bench.cpp</name>
+  </compound>
+  <compound refid="zero__xzr__primitive_8bench_8cpp" kind="file"><name>zero_xzr_primitive.bench.cpp</name>
+  </compound>
+  <compound refid="Binary_8cpp" kind="file"><name>Binary.cpp</name>
+  </compound>
+  <compound refid="Brgemm_8cpp" kind="file"><name>Brgemm.cpp</name>
+  </compound>
+  <compound refid="EinsumTree_8cpp" kind="file"><name>EinsumTree.cpp</name>
+  </compound>
+  <compound refid="IRConverter_8cpp" kind="file"><name>IRConverter.cpp</name>
+  </compound>
+  <compound refid="Optimizer_8cpp" kind="file"><name>Optimizer.cpp</name>
+  </compound>
+  <compound refid="Kernel_8cpp" kind="file"><name>Kernel.cpp</name>
+  </compound>
+  <compound refid="add__primitive_8cpp" kind="file"><name>add_primitive.cpp</name>
+  </compound>
+  <compound refid="div__primitive_8cpp" kind="file"><name>div_primitive.cpp</name>
+  </compound>
+  <compound refid="max__primitive_8cpp" kind="file"><name>max_primitive.cpp</name>
+  </compound>
+  <compound refid="min__primitive_8cpp" kind="file"><name>min_primitive.cpp</name>
+  </compound>
+  <compound refid="mul__primitive_8cpp" kind="file"><name>mul_primitive.cpp</name>
+  </compound>
+  <compound refid="sub__primitive_8cpp" kind="file"><name>sub_primitive.cpp</name>
+  </compound>
+  <compound refid="matmul__br__m__n__k_8cpp" kind="file"><name>matmul_br_m_n_k.cpp</name>
+    <member refid="matmul__br__m__n__k_8cpp_1a8c1e2f07c336da53fc71dc63ab488d91" kind="typedef"><name>gpr_t</name></member>
+    <member refid="matmul__br__m__n__k_8cpp_1ab2ff20c54f9c12d9b08cb9910e934023" kind="typedef"><name>simd_fp_t</name></member>
+    <member refid="matmul__br__m__n__k_8cpp_1a7783d12b9e6c05765efc68f3ed6f0484" kind="typedef"><name>arr_spec_t</name></member>
+    <member refid="matmul__br__m__n__k_8cpp_1ad9c72abe6aac4541405f5f650acc546f" kind="typedef"><name>neon_size_spec_t</name></member>
+  </compound>
+  <compound refid="matmul__m__n__k_8cpp" kind="file"><name>matmul_m_n_k.cpp</name>
+    <member refid="matmul__m__n__k_8cpp_1a8c1e2f07c336da53fc71dc63ab488d91" kind="typedef"><name>gpr_t</name></member>
+    <member refid="matmul__m__n__k_8cpp_1ab2ff20c54f9c12d9b08cb9910e934023" kind="typedef"><name>simd_fp_t</name></member>
+    <member refid="matmul__m__n__k_8cpp_1a7783d12b9e6c05765efc68f3ed6f0484" kind="typedef"><name>arr_spec_t</name></member>
+    <member refid="matmul__m__n__k_8cpp_1ad9c72abe6aac4541405f5f650acc546f" kind="typedef"><name>neon_size_spec_t</name></member>
+  </compound>
+  <compound refid="matmul__16__6__1_8cpp" kind="file"><name>matmul_16_6_1.cpp</name>
+    <member refid="matmul__16__6__1_8cpp_1a8c1e2f07c336da53fc71dc63ab488d91" kind="typedef"><name>gpr_t</name></member>
+    <member refid="matmul__16__6__1_8cpp_1ab2ff20c54f9c12d9b08cb9910e934023" kind="typedef"><name>simd_fp_t</name></member>
+    <member refid="matmul__16__6__1_8cpp_1a7783d12b9e6c05765efc68f3ed6f0484" kind="typedef"><name>arr_spec_t</name></member>
+    <member refid="matmul__16__6__1_8cpp_1ad9c72abe6aac4541405f5f650acc546f" kind="typedef"><name>neon_size_spec_t</name></member>
+  </compound>
+  <compound refid="matmul__16__6__k_8cpp" kind="file"><name>matmul_16_6_k.cpp</name>
+    <member refid="matmul__16__6__k_8cpp_1a8c1e2f07c336da53fc71dc63ab488d91" kind="typedef"><name>gpr_t</name></member>
+    <member refid="matmul__16__6__k_8cpp_1ab2ff20c54f9c12d9b08cb9910e934023" kind="typedef"><name>simd_fp_t</name></member>
+    <member refid="matmul__16__6__k_8cpp_1a7783d12b9e6c05765efc68f3ed6f0484" kind="typedef"><name>arr_spec_t</name></member>
+    <member refid="matmul__16__6__k_8cpp_1ad9c72abe6aac4541405f5f650acc546f" kind="typedef"><name>neon_size_spec_t</name></member>
+  </compound>
+  <compound refid="matmul__m__1__k_8cpp" kind="file"><name>matmul_m_1_k.cpp</name>
+    <member refid="matmul__m__1__k_8cpp_1a8c1e2f07c336da53fc71dc63ab488d91" kind="typedef"><name>gpr_t</name></member>
+    <member refid="matmul__m__1__k_8cpp_1ab2ff20c54f9c12d9b08cb9910e934023" kind="typedef"><name>simd_fp_t</name></member>
+    <member refid="matmul__m__1__k_8cpp_1a7783d12b9e6c05765efc68f3ed6f0484" kind="typedef"><name>arr_spec_t</name></member>
+    <member refid="matmul__m__1__k_8cpp_1ad9c72abe6aac4541405f5f650acc546f" kind="typedef"><name>neon_size_spec_t</name></member>
+  </compound>
+  <compound refid="matmul__m__2__k_8cpp" kind="file"><name>matmul_m_2_k.cpp</name>
+    <member refid="matmul__m__2__k_8cpp_1a8c1e2f07c336da53fc71dc63ab488d91" kind="typedef"><name>gpr_t</name></member>
+    <member refid="matmul__m__2__k_8cpp_1ab2ff20c54f9c12d9b08cb9910e934023" kind="typedef"><name>simd_fp_t</name></member>
+    <member refid="matmul__m__2__k_8cpp_1a7783d12b9e6c05765efc68f3ed6f0484" kind="typedef"><name>arr_spec_t</name></member>
+    <member refid="matmul__m__2__k_8cpp_1ad9c72abe6aac4541405f5f650acc546f" kind="typedef"><name>neon_size_spec_t</name></member>
+  </compound>
+  <compound refid="matmul__m__3__k_8cpp" kind="file"><name>matmul_m_3_k.cpp</name>
+    <member refid="matmul__m__3__k_8cpp_1a8c1e2f07c336da53fc71dc63ab488d91" kind="typedef"><name>gpr_t</name></member>
+    <member refid="matmul__m__3__k_8cpp_1ab2ff20c54f9c12d9b08cb9910e934023" kind="typedef"><name>simd_fp_t</name></member>
+    <member refid="matmul__m__3__k_8cpp_1a7783d12b9e6c05765efc68f3ed6f0484" kind="typedef"><name>arr_spec_t</name></member>
+    <member refid="matmul__m__3__k_8cpp_1ad9c72abe6aac4541405f5f650acc546f" kind="typedef"><name>neon_size_spec_t</name></member>
+  </compound>
+  <compound refid="matmul__m__4__k_8cpp" kind="file"><name>matmul_m_4_k.cpp</name>
+    <member refid="matmul__m__4__k_8cpp_1a8c1e2f07c336da53fc71dc63ab488d91" kind="typedef"><name>gpr_t</name></member>
+    <member refid="matmul__m__4__k_8cpp_1ab2ff20c54f9c12d9b08cb9910e934023" kind="typedef"><name>simd_fp_t</name></member>
+    <member refid="matmul__m__4__k_8cpp_1a7783d12b9e6c05765efc68f3ed6f0484" kind="typedef"><name>arr_spec_t</name></member>
+    <member refid="matmul__m__4__k_8cpp_1ad9c72abe6aac4541405f5f650acc546f" kind="typedef"><name>neon_size_spec_t</name></member>
+  </compound>
+  <compound refid="decrement__primitive_8cpp" kind="file"><name>decrement_primitive.cpp</name>
+  </compound>
+  <compound refid="decrement__trans__primitive_8cpp" kind="file"><name>decrement_trans_primitive.cpp</name>
+  </compound>
+  <compound refid="fast__sigmoid__primitive_8cpp" kind="file"><name>fast_sigmoid_primitive.cpp</name>
+  </compound>
+  <compound refid="identity__primitive_8cpp" kind="file"><name>identity_primitive.cpp</name>
+  </compound>
+  <compound refid="identity__trans__primitive_8cpp" kind="file"><name>identity_trans_primitive.cpp</name>
+  </compound>
+  <compound refid="increment__primitive_8cpp" kind="file"><name>increment_primitive.cpp</name>
+  </compound>
+  <compound refid="increment__trans__primitive_8cpp" kind="file"><name>increment_trans_primitive.cpp</name>
+  </compound>
+  <compound refid="reciprocal__primitive_8cpp" kind="file"><name>reciprocal_primitive.cpp</name>
+  </compound>
+  <compound refid="reciprocal__trans__primitive_8cpp" kind="file"><name>reciprocal_trans_primitive.cpp</name>
+    <member refid="reciprocal__trans__primitive_8cpp_1ab2ff20c54f9c12d9b08cb9910e934023" kind="typedef"><name>simd_fp_t</name></member>
+    <member refid="reciprocal__trans__primitive_8cpp_1a7783d12b9e6c05765efc68f3ed6f0484" kind="typedef"><name>arr_spec_t</name></member>
+    <member refid="reciprocal__trans__primitive_8cpp_1ad9c72abe6aac4541405f5f650acc546f" kind="typedef"><name>neon_size_spec_t</name></member>
+  </compound>
+  <compound refid="relu__primitive_8cpp" kind="file"><name>relu_primitive.cpp</name>
+  </compound>
+  <compound refid="relu__trans__primitive_8cpp" kind="file"><name>relu_trans_primitive.cpp</name>
+  </compound>
+  <compound refid="sigmoid__interp__primitive_8cpp" kind="file"><name>sigmoid_interp_primitive.cpp</name>
+  </compound>
+  <compound refid="sigmoid__taylor__primitive_8cpp" kind="file"><name>sigmoid_taylor_primitive.cpp</name>
+  </compound>
+  <compound refid="square__primitive_8cpp" kind="file"><name>square_primitive.cpp</name>
+  </compound>
+  <compound refid="square__trans__primitive_8cpp" kind="file"><name>square_trans_primitive.cpp</name>
+  </compound>
+  <compound refid="zero__primitive_8cpp" kind="file"><name>zero_primitive.cpp</name>
+  </compound>
+  <compound refid="zero__primitive__xzr_8cpp" kind="file"><name>zero_primitive_xzr.cpp</name>
+  </compound>
+  <compound refid="sigmoid__benchmark_8py" kind="file"><name>sigmoid_benchmark.py</name>
+  </compound>
+  <compound refid="sigmoid__comparison_8py" kind="file"><name>sigmoid_comparison.py</name>
+  </compound>
+  <compound refid="driver__hello__assembly_8cpp" kind="file"><name>driver_hello_assembly.cpp</name>
+    <member refid="driver__hello__assembly_8cpp_1a6098a56107301784a85e362a79da09a7" kind="function"><name>hello_assembly</name></member>
+    <member refid="driver__hello__assembly_8cpp_1ae66f6b31b5ad750f1fe042a706a4e3d4" kind="function"><name>main</name></member>
+  </compound>
+  <compound refid="driver__add__values_8cpp" kind="file"><name>driver_add_values.cpp</name>
+    <member refid="driver__add__values_8cpp_1a24c294fc02992465ead4f15a569e7edf" kind="function"><name>add_values</name></member>
+    <member refid="driver__add__values_8cpp_1ae66f6b31b5ad750f1fe042a706a4e3d4" kind="function"><name>main</name></member>
+  </compound>
+  <compound refid="hello__assembly_8c" kind="file"><name>hello_assembly.c</name>
+    <member refid="hello__assembly_8c_1a6098a56107301784a85e362a79da09a7" kind="function"><name>hello_assembly</name></member>
+  </compound>
+  <compound refid="copy__c_8c" kind="file"><name>copy_c.c</name>
+    <member refid="copy__c_8c_1a94f5348a1f63e7be96ae7877d3850377" kind="function"><name>copy_c_0</name></member>
+    <member refid="copy__c_8c_1aa1ed94caa6255579fe34ea4aa90593bc" kind="function"><name>copy_c_1</name></member>
+  </compound>
+  <compound refid="copy__driver_8cpp" kind="file"><name>copy_driver.cpp</name>
+    <member refid="copy__driver_8cpp_1a55d10270d0c01b0e44adbac73a74789f" kind="function"><name>copy_c_0</name></member>
+    <member refid="copy__driver_8cpp_1ab71033b827cf920562e02c431e0c8647" kind="function"><name>copy_c_1</name></member>
+    <member refid="copy__driver_8cpp_1a9e3c4f982be725ba3dbbcf393402472c" kind="function"><name>copy_asm_0</name></member>
+    <member refid="copy__driver_8cpp_1ae8fed94660fc2f3de42955eab51e03be" kind="function"><name>copy_asm_1</name></member>
+    <member refid="copy__driver_8cpp_1a6e00157a10aa6f420e9c7fb0ed1c5e05" kind="function"><name>init</name></member>
+    <member refid="copy__driver_8cpp_1a19439feb7c4e54488ef984030bef42b1" kind="function"><name>check</name></member>
+    <member refid="copy__driver_8cpp_1ae66f6b31b5ad750f1fe042a706a4e3d4" kind="function"><name>main</name></member>
+  </compound>
+  <compound refid="02__base_202__instruction__throughput__and__latency_2microbench_8cpp" kind="file"><name>microbench.cpp</name>
+    <member refid="02__base_202__instruction__throughput__and__latency_2microbench_8cpp_1a6602bc019ef8f541c10eb6403728dedb" kind="function"><name>add_instr</name></member>
+    <member refid="02__base_202__instruction__throughput__and__latency_2microbench_8cpp_1a5f2a96f359c055bb0f90d1e3d20f6687" kind="function"><name>mul_instr</name></member>
+    <member refid="02__base_202__instruction__throughput__and__latency_2microbench_8cpp_1a3bc114ee7739f8c522fb88a858c2653d" kind="function"><name>add_lat_instr</name></member>
+    <member refid="02__base_202__instruction__throughput__and__latency_2microbench_8cpp_1ad4c5722781abab82a3a104bd78d55af6" kind="function"><name>mul_lat_instr</name></member>
+    <member refid="02__base_202__instruction__throughput__and__latency_2microbench_8cpp_1a4e2c8a2b4f5f6a66e156aa6610fcf3a6" kind="function"><name>benchmark_thr</name></member>
+    <member refid="02__base_202__instruction__throughput__and__latency_2microbench_8cpp_1ab0ca900a5b2eb5eb54fc66a347f82a91" kind="function"><name>benchmark_lat</name></member>
+    <member refid="02__base_202__instruction__throughput__and__latency_2microbench_8cpp_1ae66f6b31b5ad750f1fe042a706a4e3d4" kind="function"><name>main</name></member>
+  </compound>
+  <compound refid="03__neon_201__execution__throughput__and__latency_2benchmark_2microbench_8cpp" kind="file"><name>microbench.cpp</name>
+    <member refid="03__neon_201__execution__throughput__and__latency_2benchmark_2microbench_8cpp_1a8a03ca346e1a0acadcfc5289c89ac83d" kind="variable"><name>g_4s_registers</name></member>
+    <member refid="03__neon_201__execution__throughput__and__latency_2benchmark_2microbench_8cpp_1a9044457b9ab1e2d87ac1fe680ff0353d" kind="variable"><name>g_2s_registers</name></member>
+    <member refid="03__neon_201__execution__throughput__and__latency_2benchmark_2microbench_8cpp_1a33c80e4b9588832facf187bf775efaed" kind="variable"><name>g_registers</name></member>
+    <member refid="03__neon_201__execution__throughput__and__latency_2benchmark_2microbench_8cpp_1a203dc7011a488fd688c96243be2261b2" kind="function"><name>fmla_4s_instr</name></member>
+    <member refid="03__neon_201__execution__throughput__and__latency_2benchmark_2microbench_8cpp_1a9b2ced6a3b363939c1ec32bb75200426" kind="function"><name>fmla_2s_instr</name></member>
+    <member refid="03__neon_201__execution__throughput__and__latency_2benchmark_2microbench_8cpp_1a9e0790b157609c2f5535d829ce9ad00c" kind="function"><name>fmadd_instr</name></member>
+    <member refid="03__neon_201__execution__throughput__and__latency_2benchmark_2microbench_8cpp_1a7a74488c702f7bef6e4897448f0364a6" kind="function"><name>fmla_4s_source_lat_instr</name></member>
+    <member refid="03__neon_201__execution__throughput__and__latency_2benchmark_2microbench_8cpp_1a43051b6aa22d5b1a98263b72ce448b5f" kind="function"><name>fmla_4s_dest_lat_instr</name></member>
+    <member refid="03__neon_201__execution__throughput__and__latency_2benchmark_2microbench_8cpp_1a174e1eaa50e326f27ec810094ecbb494" kind="function"><name>initialize_registers</name></member>
+    <member refid="03__neon_201__execution__throughput__and__latency_2benchmark_2microbench_8cpp_1a4e2c8a2b4f5f6a66e156aa6610fcf3a6" kind="function"><name>benchmark_thr</name></member>
+    <member refid="03__neon_201__execution__throughput__and__latency_2benchmark_2microbench_8cpp_1ab0ca900a5b2eb5eb54fc66a347f82a91" kind="function"><name>benchmark_lat</name></member>
+    <member refid="03__neon_201__execution__throughput__and__latency_2benchmark_2microbench_8cpp_1ae66f6b31b5ad750f1fe042a706a4e3d4" kind="function"><name>main</name></member>
+  </compound>
+  <compound refid="03__neon_202__microkernel_2benchmark_2microbench_8cpp" kind="file"><name>microbench.cpp</name>
+    <member refid="03__neon_202__microkernel_2benchmark_2microbench_8cpp_1a2acefa3f51ff882e09e33e878e2672ce" kind="function"><name>v1_matmul_16_6_1</name></member>
+    <member refid="03__neon_202__microkernel_2benchmark_2microbench_8cpp_1a025a062ced84d75243fb099c05c5ee0a" kind="function"><name>v2_matmul_16_6_1</name></member>
+    <member refid="03__neon_202__microkernel_2benchmark_2microbench_8cpp_1a541793b4f0904ea78a6e867ced5ef78d" kind="function"><name>v3_matmul_16_6_1</name></member>
+    <member refid="03__neon_202__microkernel_2benchmark_2microbench_8cpp_1a16ace44844d60863ca73aec179a69391" kind="function"><name>benchmark_thr</name></member>
+    <member refid="03__neon_202__microkernel_2benchmark_2microbench_8cpp_1ae66f6b31b5ad750f1fe042a706a4e3d4" kind="function"><name>main</name></member>
+  </compound>
+  <compound refid="03__neon_203__loops_2benchmark_2microbench_8cpp" kind="file"><name>microbench.cpp</name>
+    <member refid="03__neon_203__loops_2benchmark_2microbench_8cpp_1a9c1b40a6bea55b13f08fc3640b7a4667" kind="function"><name>matmul_16_6_64</name></member>
+    <member refid="03__neon_203__loops_2benchmark_2microbench_8cpp_1a21c3a09cb5545cd36353512c5d126309" kind="function"><name>matmul_64_6_64</name></member>
+    <member refid="03__neon_203__loops_2benchmark_2microbench_8cpp_1afd9807f9bb685f5de73ae88ee655b976" kind="function"><name>matmul_64_48_64</name></member>
+    <member refid="03__neon_203__loops_2benchmark_2microbench_8cpp_1ae259dee22b8b8d29eb76759ee08bca38" kind="function"><name>benchmark_thr</name></member>
+    <member refid="03__neon_203__loops_2benchmark_2microbench_8cpp_1ae66f6b31b5ad750f1fe042a706a4e3d4" kind="function"><name>main</name></member>
+  </compound>
+  <compound refid="03__neon_204__simd_2benchmark_2microbench_8cpp" kind="file"><name>microbench.cpp</name>
+    <member refid="03__neon_204__simd_2benchmark_2microbench_8cpp_1a780bda83e444079987e81d84c3f17786" kind="function"><name>v1_matmul_14_6_64</name></member>
+    <member refid="03__neon_204__simd_2benchmark_2microbench_8cpp_1ab68835fb9f46f2571eacfd52fb42e461" kind="function"><name>v2_matmul_14_6_64</name></member>
+    <member refid="03__neon_204__simd_2benchmark_2microbench_8cpp_1a0534113eb5f63dc6bd9e13ca8f257f5f" kind="function"><name>v3_matmul_14_6_64</name></member>
+    <member refid="03__neon_204__simd_2benchmark_2microbench_8cpp_1aac5325d782929d8a9783fb111663024e" kind="function"><name>v4_matmul_14_6_64</name></member>
+    <member refid="03__neon_204__simd_2benchmark_2microbench_8cpp_1ab32370c9e67146dfc85df2315a5072aa" kind="function"><name>v1_matmul_15_6_64</name></member>
+    <member refid="03__neon_204__simd_2benchmark_2microbench_8cpp_1aad2e670811801e58230ec68b72d147ac" kind="function"><name>v2_matmul_15_6_64</name></member>
+    <member refid="03__neon_204__simd_2benchmark_2microbench_8cpp_1a42288c22c2f192a84130659c8022c88a" kind="function"><name>v3_matmul_15_6_64</name></member>
+    <member refid="03__neon_204__simd_2benchmark_2microbench_8cpp_1aeaf3e4f6457944a733164a5a5e8cacb8" kind="function"><name>matmul_M_6_64</name></member>
+    <member refid="03__neon_204__simd_2benchmark_2microbench_8cpp_1ae259dee22b8b8d29eb76759ee08bca38" kind="function"><name>benchmark_thr</name></member>
+    <member refid="03__neon_204__simd_2benchmark_2microbench_8cpp_1ae66f6b31b5ad750f1fe042a706a4e3d4" kind="function"><name>main</name></member>
+  </compound>
+  <compound refid="03__neon_205__accumulator__block__shapes_2benchmark_2microbench_8cpp" kind="file"><name>microbench.cpp</name>
+    <member refid="03__neon_205__accumulator__block__shapes_2benchmark_2microbench_8cpp_1af0abb48311a22b0ebfd9c9120bc0437c" kind="function"><name>v1_matmul_64_64_64</name></member>
+    <member refid="03__neon_205__accumulator__block__shapes_2benchmark_2microbench_8cpp_1a084a1b7b67752c03777bb5c5a57227cb" kind="function"><name>v2_matmul_64_64_64</name></member>
+    <member refid="03__neon_205__accumulator__block__shapes_2benchmark_2microbench_8cpp_1a16ace44844d60863ca73aec179a69391" kind="function"><name>benchmark_thr</name></member>
+    <member refid="03__neon_205__accumulator__block__shapes_2benchmark_2microbench_8cpp_1ae66f6b31b5ad750f1fe042a706a4e3d4" kind="function"><name>main</name></member>
+  </compound>
+  <compound refid="03__neon_206__batch__reduce__gemm_2benchmark_2microbench_8cpp" kind="file"><name>microbench.cpp</name>
+    <member refid="03__neon_206__batch__reduce__gemm_2benchmark_2microbench_8cpp_1a81b8b1b28f7dc1978efec4a231ad5121" kind="function"><name>v1_matmul_64_48_64_16</name></member>
+    <member refid="03__neon_206__batch__reduce__gemm_2benchmark_2microbench_8cpp_1adb8fa507ba523c42c85063b5687e1793" kind="function"><name>v2_matmul_64_48_64_16</name></member>
+    <member refid="03__neon_206__batch__reduce__gemm_2benchmark_2microbench_8cpp_1ae259dee22b8b8d29eb76759ee08bca38" kind="function"><name>benchmark_thr</name></member>
+    <member refid="03__neon_206__batch__reduce__gemm_2benchmark_2microbench_8cpp_1ae66f6b31b5ad750f1fe042a706a4e3d4" kind="function"><name>main</name></member>
+  </compound>
+  <compound refid="03__neon_207__transposition_2benchmark_2microbench_8cpp" kind="file"><name>microbench.cpp</name>
+    <member refid="03__neon_207__transposition_2benchmark_2microbench_8cpp_1a21f8465d802687b26cf667c516d0fdf7" kind="function"><name>trans_neon_8_8</name></member>
+    <member refid="03__neon_207__transposition_2benchmark_2microbench_8cpp_1aeb93add8dc6499708eda4cc582982b0a" kind="function"><name>v2_trans_neon_8_8</name></member>
+    <member refid="03__neon_207__transposition_2benchmark_2microbench_8cpp_1a9adfa7836aa665939e45739249bb42d3" kind="function"><name>trans_neon_4_4</name></member>
+    <member refid="03__neon_207__transposition_2benchmark_2microbench_8cpp_1ae0fa667622a86fb8a767ce60c07637f4" kind="function"><name>v2_trans_neon_4_4</name></member>
+    <member refid="03__neon_207__transposition_2benchmark_2microbench_8cpp_1a59939cf4a4379237583f4e0e2a0d4a84" kind="function"><name>benchmark_thr</name></member>
+    <member refid="03__neon_207__transposition_2benchmark_2microbench_8cpp_1ae66f6b31b5ad750f1fe042a706a4e3d4" kind="function"><name>main</name></member>
+  </compound>
+  <compound refid="microkernel_8cpp" kind="file"><name>microkernel.cpp</name>
+    <member refid="microkernel_8cpp_1a2acefa3f51ff882e09e33e878e2672ce" kind="function"><name>v1_matmul_16_6_1</name></member>
+    <member refid="microkernel_8cpp_1a025a062ced84d75243fb099c05c5ee0a" kind="function"><name>v2_matmul_16_6_1</name></member>
+    <member refid="microkernel_8cpp_1a541793b4f0904ea78a6e867ced5ef78d" kind="function"><name>v3_matmul_16_6_1</name></member>
+    <member refid="microkernel_8cpp_1ae66f6b31b5ad750f1fe042a706a4e3d4" kind="function"><name>main</name></member>
+  </compound>
+  <compound refid="matmul__16__6__1_8test_8cpp" kind="file"><name>matmul_16_6_1.test.cpp</name>
+    <member refid="matmul__16__6__1_8test_8cpp_1a2acefa3f51ff882e09e33e878e2672ce" kind="function"><name>v1_matmul_16_6_1</name></member>
+    <member refid="matmul__16__6__1_8test_8cpp_1a025a062ced84d75243fb099c05c5ee0a" kind="function"><name>v2_matmul_16_6_1</name></member>
+    <member refid="matmul__16__6__1_8test_8cpp_1a541793b4f0904ea78a6e867ced5ef78d" kind="function"><name>v3_matmul_16_6_1</name></member>
+    <member refid="matmul__16__6__1_8test_8cpp_1a1e07bc2bbcdb490acb22be5eddf101da" kind="function"><name>TEST_CASE</name></member>
+    <member refid="matmul__16__6__1_8test_8cpp_1a215cbff0c618051a5aad7ed7e1468416" kind="function"><name>TEST_CASE</name></member>
+    <member refid="matmul__16__6__1_8test_8cpp_1a2e853f0193f20d4ca552d7f1418e569c" kind="function"><name>TEST_CASE</name></member>
+  </compound>
+  <compound refid="02__microkernel_2tests_2tests_8cpp" kind="file"><name>tests.cpp</name>
+    <member refid="02__microkernel_2tests_2tests_8cpp_1a34b4c3eca7342fbc4cba090d02139902" kind="define"><name>CATCH_CONFIG_RUNNER</name></member>
+    <member refid="02__microkernel_2tests_2tests_8cpp_1ad326631151704dee3aa2d880d265fee0" kind="function"><name>main</name></member>
+  </compound>
+  <compound refid="03__loops_2tests_2tests_8cpp" kind="file"><name>tests.cpp</name>
+    <member refid="03__loops_2tests_2tests_8cpp_1a34b4c3eca7342fbc4cba090d02139902" kind="define"><name>CATCH_CONFIG_RUNNER</name></member>
+    <member refid="03__loops_2tests_2tests_8cpp_1ad326631151704dee3aa2d880d265fee0" kind="function"><name>main</name></member>
+  </compound>
+  <compound refid="04__simd_2tests_2tests_8cpp" kind="file"><name>tests.cpp</name>
+    <member refid="04__simd_2tests_2tests_8cpp_1a34b4c3eca7342fbc4cba090d02139902" kind="define"><name>CATCH_CONFIG_RUNNER</name></member>
+    <member refid="04__simd_2tests_2tests_8cpp_1ad326631151704dee3aa2d880d265fee0" kind="function"><name>main</name></member>
+  </compound>
+  <compound refid="05__accumulator__block__shapes_2tests_2tests_8cpp" kind="file"><name>tests.cpp</name>
+    <member refid="05__accumulator__block__shapes_2tests_2tests_8cpp_1a34b4c3eca7342fbc4cba090d02139902" kind="define"><name>CATCH_CONFIG_RUNNER</name></member>
+    <member refid="05__accumulator__block__shapes_2tests_2tests_8cpp_1ad326631151704dee3aa2d880d265fee0" kind="function"><name>main</name></member>
+  </compound>
+  <compound refid="06__batch__reduce__gemm_2tests_2tests_8cpp" kind="file"><name>tests.cpp</name>
+    <member refid="06__batch__reduce__gemm_2tests_2tests_8cpp_1a34b4c3eca7342fbc4cba090d02139902" kind="define"><name>CATCH_CONFIG_RUNNER</name></member>
+    <member refid="06__batch__reduce__gemm_2tests_2tests_8cpp_1ad326631151704dee3aa2d880d265fee0" kind="function"><name>main</name></member>
+  </compound>
+  <compound refid="07__transposition_2tests_2tests_8cpp" kind="file"><name>tests.cpp</name>
+    <member refid="07__transposition_2tests_2tests_8cpp_1a34b4c3eca7342fbc4cba090d02139902" kind="define"><name>CATCH_CONFIG_RUNNER</name></member>
+    <member refid="07__transposition_2tests_2tests_8cpp_1ad326631151704dee3aa2d880d265fee0" kind="function"><name>main</name></member>
+  </compound>
+  <compound refid="matmul__16__6__64_8test_8cpp" kind="file"><name>matmul_16_6_64.test.cpp</name>
+    <member refid="matmul__16__6__64_8test_8cpp_1a9c1b40a6bea55b13f08fc3640b7a4667" kind="function"><name>matmul_16_6_64</name></member>
+    <member refid="matmul__16__6__64_8test_8cpp_1ac849aa119d305f7c3c118996ac71f83e" kind="function"><name>TEST_CASE</name></member>
+  </compound>
+  <compound refid="matmul__64__48__64_8test_8cpp" kind="file"><name>matmul_64_48_64.test.cpp</name>
+    <member refid="matmul__64__48__64_8test_8cpp_1afd9807f9bb685f5de73ae88ee655b976" kind="function"><name>matmul_64_48_64</name></member>
+    <member refid="matmul__64__48__64_8test_8cpp_1a93cb3caad0af29d530e5cc65dfc66e2d" kind="function"><name>TEST_CASE</name></member>
+  </compound>
+  <compound refid="matmul__64__6__64_8test_8cpp" kind="file"><name>matmul_64_6_64.test.cpp</name>
+    <member refid="matmul__64__6__64_8test_8cpp_1a21c3a09cb5545cd36353512c5d126309" kind="function"><name>matmul_64_6_64</name></member>
+    <member refid="matmul__64__6__64_8test_8cpp_1a675fb36da8601430fa70c42698e1e2be" kind="function"><name>TEST_CASE</name></member>
+  </compound>
+  <compound refid="matmul__14__6__64_8test_8cpp" kind="file"><name>matmul_14_6_64.test.cpp</name>
+    <member refid="matmul__14__6__64_8test_8cpp_1a780bda83e444079987e81d84c3f17786" kind="function"><name>v1_matmul_14_6_64</name></member>
+    <member refid="matmul__14__6__64_8test_8cpp_1ab68835fb9f46f2571eacfd52fb42e461" kind="function"><name>v2_matmul_14_6_64</name></member>
+    <member refid="matmul__14__6__64_8test_8cpp_1a0534113eb5f63dc6bd9e13ca8f257f5f" kind="function"><name>v3_matmul_14_6_64</name></member>
+    <member refid="matmul__14__6__64_8test_8cpp_1aac5325d782929d8a9783fb111663024e" kind="function"><name>v4_matmul_14_6_64</name></member>
+    <member refid="matmul__14__6__64_8test_8cpp_1a39f1d090f42cb2de8114fbb10aa5eee0" kind="function"><name>TEST_CASE</name></member>
+    <member refid="matmul__14__6__64_8test_8cpp_1afa4191baf665af5fb63c0fcf3034183c" kind="function"><name>TEST_CASE</name></member>
+    <member refid="matmul__14__6__64_8test_8cpp_1a92af42fbc277344beb36393f17c0caa9" kind="function"><name>TEST_CASE</name></member>
+    <member refid="matmul__14__6__64_8test_8cpp_1ab6d4d79e0e392ef5646bbe5267de7ef8" kind="function"><name>TEST_CASE</name></member>
+  </compound>
+  <compound refid="matmul__15__6__64_8test_8cpp" kind="file"><name>matmul_15_6_64.test.cpp</name>
+    <member refid="matmul__15__6__64_8test_8cpp_1ab32370c9e67146dfc85df2315a5072aa" kind="function"><name>v1_matmul_15_6_64</name></member>
+    <member refid="matmul__15__6__64_8test_8cpp_1aad2e670811801e58230ec68b72d147ac" kind="function"><name>v2_matmul_15_6_64</name></member>
+    <member refid="matmul__15__6__64_8test_8cpp_1a42288c22c2f192a84130659c8022c88a" kind="function"><name>v3_matmul_15_6_64</name></member>
+    <member refid="matmul__15__6__64_8test_8cpp_1acf835030bc3f422635a710ee194bc756" kind="function"><name>TEST_CASE</name></member>
+    <member refid="matmul__15__6__64_8test_8cpp_1aafc928427f58f21fc7cc426d7ab074b3" kind="function"><name>TEST_CASE</name></member>
+    <member refid="matmul__15__6__64_8test_8cpp_1a36accabecece67fa47178ff7238f1dce" kind="function"><name>TEST_CASE</name></member>
+  </compound>
+  <compound refid="matmul__M__6__64_8test_8cpp" kind="file"><name>matmul_M_6_64.test.cpp</name>
+    <member refid="matmul__M__6__64_8test_8cpp_1aeaf3e4f6457944a733164a5a5e8cacb8" kind="function"><name>matmul_M_6_64</name></member>
+    <member refid="matmul__M__6__64_8test_8cpp_1a7e121c04e40f6b63c47b278f54ecce8c" kind="function"><name>TEST_CASE</name></member>
+  </compound>
+  <compound refid="matmul__64__64__64_8test_8cpp" kind="file"><name>matmul_64_64_64.test.cpp</name>
+    <member refid="matmul__64__64__64_8test_8cpp_1ae5e2b2ac801ec20481930a6183a969f8" kind="function"><name>matmul_64_64_64</name></member>
+    <member refid="matmul__64__64__64_8test_8cpp_1adfda4294ae5683df9541608987532e29" kind="function"><name>TEST_CASE</name></member>
+  </compound>
+  <compound refid="matmul__64__48__64__16_8test_8cpp" kind="file"><name>matmul_64_48_64_16.test.cpp</name>
+    <member refid="matmul__64__48__64__16_8test_8cpp_1a81b8b1b28f7dc1978efec4a231ad5121" kind="function"><name>v1_matmul_64_48_64_16</name></member>
+    <member refid="matmul__64__48__64__16_8test_8cpp_1adb8fa507ba523c42c85063b5687e1793" kind="function"><name>v2_matmul_64_48_64_16</name></member>
+    <member refid="matmul__64__48__64__16_8test_8cpp_1aec3e1d49d84ac66149fa3832566b55f7" kind="function"><name>TEST_CASE</name></member>
+    <member refid="matmul__64__48__64__16_8test_8cpp_1a8743c75690518158bd07c2cb724e728f" kind="function"><name>TEST_CASE</name></member>
+  </compound>
+  <compound refid="trans__neon__4__4_8test_8cpp" kind="file"><name>trans_neon_4_4.test.cpp</name>
+    <member refid="trans__neon__4__4_8test_8cpp_1a9adfa7836aa665939e45739249bb42d3" kind="function"><name>trans_neon_4_4</name></member>
+    <member refid="trans__neon__4__4_8test_8cpp_1ae0fa667622a86fb8a767ce60c07637f4" kind="function"><name>v2_trans_neon_4_4</name></member>
+    <member refid="trans__neon__4__4_8test_8cpp_1a47fd0c8c6fdc77e629cfc392a4717279" kind="function"><name>TEST_CASE</name></member>
+    <member refid="trans__neon__4__4_8test_8cpp_1ab365f1919ef2e5e37a57f7c7f07dfc66" kind="function"><name>TEST_CASE</name></member>
+  </compound>
+  <compound refid="trans__neon__8__8_8test_8cpp" kind="file"><name>trans_neon_8_8.test.cpp</name>
+    <member refid="trans__neon__8__8_8test_8cpp_1a21f8465d802687b26cf667c516d0fdf7" kind="function"><name>trans_neon_8_8</name></member>
+    <member refid="trans__neon__8__8_8test_8cpp_1aeb93add8dc6499708eda4cc582982b0a" kind="function"><name>v2_trans_neon_8_8</name></member>
+    <member refid="trans__neon__8__8_8test_8cpp_1a6a3f48086477918ef5e6df96c134393a" kind="function"><name>TEST_CASE</name></member>
+    <member refid="trans__neon__8__8_8test_8cpp_1ad2a38053f22d2ee86be18afa2ffdb0b7" kind="function"><name>TEST_CASE</name></member>
+  </compound>
+  <compound refid="TensorOperation_8cpp" kind="file"><name>TensorOperation.cpp</name>
+  </compound>
+  <compound refid="Unary_8cpp" kind="file"><name>Unary.cpp</name>
+  </compound>
+  <compound refid="dir_4943c33995f7629dbe8d56e3fd3c66f7" kind="dir"><name>/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/01_assembly</name>
+  </compound>
+  <compound refid="dir_c8316a8095387fb8630d1f47c2e56ec5" kind="dir"><name>/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/02_base/01_copying_data</name>
+  </compound>
+  <compound refid="dir_db0c44b6c99babc115391fee31ffffd2" kind="dir"><name>/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/03_neon/01_execution_throughput_and_latency</name>
+  </compound>
+  <compound refid="dir_a8403f57bdb60ba019a26e479251be4a" kind="dir"><name>/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/01_assembly/01_task</name>
+  </compound>
+  <compound refid="dir_8f3814d38748b7c73405fc75327b8ba3" kind="dir"><name>/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/02_base</name>
+  </compound>
+  <compound refid="dir_50185a774c3beb41d3503b15f7296656" kind="dir"><name>/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/02_base/02_instruction_throughput_and_latency</name>
+  </compound>
+  <compound refid="dir_e6eb231c0e4101fda6c4d8d8fac3babc" kind="dir"><name>/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/03_neon/02_microkernel</name>
+  </compound>
+  <compound refid="dir_b97bd775aad0ea181b9f8bd99e5bd4d3" kind="dir"><name>/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/01_assembly/02_task</name>
+  </compound>
+  <compound refid="dir_fdaeb624d648c5eadf33e2657c6f49fc" kind="dir"><name>/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/03_neon/03_loops</name>
+  </compound>
+  <compound refid="dir_b2c563f7bf427f5a0c17c9a95cb1f2fd" kind="dir"><name>/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/03_neon</name>
+  </compound>
+  <compound refid="dir_1bbf329644173ab09491115de8dab028" kind="dir"><name>/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/03_neon/04_simd</name>
+  </compound>
+  <compound refid="dir_3574dc578a2032e7bffd7af1f5b71dbd" kind="dir"><name>/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/03_neon/05_accumulator_block_shapes</name>
+  </compound>
+  <compound refid="dir_f78ac28d176dc5803113e6f9814f5964" kind="dir"><name>/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/03_neon/06_batch_reduce_gemm</name>
+  </compound>
+  <compound refid="dir_f92c61175547b9411dbb5558edf13cfd" kind="dir"><name>/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/03_neon/07_transposition</name>
+  </compound>
+  <compound refid="dir_6a45cead0ad97b9b328c87f0c486e1d8" kind="dir"><name>/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/03_neon/01_execution_throughput_and_latency/benchmark</name>
+  </compound>
+  <compound refid="dir_d5427c8d199f1e3962233e4ae426a516" kind="dir"><name>/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/03_neon/02_microkernel/benchmark</name>
+  </compound>
+  <compound refid="dir_6eccd4aac8c7502a6176500c4f67d84c" kind="dir"><name>/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/03_neon/03_loops/benchmark</name>
+  </compound>
+  <compound refid="dir_b509a2945170228f8a3b0fd17ab6010f" kind="dir"><name>/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/03_neon/04_simd/benchmark</name>
+  </compound>
+  <compound refid="dir_b0dce357a3b74f0d7759fd6d8e47b00f" kind="dir"><name>/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/03_neon/05_accumulator_block_shapes/benchmark</name>
+  </compound>
+  <compound refid="dir_44fd0773b821db12e25fd7ed6f2f1b83" kind="dir"><name>/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/03_neon/06_batch_reduce_gemm/benchmark</name>
+  </compound>
+  <compound refid="dir_cf82bd28aeb972a448f9388643e725ba" kind="dir"><name>/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/03_neon/07_transposition/benchmark</name>
+  </compound>
+  <compound refid="dir_41b668e9275061b2af1811d766f5b837" kind="dir"><name>/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/benchmarks</name>
+  </compound>
+  <compound refid="dir_7882575d780a68efc929f0fd0ba0d602" kind="dir"><name>/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/python/benchmarks</name>
+  </compound>
+  <compound refid="dir_25b3e6eebcd20c11c6d0f8a243e65f4b" kind="dir"><name>/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/kernels/binary</name>
+  </compound>
+  <compound refid="dir_752612e1113a7b902f0c56a6b23f1a21" kind="dir"><name>/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/01_assembly/data</name>
+  </compound>
+  <compound refid="dir_49bd06b273f8b97000e1d37d6c1565a8" kind="dir"><name>/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/einsum</name>
+  </compound>
+  <compound refid="dir_cbf4dfb252b991084670c33e10abc5c2" kind="dir"><name>/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/ir</name>
+  </compound>
+  <compound refid="dir_40856f0cdd4bcafd28810d9265a200f7" kind="dir"><name>/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/kernels</name>
+  </compound>
+  <compound refid="dir_acfa0d7404895582bc9e59f9be4f0f55" kind="dir"><name>/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/benchmarks/matmul</name>
+  </compound>
+  <compound refid="dir_fd47011a3c6b8238c82e241c135b8246" kind="dir"><name>/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/kernels/matmul</name>
+  </compound>
+  <compound refid="dir_5c0d64f70903e893b1efe571a4b8de29" kind="dir"><name>/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/python</name>
+  </compound>
+  <compound refid="dir_68267d1309a1af8e8297ef4c3efbcdba" kind="dir"><name>/home/runner/work/machine-learning-compilers/machine-learning-compilers/src</name>
+  </compound>
+  <compound refid="dir_e80b9e9f62dec164f46e6d2dba81649d" kind="dir"><name>/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/kernels/matmul/subkernels</name>
+  </compound>
+  <compound refid="dir_89b09214c7b8767e580eb9d0667695f6" kind="dir"><name>/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions</name>
+  </compound>
+  <compound refid="dir_0368d9aa12c340e330b73559723964af" kind="dir"><name>/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/03_neon/02_microkernel/tests</name>
+  </compound>
+  <compound refid="dir_e5a450447a6bc952b2050a1e2deda141" kind="dir"><name>/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/03_neon/03_loops/tests</name>
+  </compound>
+  <compound refid="dir_e4040565e85b218234e6769320bb9883" kind="dir"><name>/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/03_neon/04_simd/tests</name>
+  </compound>
+  <compound refid="dir_2071c85ace141aacd88cf8e95975aeb0" kind="dir"><name>/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/03_neon/05_accumulator_block_shapes/tests</name>
+  </compound>
+  <compound refid="dir_b45014a08b95acf9511f02041b27a6de" kind="dir"><name>/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/03_neon/06_batch_reduce_gemm/tests</name>
+  </compound>
+  <compound refid="dir_1b2f01893187af215c5d3ce15c23646e" kind="dir"><name>/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/03_neon/07_transposition/tests</name>
+  </compound>
+  <compound refid="dir_35198e0b3f77597227874a7a59b011b8" kind="dir"><name>/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/benchmarks/unary</name>
+  </compound>
+  <compound refid="dir_e0a28dfa8071ea4b636374df08ffb717" kind="dir"><name>/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/kernels/unary</name>
+  </compound>
+</doxygenindex>

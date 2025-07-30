@@ -1,0 +1,106 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="sigmoid__comparison_8py" kind="file" language="Python">
+    <compoundname>sigmoid_comparison.py</compoundname>
+    <innernamespace refid="namespacesigmoid__comparison">sigmoid_comparison</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1" refid="namespacesigmoid__comparison" refkind="compound"><highlight class="stringliteral">&quot;&quot;&quot;</highlight></codeline>
+<codeline lineno="2"><highlight class="stringliteral">Sigmoid<sp/>Function<sp/>Comparison<sp/>Plot</highlight></codeline>
+<codeline lineno="3"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="4"><highlight class="stringliteral">This<sp/>script<sp/>plots<sp/>the<sp/>fast<sp/>sigmoid<sp/>function,<sp/>sigmoid<sp/>Taylor<sp/>approximation,<sp/></highlight></codeline>
+<codeline lineno="5"><highlight class="stringliteral">and<sp/>sigmoid<sp/>linear<sp/>interpolation<sp/>function<sp/>against<sp/>the<sp/>real<sp/>sigmoid<sp/>function.</highlight></codeline>
+<codeline lineno="6"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="7"><highlight class="stringliteral">The<sp/>linear<sp/>interpolation<sp/>is<sp/>defined<sp/>with<sp/>a<sp/>lookup<sp/>table<sp/>over<sp/>the<sp/>range<sp/>[-8,<sp/>8]<sp/>with<sp/>0.5<sp/>steps.</highlight></codeline>
+<codeline lineno="8"><highlight class="stringliteral">&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>numpy<sp/></highlight><highlight class="keyword">as</highlight><highlight class="normal"><sp/>np</highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>matplotlib.pyplot<sp/></highlight><highlight class="keyword">as</highlight><highlight class="normal"><sp/>plt</highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="keyword">from</highlight><highlight class="normal"><sp/>scipy.interpolate<sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>interp1d</highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="namespacesigmoid__comparison_1add5d7d00818258dc3d0102a1df1ef489" kindref="member">real_sigmoid</ref>(x):</highlight></codeline>
+<codeline lineno="15"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;&quot;&quot;Real<sp/>sigmoid<sp/>function:<sp/>σ(x)<sp/>=<sp/>1<sp/>/<sp/>(1<sp/>+<sp/>e^(-x))&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>1.0<sp/>/<sp/>(1.0<sp/>+<sp/>np.exp(-x))</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="namespacesigmoid__comparison_1a999cc8d21422abe109379a7a0b7ef149" kindref="member">fast_sigmoid</ref>(x):</highlight></codeline>
+<codeline lineno="19"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;&quot;&quot;Fast<sp/>sigmoid<sp/>approximation:<sp/>f(x)<sp/>=<sp/>0.5<sp/>*<sp/>(x<sp/>/<sp/>(1<sp/>+<sp/>abs(x))<sp/>+<sp/>1)&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>0.5<sp/>*<sp/>(x<sp/>/<sp/>(1<sp/>+<sp/>np.abs(x))<sp/>+<sp/>1)</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="namespacesigmoid__comparison_1aaaa0d245c26d5f18da7e248bf40746bf" kindref="member">taylor_sigmoid</ref>(x):</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;&quot;&quot;Taylor<sp/>series<sp/>approximation<sp/>(5th<sp/>order):<sp/>f(x)<sp/>=<sp/>0.5<sp/>+<sp/>0.25*x<sp/>-<sp/>0.020833*x^3<sp/>+<sp/>0.002083*x^5&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/>x2<sp/>=<sp/>x<sp/>*<sp/>x</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/><sp/><sp/>x3<sp/>=<sp/>x2<sp/>*<sp/>x</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/>x5<sp/>=<sp/>x3<sp/>*<sp/>x2</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>0.5<sp/>+<sp/>0.25<sp/>*<sp/>x<sp/>-<sp/>0.020833333<sp/>*<sp/>x3<sp/>+<sp/>0.002083333<sp/>*<sp/>x5</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="namespacesigmoid__comparison_1a19afb369986a75527131287a9cdf923f" kindref="member">interpolation_sigmoid</ref>(x):</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;&quot;&quot;Linear<sp/>interpolation<sp/>using<sp/>lookup<sp/>table<sp/>with<sp/>33<sp/>values&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/>sig_table<sp/>=<sp/>np.array([</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>0.000335,<sp/>0.000553,<sp/>0.000911,<sp/>0.001503,<sp/>0.002473,<sp/>0.004070,<sp/>0.006693,</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>0.011109,<sp/>0.017986,<sp/>0.029312,<sp/>0.047426,<sp/>0.075858,<sp/>0.119203,<sp/>0.182426,</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>0.268941,<sp/>0.377541,<sp/>0.500000,<sp/>0.622459,<sp/>0.731059,<sp/>0.817574,<sp/>0.880797,</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>0.924142,<sp/>0.952574,<sp/>0.970688,<sp/>0.982014,<sp/>0.988891,<sp/>0.993307,<sp/>0.995930,</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>0.997527,<sp/>0.998497,<sp/>0.999089,<sp/>0.999447,<sp/>0.999665</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/>])</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>Create<sp/>x<sp/>values<sp/>for<sp/>the<sp/>lookup<sp/>table<sp/>(32<sp/>intervals<sp/>from<sp/>-8<sp/>to<sp/>8)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/>x_table<sp/>=<sp/>np.linspace(-8,<sp/>8,<sp/>33)</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>Create<sp/>interpolation<sp/>function</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/>interp_func<sp/>=<sp/>interp1d(x_table,<sp/></highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>sig_table,<sp/></highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>kind=</highlight><highlight class="stringliteral">&apos;linear&apos;</highlight><highlight class="normal">,<sp/></highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bounds_error=</highlight><highlight class="keyword">False</highlight><highlight class="normal">,<sp/></highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>fill_value=(sig_table[0],<sp/>sig_table[-1]))</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>interp_func(x)</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"></highlight></codeline>
+<codeline lineno="51"><highlight class="normal"></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal">main():</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>Generate<sp/>x<sp/>values<sp/>from<sp/>-8<sp/>to<sp/>8<sp/>with<sp/>0.5<sp/>steps</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/>x<sp/>=<sp/>np.arange(-8,<sp/>8.5,<sp/>0.5)</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>Calculate<sp/>all<sp/>sigmoid<sp/>functions</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/>y_real<sp/>=<sp/><ref refid="namespacesigmoid__comparison_1add5d7d00818258dc3d0102a1df1ef489" kindref="member">real_sigmoid</ref>(x)</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/>y_fast<sp/>=<sp/><ref refid="namespacesigmoid__comparison_1a999cc8d21422abe109379a7a0b7ef149" kindref="member">fast_sigmoid</ref>(x)</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/>y_taylor<sp/>=<sp/><ref refid="namespacesigmoid__comparison_1aaaa0d245c26d5f18da7e248bf40746bf" kindref="member">taylor_sigmoid</ref>(x)</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/>y_interp<sp/>=<sp/><ref refid="namespacesigmoid__comparison_1a19afb369986a75527131287a9cdf923f" kindref="member">interpolation_sigmoid</ref>(x)</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>Create<sp/>the<sp/>plot</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/>plt.figure(figsize=(12,<sp/>8))</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>Plot<sp/>functions</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/>plt.plot(x,<sp/>y_real,<sp/><sp/><sp/>color=</highlight><highlight class="stringliteral">&apos;red&apos;</highlight><highlight class="normal">,<sp/><sp/><sp/>linestyle=</highlight><highlight class="stringliteral">&apos;-&apos;</highlight><highlight class="normal">,<sp/><sp/>linewidth=3,<sp/>label=</highlight><highlight class="stringliteral">&apos;Real<sp/>Sigmoid&apos;</highlight><highlight class="normal">,<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>alpha=0.8)</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/>plt.plot(x,<sp/>y_fast,<sp/><sp/><sp/>color=</highlight><highlight class="stringliteral">&apos;blue&apos;</highlight><highlight class="normal">,<sp/><sp/>linestyle=</highlight><highlight class="stringliteral">&apos;--&apos;</highlight><highlight class="normal">,<sp/>linewidth=2,<sp/>label=</highlight><highlight class="stringliteral">&apos;Fast<sp/>Sigmoid&apos;</highlight><highlight class="normal">,<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>alpha=0.8)</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/>plt.plot(x,<sp/>y_taylor,<sp/>color=</highlight><highlight class="stringliteral">&apos;green&apos;</highlight><highlight class="normal">,<sp/>linestyle=</highlight><highlight class="stringliteral">&apos;:&apos;</highlight><highlight class="normal">,<sp/><sp/>linewidth=2,<sp/>label=</highlight><highlight class="stringliteral">&apos;Taylor<sp/>Approximation&apos;</highlight><highlight class="normal">,<sp/>alpha=0.8)</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/>plt.plot(x,<sp/>y_interp,<sp/>color=</highlight><highlight class="stringliteral">&apos;black&apos;</highlight><highlight class="normal">,<sp/>linestyle=</highlight><highlight class="stringliteral">&apos;-.&apos;</highlight><highlight class="normal">,<sp/>linewidth=2,<sp/>label=</highlight><highlight class="stringliteral">&apos;Linear<sp/>Interpolation&apos;</highlight><highlight class="normal">,<sp/>alpha=0.8)</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>Customize<sp/>the<sp/>plot</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/>plt.xlabel(</highlight><highlight class="stringliteral">&apos;x&apos;</highlight><highlight class="normal">,<sp/><sp/><sp/><sp/>fontsize=14)</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/>plt.ylabel(</highlight><highlight class="stringliteral">&apos;σ(x)&apos;</highlight><highlight class="normal">,<sp/>fontsize=14)</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/>plt.title(</highlight><highlight class="stringliteral">&apos;Sigmoid<sp/>Function<sp/>Comparison\nRange:<sp/>[-8,<sp/>8]&apos;</highlight><highlight class="normal">,<sp/>fontsize=16)</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/>plt.legend(fontsize=12)</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/>plt.grid(</highlight><highlight class="keyword">True</highlight><highlight class="normal">,<sp/>alpha=0.3)</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>Axis<sp/>limits</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/>plt.xlim(-8,<sp/>8)</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/>plt.ylim(-0.3,<sp/>1.3)</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>Styling</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/>plt.tight_layout()</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>Save<sp/>the<sp/>plot</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/>plt.savefig(</highlight><highlight class="stringliteral">&apos;docs/_static/sigmoid_comparison.png&apos;</highlight><highlight class="normal">,<sp/>dpi=300,<sp/>bbox_inches=</highlight><highlight class="stringliteral">&apos;tight&apos;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/>print(f</highlight><highlight class="stringliteral">&quot;\nPlot<sp/>saved<sp/>as<sp/>&apos;sigmoid_comparison.png&apos;&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>Show<sp/>the<sp/>plot</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/>plt.show()</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"></highlight></codeline>
+<codeline lineno="91"><highlight class="normal"></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>__name__<sp/>==<sp/></highlight><highlight class="stringliteral">&quot;__main__&quot;</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/>main()<sp/></highlight></codeline>
+    </programlisting>
+    <location file="/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/python/sigmoid_comparison.py"/>
+  </compounddef>
+</doxygen>

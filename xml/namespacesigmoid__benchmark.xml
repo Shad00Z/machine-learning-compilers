@@ -1,0 +1,156 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespacesigmoid__benchmark" kind="namespace" language="Python">
+    <compoundname>sigmoid_benchmark</compoundname>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="namespacesigmoid__benchmark_1ab311a8210518d31e511583377e634ea5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>torch.Tensor</type>
+        <definition> torch.Tensor sigmoid_benchmark.real_sigmoid</definition>
+        <argsstring>(torch.Tensor x)</argsstring>
+        <name>real_sigmoid</name>
+        <qualifiedname>sigmoid_benchmark.real_sigmoid</qualifiedname>
+        <param>
+          <type>torch.Tensor</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><verbatim>Real sigmoid function: σ(x) = 1 / (1 + e^(-x))</verbatim> </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/python/benchmarks/sigmoid_benchmark.py" line="13" column="1" bodyfile="/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/python/benchmarks/sigmoid_benchmark.py" bodystart="13" bodyend="16"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacesigmoid__benchmark_1a57dd65b8e6a8c2917a96a3ba6f211fc7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>torch.Tensor</type>
+        <definition> torch.Tensor sigmoid_benchmark.fast_sigmoid</definition>
+        <argsstring>(torch.Tensor x)</argsstring>
+        <name>fast_sigmoid</name>
+        <qualifiedname>sigmoid_benchmark.fast_sigmoid</qualifiedname>
+        <param>
+          <type>torch.Tensor</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><verbatim>Fast sigmoid approximation: f(x) = 0.5 * (x / (1 + abs(x)) + 1)</verbatim> </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/python/benchmarks/sigmoid_benchmark.py" line="17" column="1" bodyfile="/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/python/benchmarks/sigmoid_benchmark.py" bodystart="17" bodyend="20"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacesigmoid__benchmark_1adbb94c43232ba604e2ba5d2199850a25" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>torch.Tensor</type>
+        <definition> torch.Tensor sigmoid_benchmark.taylor_sigmoid</definition>
+        <argsstring>(torch.Tensor x)</argsstring>
+        <name>taylor_sigmoid</name>
+        <qualifiedname>sigmoid_benchmark.taylor_sigmoid</qualifiedname>
+        <param>
+          <type>torch.Tensor</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><verbatim>Taylor series approximation (5th order): f(x) = 0.5 + 0.25*x - 0.020833*x^3 + 0.002083*x^5</verbatim> </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/python/benchmarks/sigmoid_benchmark.py" line="21" column="1" bodyfile="/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/python/benchmarks/sigmoid_benchmark.py" bodystart="21" bodyend="27"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacesigmoid__benchmark_1accae2279c40934686e95f06fc325dca9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>dict</type>
+        <definition> dict sigmoid_benchmark.benchmark_sigmoid</definition>
+        <argsstring>(Callable func, Tuple[int, int] matrix_size, float run_time=3.0, str device=&apos;cpu&apos;)</argsstring>
+        <name>benchmark_sigmoid</name>
+        <qualifiedname>sigmoid_benchmark.benchmark_sigmoid</qualifiedname>
+        <param>
+          <type>Callable</type>
+          <declname>func</declname>
+        </param>
+        <param>
+          <type>Tuple</type>
+          <declname>matrix_size</declname>
+          <array>[int, int]</array>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>run_time</declname>
+          <defval>3.0</defval>
+        </param>
+        <param>
+          <type>str</type>
+          <declname>device</declname>
+          <defval>&apos;cpu&apos;</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><verbatim>Benchmark a sigmoid function on a matrix of given size.
+
+Args:
+    func: Sigmoid function to benchmark
+    matrix_size: Tuple of (rows, cols) for matrix size
+    run_time: Time to run benchmark in seconds
+    device: Device to run on (&apos;cpu&apos;) - fair comparison
+
+Returns:
+    Dictionary with benchmark results
+</verbatim> </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/python/benchmarks/sigmoid_benchmark.py" line="28" column="1" bodyfile="/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/python/benchmarks/sigmoid_benchmark.py" bodystart="28" bodyend="76"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacesigmoid__benchmark_1af602c9ef9bb51f5d2562ab6587b48032" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>str</type>
+        <definition> str sigmoid_benchmark.format_benchmark_results</definition>
+        <argsstring>(dict results, str func_name)</argsstring>
+        <name>format_benchmark_results</name>
+        <qualifiedname>sigmoid_benchmark.format_benchmark_results</qualifiedname>
+        <param>
+          <type>dict</type>
+          <declname>results</declname>
+        </param>
+        <param>
+          <type>str</type>
+          <declname>func_name</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><verbatim>Format benchmark results</verbatim> </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/python/benchmarks/sigmoid_benchmark.py" line="77" column="1" bodyfile="/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/python/benchmarks/sigmoid_benchmark.py" bodystart="77" bodyend="88"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacesigmoid__benchmark_1aa8b8895823cd07e9fd11b6250581c88b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>sigmoid_benchmark.main</definition>
+        <argsstring>()</argsstring>
+        <name>main</name>
+        <qualifiedname>sigmoid_benchmark.main</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/python/benchmarks/sigmoid_benchmark.py" line="89" column="1" bodyfile="/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/python/benchmarks/sigmoid_benchmark.py" bodystart="89" bodyend="134"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para><verbatim>Sigmoid Performance Benchmark
+
+This script benchmarks the performance of applying sigmoid functions to matrices
+of different sizes using PyTorch, similar to the C++ benchmarks to compare the difference in performance.
+</verbatim> </para>
+    </detaileddescription>
+    <location file="/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/python/benchmarks/sigmoid_benchmark.py" line="1" column="1"/>
+  </compounddef>
+</doxygen>

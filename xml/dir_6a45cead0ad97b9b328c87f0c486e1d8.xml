@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_6a45cead0ad97b9b328c87f0c486e1d8" kind="dir">
+    <compoundname>/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/03_neon/01_execution_throughput_and_latency/benchmark</compoundname>
+    <innerfile refid="03__neon_201__execution__throughput__and__latency_2benchmark_2microbench_8cpp">microbench.cpp</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/submissions/03_neon/01_execution_throughput_and_latency/benchmark/"/>
+  </compounddef>
+</doxygen>

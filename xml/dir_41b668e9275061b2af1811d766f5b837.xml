@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_41b668e9275061b2af1811d766f5b837" kind="dir">
+    <compoundname>/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/benchmarks</compoundname>
+    <innerdir refid="dir_acfa0d7404895582bc9e59f9be4f0f55">/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/benchmarks/matmul</innerdir>
+    <innerdir refid="dir_35198e0b3f77597227874a7a59b011b8">/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/benchmarks/unary</innerdir>
+    <innerfile refid="EinsumTree_8bench_8cpp">EinsumTree.bench.cpp</innerfile>
+    <innerfile refid="TensorOperation_8bench_8cpp">TensorOperation.bench.cpp</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/runner/work/machine-learning-compilers/machine-learning-compilers/src/benchmarks/"/>
+  </compounddef>
+</doxygen>
